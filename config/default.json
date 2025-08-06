@@ -1,0 +1,21 @@
+{
+    "ui": {
+        "theme": "dark",
+        "spectrum_keys": 37,
+        "keybinds": {
+            "play_pause": "Space",
+            "seek_left": "Left",
+            "seek_right": "Right",
+            "add_harmony_flag": "H",
+            "add_rhythm_flag": "R"
+        }
+    },
+    "fft": {
+        "octaves": 3,
+        "window_s": 0.3
+    },
+    "playback": {
+        "speed_min": 0.1,
+        "speed_max": 4.0
+    }
+}

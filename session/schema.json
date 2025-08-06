@@ -1,0 +1,53 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "labels": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "t": {
+                        "type": "number"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "text": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "t",
+                    "type",
+                    "text"
+                ]
+            }
+        },
+        "loopPoints": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "start": {
+                        "type": "number"
+                    },
+                    "end": {
+                        "type": "number"
+                    }
+                }
+            }
+        },
+        "lastView": {
+            "type": "object",
+            "properties": {
+                "zoom": {
+                    "type": "number"
+                },
+                "offset": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}

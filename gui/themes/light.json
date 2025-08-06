@@ -1,0 +1,14 @@
+{
+    "accent": "#0066cc",
+    "background": "#fafafa",
+    "surface": "#ffffff",
+    "grid": "#e0e0e0",
+    "text": "#212121",
+    "textSecondary": "#757575",
+    "keyWhite": "#ffffff",
+    "keyBlack": "#424242",
+    "waveform": "#00c853",
+    "spectrum": "#ff1744",
+    "flagRhythm": "#e53935",
+    "flagHarmony": "#7c4dff"
+}

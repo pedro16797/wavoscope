@@ -1,0 +1,115 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "ui": {
+            "type": "object",
+            "properties": {
+                "theme": {
+                    "type": "string",
+                    "enum": [
+                        "dark",
+                        "light"
+                    ],
+                    "default": "dark"
+                },
+                "keybinds": {
+                    "type": "object",
+                    "properties": {
+                        "play_pause": {
+                            "type": "string",
+                            "default": "Space"
+                        },
+                        "seek_left": {
+                            "type": "string",
+                            "default": "Left"
+                        },
+                        "seek_right": {
+                            "type": "string",
+                            "default": "Right"
+                        },
+                        "add_harmony_flag": {
+                            "type": "string",
+                            "default": "H"
+                        },
+                        "add_rhythm_flag": {
+                            "type": "string",
+                            "default": "R"
+                        }
+                    }
+                },
+                "spectrum_keys": {
+                    "type": "integer",
+                    "minimum": 12,
+                    "maximum": 120,
+                    "default": 37
+                }
+            }
+        },
+        "fft": {
+            "type": "object",
+            "properties": {
+                "octaves": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10,
+                    "default": 3
+                },
+                "window_s": {
+                    "type": "number",
+                    "minimum": 0.05,
+                    "maximum": 5.0,
+                    "default": 0.3
+                }
+            }
+        },
+        "playback": {
+            "type": "object",
+            "properties": {
+                "speed_min": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 2.0,
+                    "default": 0.1
+                },
+                "speed_max": {
+                    "type": "number",
+                    "minimum": 1.0,
+                    "maximum": 10.0,
+                    "default": 4.0
+                }
+            }
+        },
+        "flags": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "t": {
+                        "type": "number"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "harmony",
+                            "rhythm"
+                        ]
+                    },
+                    "subdivision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "default": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "default": ""
+                    }
+                },
+                "required": [
+                    "t",
+                    "type"
+                ]
+            }
+        }
+    }
+}
