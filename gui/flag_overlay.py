@@ -20,6 +20,10 @@ class FlagOverlay:
         scale = width / (end_sec - start_sec)
         for flag in flags:
             x = int((flag["t"] - start_sec) * scale)
-            rect = QRectF(x, 0, 3, FlagOverlay.HEIGHT)
-            color = colors[flag["type"]]
+            width = 3
+            if flag.get("is_section_start", False):
+                color = colors[flag["type"]].lighter(150)
+            else:
+                color = colors[flag["type"]]
+            rect = QRectF(x, 10, width, FlagOverlay.HEIGHT)
             painter.fillRect(rect, color)

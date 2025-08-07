@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import (QDialog, QTabWidget, QWidget, QVBoxLayout, QKeySequenceEdit,
+from PySide6.QtWidgets import (QDialog, QTabWidget, QWidget, QVBoxLayout, QKeySequenceEdit, QSlider,
                                QComboBox, QSpinBox, QFormLayout, QPushButton, QKeySequenceEdit, QLabel)
 from PySide6.QtGui import QKeySequence
+from PySide6.QtCore import Qt
 from wavoscope.utils.config import Config
 
 class SettingsDialog(QDialog):
@@ -28,6 +29,15 @@ class SettingsDialog(QDialog):
         self.theme_cb.addItems(["dark", "light"])
         self.theme_cb.setCurrentText(self.config.get("ui.theme", "dark"))
         form.addRow("UI Theme:", self.theme_cb)
+
+        self.click_volume = QSlider(Qt.Horizontal)
+        self.click_volume.setRange(0, 100)
+        self.click_volume.setValue(30)
+        form.addRow("Click volume:", self.click_volume)
+
+        self.click_pitch = QSlider(Qt.Horizontal)
+        self.click_pitch.setRange(200, 2000)
+        self.click_pitch
 
         key_tab = QWidget()
         key_tab.setLayout(QVBoxLayout())

@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QPoint
 from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QPainter, QPen, QColor
 from wavoscope.gui.colours import load_palette
@@ -24,7 +24,7 @@ class Timeline(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setFixedHeight(32)
+        self.setFixedHeight(42)
         self._duration = 0.0
         self._cursor = 0.0
         self._sr = 44100
@@ -83,10 +83,53 @@ class Timeline(QWidget):
 
         # flags
         if main and hasattr(main, 'project') and main.project:
-            FlagOverlay.paint(painter,
-                              main.project.flags,
+            flags = main.project.flags
+            FlagOverlay.paint(painter, flags,
                               view_start, view_end,
                               self.width(), 12)
+            # draw flag names
+            painter.setPen(QColor(self.palette["text"]))
+            font = painter.font()
+            font.setPixelSize(9)
+            font.setFamily("Consolas")
+            painter.setFont(font)
+            for f in flags:
+                if f["type"] != "rhythm":
+                    continue
+                x = int((f["t"] - view_start) * self.width() / span)
+                name = f.get("name", "")
+                fm = painter.fontMetrics()
+                text_width = fm.horizontalAdvance(name)
+                text_x = x - text_width // 2
+                text_y = 11
+                text_rect = fm.boundingRect(name)
+                text_rect.moveTo(text_x, text_y - fm.ascent())
+                text_rect.adjust(-2, -1, 2, 1)
+
+                painter.fillRect(text_rect, QColor(self.palette["surface"]))
+                painter.setPen(QColor(self.palette["text"]))
+                painter.drawText(text_x, text_y, name)
+
+            # subdivision bars
+            painter.setPen(QPen(QColor(self.palette["accent"]).lighter(120), 1, Qt.DotLine))
+            for prev, nxt in zip(flags, flags[1:]):
+                if prev["type"] != "rhythm":
+                    continue
+                subdiv = prev.get("subdivision", 0)
+                if subdiv == 0 or subdiv is None:
+                    # walk backwards for the first rhythm flag with a non-zero value
+                    for p in reversed(flags[:flags.index(prev)+1]):
+                        if p["type"] == "rhythm" and p.get("subdivision", 0) != 0:
+                            subdiv = p["subdivision"]
+                            break
+                    else:
+                        subdiv = 1
+                if subdiv <= 1:
+                    continue
+                step = (nxt["t"] - prev["t"]) / subdiv
+                for k in range(1, subdiv):
+                    x = int((prev["t"] + k * step - view_start) * self.width() / span)
+                    painter.drawLine(x, 10, x, self.height())
 
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:

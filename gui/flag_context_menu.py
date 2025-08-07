@@ -9,6 +9,9 @@ class FlagContextMenu:
         rename_action = menu.addAction("Rename…")
         time_action = menu.addAction("Edit Time…")
         subdiv_action = menu.addAction("Subdivision…")
+        section_action = menu.addAction("Section start")
+        section_action.setCheckable(True)
+        section_action.setChecked(flag.get("is_section_start", False))
         menu.addSeparator()
         delete_action = menu.addAction("Delete")
 
@@ -43,9 +46,9 @@ class FlagContextMenu:
             new_sub, ok = QInputDialog.getInt(
                 parent,
                 "Set subdivision",
-                "Sub-beats per measure:",
-                value=flag.get("subdivision", 1),
-                minValue=1,
+                "Sub-beats per measure (0 = inherit):",
+                value=flag.get("subdivision", 0),
+                minValue=0,
                 maxValue=32,
             )
             if ok:
@@ -54,11 +57,9 @@ class FlagContextMenu:
                 project.flag_added.emit(flag["t"])
 
         elif chosen == delete_action:
-            reply = QMessageBox.question(
-                parent,
-                "Delete flag?",
-                f'Delete {flag["type"]} flag at {flag["t"]:.2f}s?',
-                QMessageBox.Yes | QMessageBox.No,
-            )
-            if reply == QMessageBox.Yes:
-                project.remove_flag(idx)
+            project.remove_flag(idx)
+
+        elif chosen == section_action:
+            flag["is_section_start"] = not flag.get("is_section_start", False)
+            project.save()
+            project.flag_added.emit(flag["t"])

@@ -89,6 +89,7 @@ class MainWindow(QMainWindow):
     def _connect_project_signals(self):
         if not hasattr(self, '_connected') or not self._connected:
             self.waveform.seek_requested.connect(self.project.seek)
+            self.project.backend.set_tick_provider(self.project.subdivision_ticks_between)
             self.playback_bar.btn_play.clicked.connect(self.project.play)
             self.playback_bar.btn_stop.clicked.connect(self.project.pause)
             self.playback_bar.mode_btn.clicked.connect(

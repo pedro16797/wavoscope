@@ -54,21 +54,32 @@ class Project(QObject):
         self.backend.open_file(path)
         self.wave_cache = WaveformCache(self.backend._data, self.backend._sr)
 
-    def add_flag(self, t: float, type_: str = "rhythm", subdivision: int = 1, name: str = ""):
+    def add_flag(self, t: float, type_: str = "rhythm", subdivision: int = 0,
+                 name: str = "", is_section_start: bool = False):
         if any(abs(f["t"] - t) < 0.001 for f in self.flags):
             return
-        self.flags.append({"t": t, "type": type_, "subdivision": subdivision, "name": name})
+        self.flags.append({
+            "t": t,
+            "type": type_,
+            "subdivision": subdivision,
+            "name": name,
+            "is_section_start": is_section_start,
+        })
+        self.flags.sort(key=lambda f: f["t"])
+        self._recompute_auto_names()
         self.save()
         self.flag_added.emit(t)
 
     def remove_flag(self, idx: int):
         self.flags.pop(idx)
+        self._recompute_auto_names()
         self.save()
         self.flag_removed.emit(idx)
 
     def move_flag(self, idx: int, new_time: float):
         if 0 <= idx < len(self.flags):
             self.flags[idx]["t"] = new_time
+            self._recompute_auto_names()
             self.save()
 
     def set_speed(self, speed: float):
@@ -76,3 +87,50 @@ class Project(QObject):
 
     def set_volume(self, volume: float):
         self.backend.set_volume(volume)
+
+    def subdivision_ticks_between(self, t_start, t_end):
+        ticks = []
+        for prev, nxt in zip(self.flags, self.flags[1:]):
+            if prev["type"] != "rhythm":
+                continue
+            span = nxt["t"] - prev["t"]
+            subdiv = prev.get("subdivision", 0)
+            if subdiv == 0:
+                for p in reversed(self.flags[:self.flags.index(prev)+1]):
+                    if p["type"] == "rhythm" and p.get("subdivision", 0) != 0:
+                        subdiv = p["subdivision"]
+                        break
+                else:
+                    subdiv = 1
+            if subdiv <= 1:
+                ticks.append((prev["t"], True))
+            else:
+                step = span / subdiv
+                for k in range(subdiv):
+                    tick_t = prev["t"] + k * step
+                    if t_start <= tick_t < t_end:
+                        is_strong = (k == 0)
+                        ticks.append((tick_t, is_strong))
+        return sorted(ticks, key=lambda x: x[0])
+
+    def _recompute_auto_names(self):
+        """
+        Re-apply auto names to rhythm flags.
+        Section starts: A, B, C …
+        Measures inside section: A-01, A-02 …
+        """
+        section_idx = 0
+        measure_counter = 0
+        for f in self.flags:
+            if f["type"] != "rhythm":
+                continue
+
+            if f.get("is_section_start", False):
+                section_name = chr(ord("A") + section_idx)
+                section_idx += 1
+                measure_counter = 0
+                f["name"] = section_name
+            else:
+                measure_counter += 1
+                section_name = chr(ord("A") + section_idx - 1) if section_idx else ""
+                f["name"] = f"{section_name}-{measure_counter:02d}"
