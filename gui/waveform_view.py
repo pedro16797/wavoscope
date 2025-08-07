@@ -93,22 +93,23 @@ class WaveformView(QGraphicsView):
             self.scene().clear()
             return
 
+        # Build one path per bar with its own colour
         mid = self.height() / 2
         scale = mid * 0.9
+        base_colour = QColor(self.palette["waveform"])
+        
+        self.scene().clear()
 
-        # Build a single painter path instead of many lines
-        from PySide6.QtGui import QPainterPath
-        path = QPainterPath()
-        for i, (mn, mx) in enumerate(bars):
+        for i, (mn, mx, intensity) in enumerate(bars):
             x = i * bar_w
             y1 = mid + mn * scale
             y2 = mid + mx * scale
-            path.moveTo(x, y1)
-            path.lineTo(x, y2)
 
-        self.scene().clear()
-        pen = QPen(QColor(self.palette["waveform"]), bar_w)
-        self.scene().addPath(path, pen)
+            colour = QColor(base_colour)
+            colour.setAlphaF(max(0.3, intensity))   # darker when intensity < 1
+            pen = QPen(colour, bar_w)
+
+            self.scene().addLine(x, y1, x, y2, pen)
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
