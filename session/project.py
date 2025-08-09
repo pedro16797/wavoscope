@@ -1,189 +1,238 @@
-from pathlib import Path
-from PySide6.QtCore import QObject, Signal
+"""
+`Project` ties together:
+
+• a backing audio file (via AudioBackend)  
+• its companion *.oscope* side-car with flags / labels  
+• cached waveform data for drawing
+
+Public workflow
+---------------
+project = Project(audio_path)
+project.open_file(audio_path)   # loads audio
+project.add_flag(t, "rhythm")   # etc.
+project.save()                  # writes .oscope
+"""
+from __future__ import annotations
+
 import json
+from pathlib import Path
+from typing import List, Dict, Any
+
+from PySide6.QtCore import QObject, Signal
+
 from wavoscope.audio.audio_backend import AudioBackend
 from wavoscope.audio.waveform_cache import WaveformCache
 
+
 class Project(QObject):
+    # UI-facing signals
     flag_added = Signal(float)
     flag_removed = Signal(int)
 
-    # --------- playback passthrough ---------
-    def seek(self, t):            self.backend.seek(t)
-    def play(self):               self.backend.play()
-    def pause(self):              self.backend.pause()
-    @property
-    def flags(self) -> list[dict]: return self.session_data.setdefault("flags", [])
-    @property
-    def _data(self): return self.backend._data
-    @property
-    def duration(self): return self.backend.duration
-    @property
-    def position(self): return self.backend.position
-    @property
-    def _sr(self): return self.backend._sr
-
-    def __init__(self, audio_path: Path):
+    # ---------- construction / persistence ----------
+    def __init__(self, audio_path: Path) -> None:
         super().__init__()
-        self.audio_path = audio_path
-        self.sidecar_path = audio_path.with_suffix(audio_path.suffix + "oscope")
-        self.backend = AudioBackend()
-        self.session_data = self._load_or_create_sidecar()
-        self._spectrum_cache = {}
-        self.wave_cache = None
-        self._dirty = False
+        self.audio_path: Path = audio_path
+        self.sidecar_path: Path = audio_path.with_suffix(audio_path.suffix + "oscope")
 
-    def _load_or_create_sidecar(self):
-        if self.sidecar_path.exists():
-            return json.loads(self.sidecar_path.read_text())
-        return {"labels": [], "loopPoints": [], "lastView": {}}
+        self.backend: AudioBackend = AudioBackend()
+        self.session_data: Dict[str, Any] = self._load_or_create_sidecar()
 
-    def save(self):
-        self.sidecar_path.write_text(json.dumps(self.session_data, indent=2))
-        self._dirty = False
+        self.wave_cache: WaveformCache | None = None
+        self._dirty: bool = False
 
-    def mark_dirty(self):
-        self._dirty = True
-
-    def open_file(self, path: Path):
-        # Stop and cleanup any existing playback
+    # ---------- file handling ----------
+    def open_file(self, path: Path) -> None:
+        """Close current audio, open new file, build cache."""
+        # Stop ongoing playback
         if self.backend._playing:
             self.backend.pause()
         self.backend.close()
-        
-        # Clear caches
-        self._spectrum_cache.clear()
-        self.wave_cache = None
-        
-        # Load new file
+
+        # Load new audio
         self.backend.open_file(path)
         self.wave_cache = WaveformCache(self.backend._data, self.backend._sr)
 
-    def add_flag(self, t: float, type_: str = "rhythm", subdivision: int = 0,
-                 name: str = "", is_section_start: bool = False, shaded_subdivisions: bool = False):
-        if any(abs(f["t"] - t) < 0.001 for f in self.flags):
+        # Reset caches
+        self._spectrum_cache: Dict[str, Any] = {}
+
+    def save(self) -> None:
+        """Write current session data to .oscope file."""
+        self.sidecar_path.write_text(json.dumps(self.session_data, indent=2))
+        self._dirty = False
+
+    # ---------- flag API ----------
+    @property
+    def flags(self) -> List[Dict[str, Any]]:
+        """Live, sorted list of flags (in-place edits are allowed)."""
+        return self.session_data.setdefault("flags", [])
+
+    def add_flag(
+        self,
+        time: float,
+        kind: str = "rhythm",
+        subdivision: int = 0,
+        name: str = "",
+        section_start: bool = False,
+        shaded: bool = False,
+    ) -> None:
+        """Insert and sort a new flag, skipping duplicates < 1 ms."""
+        if any(abs(f["t"] - time) < 0.001 for f in self.flags):
             return
-        self.flags.append({
-            "t": t,
-            "type": type_,
-            "subdivision": subdivision,
-            "name": name,
-            "is_section_start": is_section_start,
-            "shaded_subdivisions": shaded_subdivisions,
-        })
+
+        self.flags.append(
+            {
+                "t": time,
+                "type": kind,
+                "subdivision": subdivision,
+                "name": name,
+                "is_section_start": section_start,
+                "shaded_subdivisions": shaded,
+            }
+        )
         self.flags.sort(key=lambda f: f["t"])
         self._recompute_auto_names()
         self._clear_backend_cache()
         self.mark_dirty()
-        self.flag_added.emit(t)
+        self.flag_added.emit(time)
 
-    def remove_flag(self, idx: int):
+    def remove_flag(self, idx: int) -> None:
+        """Delete flag by index."""
         self.flags.pop(idx)
         self._recompute_auto_names()
         self._clear_backend_cache()
         self.mark_dirty()
         self.flag_removed.emit(idx)
 
-    def move_flag(self, idx: int, new_time: float):
+    def move_flag(self, idx: int, new_time: float) -> None:
+        """Change flag time while enforcing ordering."""
         if 0 <= idx < len(self.flags):
             self.flags[idx]["t"] = new_time
+            self.flags.sort(key=lambda f: f["t"])
             self._recompute_auto_names()
             self._clear_backend_cache()
             self.mark_dirty()
 
-    def set_speed(self, speed: float):
-        self.backend.set_speed(speed)
+    # ---------- playback passthrough ----------
+    def seek(self, time: float) -> None: self.backend.seek(time)
+    def play(self) -> None: self.backend.play()
+    def pause(self) -> None: self.backend.pause()
 
-    def set_volume(self, volume: float):
-        self.backend.set_volume(volume)
+    def set_speed(self, speed: float) -> None: self.backend.set_speed(speed)
+    def set_volume(self, volume: float) -> None: self.backend.set_volume(volume)
 
-    def subdivision_ticks_between(self, t_start, t_end):
-        ticks = []
+    # ---------- derived read-only properties ----------
+    @property
+    def position(self) -> float: return self.backend.position
+    @property
+    def duration(self) -> float: return self.backend.duration
+    @property
+    def _data(self) -> Any: return self.backend._data
+    @property
+    def _sr(self) -> int: return self.backend._sr
+
+    # ---------- metronome helpers ----------
+    def subdivision_ticks_between(self, start: float, end: float) -> list[tuple[float, bool]]:
+        """
+        Return (time, is_strong) ticks between two play-head positions,
+        honouring subdivision flags.
+        """
+        ticks: list[tuple[float, bool]] = []
+
+        # Iterate over neighbouring flag pairs
         for prev, nxt in zip(self.flags, self.flags[1:]):
             if prev["type"] != "rhythm":
                 continue
-            span = nxt["t"] - prev["t"]
+
+            # Resolve subdivision (walk backwards if not explicitly set)
             subdiv = prev.get("subdivision", 0)
             if subdiv == 0:
-                for p in reversed(self.flags[:self.flags.index(prev)+1]):
+                for p in reversed(self.flags[: self.flags.index(prev) + 1]):
                     if p["type"] == "rhythm" and p.get("subdivision", 0) != 0:
                         subdiv = p["subdivision"]
                         break
                 else:
                     subdiv = 1
-            if subdiv <= 1:
-                ticks.append((prev["t"], True))
-            else:
-                step = span / subdiv
-                for k in range(subdiv):
-                    tick_t = prev["t"] + k * step
-                    if t_start <= tick_t < t_end:
-                        is_strong = (k == 0)
-                        ticks.append((tick_t, is_strong))
-        return sorted(ticks, key=lambda x: x[0])
-    
-    def _clear_backend_cache(self):
-        if hasattr(self, 'backend') and self.backend:
-            self.backend.clear_tick_cache()
 
-    def _recompute_auto_names(self):
-        section_idx = 0
-        measure_counter = 0
-        
-        for f in self.flags:
-            if f["type"] != "rhythm":
+            if subdiv <= 1:
+                if start <= prev["t"] < end:
+                    ticks.append((prev["t"], True))
                 continue
 
-            if f.get("is_section_start", False):
-                section_name = chr(ord("A") + section_idx)
-                section_idx += 1
-                measure_counter = 0
-                f["name"] = section_name
-            else:
-                measure_counter += 1
-                if section_idx > 0:
-                    section_name = chr(ord("A") + section_idx - 1)
-                    f["name"] = f"{section_name}-{measure_counter:02d}"
-                else:
-                    f["name"] = f"{measure_counter:02d}"
+            # Evenly spaced ticks within the span
+            span = nxt["t"] - prev["t"]
+            step = span / subdiv
+            for k in range(subdiv):
+                tick_time = prev["t"] + k * step
+                if start <= tick_time < end:
+                    ticks.append((tick_time, k == 0))  # first tick is strong
 
-    def insert_equi_spaced_flags(self, left_idx, right_idx, count):
-        if left_idx >= len(self.flags) or right_idx >= len(self.flags):
+        return sorted(ticks, key=lambda t: t[0])
+
+    # ---------- internal utilities ----------
+    def _load_or_create_sidecar(self) -> dict[str, Any]:
+        if self.sidecar_path.exists():
+            return json.loads(self.sidecar_path.read_text())
+        return {"labels": [], "loopPoints": [], "lastView": {}}
+
+    def mark_dirty(self) -> None:
+        self._dirty = True
+
+    def _clear_backend_cache(self) -> None:
+        self.backend.clear_tick_cache()
+
+    def _recompute_auto_names(self) -> None:
+        """Auto-generate A, A-01, A-02… names for rhythm flags."""
+        section_idx = 0
+        measure = 0
+
+        for flag in self.flags:
+            if flag["type"] != "rhythm":
+                continue
+
+            if flag.get("is_section_start", False):
+                section_idx += 1
+                measure = 0
+                flag["name"] = chr(ord("A") + section_idx - 1)
+            else:
+                measure += 1
+                section = chr(ord("A") + section_idx - 1) if section_idx else ""
+                flag["name"] = f"{section}{measure:02d}".lstrip("0") or "00"
+
+    # ---------- bulk helpers ----------
+    def insert_equi_spaced_flags(
+        self, left_idx: int, right_idx: int, count: int
+    ) -> None:
+        """
+        Insert `count` evenly-spaced rhythm flags between two existing flags.
+        """
+        if not (0 <= left_idx < len(self.flags) and 0 <= right_idx < len(self.flags)):
             return
-            
-        left_flag = self.flags[left_idx]
-        right_flag = self.flags[right_idx]
-        
-        start_time = left_flag["t"]
-        end_time = right_flag["t"]
-        
-        if end_time <= start_time:
+
+        left = self.flags[left_idx]
+        right = self.flags[right_idx]
+        if right["t"] <= left["t"]:
             return
-        
-        # Calculate even spacing
-        total_span = end_time - start_time
-        step = total_span / (count + 1)
-        
-        # Inherit subdivision from left flag
-        subdivision = left_flag.get("subdivision", 0)
-        
-        flags_to_add = []
+
+        span = right["t"] - left["t"]
+        step = span / (count + 1)
+        subdivision = left.get("subdivision", 0)
+
         for i in range(1, count + 1):
-            new_time = start_time + (i * step)
-            new_flag = {
-                "t": new_time,
-                "type": "rhythm",
-                "subdivision": subdivision,
-                "name": "",
-                "is_section_start": False,
-                "shaded_subdivisions": False,
-            }
-            flags_to_add.append(new_flag)
-        
-        # Add all flags at once
-        self.flags.extend(flags_to_add)
+            t = left["t"] + i * step
+            self.flags.append(
+                {
+                    "t": t,
+                    "type": "rhythm",
+                    "subdivision": subdivision,
+                    "name": "",
+                    "is_section_start": False,
+                    "shaded_subdivisions": False,
+                }
+            )
+
         self.flags.sort(key=lambda f: f["t"])
         self._recompute_auto_names()
         self._clear_backend_cache()
         self.mark_dirty()
-        self.flag_added.emit(start_time)
+        self.flag_added.emit(left["t"])

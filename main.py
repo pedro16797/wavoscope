@@ -3,7 +3,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 from wavoscope.gui.main_window import MainWindow
 from wavoscope.gui.colours import load_palette
-import wavoscope.gui.resources_rc
+import wavoscope.gui._resources_rc
 from PySide6.QtGui import QPalette, QColor
 
 def main():
