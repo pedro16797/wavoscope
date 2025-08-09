@@ -124,6 +124,7 @@ class Project(QObject):
     def _recompute_auto_names(self):
         section_idx = 0
         measure_counter = 0
+        
         for f in self.flags:
             if f["type"] != "rhythm":
                 continue
@@ -135,5 +136,49 @@ class Project(QObject):
                 f["name"] = section_name
             else:
                 measure_counter += 1
-                section_name = chr(ord("A") + section_idx - 1) if section_idx else ""
-                f["name"] = f"{section_name}-{measure_counter:02d}"
+                if section_idx > 0:
+                    section_name = chr(ord("A") + section_idx - 1)
+                    f["name"] = f"{section_name}-{measure_counter:02d}"
+                else:
+                    f["name"] = f"{measure_counter:02d}"
+
+    def insert_equi_spaced_flags(self, left_idx, right_idx, count):
+        if left_idx >= len(self.flags) or right_idx >= len(self.flags):
+            return
+            
+        left_flag = self.flags[left_idx]
+        right_flag = self.flags[right_idx]
+        
+        start_time = left_flag["t"]
+        end_time = right_flag["t"]
+        
+        if end_time <= start_time:
+            return
+        
+        # Calculate even spacing
+        total_span = end_time - start_time
+        step = total_span / (count + 1)
+        
+        # Inherit subdivision from left flag
+        subdivision = left_flag.get("subdivision", 0)
+        
+        flags_to_add = []
+        for i in range(1, count + 1):
+            new_time = start_time + (i * step)
+            new_flag = {
+                "t": new_time,
+                "type": "rhythm",
+                "subdivision": subdivision,
+                "name": "",
+                "is_section_start": False,
+                "shaded_subdivisions": False,
+            }
+            flags_to_add.append(new_flag)
+        
+        # Add all flags at once
+        self.flags.extend(flags_to_add)
+        self.flags.sort(key=lambda f: f["t"])
+        self._recompute_auto_names()
+        self._clear_backend_cache()
+        self.save()
+        self.flag_added.emit(start_time)

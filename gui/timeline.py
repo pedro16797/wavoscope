@@ -152,9 +152,8 @@ class Timeline(QWidget):
             view_span = self.width() / max(waveform._zoom * waveform._sr, 1e-3)
             click_t = view_start + event.position().x() * view_span / self.width()
 
-            scale = self.width() / view_span
             best_idx = None
-            min_dist = 10.0 / scale
+            min_dist = 10.0 / (self.width() / view_span)
             for idx, f in enumerate(self.window().project.flags):
                 d = abs(f["t"] - click_t)
                 if d < min_dist:
@@ -168,8 +167,6 @@ class Timeline(QWidget):
                 )
                 event.accept()
                 return
-            super().mousePressEvent(event)
-            return
 
         if event.button() != Qt.LeftButton:
             super().mousePressEvent(event)
