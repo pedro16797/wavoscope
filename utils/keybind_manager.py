@@ -41,6 +41,7 @@ class KeybindManager(QObject):
             "seek_right": "Right",
             "add_harmony_flag": "H",
             "add_rhythm_flag": "R",
+            "save": "Ctrl+S",
         }
         for action, default in schema.items():
             self._mapping[action] = self.config.get(f"ui.keybinds.{action}", default)

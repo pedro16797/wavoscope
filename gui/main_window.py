@@ -106,16 +106,26 @@ class MainWindow(QMainWindow):
     # ---------- UI / menu ----------
     def _build_menu(self):
         file_menu = self.menuBar().addMenu("&File")
+        
         open_action = QAction("&Open…", self)
         open_action.setShortcut(QKeySequence.Open)
         open_action.triggered.connect(self._open_file_dialog)
         file_menu.addAction(open_action)
-
+        
+        save_action = QAction("&Save", self)
+        save_action.setShortcut(QKeySequence.Save)
+        save_action.triggered.connect(self._save_project)
+        file_menu.addAction(save_action)
+        
         file_menu.addSeparator()
         settings_action = QAction("&Settings…", self)
         settings_action.setShortcut(QKeySequence.Preferences)
         settings_action.triggered.connect(lambda: SettingsDialog(self).exec())
         file_menu.addAction(settings_action)
+
+    def _save_project(self):
+        if self.project:
+            self.project.save()
 
     def _load_theme(self, name):
         self.setStyleSheet(full_stylesheet(name))
@@ -200,6 +210,27 @@ class MainWindow(QMainWindow):
         self.spectrum.set_audio_data(self.project._data, self.project._sr)
         self.spectrum.set_synth(self.project.backend._synth)
         self.playback_bar.set_position(0, self.project.duration)
+
+    def closeEvent(self, event):
+        if self.project and self.project._dirty:
+            from PySide6.QtWidgets import QMessageBox
+            
+            reply = QMessageBox.question(
+                self, "Unsaved Changes",
+                "You have unsaved changes. Save before closing?",
+                QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel,
+                QMessageBox.Save
+            )
+            
+            if reply == QMessageBox.Save:
+                self.project.save()
+                event.accept()
+            elif reply == QMessageBox.Discard:
+                event.accept()
+            else:  # Cancel
+                event.ignore()
+        else:
+            event.accept()
 
     # ---------- Playback ----------
     def _toggle_play(self):

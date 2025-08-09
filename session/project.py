@@ -31,6 +31,7 @@ class Project(QObject):
         self.session_data = self._load_or_create_sidecar()
         self._spectrum_cache = {}
         self.wave_cache = None
+        self._dirty = False
 
     def _load_or_create_sidecar(self):
         if self.sidecar_path.exists():
@@ -39,6 +40,10 @@ class Project(QObject):
 
     def save(self):
         self.sidecar_path.write_text(json.dumps(self.session_data, indent=2))
+        self._dirty = False
+
+    def mark_dirty(self):
+        self._dirty = True
 
     def open_file(self, path: Path):
         # Stop and cleanup any existing playback
@@ -69,14 +74,14 @@ class Project(QObject):
         self.flags.sort(key=lambda f: f["t"])
         self._recompute_auto_names()
         self._clear_backend_cache()
-        self.save()
+        self.mark_dirty()
         self.flag_added.emit(t)
 
     def remove_flag(self, idx: int):
         self.flags.pop(idx)
         self._recompute_auto_names()
         self._clear_backend_cache()
-        self.save()
+        self.mark_dirty()
         self.flag_removed.emit(idx)
 
     def move_flag(self, idx: int, new_time: float):
@@ -84,7 +89,7 @@ class Project(QObject):
             self.flags[idx]["t"] = new_time
             self._recompute_auto_names()
             self._clear_backend_cache()
-            self.save()
+            self.mark_dirty()
 
     def set_speed(self, speed: float):
         self.backend.set_speed(speed)
@@ -180,5 +185,5 @@ class Project(QObject):
         self.flags.sort(key=lambda f: f["t"])
         self._recompute_auto_names()
         self._clear_backend_cache()
-        self.save()
+        self.mark_dirty()
         self.flag_added.emit(start_time)

@@ -8,7 +8,8 @@
             "seek_left": "Left",
             "seek_right": "Right",
             "add_harmony_flag": "H",
-            "add_rhythm_flag": "R"
+            "add_rhythm_flag": "R",
+            "save": "Ctrl+S"
         }
     },
     "fft": {

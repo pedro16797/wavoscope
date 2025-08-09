@@ -155,10 +155,8 @@ class FlagDialog(QDialog):
         self.flag["shaded_subdivisions"] = self.shade_check.isChecked()
         
         self.project._recompute_auto_names()
-        self.project._clear_backend_cache()
-        self.project.save()
+        self.project.mark_dirty()
         self.project.flag_added.emit(self.flag["t"])
-        
         super().accept()
     
     def delete_flag(self):
