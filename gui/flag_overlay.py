@@ -1,6 +1,6 @@
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QPainter, QColor
-from wavoscope.gui.colours import load_palette
+from wavoscope.gui.colours import load_palette, current_theme
 
 class FlagOverlay:
     """Lightweight helper for Timeline & Waveform to paint flags."""
@@ -11,7 +11,7 @@ class FlagOverlay:
         if not flags or start_sec == end_sec:
             return
             
-        palette = load_palette()
+        palette = load_palette(current_theme())
         colors = {
             "harmony": QColor(palette.get("flagHarmony", "#0f0")),
             "rhythm": QColor(palette.get("flagRhythm", "#f00")),

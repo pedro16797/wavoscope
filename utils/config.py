@@ -3,6 +3,7 @@ from pathlib import Path
 from PySide6.QtCore import QSettings
 
 _DEFAULT_CFG = Path(__file__).with_suffix('').parent.parent / "config/default.json"
+AUDIO_FILTER = "Audio Files (*.wav *.mp3 *.flac *.ogg)"
 
 class Config:
     _inst = None

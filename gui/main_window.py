@@ -6,12 +6,12 @@ from wavoscope.gui.waveform_view import WaveformView
 from wavoscope.gui.spectrum_view import SpectrumView
 from wavoscope.gui.playback_bar import PlaybackBar
 from wavoscope.gui.timeline import Timeline
-from wavoscope.utils.helpers import AUDIO_FILTER
 from wavoscope.gui.dialogs.settings import SettingsDialog
-from wavoscope.session.project import Project
-from wavoscope.gui.colours import full_stylesheet, load_theme
+from wavoscope.gui.colours import full_stylesheet
 from wavoscope.utils.config import Config
+from wavoscope.utils.config import AUDIO_FILTER
 from wavoscope.utils.keybind_manager import KeybindManager
+from wavoscope.session.project import Project
 
 def midi_to_freq(midi):
     return 440.0 * (2 ** ((midi - 69) / 12))

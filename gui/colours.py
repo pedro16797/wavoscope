@@ -14,6 +14,10 @@ PALETTE = {
 AVAILABLE_THEMES = ["dark", "light", "neon", "warm", "cosmic"]
 THEMES_DIR = Path(__file__).parent / "themes"
 
+def current_theme() -> str:
+    from wavoscope.utils.config import Config
+    return Config().get("ui.theme", "dark")
+
 def full_stylesheet(name):
     palette = load_palette(name)
     qss = load_theme(name)

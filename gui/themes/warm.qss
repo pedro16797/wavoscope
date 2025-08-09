@@ -30,6 +30,11 @@ QPushButton:pressed {
     background: {accent};
     color: {surface};
 }
+QPushButton:checked {
+    background: {accent};
+    border: 1px solid {accent};
+    color: {surface};
+}
 
 /* Sliders */
 QSlider::groove:horizontal {
