@@ -168,6 +168,24 @@ class MainWindow(QMainWindow):
         path, _ = QFileDialog.getOpenFileName(self, "Open audio", "", AUDIO_FILTER)
         if not path:
             return
+            
+        # STOP any existing playback first
+        if hasattr(self, 'project') and self.project:
+            self.project.backend.pause()
+            self.project.backend.close()
+            
+        # Disconnect existing connections to prevent duplicates
+        if hasattr(self, '_connected') and self._connected:
+            try:
+                self.waveform.seek_requested.disconnect()
+                self.playback_bar.btn_play.clicked.disconnect()
+                self.playback_bar.btn_stop.clicked.disconnect()
+                self.playback_bar.metronome_toggled.disconnect()
+            except:
+                pass  # Ignore if connections don't exist
+            self._connected = False
+            
+        # Create new project
         self.project = Project(Path(path))
         self.project.open_file(Path(path))
         self._connect_project_signals()

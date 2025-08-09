@@ -47,7 +47,9 @@ class WaveformView(QGraphicsView):
     # ---------- public ----------
     def setProject(self, project):
         self.project = project
-        self.set_audio_data(project._data, project._sr)
+        if project:
+            self.set_audio_data(project._data, project._sr)
+            self.set_viewport_range(0, project.duration)
 
     def set_audio_data(self, y, sr):
         self._y = y.astype(np.float32)
