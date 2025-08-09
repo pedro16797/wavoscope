@@ -12,6 +12,12 @@ class FlagContextMenu:
         section_action = menu.addAction("Section start")
         section_action.setCheckable(True)
         section_action.setChecked(flag.get("is_section_start", False))
+        
+        # NEW: Shading toggle
+        shading_action = menu.addAction("Shade 8th notes")
+        shading_action.setCheckable(True)
+        shading_action.setChecked(flag.get("shaded_subdivisions", False))
+        
         menu.addSeparator()
         delete_action = menu.addAction("Delete")
 
@@ -26,7 +32,7 @@ class FlagContextMenu:
             if ok:
                 flag["name"] = new_name
                 project.save()
-                project.flag_added.emit(flag["t"])  # re-render
+                project.flag_added.emit(flag["t"])
 
         elif chosen == time_action:
             new_time, ok = QInputDialog.getDouble(
@@ -61,5 +67,10 @@ class FlagContextMenu:
 
         elif chosen == section_action:
             flag["is_section_start"] = not flag.get("is_section_start", False)
+            project.save()
+            project.flag_added.emit(flag["t"])
+
+        elif chosen == shading_action:
+            flag["shaded_subdivisions"] = not flag.get("shaded_subdivisions", False)
             project.save()
             project.flag_added.emit(flag["t"])

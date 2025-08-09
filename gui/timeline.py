@@ -110,8 +110,7 @@ class Timeline(QWidget):
                 painter.setPen(QColor(self.palette["text"]))
                 painter.drawText(text_x, text_y, name)
 
-            # subdivision bars
-            painter.setPen(QPen(QColor(self.palette["accent"]).lighter(120), 1, Qt.DotLine))
+            # subdivision bars with shading
             for prev, nxt in zip(flags, flags[1:]):
                 if prev["type"] != "rhythm":
                     continue
@@ -124,12 +123,24 @@ class Timeline(QWidget):
                             break
                     else:
                         subdiv = 1
+                
                 if subdiv <= 1:
                     continue
+                
                 step = (nxt["t"] - prev["t"]) / subdiv
+                shaded = prev.get("shaded_subdivisions", False)
+                
                 for k in range(1, subdiv):
                     x = int((prev["t"] + k * step - view_start) * self.width() / span)
-                    painter.drawLine(x, 10, x, self.height())
+                    
+                    if shaded and k % 2 == 1:  # 8th notes (odd positions)
+                        # Shorter and lighter lines
+                        painter.setPen(QPen(QColor(self.palette["accent"]).lighter(150), 1, Qt.DotLine))
+                        painter.drawLine(x, 15, x, self.height() - 5)  # Shorter line
+                    else:
+                        # Normal subdivision lines
+                        painter.setPen(QPen(QColor(self.palette["accent"]).lighter(120), 1, Qt.DotLine))
+                        painter.drawLine(x, 10, x, self.height())
 
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:

@@ -187,15 +187,40 @@ class AudioBackend:
                 if click_duration > 0:
                     t = np.arange(click_duration) / self._sr
                     envelope = np.exp(-t * 10)
+                    
+                    # Check if this tick should be shaded
+                    shaded = False
+                    flags = self._subdivision_ticks_between.__self__.flags if hasattr(self._subdivision_ticks_between, '__self__') else []
+                    
+                    # Find which flag this tick belongs to
+                    for prev, nxt in zip(flags, flags[1:]):
+                        if prev["type"] != "rhythm":
+                            continue
+                            
+                        subdiv = prev.get("subdivision", 0)
+                        if subdiv == 0:
+                            continue
+                            
+                        # Check if tick_time falls in this subdivision
+                        if prev["t"] <= tick_time < nxt["t"]:
+                            span = nxt["t"] - prev["t"]
+                            step = span / subdiv
+                            k = int((tick_time - prev["t"]) / step)
+                            
+                            shaded = prev.get("shaded_subdivisions", False) and k % 2 == 1
+                            break
+                    
+                    # Adjust volume for shaded clicks
+                    volume_multiplier = 0.5 if shaded else 1.0
+                    effective_gain = self._click_gain * volume_multiplier
+                    
                     strong_freq = 800
                     weak_freq = 1200
                     freq = strong_freq if is_strong else weak_freq
-                    base_gain = self._click_gain
                     
-                    # Add second harmonic for more presence
                     fundamental = np.sin(2 * np.pi * freq * t)
                     harmonic = 0.3 * np.sin(2 * np.pi * freq * 2 * t)
-                    click_samples = (fundamental + harmonic) * envelope * base_gain
+                    click_samples = (fundamental + harmonic) * envelope * effective_gain
                     click_samples = np.clip(click_samples, -0.8, 0.8)
                     
                     outdata[buffer_offset:buffer_offset + click_duration, 0] += click_samples

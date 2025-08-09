@@ -55,7 +55,7 @@ class Project(QObject):
         self.wave_cache = WaveformCache(self.backend._data, self.backend._sr)
 
     def add_flag(self, t: float, type_: str = "rhythm", subdivision: int = 0,
-                 name: str = "", is_section_start: bool = False):
+                 name: str = "", is_section_start: bool = False, shaded_subdivisions: bool = False):
         if any(abs(f["t"] - t) < 0.001 for f in self.flags):
             return
         self.flags.append({
@@ -64,6 +64,7 @@ class Project(QObject):
             "subdivision": subdivision,
             "name": name,
             "is_section_start": is_section_start,
+            "shaded_subdivisions": shaded_subdivisions,
         })
         self.flags.sort(key=lambda f: f["t"])
         self._recompute_auto_names()
