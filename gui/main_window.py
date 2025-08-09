@@ -92,6 +92,13 @@ class MainWindow(QMainWindow):
             self.project.backend.set_tick_provider(self.project.subdivision_ticks_between)
             self.playback_bar.btn_play.clicked.connect(self.project.play)
             self.playback_bar.btn_stop.clicked.connect(self.project.pause)
+            self.playback_bar.metronome_toggled.connect(
+                lambda enabled: self.project.backend.set_metronome_enabled(enabled))
+            
+            # Set initial click volume from config
+            initial_volume = self.config.get("ui.click_volume", 0.5)
+            self.project.backend.set_click_gain(initial_volume)
+            
             self.playback_bar.mode_btn.clicked.connect(
                 lambda: self.timeline._on_mode_clicked())
             self._connected = True

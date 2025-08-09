@@ -32,3 +32,22 @@ QSlider::handle:horizontal {
 QKeySequenceEdit:focus {
     border: 2px solid {accent};
 }
+
+QPushButton:checked {
+    background: {accent};
+    color: {background};
+}
+
+QTabBar::tab {
+    padding: 8px 16px;
+    margin-right: 2px;
+}
+
+QTabBar::tab:selected {
+    background: {accent};
+    color: {background};
+}
+
+QTabBar::tab:!selected:hover {
+    background: {surface};
+}

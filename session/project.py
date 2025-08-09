@@ -67,12 +67,14 @@ class Project(QObject):
         })
         self.flags.sort(key=lambda f: f["t"])
         self._recompute_auto_names()
+        self._clear_backend_cache()
         self.save()
         self.flag_added.emit(t)
 
     def remove_flag(self, idx: int):
         self.flags.pop(idx)
         self._recompute_auto_names()
+        self._clear_backend_cache()
         self.save()
         self.flag_removed.emit(idx)
 
@@ -80,6 +82,7 @@ class Project(QObject):
         if 0 <= idx < len(self.flags):
             self.flags[idx]["t"] = new_time
             self._recompute_auto_names()
+            self._clear_backend_cache()
             self.save()
 
     def set_speed(self, speed: float):
@@ -112,13 +115,12 @@ class Project(QObject):
                         is_strong = (k == 0)
                         ticks.append((tick_t, is_strong))
         return sorted(ticks, key=lambda x: x[0])
+    
+    def _clear_backend_cache(self):
+        if hasattr(self, 'backend') and self.backend:
+            self.backend.clear_tick_cache()
 
     def _recompute_auto_names(self):
-        """
-        Re-apply auto names to rhythm flags.
-        Section starts: A, B, C …
-        Measures inside section: A-01, A-02 …
-        """
         section_idx = 0
         measure_counter = 0
         for f in self.flags:

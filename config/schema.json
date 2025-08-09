@@ -13,6 +13,18 @@
                     ],
                     "default": "dark"
                 },
+                "click_volume": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "default": 0.3
+                },
+                "spectrum_keys": {
+                    "type": "integer",
+                    "minimum": 12,
+                    "maximum": 120,
+                    "default": 37
+                },
                 "keybinds": {
                     "type": "object",
                     "properties": {
@@ -37,12 +49,6 @@
                             "default": "R"
                         }
                     }
-                },
-                "spectrum_keys": {
-                    "type": "integer",
-                    "minimum": 12,
-                    "maximum": 120,
-                    "default": 37
                 }
             }
         },

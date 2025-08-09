@@ -26,6 +26,7 @@ class AudioBackend:
         self._click_gain = 0.3
         self._strong_freq = 1200
         self._weak_freq   = 800
+        self._metronome_enabled = True
 
     # ---------- File I/O ----------
     def open_file(self, path: Path):
@@ -62,14 +63,16 @@ class AudioBackend:
         self._stream.start()
 
     # ---------- Playback control ----------
-    def play(self):
-        self._playing = True
-
-    def pause(self):
-        self._playing = False
-
     def seek(self, sec: float):
         self._cursor = max(0.0, min(sec, self.duration))
+        self._last_processed_tick = None
+        
+    def play(self):
+        self._playing = True
+        
+    def pause(self):
+        self._playing = False
+        self._last_processed_tick = None
 
     def set_speed(self, speed: float):
         self._speed = max(0.1, min(1.0, speed))
@@ -83,8 +86,24 @@ class AudioBackend:
     def _make_click(self, frames, freq):
         t = np.arange(frames) / self._sr
         envelope = np.exp(-t * 40)
-        wave = np.sin(2 * np.pi * freq * t) * envelope
+        wave = 4* np.sin(2 * np.pi * freq * t) * envelope
         return wave.astype(np.float32)
+    
+    def set_metronome_enabled(self, enabled: bool):
+        self._metronome_enabled = enabled
+
+    def is_metronome_enabled(self) -> bool:
+        return self._metronome_enabled
+
+    def clear_tick_cache(self):
+        if hasattr(self, '_last_tick_time'):
+            delattr(self, '_last_tick_time')
+
+    def set_click_gain(self, gain: float):
+        self._click_gain = max(0.0, min(1.0, gain))
+
+    def get_click_gain(self) -> float:
+        return self._click_gain
 
     @property
     def position(self):
@@ -98,15 +117,23 @@ class AudioBackend:
     def _audio_callback(self, outdata, frames, time, status):
         if status:
             print(status)
+        
+        # Always start with silence
+        outdata[:] = 0
+        
         if not self._playing or self._data is None:
-            outdata[:] = 0
             return
 
         # compute required samples
         needed = int(frames * self._speed)
         start = int(self._cursor * self._sr)
         end   = int((self._cursor + frames / self._speed) * self._sr)
-        chunk = self._data[start:end]
+        
+        # Prevent access beyond data bounds
+        actual_end = min(end, len(self._data))
+        actual_start = min(start, actual_end)
+        
+        chunk = self._data[actual_start:actual_end]
 
         if len(chunk) < needed:          # EOF
             padding = needed - len(chunk)
@@ -114,33 +141,61 @@ class AudioBackend:
             self._cursor = 0.0
             self._playing = False
             self.finished.emit()
+        elif len(chunk) > needed:
+            chunk = chunk[:needed]
 
-        # resize to exact frame count
+        # Ensure exactly 'frames' samples
         if len(chunk) < frames:
             chunk = np.concatenate([chunk, np.zeros(frames - len(chunk), dtype=np.float32)])
         elif len(chunk) > frames:
             chunk = chunk[:frames]
 
-        # filter, volume & output
+        # filter for speed changes
         if self._speed < 0.9:
-            # based on speed lerp between 100 and 20 for low, and 20000 and 4000 for high
             low = 100 + (1 - self._speed) * 80
             high = 20000 - (1 - self._speed) * 16000
             sos = butter(2, [low, high], btype='band', fs=self._sr, output='sos')
             chunk = sosfilt(sos, chunk)
 
-        # metronome clicks
-        if self._playing:
-            look_ahead = frames / self._sr
-            if hasattr(self, '_subdivision_ticks_between') and self._subdivision_ticks_between:
-                ticks = self._subdivision_ticks_between(self._cursor,
-                                                        self._cursor + look_ahead)
-                for tick_t, is_strong in ticks:
-                    offset_frames = int((tick_t - self._cursor) * self._sr)
-                    if 0 <= offset_frames < len(chunk):
-                        freq = self._strong_freq if is_strong else self._weak_freq
-                        click = self._make_click(len(chunk) - offset_frames, freq)
-                        chunk[offset_frames:] += click * self._click_gain
-
+        # Apply volume and send to output
         outdata[:, 0] = chunk * self._volume
+
+        # Add metronome clicks if enabled
+        if self._metronome_enabled:
+            self._add_metronome_clicks(outdata, frames)
+            
         self._cursor += frames / self._sr * self._speed
+
+    def _add_metronome_clicks(self, outdata, frames):
+        if not hasattr(self, '_subdivision_ticks_between') or not self._subdivision_ticks_between:
+            return
+            
+        callback_start = self._cursor
+        callback_end = self._cursor + frames / self._sr
+        
+        ticks = self._subdivision_ticks_between(callback_start, callback_end)
+        
+        for tick_time, is_strong in ticks:
+            if tick_time < callback_start or tick_time >= callback_end:
+                continue
+                
+            buffer_offset = int((tick_time - callback_start) * self._sr)
+            
+            if 0 <= buffer_offset < frames:
+                click_duration = min(int(0.1 * self._sr), frames - buffer_offset)
+                
+                if click_duration > 0:
+                    t = np.arange(click_duration) / self._sr
+                    envelope = np.exp(-t * 10)
+                    strong_freq = 800
+                    weak_freq = 1200
+                    freq = strong_freq if is_strong else weak_freq
+                    base_gain = self._click_gain
+                    
+                    # Add second harmonic for more presence
+                    fundamental = np.sin(2 * np.pi * freq * t)
+                    harmonic = 0.3 * np.sin(2 * np.pi * freq * 2 * t)
+                    click_samples = (fundamental + harmonic) * envelope * base_gain
+                    click_samples = np.clip(click_samples, -0.8, 0.8)
+                    
+                    outdata[buffer_offset:buffer_offset + click_duration, 0] += click_samples

@@ -2,6 +2,7 @@
     "ui": {
         "theme": "dark",
         "spectrum_keys": 37,
+        "click_volume": 0.3,
         "keybinds": {
             "play_pause": "Space",
             "seek_left": "Left",

@@ -6,6 +6,7 @@ class PlaybackBar(QWidget):
     speed_changed  = Signal(float)
     fft_changed    = Signal(float)
     octave_shift_changed = Signal(int)
+    metronome_toggled = Signal(bool)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -19,6 +20,11 @@ class PlaybackBar(QWidget):
 
         self.btn_down = QPushButton("⭳")
         self.btn_up   = QPushButton("⭱")
+        self.btn_metronome = QPushButton("♩")
+        self.btn_metronome.setCheckable(True)
+        self.btn_metronome.setChecked(True)
+        self.btn_metronome.setFixedSize(32, 32)
+        self.btn_metronome.setToolTip("Toggle click")
         for btn in (self.btn_down, self.btn_up):
             btn.setFixedSize(32, 32)
             
@@ -27,7 +33,10 @@ class PlaybackBar(QWidget):
 
         lay.addWidget(self.btn_down)
         lay.addWidget(self.btn_up)
+        lay.addWidget(self.btn_metronome)
         lay.addWidget(self.mode_btn)
+
+        self.btn_metronome.toggled.connect(self.metronome_toggled)
 
         self.time_label = QLabel("0:00 / 0:00")
         self.time_label.setAlignment(Qt.AlignCenter)

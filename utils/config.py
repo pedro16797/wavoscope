@@ -18,12 +18,22 @@ class Config:
         """key is dot-separated, e.g. 'fft.window_s'"""
         val = self._settings.value(key, None)
         if val is not None:
+            if isinstance(val, str):
+                try:
+                    # Try to parse as float
+                    if '.' in val:
+                        return float(val)
+                    return int(val)
+                except ValueError:
+                    return val
             return val
-        # fallback to default.json
+            
         keys = key.split(".")
         node = self._defaults
         for k in keys:
             node = node.get(k, {})
+            if not isinstance(node, dict):
+                return node
         return node if node != {} else default
 
     def set(self, key: str,value):

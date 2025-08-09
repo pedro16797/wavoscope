@@ -14,37 +14,36 @@ class SettingsDialog(QDialog):
         tabs = QTabWidget(self)
         global_tab = QWidget()
 
-        # ---------- Spectrum tab ----------
-        spectrum_tab = QWidget()
-        spec_form = QFormLayout(spectrum_tab)
-
-        self.keys_spin = QSpinBox()
-        self.keys_spin.setRange(12, 120)
-        self.keys_spin.setValue(self.config.get("ui.spectrum_keys", 37))
-        spec_form.addRow("Visible piano keys:", self.keys_spin)
-
         form = QFormLayout(global_tab)
 
+        # Theme
         self.theme_cb = QComboBox()
         self.theme_cb.addItems(["dark", "light"])
         self.theme_cb.setCurrentText(self.config.get("ui.theme", "dark"))
         form.addRow("UI Theme:", self.theme_cb)
 
+        # Click volume slider
         self.click_volume = QSlider(Qt.Horizontal)
         self.click_volume.setRange(0, 100)
-        self.click_volume.setValue(30)
+        self.click_volume.setValue(int(self.config.get("ui.click_volume", 0.3) * 100))
         form.addRow("Click volume:", self.click_volume)
+        
+        # Ensure proper range
+        self.click_volume.setSingleStep(5)
 
-        self.click_pitch = QSlider(Qt.Horizontal)
-        self.click_pitch.setRange(200, 2000)
-        self.click_pitch
+        # Spectrum keys (moved from spectrum tab)
+        self.keys_spin = QSpinBox()
+        self.keys_spin.setRange(12, 120)
+        self.keys_spin.setValue(self.config.get("ui.spectrum_keys", 37))
+        form.addRow("Visible piano keys:", self.keys_spin)
 
+        # Keybinds tab
         key_tab = QWidget()
         key_tab.setLayout(QVBoxLayout())
         key_tab.layout().addWidget(KeybindEditor(self.parent().keybinds))
 
+        # Only these two tabs now
         tabs.addTab(global_tab, "Global")
-        tabs.addTab(spectrum_tab, "Spectrum")
         tabs.addTab(key_tab, "Keybinds")
 
         ok_btn = QPushButton("OK")
@@ -56,18 +55,40 @@ class SettingsDialog(QDialog):
         
     def showEvent(self, event):
         super().showEvent(event)
-        # Apply theme to tabs
-        for tab in [self.findChild(QWidget, name) for name in ["global_tab", "spectrum_tab", "key_tab"]]:
-            if tab:
-                tab.setStyleSheet(self.parent().styleSheet())
+        # Apply theme to tabs and fix header styling
+        tab_bar = self.findChild(QTabWidget).tabBar()
+        if tab_bar:
+            # Make tab headers readable
+            tab_bar.setStyleSheet(f"""
+                QTabBar::tab {{
+                    background: {self.parent().palette().color(self.parent().backgroundRole()).name()};
+                    color: {self.parent().palette().color(self.parent().foregroundRole()).name()};
+                    padding: 8px 16px;
+                    margin-right: 2px;
+                    border: 1px solid #555;
+                }}
+                QTabBar::tab:selected {{
+                    background: {self.parent().palette().highlight().color().name()};
+                    color: {self.parent().palette().highlightedText().color().name()};
+                }}
+                QTabBar::tab:hover {{
+                    background: {self.parent().palette().mid().color().name()};
+                }}
+            """)
 
     def accept(self):
         new_theme = self.theme_cb.currentText()
         self.config.set("ui.theme", new_theme)
-        self.parent()._load_theme(new_theme)
+        self.config.set("ui.click_volume", self.click_volume.value() / 100.0)
         self.config.set("ui.spectrum_keys", self.keys_spin.value())
+        
+        if hasattr(self.parent(), 'project') and self.parent().project:
+            self.parent().project.backend.set_click_gain(self.click_volume.value() / 100.0)
+        
         if hasattr(self.parent(), '_sync_piano_fft'):
             self.parent()._sync_piano_fft()
+        
+        self.parent()._load_theme(new_theme)
         super().accept()
 
 class KeybindEditor(QWidget):
