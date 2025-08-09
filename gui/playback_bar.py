@@ -1,5 +1,7 @@
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QPixmap, QPainter, QColor, QIcon
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel, QSlider
+from wavoscope.gui.colours import load_palette
 
 class PlaybackBar(QWidget):
     volume_changed = Signal(float)
@@ -8,26 +10,31 @@ class PlaybackBar(QWidget):
     octave_shift_changed = Signal(int)
     metronome_toggled = Signal(bool)
 
+    @staticmethod
+    def tinted_icon(path: str, color: QColor, size=24):
+        pm = QPixmap(path).scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        p = QPainter(pm)
+        p.setCompositionMode(QPainter.CompositionMode_SourceIn)
+        p.fillRect(pm.rect(), color)
+        p.end()
+        return pm
+
     def __init__(self, parent=None):
         super().__init__(parent)
         lay = QHBoxLayout(self)
         lay.setContentsMargins(4, 4, 4, 4)
 
-        self.btn_play = QPushButton("⏵")
-        self.btn_play.setFixedSize(32, 32)
-        self.btn_stop = QPushButton("⏹")
-        self.btn_stop.setFixedSize(32, 32)
-
-        self.btn_down = QPushButton("⭳")
-        self.btn_up   = QPushButton("⭱")
-        self.btn_metronome = QPushButton("♩")
+        self.btn_play = QPushButton()
+        self.btn_stop = QPushButton()
+        self.btn_down = QPushButton()
+        self.btn_up   = QPushButton()
+        self.btn_metronome = QPushButton()
         self.btn_metronome.setCheckable(True)
         self.btn_metronome.setChecked(True)
-        self.btn_metronome.setFixedSize(32, 32)
         self.btn_metronome.setToolTip("Toggle click")
-        for btn in (self.btn_down, self.btn_up):
+        for btn in (self.btn_play, self.btn_stop, self.btn_up, self.btn_down, self.btn_metronome):
             btn.setFixedSize(32, 32)
-            
+
         self.mode_btn = QPushButton("Mode: Rhythm")
         self.mode_btn.setFixedHeight(32)
 
@@ -76,3 +83,12 @@ class PlaybackBar(QWidget):
         m1, s1 = divmod(int(pos), 60)
         m2, s2 = divmod(int(dur), 60)
         self.time_label.setText(f"{m1}:{s1:02d} / {m2}:{s2:02d}")
+
+    def on_theme_changed(self, name):
+        self.palette = load_palette(name)
+        txt = self.palette["text"]
+        self.btn_play.setIcon(QIcon(self.tinted_icon("./resources/icons/play.svg", txt)))
+        self.btn_stop.setIcon(QIcon(self.tinted_icon("./resources/icons/stop.svg", txt)))
+        self.btn_up.setIcon(QIcon(self.tinted_icon("./resources/icons/arrow-up.svg", txt)))
+        self.btn_down.setIcon(QIcon(self.tinted_icon("./resources/icons/arrow-down.svg", txt)))
+        self.btn_metronome.setIcon(QIcon(self.tinted_icon("./resources/icons/metronome.svg", txt)))

@@ -1,0 +1,47 @@
+/* Neon Glass theme – cyan-magenta glow, 2 px radius, glass buttons */
+
+/* Global base */
+* {
+    background: {background};
+    color: {text};
+    selection-background-color: {accent};
+    border: 1px solid {grid};
+}
+
+/* Main window & dialogs */
+QMainWindow {
+    background: {surface};
+    border-radius: 6px;
+}
+
+/* Buttons */
+QPushButton {
+    background: {accent};
+    color: {background};
+    border: 1px solid {accent};
+    border-radius: 12px;
+    padding: 6px 12px;
+}
+QPushButton:hover {
+    background: #00bfff;
+    border-color: #ffffff;
+}
+QPushButton:pressed {
+    background: #ffffff;
+    color: {accent};
+}
+
+/* Sliders */
+QSlider::groove:horizontal {
+    background: {accent};
+    height: 4px;
+    border-radius: 2px;
+}
+QSlider::handle:horizontal {
+    background: #ffffff;
+    width: 14px;
+    height: 14px;
+    margin: -5px 0;
+    border-radius: 7px;
+    border: 1px solid {accent};
+}

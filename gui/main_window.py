@@ -81,6 +81,7 @@ class MainWindow(QMainWindow):
         self._sync_piano_fft()
 
         # Connect theme change
+        self.theme_changed.connect(self.playback_bar.on_theme_changed)
         self.theme_changed.connect(self.timeline._on_theme_changed)
         self.theme_changed.connect(self.spectrum._on_theme_changed)
         self.theme_changed.connect(self.waveform._on_theme_changed)

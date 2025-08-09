@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (QDialog, QTabWidget, QWidget, QVBoxLayout, QKeySe
 from PySide6.QtGui import QKeySequence
 from PySide6.QtCore import Qt
 from wavoscope.utils.config import Config
+from wavoscope.gui.colours import AVAILABLE_THEMES
 
 class SettingsDialog(QDialog):
     def __init__(self, parent=None):
@@ -18,7 +19,8 @@ class SettingsDialog(QDialog):
 
         # Theme
         self.theme_cb = QComboBox()
-        self.theme_cb.addItems(["dark", "light"])
+        self.theme_cb.clear()
+        self.theme_cb.addItems(AVAILABLE_THEMES)
         self.theme_cb.setCurrentText(self.config.get("ui.theme", "dark"))
         form.addRow("UI Theme:", self.theme_cb)
 

@@ -11,6 +11,7 @@ PALETTE = {
     "keyBlack": "#888"
 }
 
+AVAILABLE_THEMES = ["dark", "light", "neon", "warm", "cosmic"]
 THEMES_DIR = Path(__file__).parent / "themes"
 
 def full_stylesheet(name):
@@ -21,13 +22,23 @@ def full_stylesheet(name):
     return qss
 
 def load_palette(theme="dark"):
-    path = THEMES_DIR / f"{theme}.json"
     try:
-        return json.loads(path.read_text())
+        path = THEMES_DIR / f"{theme}.json"
+        palette = json.loads(path.read_text())
     except (FileNotFoundError, json.JSONDecodeError):
         return PALETTE
 
+    # Merge parent if "inherits" key is present
+    if "inherits" in palette:
+        parent = load_palette(palette["inherits"])
+        parent.update(palette)
+        return parent
+
+    return palette
+
 def load_theme(name: str) -> str:
+    if name not in AVAILABLE_THEMES:
+        name = "dark"
     qss_path = THEMES_DIR / f"{name}.qss"
     if qss_path.exists():
         return qss_path.read_text(encoding="utf-8")

@@ -1,0 +1,53 @@
+/* Warm Minimal – copper shadows, 12 px radius, subtle depth */
+
+* {
+    background: {background};
+    color: {text};
+    selection-background-color: {accent};
+    border: 1px solid {grid};
+}
+
+QMainWindow {
+    background: qlineargradient(x1:0 y1:0 x2:1 y2:1,
+                                stop:0 {background}
+                                stop:1 #f2efea);
+}
+
+/* Buttons */
+QPushButton {
+    background: {surface};
+    border: 1px solid {grid};
+    border-radius: 12px;
+    padding: 6px 12px;
+}
+QPushButton:hover {
+    background: qlineargradient(x1:0 y1:0 x2:0 y2:1,
+                                stop:0 {surface}
+                                stop:1 #f5f5f5);
+    border-color: {accent};
+}
+QPushButton:pressed {
+    background: {accent};
+    color: {surface};
+}
+
+/* Sliders */
+QSlider::groove:horizontal {
+    background: {grid};
+    height: 4px;
+    border-radius: 2px;
+}
+QSlider::handle:horizontal {
+    background: {accent};
+    width: 16px;
+    height: 16px;
+    margin: -6px 0;
+    border-radius: 8px;
+}
+
+/* Raised cards (used by dialogs) */
+QFrame[frameShape="4"] { /* StyledPanel */
+    background: {surface};
+    border-radius: 12px;
+    border: 1px solid {grid};
+}
