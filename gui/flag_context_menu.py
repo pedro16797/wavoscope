@@ -15,9 +15,7 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QCheckBox,
     QPushButton,
-    QDialogButtonBox,
 )
-from PySide6.QtGui import QPalette
 
 if TYPE_CHECKING:
     from wavoscope.session.project import Project
@@ -135,6 +133,7 @@ class FlagDialog(QDialog):
         self.flag["is_section_start"] = self.section_check.isChecked()
         self.flag["shaded_subdivisions"] = self.shade_check.isChecked()
 
+        self.project.flags.sort(key=lambda f: f["t"])
         self.project._recompute_auto_names()
         self.project.mark_dirty()
         self.project.flag_added.emit(self.flag["t"])

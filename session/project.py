@@ -188,16 +188,17 @@ class Project(QObject):
 
         for flag in self.flags:
             if flag["type"] != "rhythm":
+                flag["auto_name"] = ""
                 continue
 
             if flag.get("is_section_start", False):
                 section_idx += 1
                 measure = 0
-                flag["name"] = chr(ord("A") + section_idx - 1)
+                flag["auto_name"] = chr(ord("A") + section_idx - 1)
             else:
                 measure += 1
                 section = chr(ord("A") + section_idx - 1) if section_idx else ""
-                flag["name"] = f"{section}{measure:02d}".lstrip("0") or "00"
+                flag["auto_name"] = f"{section}{measure:02d}".lstrip("0") or "00"
 
     # ---------- bulk helpers ----------
     def insert_equi_spaced_flags(

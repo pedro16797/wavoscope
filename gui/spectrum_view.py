@@ -11,6 +11,7 @@ from PySide6.QtCore import QPointF, Signal
 from PySide6.QtGui import QPainter, QPen, QColor, QPolygonF
 from PySide6.QtWidgets import QWidget
 
+from wavoscope.utils.config import Config
 from wavoscope.audio.spectrum_analyzer import analyze as run_fft
 
 NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
@@ -108,7 +109,9 @@ class SpectrumView(QWidget):
 
         # Piano-key grid
         first_midi = int(np.round(12 * np.log2(self._low_hz / 440) + 69))
-        for midi in range(first_midi, first_midi + 37):
+        cfg = Config()
+        visible_keys = int(cfg.get("ui.spectrum_keys", 37))
+        for midi in range(first_midi, first_midi + visible_keys):
             hz = _midi_to_freq(midi)
             x = np.log2(hz / self._low_hz) * x_scale
 

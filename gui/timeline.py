@@ -109,7 +109,7 @@ class Timeline(QWidget):
                 if f["type"] != "rhythm":
                     continue
                 x = int((f["t"] - view_start) * self.width() / view_span)
-                name = f.get("name", "")
+                name = name = f.get("name") or f.get("auto_name", "")
                 fm = painter.fontMetrics()
                 text_width = fm.horizontalAdvance(name)
                 text_x = x - text_width // 2
