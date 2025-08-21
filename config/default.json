@@ -19,7 +19,12 @@
             "seek_right": "Right",
             "add_harmony_flag": "H",
             "add_rhythm_flag": "R",
-            "save": "Ctrl+S"
+            "save": "Ctrl+S",
+            "stop": "Backspace",
+            "find_song": "Ctrl+O",
+            "toggle_metronome": "M",
+            "seek_start": "Home",
+            "seek_end": "End"
         }
     },
     "fft": {

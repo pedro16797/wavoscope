@@ -43,6 +43,8 @@ class MainWindow(QMainWindow):
         lay = QVBoxLayout(central)
         self.playback_bar = PlaybackBar()
         lay.addWidget(self.playback_bar)
+        self._last_play_start: float = 0.0
+        self._stop_requested = False
 
         # Splitter
         splitter = QSplitter(Qt.Vertical)
@@ -90,11 +92,13 @@ class MainWindow(QMainWindow):
     def _connect_project_signals(self):
         if not hasattr(self, '_connected') or not self._connected:
             self.waveform.seek_requested.connect(self.project.seek)
+            self.waveform.stop_origin_changed.connect(self._set_last_play_start)
             self.project.backend.set_tick_provider(self.project.subdivision_ticks_between)
-            self.playback_bar.btn_play.clicked.connect(self.project.play)
-            self.playback_bar.btn_stop.clicked.connect(self.project.pause)
-            self.playback_bar.metronome_toggled.connect(
-                lambda enabled: self.project.backend.set_metronome_enabled(enabled))
+            self.project.backend.finished.connect(lambda: self.playback_bar.set_playing(False))
+            self.playback_bar.play_requested.connect(self._handle_play)
+            self.playback_bar.pause_requested.connect(self._handle_pause)
+            self.playback_bar.stop_requested.connect(self._handle_stop)
+            self.playback_bar.metronome_toggled.connect(lambda enabled: self.project.backend.set_metronome_enabled(enabled))
             
             # Set initial click volume from config
             initial_volume = self.config.get("ui.click_volume", 0.5)
@@ -167,12 +171,16 @@ class MainWindow(QMainWindow):
     def _handle_key_action(self, action: str):
         if self.project is None:
             return
-        if action == "play_pause":
-            self._toggle_play()
-        elif action == "seek_left":
-            self.project.seek(self.project.position - 0.1)
-        elif action == "seek_right":
-            self.project.seek(self.project.position + 0.1)
+        match action:
+            case "play_pause"           : self._handle_play()
+            case "seek_left"            : self.project.seek(self.project.position - 0.1)
+            case "seek_right"           : self.project.seek(self.project.position + 0.1)
+            case "save"                 : self._save_project()
+            case "stop"                 : self._handle_stop()
+            case "find_song"            : self._open_file_dialog()
+            case "toggle_metronome"     : self.playback_bar.btn_metronome.toggle()
+            case "seek_start"           : self.project.seek(0.0)
+            case "seek_end"             : self.project.seek(self.project.duration)
 
     # ---------- File ----------
     def _open_file_dialog(self):
@@ -234,15 +242,29 @@ class MainWindow(QMainWindow):
             event.accept()
 
     # ---------- Playback ----------
-    def _toggle_play(self):
-        if self.project.backend._playing:
-            self.project.backend.pause()
-        else:
-            self.project.backend.play()
+    def _handle_play(self) -> None:
+        if self.project and not self.project.backend._playing:
+            # only record when starting from true stop
+            if self._stop_requested:
+                self._last_play_start = self.project.position
+                self._stop_requested = False
+            self.project.play()
+            self.playback_bar.set_playing(True)
 
-    def _on_stop(self):
-        self.project.pause()
-        self.project.seek(0.0)
+    def _handle_pause(self) -> None:
+        if self.project:
+            self.project.pause()
+            self.playback_bar.set_playing(False)
+
+    def _handle_stop(self) -> None:
+        if self.project:
+            self.project.pause()
+            self.project.seek(self._last_play_start)
+            self.playback_bar.set_playing(False)
+            self._stop_requested = True
+
+    def _set_last_play_start(self, time: float) -> None:
+        self._last_play_start = time
 
     def _shift_octave(self, delta):
         self._octave_offset += delta

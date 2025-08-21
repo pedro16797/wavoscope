@@ -1,1 +1,62 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <ellipse cx="6"  cy="16" rx="2.5" ry="2"/> <path d="M6 16 v-8"/> <path d="M6 8  l3 -3"/> <ellipse cx="14" cy="17" rx="2.5" ry="2"/> <path d="M14 17 v-9"/> <path d="M14 8 l3 -3"/> </svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 24 24"
+   fill="none"
+   stroke="#000000"
+   stroke-width="1.5"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   version="1.1"
+   id="svg14"
+   sodipodi:docname="metronome.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs18" />
+  <sodipodi:namedview
+     id="namedview16"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     showgrid="false"
+     inkscape:zoom="43.875"
+     inkscape:cx="6.9059829"
+     inkscape:cy="12.011396"
+     inkscape:window-width="2560"
+     inkscape:window-height="1027"
+     inkscape:window-x="577"
+     inkscape:window-y="1462"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg14" />
+  <ellipse
+     cx="6"
+     cy="16"
+     rx="2.5"
+     ry="2"
+     id="ellipse2" />
+  <path
+     d="M 8.5,16 V 8"
+     id="path4" />
+  <path
+     d="m 8.5,8 3,-3"
+     id="path6" />
+  <ellipse
+     cx="14"
+     cy="17"
+     rx="2.5"
+     ry="2"
+     id="ellipse8" />
+  <path
+     d="M 16.5,17 V 8"
+     id="path10" />
+  <path
+     d="m 16.5,8 3,-3"
+     id="path12" />
+</svg>

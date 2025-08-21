@@ -111,7 +111,9 @@ class KeybindEditor(QWidget):
         form = QFormLayout(self)
         self._edits = {}
 
-        for action in ("play_pause", "seek_left", "seek_right", "add_harmony_flag", "add_rhythm_flag"):
+        for action in ("play_pause", "stop", "seek_left", "seek_right",
+                       "add_harmony_flag", "add_rhythm_flag", "save",
+                       "find_song", "toggle_metronome", "seek_start", "seek_end"):
             edit = QKeySequenceEdit(QKeySequence(manager._mapping[action]))
             edit.keySequenceChanged.connect(
                 lambda seq, a=action: manager.bind(a, seq.toString())

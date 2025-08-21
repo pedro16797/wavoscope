@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 class WaveformView(QGraphicsView):
     # Public API
     seek_requested = Signal(float)
+    stop_origin_changed = Signal(float)
     viewport_changed = Signal()
 
     def __init__(self, parent: QWidget | None = None) -> None:
@@ -155,6 +156,7 @@ class WaveformView(QGraphicsView):
             # Single click → seek
             sec = self._offset + event.position().x() / max(self._zoom * self._sr, 1e-6)
             self.seek_requested.emit(sec)
+            self.stop_origin_changed.emit(sec)
         self._drag_active = False
         self._drag_origin = None
 

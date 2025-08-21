@@ -24,6 +24,9 @@ class PlaybackBar(QWidget):
     fft_changed = Signal(float)          # seconds
     octave_shift_changed = Signal(int)   # -1/0/+1
     metronome_toggled = Signal(bool)
+    play_requested = Signal()
+    pause_requested = Signal()
+    stop_requested = Signal()
 
     @staticmethod
     def _tinted_icon(path: str, color: QColor, size: int = 24) -> QIcon:
@@ -49,6 +52,7 @@ class PlaybackBar(QWidget):
 
         self.mode_btn = QPushButton("Mode: Rhythm")
         self.btn_play = QPushButton()
+        self.btn_play.setCheckable(True)
         self.btn_stop = QPushButton()
 
         for btn in (self.btn_up, self.btn_down, self.btn_metronome, self.btn_play, self.btn_stop):
@@ -94,9 +98,11 @@ class PlaybackBar(QWidget):
 
         # ---------- wiring ----------
         self.btn_metronome.toggled.connect(self.metronome_toggled)
+        self.btn_play.clicked.connect(self.on_play_clicked)
+        self.btn_stop.clicked.connect(self.stop_requested)
         self.vol_slider.valueChanged.connect(lambda v: self.volume_changed.emit(v / 100.0))
         self.speed_slider.valueChanged.connect(
-            lambda v: self.speed_changed.emit(0.1 + (v / 100.0) * 1.9)  # 0.1 … 2.0
+            lambda v: self.speed_changed.emit(0.1 + (v / 100.0) * 0.9)  # 0.1 … 1.0
         )
         self.fft_slider.valueChanged.connect(lambda v: self.fft_changed.emit(v / 10.0))
 
@@ -106,6 +112,15 @@ class PlaybackBar(QWidget):
         m1, s1 = divmod(int(pos), 60)
         m2, s2 = divmod(int(duration), 60)
         self.time_label.setText(f"{m1}:{s1:02d} / {m2}:{s2:02d}")
+
+    def on_play_clicked(self) -> None:
+        if self.btn_play.isChecked():
+            self.play_requested.emit()
+        else:
+            self.pause_requested.emit()
+
+    def set_playing(self, playing: bool) -> None:
+        self.btn_play.setChecked(playing)
 
     # ---------- theme ----------
     def on_theme_changed(self, name: str) -> None:

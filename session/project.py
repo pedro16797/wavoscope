@@ -115,8 +115,11 @@ class Project(QObject):
 
     # ---------- playback passthrough ----------
     def seek(self, time: float) -> None: self.backend.seek(time)
-    def play(self) -> None: self.backend.play()
     def pause(self) -> None: self.backend.pause()
+    def play(self) -> None:
+        if not self.backend._playing:
+            self._last_play_start = self.backend.position
+        self.backend.play()
 
     def set_speed(self, speed: float) -> None: self.backend.set_speed(speed)
     def set_volume(self, volume: float) -> None: self.backend.set_volume(volume)
