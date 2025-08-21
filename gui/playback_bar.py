@@ -13,9 +13,10 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSlider,
 )
-
+from pathlib import Path
 from wavoscope.gui.colours import load_palette
 
+RESOURCES = Path(__file__).with_suffix('').parent.parent / "resources/icons"
 
 class PlaybackBar(QWidget):
     # Emitted when the user changes parameters
@@ -29,9 +30,15 @@ class PlaybackBar(QWidget):
     stop_requested = Signal()
 
     @staticmethod
-    def _tinted_icon(path: str, color: QColor, size: int = 24) -> QIcon:
-        """Return an SVG icon tinted to the requested colour."""
-        pm = QPixmap(path).scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+    def _tinted_icon(name: str, color: QColor, size: int = 24) -> QIcon:
+        svg_path = RESOURCES / f"{name}.svg"
+        if not svg_path.exists():
+            return QIcon()
+        pm = QPixmap(str(svg_path)).scaled(
+            size, size,
+            Qt.KeepAspectRatio,
+            Qt.SmoothTransformation,
+        )
         p = QPainter(pm)
         p.setCompositionMode(QPainter.CompositionMode_SourceIn)
         p.fillRect(pm.rect(), color)
@@ -134,4 +141,4 @@ class PlaybackBar(QWidget):
             (self.btn_down,  "arrow-down"),
             (self.btn_metronome, "metronome"),
         ):
-            btn.setIcon(self._tinted_icon(f"./resources/icons/{base_name}.svg", colour))
+            btn.setIcon(self._tinted_icon(base_name, colour))

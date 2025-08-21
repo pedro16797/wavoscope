@@ -20,7 +20,7 @@ def main():
 
     app.setApplicationName("Wavoscope")
     window = MainWindow()
-    app.setWindowIcon(QIcon("./resources/icons/app-icon.svg"))
+    app.setWindowIcon(QIcon(f"./wavoscope/resources/icons/app-icon.svg"))
     window.show()
     sys.exit(app.exec())
     
