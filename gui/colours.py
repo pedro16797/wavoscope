@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PySide6.QtGui import QColor
 
-AVAILABLE_THEMES = ["dark", "light", "neon", "warm", "cosmic"]
+AVAILABLE_THEMES = ["oled", "dark", "cosmic", "neon", "light", "warm", "toy", "doll"]
 _PALETTE = {
     "accent": "#0af",
     "background": "#121212",

@@ -1,0 +1,15 @@
+{
+    "inherits": "dark",
+    "accent": "#800",
+    "background": "#000",
+    "surface": "#111",
+    "grid": "#222",
+    "text": "#ccc",
+    "textSecondary": "#666",
+    "keyWhite": "#555",
+    "keyBlack": "#222",
+    "waveform": "#888",
+    "spectrum": "#800",
+    "flagRhythm": "#800",
+    "flagHarmony": "#a00"
+}

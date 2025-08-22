@@ -1,15 +1,17 @@
 {
     "inherits": "light",
-    "accent": "#c7923e",
-    "background": "#f7f5f2",
+    "background": "#faf6f0",
     "surface": "#ffffff",
-    "grid": "#d6d0c4",
-    "text": "#3a3225",
-    "textSecondary": "#8b7e6a",
-    "keyWhite": "#c7c5c2",
-    "keyBlack": "#5c5347",
+    "accent": "#a67c3d",
+    "text": "#2c2418",
+    "textSecondary": "#544a3a",
+    "grid": "#c9bfa9",
+    "keyWhite": "#dedacf",
+    "keyBlack": "#63594a",
     "waveform": "#7c6f4a",
     "spectrum": "#a67c52",
     "flagRhythm": "#c96454",
-    "flagHarmony": "#7c5c46"
+    "flagHarmony": "#7c5c46",
+    "bronze": "#b5843d",
+    "bronzeDark": "#8d6a2d"
 }

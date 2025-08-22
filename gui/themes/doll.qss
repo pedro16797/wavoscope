@@ -1,0 +1,81 @@
+/* Barbie Dream – all colors tokenised */
+
+* {
+    background: {background};
+    color: {text};
+    selection-background-color: {accent};
+}
+
+QMainWindow {
+    background: qlineargradient(x1:0 y1:0, x2:0 y2:1,
+                                stop:0 {surface},
+                                stop:1 {background});
+}
+
+/* Bubble-gum plastic buttons */
+QPushButton {
+    background: qlineargradient(x1:0 y1:0, x2:0 y2:1,
+                                stop:0 {surface} stop:1 {accent});
+    border: 2px solid {accent};
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background: qlineargradient(x1:0 y1:0, x2:0 y2:1,
+                                stop:0 {textSecondary} stop:1 {accent});
+}
+QPushButton:pressed {
+    background: {accent};
+    color: {surface};
+}
+QPushButton:checked {
+    background: {accent};
+    border: 3px solid {flagRhythm};
+    color: {surface};
+}
+
+/* Slider groove */
+QSlider::groove:horizontal {
+    background: qlineargradient(x1:0 y1:0, x2:1 y2:0,
+                                stop:0 {surface},
+                                stop:1 {grid});
+    height: 8px;
+    border-radius: 4px;
+}
+
+/* Heart handle */
+QSlider::handle:horizontal {
+    background: qradialgradient(cx:0.5 cy:0.5 radius:0.8,
+                                stop:0 {surface},
+                                stop:1 {accent});
+    width: 18px;
+    height: 18px;
+    margin: -5px 0;
+    border-radius: 9px;
+    border: 2px solid {accent};
+}
+
+/* Tab hearts */
+QTabBar::tab {
+    background: {surface};
+    color: {accent};
+    padding: 8px 16px;
+    margin-right: 2px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+QTabBar::tab:selected {
+    background: {accent};
+    color: {surface};
+}
+QTabBar::tab:!selected:hover {
+    background: {textSecondary};
+}
+
+/* Dialog clouds */
+QFrame[frameShape="4"] {
+    background: {surface};
+    border-radius: 16px;
+    border: 2px solid {grid};
+}

@@ -1,0 +1,15 @@
+{
+    "inherits": "light",
+    "accent": "#ff69b4",
+    "background": "#ffe4f1",
+    "surface": "#ffffff",
+    "grid": "#ffc0d9",
+    "text": "#ff007f",
+    "textSecondary": "#cc4d8e",
+    "keyWhite": "#ffffff",
+    "keyBlack": "#ff69b4",
+    "waveform": "#ff80b0",
+    "spectrum": "#ff1493",
+    "flagRhythm": "#ff69b4",
+    "flagHarmony": "#ff1493"
+}
