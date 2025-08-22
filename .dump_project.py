@@ -1,13 +1,12 @@
 import os
-import sys
 
 def main():
     root = os.getcwd()
     for dirpath, dirnames, filenames in os.walk(root, topdown=True):
         # skip hidden dirs & dive into sub-folders
-        dirnames[:] = [d for d in dirnames if not d.startswith(('_', '.'))]
+        dirnames[:] = [d for d in dirnames if not d.startswith(('_', '.', 'dist', 'venv'))]
         for fname in filenames:
-            if fname.startswith(('_', '.')):
+            if fname.startswith(('_', '.')) | fname.endswith((".exe", ".spec")):
                 continue
             rel_path = os.path.relpath(os.path.join(dirpath, fname), root)
             try:
