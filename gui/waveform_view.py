@@ -126,6 +126,20 @@ class WaveformView(QGraphicsView):
             pen = QPen(colour, bar_w)
             self.scene().addLine(x, y1, x, y2, pen)  # single vertical bar
 
+    def paintEvent(self, event):
+        """Paint dynamic cursor on top of the cached scene."""
+        super().paintEvent(event)  # let QGraphicsView render the scene first
+
+        if self._cursor is None or self._duration <= 0:
+            return
+
+        x = (self._cursor - self._offset) * self._zoom * self._sr
+        if 0 <= x <= self.width():
+            painter = QPainter(self.viewport())
+            painter.setRenderHint(QPainter.Antialiasing)
+            painter.setPen(QPen(QColor(self.palette["accent"]), 2))
+            painter.drawLine(int(x), 0, int(x), self.height())
+
     # ---------- viewport mechanics ----------
     def resizeEvent(self, _) -> None:
         super().resizeEvent(_)

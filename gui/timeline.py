@@ -5,7 +5,7 @@ Supports drag-to-reorder and right-click menu for flags.
 from __future__ import annotations
 
 import numpy as np
-from PySide6.QtCore import Qt, QPoint, Signal
+from PySide6.QtCore import Qt, QElapsedTimer, QPoint, Signal
 from PySide6.QtGui import QPainter, QPen, QColor
 from PySide6.QtWidgets import QWidget
 
@@ -30,6 +30,7 @@ class Timeline(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setFixedHeight(42)
+        self._latency_timer = QElapsedTimer()
 
         # Audio state
         self._duration: float = 0.0
@@ -151,8 +152,14 @@ class Timeline(QWidget):
                     else:
                         painter.setPen(QPen(QColor(self.palette["accent"]).lighter(120), 1, Qt.DotLine))
                         painter.drawLine(x, 10, x, self.height())
+        if getattr(main, "_debug_latency", False):
+            painter.setPen(QColor("#ffff00"))
+            font = painter.font()
+            font.setPixelSize(11)
+            painter.setFont(font)
+            painter.drawText(4, 14, self._latency_text())
 
-        # ---------- mouse interaction ----------
+    # ---------- mouse interaction ----------
     def mousePressEvent(self, event) -> None:
         """Left-click = add / drag flag; Right-click = context menu."""
         if event.button() == Qt.RightButton:
@@ -243,3 +250,13 @@ class Timeline(QWidget):
             FlagContextMenu.show(
                 self, main.project, best_idx, global_pos, self._snap_time
             )
+    
+    def _latency_text(self) -> str:
+        """Return Δ (visual − audio) in ms, or empty string."""
+        main = self.window()
+        if not (main and main.project):
+            return ""
+        audio_t = main.project.position
+        visual_t = self._cursor
+        delta_ms = (visual_t - audio_t) * 1000.0
+        return f"{delta_ms:+.1f} ms"

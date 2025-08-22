@@ -125,7 +125,7 @@ class SpectrumView(QWidget):
 
         # Spectrum line
         low_db, high_db = np.percentile(db, [1, 99])
-        span_db = max(high_db - low_db, 1e-3)
+        span_db = max(1.05 * high_db - low_db, 1e-3)
 
         poly = QPolygonF()
         for f, d in zip(freqs, db):

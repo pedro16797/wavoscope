@@ -19,8 +19,9 @@ def midi_to_freq(midi):
 class MainWindow(QMainWindow):
     theme_changed = Signal(str)
 
-    def __init__(self):
+    def __init__(self, debug_latency: bool = False):
         super().__init__()
+        self._debug_latency = debug_latency
         self.setWindowTitle("Wavoscope")
         self.setGeometry(100, 100, 1200, 700)
         self.project = None
@@ -172,7 +173,11 @@ class MainWindow(QMainWindow):
         if self.project is None:
             return
         match action:
-            case "play_pause"           : self._handle_play()
+            case "play_pause"           :
+                if self.project.backend._playing:
+                    self._handle_pause()
+                else:
+                    self._handle_play()
             case "seek_left"            : self.project.seek(self.project.position - 0.1)
             case "seek_right"           : self.project.seek(self.project.position + 0.1)
             case "save"                 : self._save_project()

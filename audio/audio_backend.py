@@ -11,7 +11,7 @@ import numpy as np
 import sounddevice as sd
 import soundfile as sf
 from PySide6.QtCore import Signal, QObject
-from scipy.signal import butter, sosfilt
+from scipy.signal import ellip, sosfilt
 
 from wavoscope.audio.ringbuffer import RingBuffer
 from wavoscope.audio.synth import SimpleSynth
@@ -164,7 +164,8 @@ class AudioBackend(QObject):
         # End-of-file handling
         if chunk.size < needed:
             padding = needed - chunk.size
-            chunk = np.concatenate([chunk, np.zeros(padding, dtype=np.float32)])
+            pad = np.zeros(padding, dtype=np.float32)
+            chunk = np.concatenate([chunk, pad])
             self._cursor = 0.0
             self._playing = False
             self.finished.emit()
@@ -175,10 +176,10 @@ class AudioBackend(QObject):
         chunk = chunk[:frames] if chunk.size > frames else np.pad(chunk, (0, frames - chunk.size))
 
         # Simple anti-aliasing filter when speed < 0.9
-        if self._speed < 0.9:
+        if self._speed < 0.95:
             low = 100 + (1.0 - self._speed) * 80
             high = 20_000 - (1.0 - self._speed) * 16_000
-            sos = butter(2, [low, high], btype="band", fs=self._sr, output="sos")
+            sos = ellip(6, 0.2, 60, (low, high), btype='bandpass', fs=self._sr, output='sos')
             chunk = sosfilt(sos, chunk)
 
         # Apply volume
