@@ -171,16 +171,17 @@ class AudioBackend(QObject):
             self.finished.emit()
         elif chunk.size > needed:
             chunk = chunk[:needed]
+            padding = frames - needed
+            if padding > 0:
+                tail   = chunk[-min(len(chunk), padding):]
+                mirror = tail[::-1]
+                pattern = np.concatenate([mirror, tail])
+                repeated = np.resize(pattern, padding)
+                pad = repeated
+                chunk  = np.concatenate([chunk, pad])
 
         # Ensure exact length
         chunk = chunk[:frames] if chunk.size > frames else np.pad(chunk, (0, frames - chunk.size))
-
-        # Simple anti-aliasing filter when speed < 0.9
-        if self._speed < 0.95:
-            low = 100 + (1.0 - self._speed) * 80
-            high = 20_000 - (1.0 - self._speed) * 16_000
-            sos = ellip(6, 0.2, 60, (low, high), btype='bandpass', fs=self._sr, output='sos')
-            chunk = sosfilt(sos, chunk)
 
         # Apply volume
         outdata[:, 0] = chunk * self._volume
