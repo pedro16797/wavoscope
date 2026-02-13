@@ -95,7 +95,8 @@ class MainWindow(QMainWindow):
             self.waveform.seek_requested.connect(self.project.seek)
             self.waveform.stop_origin_changed.connect(self._set_last_play_start)
             self.project.backend.set_tick_provider(self.project.subdivision_ticks_between)
-            self.project.backend.finished.connect(lambda: self.playback_bar.set_playing(False))
+            # Ensure callback runs on GUI thread
+            self.project.backend.on_finished(lambda: QTimer.singleShot(0, lambda: self.playback_bar.set_playing(False)))
             self.playback_bar.play_requested.connect(self._handle_play)
             self.playback_bar.pause_requested.connect(self._handle_pause)
             self.playback_bar.stop_requested.connect(self._handle_stop)

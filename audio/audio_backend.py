@@ -10,26 +10,19 @@ from typing import Callable, List, Tuple, Any
 import numpy as np
 import sounddevice as sd
 import soundfile as sf
-from PySide6.QtCore import Signal, QObject
 from scipy.signal import ellip, sosfilt
 
 from wavoscope.audio.ringbuffer import RingBuffer
 from wavoscope.audio.synth import SimpleSynth
 
 
-class AudioBackend(QObject):
+class AudioBackend:
     """
     Thread-safe audio backend.
-
-    Emits
-    -----
-    finished : Signal()   – playback reached EOF
     """
 
-    finished = Signal()
-
     def __init__(self) -> None:
-        super().__init__()
+        self._finished_callbacks: List[Callable[[], None]] = []
 
         self._data: np.ndarray | None = None          # mono float32
         self._sr: int = 44_100
@@ -130,8 +123,13 @@ class AudioBackend(QObject):
         )
         self._stream.start()
 
+    def on_finished(self, callback: Callable[[], None]) -> None:
+        """Register a callback for when playback reaches EOF."""
+        self._finished_callbacks.append(callback)
+
     def _on_finished(self) -> None:
-        self.finished.emit()
+        for cb in self._finished_callbacks:
+            cb()
 
     # ---------- real-time callback ----------
     def _audio_callback(
@@ -168,7 +166,7 @@ class AudioBackend(QObject):
             chunk = np.concatenate([chunk, pad])
             self._cursor = 0.0
             self._playing = False
-            self.finished.emit()
+            self._on_finished()
         elif chunk.size > needed:
             chunk = chunk[:needed]
             padding = frames - needed

@@ -11,20 +11,20 @@ Migrate the Wavoscope GUI from PySide6 (Qt) to a browser-based interface using R
 ## Sub-Tasks
 
 ### 1. Backend Setup
--   [ ] Initialize a FastAPI or Flask project.
--   [ ] Set up a WebSocket or REST API to handle communication between the frontend and backend.
--   [ ] Port the `AudioBackend` and `Project` logic from `audio/` and `session/`.
+-   [x] Initialize a FastAPI or Flask project.
+-   [x] Set up a WebSocket or REST API to handle communication between the frontend and backend.
+-   [x] Port the `AudioBackend` and `Project` logic from `audio/` and `session/`.
     -   *Note:* Remove Qt-specific dependencies like `QObject` and `Signal` from these core classes.
 -   [ ] Implement endpoints for:
-    -   Loading audio files.
-    -   Playback control (play, pause, seek, set speed).
-    -   Managing flags (add, remove, move, list).
-    -   Retrieving waveform and spectrum data.
+    -   [x] Loading audio files.
+    -   [x] Playback control (play, pause, seek, set speed).
+    -   [ ] Managing flags (add, remove, move, list).
+    -   [ ] Retrieving waveform and spectrum data.
 
 ### 2. Frontend Setup
--   [ ] Initialize a React project (e.g., using Vite) in a `frontend/` directory.
+-   [x] Initialize a React project (e.g., using Vite) in a `frontend/` directory.
 -   [ ] Set up a state management system (e.g., Redux, Zustand, or simple React Context).
--   [ ] Implement a communication layer to talk to the Python backend.
+-   [x] Implement a communication layer to talk to the Python backend.
 
 ### 3. Core UI Components
 -   [ ] **Waveform Viewer:** Implement a high-performance waveform viewer. Use `<canvas>` or WebGL to handle large audio files smoothly.
