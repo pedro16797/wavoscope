@@ -1,3 +1,4 @@
+<!-- Legacy Qt Resource File -->
 <RCC>
   <qresource prefix="\">
     <file>resources\icons\app-icon.svg</file>
