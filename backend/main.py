@@ -32,6 +32,15 @@ class ProjectStatus(BaseModel):
     speed: float
     volume: float
 
+class Flag(BaseModel):
+    t: float
+    type: str
+    subdivision: int
+    name: str
+    is_section_start: bool
+    shaded_subdivisions: bool
+    auto_name: Optional[str] = ""
+
 @app.post("/load")
 async def load_project(path: str):
     global current_project
@@ -90,6 +99,43 @@ async def set_volume(volume: float):
         raise HTTPException(status_code=404, detail="No project loaded")
     current_project.set_volume(volume)
     return {"message": f"Volume set to {volume}"}
+
+@app.get("/flags", response_model=List[Flag])
+async def get_flags():
+    if not current_project:
+        raise HTTPException(status_code=404, detail="No project loaded")
+    return current_project.flags
+
+@app.post("/flags")
+async def add_flag(flag: Flag):
+    if not current_project:
+        raise HTTPException(status_code=404, detail="No project loaded")
+    current_project.add_flag(
+        time=flag.t,
+        kind=flag.type,
+        subdivision=flag.subdivision,
+        name=flag.name,
+        section_start=flag.is_section_start,
+        shaded=flag.shaded_subdivisions
+    )
+    return {"message": "Flag added"}
+
+@app.delete("/flags/{idx}")
+async def remove_flag(idx: int):
+    if not current_project:
+        raise HTTPException(status_code=404, detail="No project loaded")
+    if idx < 0 or idx >= len(current_project.flags):
+        raise HTTPException(status_code=404, detail="Flag index out of range")
+    current_project.remove_flag(idx)
+    return {"message": "Flag removed"}
+
+@app.get("/waveform")
+async def get_waveform(start: float, end: float, bars: int):
+    if not current_project or not current_project.wave_cache:
+        raise HTTPException(status_code=404, detail="No project or wave cache")
+
+    data = current_project.wave_cache.bars(start, end, bars)
+    return data
 
 if __name__ == "__main__":
     import uvicorn

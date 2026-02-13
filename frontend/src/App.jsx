@@ -1,55 +1,24 @@
 import { useState, useEffect } from 'react'
+import useStore from './store'
+import Waveform from './components/Waveform'
+import Timeline from './components/Timeline'
 import './App.css'
 
 function App() {
   const [path, setPath] = useState('')
-  const [status, setStatus] = useState(null)
-  const [error, setError] = useState(null)
-
-  const fetchStatus = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/status')
-      if (response.ok) {
-        const data = await response.json()
-        setStatus(data)
-      } else {
-        setStatus(null)
-      }
-    } catch (err) {
-      // Backend might be down or no project loaded
-    }
-  }
+  const { status, flags, error, fetchStatus, fetchFlags, loadProject, play, pause } = useStore()
 
   useEffect(() => {
-    const interval = setInterval(fetchStatus, 1000)
+    const interval = setInterval(fetchStatus, 500) // Poll more frequently for smoother position updates
     return () => clearInterval(interval)
-  }, [])
+  }, [fetchStatus])
 
-  const handleLoad = async () => {
-    try {
-      const response = await fetch(`http://localhost:8000/load?path=${encodeURIComponent(path)}`, {
-        method: 'POST'
-      })
-      if (!response.ok) {
-        const data = await response.json()
-        setError(data.detail || 'Failed to load')
-      } else {
-        setError(null)
-        fetchStatus()
-      }
-    } catch (err) {
-      setError('Connection failed')
-    }
-  }
+  useEffect(() => {
+    fetchFlags()
+  }, [fetchFlags, status?.audio_path])
 
-  const handlePlay = async () => {
-    await fetch('http://localhost:8000/play', { method: 'POST' })
-    fetchStatus()
-  }
-
-  const handlePause = async () => {
-    await fetch('http://localhost:8000/pause', { method: 'POST' })
-    fetchStatus()
+  const handleLoad = () => {
+    loadProject(path)
   }
 
   return (
@@ -73,8 +42,20 @@ function App() {
           <p><strong>Position:</strong> {status.position.toFixed(2)} / {status.duration.toFixed(2)} s</p>
           <p><strong>Status:</strong> {status.playing ? 'Playing' : 'Paused'}</p>
           <div className="controls">
-            <button onClick={handlePlay} disabled={status.playing} style={{ padding: '10px 20px', marginRight: '10px' }}>Play</button>
-            <button onClick={handlePause} disabled={!status.playing} style={{ padding: '10px 20px' }}>Pause</button>
+            <button onClick={play} disabled={status.playing} style={{ padding: '10px 20px', marginRight: '10px' }}>Play</button>
+            <button onClick={pause} disabled={!status.playing} style={{ padding: '10px 20px' }}>Pause</button>
+          </div>
+          <div className="waveform-container" style={{ marginTop: '20px' }}>
+            <Timeline />
+            <Waveform />
+          </div>
+          <div className="flags-section" style={{ marginTop: '20px' }}>
+            <h3>Flags ({flags.length})</h3>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {flags.map((f, i) => (
+                <li key={i}>{f.t.toFixed(3)}s - {f.auto_name || f.name || f.type}</li>
+              ))}
+            </ul>
           </div>
         </div>
       )}
