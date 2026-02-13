@@ -4,8 +4,10 @@ const useStore = create((set, get) => ({
   status: null,
   flags: [],
   waveform: [],
+  spectrum: { freqs: [], db: [] },
   error: null,
   viewport: { start: 0, end: 10 }, // seconds
+  spectrumRange: { low: 440 * Math.pow(2, (48 - 69) / 12), high: 440 * Math.pow(2, (84 - 69) / 12) }, // C2 to C5
 
   fetchStatus: async () => {
     try {
@@ -47,6 +49,19 @@ const useStore = create((set, get) => ({
     }
   },
 
+  fetchSpectrum: async (time, window, width) => {
+    try {
+      const { spectrumRange } = get()
+      const response = await fetch(`http://localhost:8000/spectrum?time=${time}&window=${window}&low_hz=${spectrumRange.low}&high_hz=${spectrumRange.high}&width=${width}`)
+      if (response.ok) {
+        const data = await response.json()
+        set({ spectrum: data })
+      }
+    } catch (err) {
+      console.error('Failed to fetch spectrum', err)
+    }
+  },
+
   loadProject: async (path) => {
     try {
       const response = await fetch(`http://localhost:8000/load?path=${encodeURIComponent(path)}`, {
@@ -82,8 +97,34 @@ const useStore = create((set, get) => ({
     get().fetchStatus()
   },
 
+  setSpeed: async (speed) => {
+    await fetch(`http://localhost:8000/set_speed?speed=${speed}`, { method: 'POST' })
+    get().fetchStatus()
+  },
+
+  setVolume: async (volume) => {
+    await fetch(`http://localhost:8000/set_volume?volume=${volume}`, { method: 'POST' })
+    get().fetchStatus()
+  },
+
+  synthStart: async (freq) => {
+    await fetch(`http://localhost:8000/synth/start?freq=${freq}`, { method: 'POST' })
+  },
+
+  synthStop: async (freq) => {
+    await fetch(`http://localhost:8000/synth/stop?freq=${freq}`, { method: 'POST' })
+  },
+
+  synthStopAll: async () => {
+    await fetch('http://localhost:8000/synth/stop_all', { method: 'POST' })
+  },
+
   setViewport: (start, end) => {
     set({ viewport: { start, end } })
+  },
+
+  setSpectrumRange: (low, high) => {
+    set({ spectrumRange: { low, high } })
   }
 }))
 

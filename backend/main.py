@@ -10,6 +10,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from wavoscope.session.project import Project
+from wavoscope.audio.spectrum_analyzer import analyze as run_fft
 
 app = FastAPI()
 
@@ -136,6 +137,38 @@ async def get_waveform(start: float, end: float, bars: int):
 
     data = current_project.wave_cache.bars(start, end, bars)
     return data
+
+@app.get("/spectrum")
+async def get_spectrum(time: float, window: float, low_hz: float, high_hz: float, width: int):
+    if not current_project:
+        raise HTTPException(status_code=404, detail="No project loaded")
+
+    freqs, db = run_fft(
+        current_project.backend._data, current_project.backend._sr,
+        time, window, low_hz, high_hz, width
+    )
+    return {"freqs": freqs.tolist(), "db": db.tolist()}
+
+@app.post("/synth/start")
+async def synth_start(freq: float):
+    if not current_project:
+        raise HTTPException(status_code=404, detail="No project loaded")
+    current_project.backend._synth.start_tone(freq)
+    return {"message": f"Tone started: {freq} Hz"}
+
+@app.post("/synth/stop")
+async def synth_stop(freq: float):
+    if not current_project:
+        raise HTTPException(status_code=404, detail="No project loaded")
+    current_project.backend._synth.stop_tone(freq)
+    return {"message": f"Tone stopped: {freq} Hz"}
+
+@app.post("/synth/stop_all")
+async def synth_stop_all():
+    if not current_project:
+        raise HTTPException(status_code=404, detail="No project loaded")
+    current_project.backend._synth.stop_all()
+    return {"message": "All tones stopped"}
 
 if __name__ == "__main__":
     import uvicorn

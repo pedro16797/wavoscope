@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import useStore from './store'
 import Waveform from './components/Waveform'
 import Timeline from './components/Timeline'
+import Spectrum from './components/Spectrum'
+import Controls from './components/Controls'
 import './App.css'
 
 function App() {
@@ -45,9 +47,13 @@ function App() {
             <button onClick={play} disabled={status.playing} style={{ padding: '10px 20px', marginRight: '10px' }}>Play</button>
             <button onClick={pause} disabled={!status.playing} style={{ padding: '10px 20px' }}>Pause</button>
           </div>
+          <Controls />
           <div className="waveform-container" style={{ marginTop: '20px' }}>
             <Timeline />
             <Waveform />
+          </div>
+          <div className="spectrum-container" style={{ marginTop: '20px' }}>
+            <Spectrum />
           </div>
           <div className="flags-section" style={{ marginTop: '20px' }}>
             <h3>Flags ({flags.length})</h3>
