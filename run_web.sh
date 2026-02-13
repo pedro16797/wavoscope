@@ -5,7 +5,11 @@ echo "=== Wavoscope Environment Setup ==="
 # 1. Python environment
 if [ ! -d ".venv" ]; then
     echo "[Backend] Creating virtual environment..."
-    python3 -m venv .venv
+    if command -v python3 > /dev/null; then
+        python3 -m venv .venv
+    else
+        python -m venv .venv
+    fi
 fi
 
 PYTHON_EXE=".venv/bin/python"
