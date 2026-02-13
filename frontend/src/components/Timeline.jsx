@@ -14,9 +14,15 @@ const Timeline = () => {
     const height = canvas.height
     const duration = viewport.end - viewport.start
 
+    const style = getComputedStyle(document.documentElement)
+    const gridColor = style.getPropertyValue('--grid').trim() || '#555'
+    const textColor = style.getPropertyValue('--textSecondary').trim() || '#888'
+    const accentColor = style.getPropertyValue('--accent').trim() || '#ff4a4a'
+    const flagColor = style.getPropertyValue('--flagRhythm').trim() || '#ffd700'
+
     ctx.clearRect(0, 0, width, height)
-    ctx.fillStyle = '#888'
-    ctx.strokeStyle = '#555'
+    ctx.fillStyle = textColor
+    ctx.strokeStyle = gridColor
     ctx.font = '10px Arial'
 
     // Draw time markers
@@ -37,14 +43,14 @@ const Timeline = () => {
     flags.forEach((f) => {
       if (f.t >= viewport.start && f.t <= viewport.end) {
         const x = ((f.t - viewport.start) / duration) * width
-        ctx.fillStyle = '#ffd700'
+        ctx.fillStyle = flagColor
         ctx.beginPath()
         ctx.moveTo(x - 5, 0)
         ctx.lineTo(x + 5, 0)
         ctx.lineTo(x, 10)
         ctx.fill()
 
-        ctx.fillStyle = '#fff'
+        ctx.fillStyle = style.getPropertyValue('--text').trim()
         ctx.fillText(f.auto_name || f.name || f.type, x + 2, 22)
       }
     })
@@ -52,7 +58,7 @@ const Timeline = () => {
     // Draw cursor
     if (status && status.position >= viewport.start && status.position <= viewport.end) {
         const cursorX = ((status.position - viewport.start) / duration) * width
-        ctx.strokeStyle = '#ff4a4a'
+        ctx.strokeStyle = accentColor
         ctx.lineWidth = 2
         ctx.beginPath()
         ctx.moveTo(cursorX, 0)
@@ -69,8 +75,8 @@ const Timeline = () => {
       style={{
         width: '100%',
         height: '30px',
-        backgroundColor: '#111',
-        borderBottom: '1px solid #333'
+        backgroundColor: 'var(--surface)',
+        borderBottom: '1px solid var(--grid)'
       }}
     />
   )

@@ -4,17 +4,26 @@ import Waveform from './components/Waveform'
 import Timeline from './components/Timeline'
 import Spectrum from './components/Spectrum'
 import Controls from './components/Controls'
+import themes from './themes.json'
 import './App.css'
 
 function App() {
   const [path, setPath] = useState('')
   const {
-    status, flags, error, connectStatusWS, fetchFlags, loadProject, play, pause, addFlag, deleteFlag, updateFlag
+    status, flags, error, connectStatusWS, fetchFlags, loadProject, play, pause, addFlag, deleteFlag, updateFlag, theme, setTheme
   } = useStore()
 
   useEffect(() => {
     connectStatusWS()
   }, [connectStatusWS])
+
+  useEffect(() => {
+    const currentTheme = themes[theme] || themes.dark
+    const root = document.documentElement
+    Object.entries(currentTheme).forEach(([key, value]) => {
+      root.style.setProperty(`--${key}`, value)
+    })
+  }, [theme])
 
   useEffect(() => {
     fetchFlags()
@@ -38,7 +47,15 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Wavoscope Web</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>Wavoscope Web</h1>
+        <div>
+          <label style={{ marginRight: '8px' }}>Theme:</label>
+          <select value={theme} onChange={(e) => setTheme(e.target.value)} style={{ padding: '4px' }}>
+            {Object.keys(themes).map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+      </div>
       <div className="load-section">
         <input
           type="text"

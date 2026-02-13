@@ -20,8 +20,12 @@ const Waveform = () => {
     const height = canvas.height
     const midY = height / 2
 
+    const style = getComputedStyle(document.documentElement)
+    const waveformColor = style.getPropertyValue('--waveform').trim() || '#4a9eff'
+    const accentColor = style.getPropertyValue('--accent').trim() || '#ff4a4a'
+
     ctx.clearRect(0, 0, width, height)
-    ctx.fillStyle = '#4a9eff'
+    ctx.fillStyle = waveformColor
 
     const barWidth = width / waveform.length
     waveform.forEach(([min, max, intensity], i) => {
@@ -37,7 +41,7 @@ const Waveform = () => {
     if (status && status.position >= viewport.start && status.position <= viewport.end) {
       const cursorX = ((status.position - viewport.start) / (viewport.end - viewport.start)) * width
       ctx.globalAlpha = 1
-      ctx.strokeStyle = '#ff4a4a'
+      ctx.strokeStyle = accentColor
       ctx.lineWidth = 2
       ctx.beginPath()
       ctx.moveTo(cursorX, 0)
@@ -64,9 +68,8 @@ const Waveform = () => {
       style={{
         width: '100%',
         height: '200px',
-        backgroundColor: '#1e1e1e',
-        cursor: 'pointer',
-        borderRadius: '4px'
+        backgroundColor: 'var(--background)',
+        cursor: 'pointer'
       }}
     />
   )

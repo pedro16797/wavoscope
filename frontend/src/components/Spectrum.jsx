@@ -25,6 +25,12 @@ const Spectrum = () => {
     const width = canvas.width
     const height = canvas.height
 
+    const style = getComputedStyle(document.documentElement)
+    const spectrumColor = style.getPropertyValue('--spectrum').trim() || '#00ff00'
+    const keyWhiteColor = style.getPropertyValue('--keyWhite').trim() || '#ffffff'
+    const keyBlackColor = style.getPropertyValue('--keyBlack').trim() || '#000000'
+    const textColor = style.getPropertyValue('--textSecondary').trim() || '#888'
+
     ctx.clearRect(0, 0, width, height)
 
     const lowHz = spectrumRange.low
@@ -38,14 +44,17 @@ const Spectrum = () => {
       const hz = midiToFreq(midi)
       const x = Math.log2(hz / lowHz) * xScale
 
-      ctx.strokeStyle = WHITE_KEYS.has(midi % 12) ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.5)'
+      const isWhite = WHITE_KEYS.has(midi % 12)
+      ctx.strokeStyle = isWhite ? keyWhiteColor : keyBlackColor
+      ctx.globalAlpha = 0.2
       ctx.lineWidth = 3
       ctx.beginPath()
       ctx.moveTo(x, 0)
       ctx.lineTo(x, height)
       ctx.stroke()
 
-      ctx.fillStyle = '#888'
+      ctx.globalAlpha = 1.0
+      ctx.fillStyle = textColor
       ctx.font = '10px Arial'
       ctx.fillText(`${NOTE_NAMES[midi % 12]}${Math.floor((midi - 12) / 12)}`, x + 2, 12)
     }
@@ -60,7 +69,7 @@ const Spectrum = () => {
       const maxDb = Math.max(...db)
       const spanDb = Math.max(1.05 * maxDb - minDb, 1e-3)
 
-      ctx.strokeStyle = '#00ff00'
+      ctx.strokeStyle = spectrumColor
       ctx.lineWidth = 1
       ctx.beginPath()
 
@@ -72,7 +81,7 @@ const Spectrum = () => {
       }
       ctx.stroke()
     }
-  }, [spectrum, spectrumRange])
+  }, [spectrum, spectrumRange, status?.position])
 
   const hzAtX = (x) => {
     const spanLog = Math.log2(spectrumRange.high / spectrumRange.low)
@@ -111,9 +120,8 @@ const Spectrum = () => {
       style={{
         width: '100%',
         height: '150px',
-        backgroundColor: '#1e1e1e',
-        cursor: 'crosshair',
-        borderRadius: '4px'
+        backgroundColor: 'var(--background)',
+        cursor: 'crosshair'
       }}
     />
   )

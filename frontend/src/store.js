@@ -7,6 +7,7 @@ const useStore = create((set, get) => ({
   spectrum: { freqs: [], db: [] },
   error: null,
   ws: null,
+  theme: 'dark',
   viewport: { start: 0, end: 10 }, // seconds
   spectrumRange: { low: 440 * Math.pow(2, (48 - 69) / 12), high: 440 * Math.pow(2, (84 - 69) / 12) }, // C2 to C5
 
@@ -179,6 +180,10 @@ const useStore = create((set, get) => ({
     } catch (err) {
       console.error('Failed to update flag', err)
     }
+  },
+
+  setTheme: (theme) => {
+    set({ theme })
   },
 
   setViewport: (start, end) => {
