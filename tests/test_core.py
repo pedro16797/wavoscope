@@ -32,19 +32,19 @@ def test_project_initialization(tmp_path):
     audio_file.touch()
     project = Project(audio_file)
     assert project.audio_path == audio_file
-    assert project._flag_added_callbacks == []
+    assert project._flags_updated_callbacks == []
 
 def test_project_callbacks(tmp_path):
     audio_file = tmp_path / "test.wav"
     audio_file.touch()
     project = Project(audio_file)
 
-    added_time = None
-    def flag_added(t):
-        nonlocal added_time
-        added_time = t
+    updated = False
+    def flags_updated():
+        nonlocal updated
+        updated = True
 
-    project.on_flag_added(flag_added)
+    project.on_flags_updated(flags_updated)
 
     # Mocking dependencies to avoid real file loading/audio backend issues
     project.session_data = {"flags": []}
@@ -54,4 +54,4 @@ def test_project_callbacks(tmp_path):
 
     project.add_flag(1.5)
 
-    assert added_time == 1.5
+    assert updated is True

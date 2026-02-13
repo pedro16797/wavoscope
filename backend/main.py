@@ -122,7 +122,7 @@ async def websocket_status(websocket: WebSocket):
                     speed=current_project.backend._speed,
                     volume=current_project.backend._volume
                 )
-                await websocket.send_json(status.dict())
+                await websocket.send_json(status.model_dump())
             await asyncio.sleep(0.05) # 20 Hz updates
     except WebSocketDisconnect:
         pass
@@ -160,24 +160,8 @@ async def remove_flag(idx: int):
 async def update_flag(idx: int, flag: Flag):
     if not current_project:
         raise HTTPException(status_code=404, detail="No project loaded")
-    if idx < 0 or idx >= len(current_project.flags):
-        raise HTTPException(status_code=404, detail="Flag index out of range")
 
-    # We update the flag. Note: current_project.move_flag or direct edit
-    current_project.flags[idx]["t"] = flag.t
-    current_project.flags[idx]["type"] = flag.type
-    current_project.flags[idx]["subdivision"] = flag.subdivision
-    current_project.flags[idx]["name"] = flag.name
-    current_project.flags[idx]["is_section_start"] = flag.is_section_start
-    current_project.flags[idx]["shaded_subdivisions"] = flag.shaded_subdivisions
-
-    # Trigger recompute/dirty in Project if needed.
-    # Current implementation of Project doesn't have a generic "update_flag" but we can reuse parts.
-    current_project.flags.sort(key=lambda f: f["t"])
-    current_project._recompute_auto_names()
-    current_project._clear_backend_cache()
-    current_project.mark_dirty()
-
+    current_project.update_flag(idx, flag.model_dump())
     return {"message": "Flag updated"}
 
 @app.get("/waveform")

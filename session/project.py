@@ -25,8 +25,7 @@ from wavoscope.audio.waveform_cache import WaveformCache
 class Project:
     # ---------- construction / persistence ----------
     def __init__(self, audio_path: Path) -> None:
-        self._flag_added_callbacks: List[Callable[[float], None]] = []
-        self._flag_removed_callbacks: List[Callable[[int], None]] = []
+        self._flags_updated_callbacks: List[Callable[[], None]] = []
         self.audio_path: Path = audio_path
         self.sidecar_path: Path = audio_path.with_suffix(audio_path.suffix + "oscope")
 
@@ -62,11 +61,13 @@ class Project:
         """Live, sorted list of flags (in-place edits are allowed)."""
         return self.session_data.setdefault("flags", [])
 
-    def on_flag_added(self, callback: Callable[[float], None]) -> None:
-        self._flag_added_callbacks.append(callback)
+    def on_flags_updated(self, callback: Callable[[], None]) -> None:
+        """Register a callback for whenever flags are added, removed, or modified."""
+        self._flags_updated_callbacks.append(callback)
 
-    def on_flag_removed(self, callback: Callable[[int], None]) -> None:
-        self._flag_removed_callbacks.append(callback)
+    def _notify_flags_updated(self) -> None:
+        for cb in self._flags_updated_callbacks:
+            cb()
 
     def add_flag(
         self,
@@ -95,8 +96,7 @@ class Project:
         self._recompute_auto_names()
         self._clear_backend_cache()
         self.mark_dirty()
-        for cb in self._flag_added_callbacks:
-            cb(time)
+        self._notify_flags_updated()
 
     def remove_flag(self, idx: int) -> None:
         """Delete flag by index."""
@@ -104,8 +104,7 @@ class Project:
         self._recompute_auto_names()
         self._clear_backend_cache()
         self.mark_dirty()
-        for cb in self._flag_removed_callbacks:
-            cb(idx)
+        self._notify_flags_updated()
 
     def move_flag(self, idx: int, new_time: float) -> None:
         """Change flag time while enforcing ordering."""
@@ -115,6 +114,17 @@ class Project:
             self._recompute_auto_names()
             self._clear_backend_cache()
             self.mark_dirty()
+            self._notify_flags_updated()
+
+    def update_flag(self, idx: int, data: Dict[str, Any]) -> None:
+        """Update flag at index with new data."""
+        if 0 <= idx < len(self.flags):
+            self.flags[idx].update(data)
+            self.flags.sort(key=lambda f: f["t"])
+            self._recompute_auto_names()
+            self._clear_backend_cache()
+            self.mark_dirty()
+            self._notify_flags_updated()
 
     # ---------- playback passthrough ----------
     def seek(self, time: float) -> None: self.backend.seek(time)
@@ -242,5 +252,4 @@ class Project:
         self._recompute_auto_names()
         self._clear_backend_cache()
         self.mark_dirty()
-        for cb in self._flag_added_callbacks:
-            cb(left["t"])
+        self._notify_flags_updated()
