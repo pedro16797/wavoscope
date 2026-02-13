@@ -18,20 +18,20 @@ Migrate the Wavoscope GUI from PySide6 (Qt) to a browser-based interface using R
 -   [ ] Implement endpoints for:
     -   [x] Loading audio files.
     -   [x] Playback control (play, pause, seek, set speed).
-    -   [ ] Managing flags (add, remove, move, list).
-    -   [ ] Retrieving waveform and spectrum data.
+    -   [x] Managing flags (add, remove, move, list).
+    -   [x] Retrieving waveform and spectrum data.
 
 ### 2. Frontend Setup
 -   [x] Initialize a React project (e.g., using Vite) in a `frontend/` directory.
--   [ ] Set up a state management system (e.g., Redux, Zustand, or simple React Context).
+-   [x] Set up a state management system (e.g., Redux, Zustand, or simple React Context).
 -   [x] Implement a communication layer to talk to the Python backend.
 
 ### 3. Core UI Components
--   [ ] **Waveform Viewer:** Implement a high-performance waveform viewer. Use `<canvas>` or WebGL to handle large audio files smoothly.
--   [ ] **Spectrum Viewer:** Implement the spectrogram view.
--   [ ] **Timeline & Playback Bar:** Create a timeline that tracks the current playback position.
+-   [x] **Waveform Viewer:** Implement a high-performance waveform viewer. Use `<canvas>` or WebGL to handle large audio files smoothly.
+-   [x] **Spectrum Viewer:** Implement the spectrogram view.
+-   [x] **Timeline & Playback Bar:** Create a timeline that tracks the current playback position.
 -   [ ] **Flag/Label Management:** Implement a UI for adding and editing transcription flags.
--   [ ] **Controls:** Implement play/pause buttons, speed slider, and volume control.
+-   [x] **Controls:** Implement play/pause buttons, speed slider, and volume control.
 
 ### 4. Integration & Optimization
 -   [ ] Ensure low-latency synchronization between the audio playback and the UI position.

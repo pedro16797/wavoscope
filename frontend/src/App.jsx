@@ -8,7 +8,9 @@ import './App.css'
 
 function App() {
   const [path, setPath] = useState('')
-  const { status, flags, error, fetchStatus, fetchFlags, loadProject, play, pause } = useStore()
+  const {
+    status, flags, error, fetchStatus, fetchFlags, loadProject, play, pause, addFlag, deleteFlag
+  } = useStore()
 
   useEffect(() => {
     const interval = setInterval(fetchStatus, 500) // Poll more frequently for smoother position updates
@@ -21,6 +23,18 @@ function App() {
 
   const handleLoad = () => {
     loadProject(path)
+  }
+
+  const handleAddFlag = () => {
+    if (!status) return
+    addFlag({
+      t: status.position,
+      type: 'rhythm',
+      subdivision: 1,
+      name: '',
+      is_section_start: false,
+      shaded_subdivisions: false
+    })
   }
 
   return (
@@ -56,10 +70,34 @@ function App() {
             <Spectrum />
           </div>
           <div className="flags-section" style={{ marginTop: '20px' }}>
-            <h3>Flags ({flags.length})</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <h3>Flags ({flags.length})</h3>
+              <button onClick={handleAddFlag} style={{ padding: '4px 8px' }}>Add Flag at Position</button>
+            </div>
             <ul style={{ listStyle: 'none', padding: 0 }}>
               {flags.map((f, i) => (
-                <li key={i}>{f.t.toFixed(3)}s - {f.auto_name || f.name || f.type}</li>
+                <li key={i} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '4px 0',
+                  borderBottom: '1px solid #333'
+                }}>
+                  <span>{f.t.toFixed(3)}s - {f.auto_name || f.name || f.type}</span>
+                  <button
+                    onClick={() => deleteFlag(i)}
+                    style={{
+                      padding: '2px 6px',
+                      backgroundColor: '#ff4a4a',
+                      border: 'none',
+                      borderRadius: '4px',
+                      color: 'white',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Delete
+                  </button>
+                </li>
               ))}
             </ul>
           </div>

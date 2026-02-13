@@ -119,6 +119,34 @@ const useStore = create((set, get) => ({
     await fetch('http://localhost:8000/synth/stop_all', { method: 'POST' })
   },
 
+  addFlag: async (flagData) => {
+    try {
+      const response = await fetch('http://localhost:8000/flags', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(flagData)
+      })
+      if (response.ok) {
+        get().fetchFlags()
+      }
+    } catch (err) {
+      console.error('Failed to add flag', err)
+    }
+  },
+
+  deleteFlag: async (idx) => {
+    try {
+      const response = await fetch(`http://localhost:8000/flags/${idx}`, {
+        method: 'DELETE'
+      })
+      if (response.ok) {
+        get().fetchFlags()
+      }
+    } catch (err) {
+      console.error('Failed to delete flag', err)
+    }
+  },
+
   setViewport: (start, end) => {
     set({ viewport: { start, end } })
   },
