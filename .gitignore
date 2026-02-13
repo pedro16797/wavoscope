@@ -1,5 +1,5 @@
 /venv/
-/__pycache__/
-*.cpython-312.pyc
-*.cpython-312-pytest-8.4.1.pyc
+__pycache__/
+*.py[cod]
+*$py.class
 /dist-nuitka/
