@@ -10,7 +10,7 @@ import './App.css'
 function App() {
   const [path, setPath] = useState('')
   const {
-    status, flags, error, connectStatusWS, fetchFlags, loadProject, play, pause, addFlag, deleteFlag, updateFlag, theme, setTheme
+    status, flags, error, connectStatusWS, fetchFlags, loadProject, play, pause, addFlag, deleteFlag, updateFlag, theme, setTheme, browse
   } = useStore()
 
   useEffect(() => {
@@ -31,6 +31,13 @@ function App() {
 
   const handleLoad = () => {
     loadProject(path)
+  }
+
+  const handleBrowse = async () => {
+    const selectedPath = await browse()
+    if (selectedPath) {
+      setPath(selectedPath)
+    }
   }
 
   const handleAddFlag = () => {
@@ -64,6 +71,7 @@ function App() {
           placeholder="Path to audio file"
           style={{ width: '300px', padding: '8px' }}
         />
+        <button onClick={handleBrowse} style={{ marginLeft: '8px', padding: '8px' }}>Browse...</button>
         <button onClick={handleLoad} style={{ marginLeft: '8px', padding: '8px' }}>Load</button>
       </div>
       {error && <p style={{color: 'red'}}>{error}</p>}

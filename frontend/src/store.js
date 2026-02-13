@@ -82,6 +82,19 @@ const useStore = create((set, get) => ({
     }
   },
 
+  browse: async () => {
+    try {
+      const response = await fetch('http://localhost:8000/browse')
+      if (response.ok) {
+        const data = await response.json()
+        return data.path
+      }
+    } catch (err) {
+      console.error('Failed to browse', err)
+    }
+    return null
+  },
+
   loadProject: async (path) => {
     try {
       const response = await fetch(`http://localhost:8000/load?path=${encodeURIComponent(path)}`, {

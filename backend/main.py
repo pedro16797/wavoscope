@@ -7,6 +7,9 @@ from typing import List, Optional
 import os
 import sys
 import asyncio
+import tkinter as tk
+from tkinter import filedialog
+from starlette.concurrency import run_in_threadpool
 
 # Ensure wavoscope is importable
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -48,6 +51,23 @@ class Flag(BaseModel):
     is_section_start: bool
     shaded_subdivisions: bool
     auto_name: Optional[str] = ""
+
+def _open_file_dialog():
+    root = tk.Tk()
+    root.withdraw()
+    # Bring the dialog to the front
+    root.attributes("-topmost", True)
+    file_path = filedialog.askopenfilename(
+        title="Select Audio File",
+        filetypes=[("Audio Files", "*.wav *.mp3 *.flac *.ogg"), ("All Files", "*.*")]
+    )
+    root.destroy()
+    return file_path
+
+@app.get("/browse")
+async def browse():
+    path = await run_in_threadpool(_open_file_dialog)
+    return {"path": path}
 
 @app.post("/load")
 async def load_project(path: str):
