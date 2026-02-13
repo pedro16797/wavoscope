@@ -21,14 +21,8 @@ python -m wavoscope
 pip install -r requirements.txt
 ```
 
-### Dump the project for AI system prompts
-This tool generates a single text dump of the project, useful for providing context to LLMs.
-```bash
-python .dump_project.py
-```
-
 ### Build
 To create a standalone executable using Nuitka:
 ```bash
-python -m nuitka --standalone --enable-plugin=pyside6 --include-package-data=wavoscope --include-qt-plugins=sensible,styles,imageformats --include-data-dir=resources=resources --noinclude-data-files="**/.git/**" --noinclude-data-files="**/venv/**" --noinclude-data-files="**/__pycache__/**" --noinclude-data-files="**/requirements.txt" --noinclude-data-files="**/Wavoscope.spec" --noinclude-data-files="**/.dump_project.py" --noinclude-data-files="**/README.md" --nofollow-import-to=pytest --windows-icon-from-ico=resources/icons/app-icon.png --output-dir=dist-nuitka --assume-yes-for-downloads --jobs=0 main.py
+python -m nuitka --standalone --enable-plugin=pyside6 --include-package-data=wavoscope --include-qt-plugins=sensible,styles,imageformats --include-data-dir=resources=resources --noinclude-data-files="**/.git/**" --noinclude-data-files="**/venv/**" --noinclude-data-files="**/__pycache__/**" --noinclude-data-files="**/requirements.txt" --noinclude-data-files="**/Wavoscope.spec" --noinclude-data-files="**/README.md" --nofollow-import-to=pytest --windows-icon-from-ico=resources/icons/app-icon.png --output-dir=dist-nuitka --assume-yes-for-downloads --jobs=0 main.py
 ```

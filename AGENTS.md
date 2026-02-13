@@ -19,3 +19,17 @@ We are currently focusing on three major initiatives:
 -   Always verify your changes by running existing tests (if any) or adding new ones.
 -   Follow the technical details outlined in the specific task documents.
 -   Maintain clear documentation of your progress.
+
+## Documentation Maintenance
+As an agent, you are responsible for keeping the project documentation accurate and up-to-date.
+
+### Files to Maintain:
+-   **`Readme.md`**: Update with high-level project status and setup instructions.
+-   **`AGENTS.md`**: (This file) Update with major goals and guidelines.
+-   **`docs/project_structure.md`**: Update whenever directories or major files are added, moved, or removed.
+-   **`docs/tasks/`**: Update the status of sub-tasks (check/uncheck boxes) and add new tasks as the project evolves.
+
+### Formatting & Style:
+-   Use clear, concise Markdown.
+-   Organize tasks logically and subdivide them into actionable steps.
+-   Use cross-links between documentation files where appropriate.

@@ -35,5 +35,4 @@ This document outlines the directory structure and the purpose of each component
 -   **`Readme.md`**: General project overview and setup instructions.
 -   **`requirements.txt`**: Python dependencies.
 -   **`Wavoscope.spec`**: PyInstaller specification file for building the executable.
--   **`.dump_project.py`**: A utility script to aggregate the project's source code into a single file for AI analysis.
 -   **`resources.qrc`**: Qt resource collection file.
