@@ -9,13 +9,12 @@ import './App.css'
 function App() {
   const [path, setPath] = useState('')
   const {
-    status, flags, error, fetchStatus, fetchFlags, loadProject, play, pause, addFlag, deleteFlag
+    status, flags, error, connectStatusWS, fetchFlags, loadProject, play, pause, addFlag, deleteFlag, updateFlag
   } = useStore()
 
   useEffect(() => {
-    const interval = setInterval(fetchStatus, 500) // Poll more frequently for smoother position updates
-    return () => clearInterval(interval)
-  }, [fetchStatus])
+    connectStatusWS()
+  }, [connectStatusWS])
 
   useEffect(() => {
     fetchFlags()
@@ -83,7 +82,17 @@ function App() {
                   padding: '4px 0',
                   borderBottom: '1px solid #333'
                 }}>
-                  <span>{f.t.toFixed(3)}s - {f.auto_name || f.name || f.type}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>{f.t.toFixed(3)}s</span>
+                    <span style={{ color: '#aaa', fontSize: '0.8em' }}>[{f.auto_name}]</span>
+                    <input
+                      type="text"
+                      value={f.name || ''}
+                      placeholder={f.type}
+                      onChange={(e) => updateFlag(i, { ...f, name: e.target.value })}
+                      style={{ backgroundColor: '#333', color: '#fff', border: '1px solid #555', padding: '2px 4px' }}
+                    />
+                  </div>
                   <button
                     onClick={() => deleteFlag(i)}
                     style={{

@@ -1,10 +1,12 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from pathlib import Path
 from typing import List, Optional
 import os
 import sys
+import asyncio
 
 # Ensure wavoscope is importable
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -21,6 +23,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serve static files from the React build
+frontend_path = Path(__file__).parent.parent / "frontend" / "dist"
+if frontend_path.exists():
+    app.mount("/", StaticFiles(directory=str(frontend_path), html=True), name="frontend")
 
 # Global state for the current project
 current_project: Optional[Project] = None
@@ -101,6 +108,25 @@ async def set_volume(volume: float):
     current_project.set_volume(volume)
     return {"message": f"Volume set to {volume}"}
 
+@app.websocket("/ws/status")
+async def websocket_status(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            if current_project:
+                status = ProjectStatus(
+                    audio_path=str(current_project.audio_path),
+                    position=current_project.position,
+                    duration=current_project.duration,
+                    playing=current_project.backend._playing,
+                    speed=current_project.backend._speed,
+                    volume=current_project.backend._volume
+                )
+                await websocket.send_json(status.dict())
+            await asyncio.sleep(0.05) # 20 Hz updates
+    except WebSocketDisconnect:
+        pass
+
 @app.get("/flags", response_model=List[Flag])
 async def get_flags():
     if not current_project:
@@ -129,6 +155,30 @@ async def remove_flag(idx: int):
         raise HTTPException(status_code=404, detail="Flag index out of range")
     current_project.remove_flag(idx)
     return {"message": "Flag removed"}
+
+@app.put("/flags/{idx}")
+async def update_flag(idx: int, flag: Flag):
+    if not current_project:
+        raise HTTPException(status_code=404, detail="No project loaded")
+    if idx < 0 or idx >= len(current_project.flags):
+        raise HTTPException(status_code=404, detail="Flag index out of range")
+
+    # We update the flag. Note: current_project.move_flag or direct edit
+    current_project.flags[idx]["t"] = flag.t
+    current_project.flags[idx]["type"] = flag.type
+    current_project.flags[idx]["subdivision"] = flag.subdivision
+    current_project.flags[idx]["name"] = flag.name
+    current_project.flags[idx]["is_section_start"] = flag.is_section_start
+    current_project.flags[idx]["shaded_subdivisions"] = flag.shaded_subdivisions
+
+    # Trigger recompute/dirty in Project if needed.
+    # Current implementation of Project doesn't have a generic "update_flag" but we can reuse parts.
+    current_project.flags.sort(key=lambda f: f["t"])
+    current_project._recompute_auto_names()
+    current_project._clear_backend_cache()
+    current_project.mark_dirty()
+
+    return {"message": "Flag updated"}
 
 @app.get("/waveform")
 async def get_waveform(start: float, end: float, bars: int):

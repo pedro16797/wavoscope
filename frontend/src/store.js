@@ -6,8 +6,27 @@ const useStore = create((set, get) => ({
   waveform: [],
   spectrum: { freqs: [], db: [] },
   error: null,
+  ws: null,
   viewport: { start: 0, end: 10 }, // seconds
   spectrumRange: { low: 440 * Math.pow(2, (48 - 69) / 12), high: 440 * Math.pow(2, (84 - 69) / 12) }, // C2 to C5
+
+  connectStatusWS: () => {
+    if (get().ws) return
+
+    const ws = new WebSocket('ws://localhost:8000/ws/status')
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      set({ status: data })
+      if (data.duration > 0 && get().viewport.end === 10 && get().viewport.start === 0) {
+        set({ viewport: { start: 0, end: data.duration } })
+      }
+    }
+    ws.onclose = () => {
+      set({ ws: null })
+      setTimeout(() => get().connectStatusWS(), 1000)
+    }
+    set({ ws })
+  },
 
   fetchStatus: async () => {
     try {
@@ -144,6 +163,21 @@ const useStore = create((set, get) => ({
       }
     } catch (err) {
       console.error('Failed to delete flag', err)
+    }
+  },
+
+  updateFlag: async (idx, flagData) => {
+    try {
+      const response = await fetch(`http://localhost:8000/flags/${idx}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(flagData)
+      })
+      if (response.ok) {
+        get().fetchFlags()
+      }
+    } catch (err) {
+      console.error('Failed to update flag', err)
     }
   },
 
