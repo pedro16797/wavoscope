@@ -24,9 +24,10 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
   }, []);
 
   useEffect(() => {
-    window.addEventListener('resize', updateSize);
+    const observer = new ResizeObserver(updateSize);
+    if (containerRef.current) observer.observe(containerRef.current);
     updateSize();
-    return () => window.removeEventListener('resize', updateSize);
+    return () => observer.disconnect();
   }, [updateSize]);
 
   useEffect(() => {

@@ -30,9 +30,10 @@ export const Spectrum: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    window.addEventListener('resize', updateSize);
+    const observer = new ResizeObserver(updateSize);
+    if (containerRef.current) observer.observe(containerRef.current);
     updateSize();
-    return () => window.removeEventListener('resize', updateSize);
+    return () => observer.disconnect();
   }, [updateSize]);
 
   useEffect(() => {
@@ -109,6 +110,8 @@ export const Spectrum: React.FC = () => {
   }, [data, range.low, range.high, theme, spectrum_keys]);
 
   const lastToneRef = useRef<number>(0);
+  const currentHzRef = useRef<number>(0);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -118,9 +121,19 @@ export const Spectrum: React.FC = () => {
         const spanLog = Math.log2(range.high / range.low);
         const hz = range.low * Math.pow(2, (x * spanLog / rect.width));
 
+        // Round to nearest MIDI note frequency for cleaner dragging
+        const midi = Math.round(freqToMidi(hz));
+        const snappedHz = midiToFreq(midi);
+
+        if (snappedHz === currentHzRef.current) return;
+
         const now = Date.now();
-        if (now - lastToneRef.current > 50) {
-            axios.post(`/playback/tone`, { freq: hz, action: 'start' });
+        if (now - lastToneRef.current > 30) {
+            if (currentHzRef.current > 0) {
+                axios.post(`/playback/tone`, { freq: currentHzRef.current, action: 'stop' });
+            }
+            axios.post(`/playback/tone`, { freq: snappedHz, action: 'start' });
+            currentHzRef.current = snappedHz;
             lastToneRef.current = now;
         }
     };
@@ -135,6 +148,7 @@ export const Spectrum: React.FC = () => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
         axios.post(`/playback/tone`, { action: 'stop' });
+        currentHzRef.current = 0;
     };
 
     window.addEventListener('mousemove', onMouseMove);

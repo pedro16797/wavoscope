@@ -21,9 +21,10 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         canvasRef.current.height = containerRef.current.clientHeight;
       }
     };
-    window.addEventListener('resize', updateSize);
+    const observer = new ResizeObserver(updateSize);
+    if (containerRef.current) observer.observe(containerRef.current);
     updateSize();
-    return () => window.removeEventListener('resize', updateSize);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {

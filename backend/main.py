@@ -202,6 +202,20 @@ async def save_project():
     project.save()
     return {"status": "ok"}
 
+class OpenProject(BaseModel):
+    path: str
+
+@app.post("/project/open")
+async def open_project(data: OpenProject):
+    global project
+    path = Path(data.path)
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+
+    project = Project(path)
+    project.open_file(path)
+    return {"status": "ok", "filename": path.name}
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()

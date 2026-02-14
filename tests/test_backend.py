@@ -31,3 +31,15 @@ def test_insert_n_flags():
 
     # Cleanup
     backend.main.project = None
+
+def test_open_project(tmp_path):
+    # Create a dummy audio file
+    audio_file = tmp_path / "test.wav"
+    audio_file.write_bytes(b"dummy audio content")
+
+    # Mock Project to avoid actual audio loading issues in test environment
+    with MagicMock() as mock_project_class:
+        backend.main.Project = mock_project_class
+        response = client.post("/project/open", json={"path": str(audio_file)})
+        assert response.status_code == 200
+        assert response.json()["filename"] == "test.wav"

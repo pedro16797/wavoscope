@@ -120,9 +120,14 @@ export const useStore = create<AppState>((set, get) => ({
 
   browseFile: async () => {
     try {
-      const res = await axios.get(`${API_BASE}/browse`);
-      if (res.data.status === 'loaded') {
+      if ((window as any).pywebview?.api?.browse) {
+        await (window as any).pywebview.api.browse();
         get().fetchStatus();
+      } else {
+        const res = await axios.get(`${API_BASE}/browse`);
+        if (res.data.status === 'loaded') {
+          get().fetchStatus();
+        }
       }
     } catch (e) {
       console.error(e);

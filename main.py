@@ -41,14 +41,28 @@ def main():
         width=1200,
         height=750,
         min_size=(800, 600),
-        background_color='#1e1e1e'
+        background_color='#1e1e1e',
+        js_api=api
     )
 
     # Native Menu
     from webview.menu import Menu, MenuAction, MenuSeparator
 
+    class Api:
+        def browse(self):
+            file_types = ('Audio Files (*.wav;*.mp3;*.flac;*.ogg)', 'All files (*.*)')
+            res = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+            if res:
+                file_path = res[0]
+                try:
+                    requests.post('http://127.0.0.1:8000/project/open', json={'path': file_path})
+                except Exception as e:
+                    print(f"Error opening file: {e}")
+
+    api = Api()
+
     def open_file():
-        requests.get('http://127.0.0.1:8000/browse')
+        api.browse()
 
     def save_file():
         requests.post('http://127.0.0.1:8000/project/save')
