@@ -45,6 +45,8 @@ def main():
     )
 
     # Native Menu
+    from webview.menu import Menu, MenuAction, MenuSeparator
+
     def open_file():
         requests.get('http://127.0.0.1:8000/browse')
 
@@ -52,13 +54,13 @@ def main():
         requests.post('http://127.0.0.1:8000/project/save')
 
     menu_items = [
-        webview.Menu(
+        Menu(
             'File',
             [
-                webview.MenuAction('Open...', open_file),
-                webview.MenuAction('Save', save_file),
-                webview.MenuSeparator(),
-                webview.MenuAction('Exit', window.destroy),
+                MenuAction('Open...', open_file),
+                MenuAction('Save', save_file),
+                MenuSeparator(),
+                MenuAction('Exit', window.destroy),
             ],
         )
     ]

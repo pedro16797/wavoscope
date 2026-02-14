@@ -6,7 +6,7 @@ import { SettingsDialog } from './SettingsDialog';
 export const PlaybackBar: React.FC = () => {
   const {
     loaded, position, duration, playing, speed, volume, filename,
-    controlPlayback, browseFile, currentTheme, themes, setTheme,
+    controlPlayback, browseFile, currentTheme, themes,
     metronome_enabled, updateMetronome, fft_window, setFFTWindow,
     octave_shift, setOctaveShift
   } = useStore();
@@ -20,44 +20,38 @@ export const PlaybackBar: React.FC = () => {
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  if (!loaded) {
-    return (
-      <div className="p-4 flex items-center justify-between border-b" style={{ backgroundColor: theme.surface || '#252525', color: theme.text || '#fff' }}>
-        <div className="flex items-center gap-4">
-            <button onClick={browseFile} className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm">Open Audio File</button>
-            <div className="text-sm opacity-50 italic">No audio loaded</div>
-        </div>
-        <div className="flex items-center gap-4">
-            <select value={currentTheme} onChange={(e) => setTheme(e.target.value)}
-                    className="bg-transparent border border-white/20 rounded text-[10px] p-1">
-                {Object.keys(themes).map(t => <option key={t} value={t} className="bg-neutral-800">{t}</option>)}
-            </select>
-            <button onClick={() => setShowSettings(true)} className="p-2 hover:bg-white/10 rounded transition-colors">
-                <Settings size={18} />
-            </button>
-        </div>
-        {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
-      </div>
-    );
-  }
+  const progressPercent = duration > 0 ? (position / duration) * 100 : 0;
 
   return (
-    <div className="p-2 flex items-center gap-4 border-b select-none h-14" style={{ backgroundColor: theme.surface, color: theme.text }}>
-      <div className="flex items-center gap-1">
-        <button onClick={() => controlPlayback(playing ? 'pause' : 'play')} className="p-2 hover:bg-white/10 rounded transition-colors">
-          {playing ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
-        </button>
-        <button onClick={() => controlPlayback('stop')} className="p-2 hover:bg-white/10 rounded transition-colors">
-          <Square size={20} fill="currentColor" />
-        </button>
+    <div className="p-2 flex items-center gap-4 border-b select-none h-16 shrink-0" style={{ backgroundColor: theme.surface, color: theme.text }}>
+      <div className="flex items-center gap-2">
+        {loaded ? (
+            <>
+                <button onClick={() => controlPlayback(playing ? 'pause' : 'play')} className="p-2 hover:bg-white/10 rounded transition-colors">
+                {playing ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
+                </button>
+                <button onClick={() => controlPlayback('stop')} className="p-2 hover:bg-white/10 rounded transition-colors">
+                <Square size={20} fill="currentColor" />
+                </button>
+            </>
+        ) : (
+            <button onClick={browseFile} className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-lg active:scale-95 transition-all">Open Audio</button>
+        )}
       </div>
 
-      <div className="flex-1 flex flex-col justify-center gap-1 min-w-0 px-2">
-        <div className="text-xs font-bold truncate opacity-80">{filename}</div>
-        <div className="flex items-center gap-2 text-[10px] font-mono">
-            <span className="w-10 text-right">{formatTime(position)}</span>
-            <div className="flex-1 h-1.5 bg-white/10 rounded-full relative overflow-hidden">
-                <div className="absolute h-full rounded-full transition-all duration-75" style={{ width: `${(position/duration)*100}%`, backgroundColor: theme.accent }} />
+      <div className="flex-1 flex flex-col justify-center gap-1 min-w-0 px-4">
+        <div className="text-xs font-bold truncate opacity-80">{loaded ? filename : 'Ready to load audio'}</div>
+        <div className="flex items-center gap-3 text-[11px] font-mono">
+            <span className="w-12 text-right">{formatTime(position)}</span>
+            <div className="flex-1 h-3 bg-white/5 rounded-full relative overflow-hidden cursor-pointer hover:bg-white/10 transition-colors shadow-inner border border-white/5"
+                 onClick={(e) => {
+                    if (!loaded || !duration) return;
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const seekT = (x / rect.width) * duration;
+                    controlPlayback('seek', seekT);
+                 }}>
+                <div className="absolute h-full rounded-full transition-all duration-75" style={{ width: `${progressPercent}%`, backgroundColor: theme.accent }} />
             </div>
             <span className="w-10">{formatTime(duration)}</span>
         </div>
@@ -106,7 +100,7 @@ export const PlaybackBar: React.FC = () => {
                    className="w-16 accent-current" />
         </div>
 
-        <button onClick={() => setShowSettings(true)} className="p-2 hover:bg-white/10 rounded transition-colors">
+        <button onClick={() => setShowSettings(true)} className="p-2 hover:bg-white/10 rounded transition-colors" title="Settings">
             <Settings size={18} />
         </button>
       </div>
