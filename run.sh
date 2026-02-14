@@ -14,6 +14,15 @@ source .venv/bin/activate
 echo "Checking dependencies..."
 pip install -r requirements.txt
 
+# Build frontend if missing
+if [ ! -d "frontend/dist" ]; then
+    echo "Frontend build missing. Building now..."
+    cd frontend
+    npm install
+    npm run build
+    cd ..
+fi
+
 # Run the application
 echo "Launching Wavoscope..."
 python main.py
