@@ -16,8 +16,8 @@ The current implementation performs the following functionalities that must be p
 1.  **Layout & Window Management:**
     *   [x] Main window with vertical layout.
     *   [x] Resizable vertical splitter between waveform and spectrum areas.
-    *   [ ] System menu bar (File: Open, Save, Settings) - *Implemented via UI buttons and shortcuts.*
-    *   [ ] Unsaved changes confirmation dialog.
+    *   [x] System menu bar (File: Open, Save, Exit) - *Implemented using pywebview native menu.*
+    *   [x] Unsaved changes confirmation dialog - *Implemented using pywebview confirmation.*
 2.  **Audio Visualization:**
     *   [x] **Waveform View:** Scrollable and zoomable canvas-based drawing of audio bars. Adaptive rendering based on zoom level.
     *   [x] **Spectrogram View:** FFT-based visualization with frequency range mapping and a piano roll overlay for pitch reference.
@@ -25,13 +25,13 @@ The current implementation performs the following functionalities that must be p
 3.  **Playback Controls:**
     *   [x] Buttons for Play, Pause, and Stop (returns to the last play start position).
     *   [x] Volume and playback speed (0.1x to 4.0x) sliders.
-    *   [x] Metronome toggle and click volume control (Backend logic ported).
-    *   [ ] FFT window size selection for the spectrogram.
-    *   [ ] Octave shift for the spectrogram piano roll.
+    *   [x] Metronome toggle and click volume control.
+    *   [x] FFT window size selection for the spectrogram.
+    *   [x] Octave shift for the spectrogram piano roll.
 4.  **Transcription Engine (Flags):**
     *   [x] Add flags via click on timeline or keyboard shortcut.
     *   [x] Drag flags to move them (with snapping to a 10ms grid).
-    *   [x] Right-click context menu for editing flag details (name, subdivision, section start, shading).
+    *   [x] Right-click context menu / Dialog for editing flag details (name, subdivision, section start, shading).
     *   [ ] Equi-spaced flag insertion between two existing flags.
     *   [x] Automatic naming of flags (e.g., "1.1", "1.2").
 5.  **Project Management:**

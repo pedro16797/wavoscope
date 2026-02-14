@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
-import axios from 'axios';
+import { FlagDialog } from './FlagDialog';
 
 interface TimelineProps {
   offset: number;
@@ -10,8 +10,9 @@ interface TimelineProps {
 export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { loaded, duration, currentTheme, themes, flags, fetchStatus } = useStore();
+  const { loaded, duration, currentTheme, themes, flags, addFlag, moveFlag } = useStore();
   const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
 
   const theme = themes[currentTheme] || {};
 
@@ -38,7 +39,6 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     const span = canvas.width / zoom;
     const end = offset + span;
 
-    // Draw grid & labels
     ctx.strokeStyle = theme.grid || '#404040';
     ctx.fillStyle = theme.text || '#e0e0e0';
     ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
@@ -65,7 +65,6 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         }
     }
 
-    // Draw flags
     flags.forEach((f, idx) => {
         const x = (f.t - offset) * zoom;
         if (x >= 0 && x <= canvas.width) {
@@ -93,7 +92,6 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     const x = e.clientX - rect.left;
     const clickT = offset + x / zoom;
 
-    // Check for nearby flag
     const threshold = 10 / zoom;
     let foundIdx = -1;
     flags.forEach((f, idx) => {
@@ -102,14 +100,14 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         }
     });
 
-    if (e.button === 0) { // Left click
+    if (e.button === 0) {
         if (foundIdx !== -1) {
             setDragIdx(foundIdx);
             const onMouseMove = (moveEvent: MouseEvent) => {
                 const newX = moveEvent.clientX - rect.left;
                 const newT = Math.max(0, Math.min(duration, offset + newX / zoom));
                 const snappedT = Math.round(newT * 100) / 100;
-                axios.post('http://127.0.0.1:8000/project/flags/move', { idx: foundIdx, t: snappedT }).then(() => fetchStatus());
+                moveFlag(foundIdx, snappedT);
             };
             const onMouseUp = () => {
                 window.removeEventListener('mousemove', onMouseMove);
@@ -120,7 +118,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
             window.addEventListener('mouseup', onMouseUp);
         } else {
             const snappedT = Math.round(clickT * 100) / 100;
-            axios.post('http://127.0.0.1:8000/project/flags', { t: snappedT }).then(() => fetchStatus());
+            addFlag(snappedT);
         }
     }
   };
@@ -141,18 +139,21 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     });
 
     if (foundIdx !== -1) {
-        if (confirm(`Delete flag ${flags[foundIdx].auto_name}?`)) {
-            axios.delete(`http://127.0.0.1:8000/project/flags/${foundIdx}`).then(() => fetchStatus());
-        }
+        setEditingIdx(foundIdx);
     }
   };
 
   return (
-    <div ref={containerRef} className="h-10 w-full border-b select-none cursor-crosshair"
-         style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
-         onMouseDown={handleMouseDown}
-         onContextMenu={handleContextMenu}>
-        <canvas ref={canvasRef} className="w-full h-full block" />
-    </div>
+    <>
+        <div ref={containerRef} className="h-10 w-full border-b select-none cursor-crosshair"
+            style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
+            onMouseDown={handleMouseDown}
+            onContextMenu={handleContextMenu}>
+            <canvas ref={canvasRef} className="w-full h-full block" />
+        </div>
+        {editingIdx !== null && (
+            <FlagDialog idx={editingIdx} flag={flags[editingIdx]} onClose={() => setEditingIdx(null)} />
+        )}
+    </>
   );
 };

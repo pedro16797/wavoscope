@@ -65,7 +65,10 @@ async def get_status():
         "speed": project.backend._speed,
         "volume": project.backend._volume,
         "filename": project.audio_path.name,
-        "flags": project.flags
+        "flags": project.flags,
+        "dirty": project._dirty,
+        "metronome_enabled": project.backend._metronome_enabled,
+        "click_gain": project.backend._click_gain
     }
 
 @app.post("/playback")
@@ -116,19 +119,39 @@ async def get_spectrum(position: float, window: float = 0.3, low_hz: float = 20,
     f, db = analyze(project._data, project._sr, position, window, low_hz, high_hz, width)
     return {"freqs": f.tolist(), "db": db.tolist()}
 
+class ToneControl(BaseModel):
+    freq: float = 0
+    action: str = "start"
+
 @app.post("/playback/tone")
-async def play_tone(freq: float = 0, action: str = "start"):
+async def play_tone(control: ToneControl):
     if not project:
         raise HTTPException(status_code=400, detail="No project loaded")
 
     synth = project.backend._synth
-    if action == "start":
-        synth.start_tone(freq)
-    elif action == "stop":
-        if freq == 0:
+    if control.action == "start":
+        synth.start_tone(control.freq)
+    elif control.action == "stop":
+        if control.freq == 0:
             synth.stop_all()
         else:
-            synth.stop_tone(freq)
+            synth.stop_tone(control.freq)
+    return {"status": "ok"}
+
+class MetronomeControl(BaseModel):
+    enabled: Optional[bool] = None
+    gain: Optional[float] = None
+
+@app.post("/playback/metronome")
+async def control_metronome(control: MetronomeControl):
+    if not project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+
+    if control.enabled is not None:
+        project.backend.set_metronome_enabled(control.enabled)
+    if control.gain is not None:
+        project.backend.set_click_gain(control.gain)
+
     return {"status": "ok"}
 
 @app.post("/project/flags")
@@ -208,6 +231,35 @@ async def get_themes():
         with open(theme_file, "r") as f:
             themes[theme_name] = json.load(f)
     return themes
+
+class AppConfig(BaseModel):
+    theme: Optional[str] = None
+    click_volume: Optional[float] = None
+    spectrum_keys: Optional[int] = None
+
+@app.get("/config")
+async def get_config():
+    from utils.config import Config
+    cfg = Config()
+    return {
+        "theme": cfg.get("ui.theme", "dark"),
+        "click_volume": cfg.get("ui.click_volume", 0.3),
+        "spectrum_keys": cfg.get("ui.spectrum_keys", 37)
+    }
+
+@app.post("/config")
+async def update_config(new_cfg: AppConfig):
+    from utils.config import Config
+    cfg = Config()
+    if new_cfg.theme is not None:
+        cfg.set("ui.theme", new_cfg.theme)
+    if new_cfg.click_volume is not None:
+        cfg.set("ui.click_volume", new_cfg.click_volume)
+        if project:
+            project.backend.set_click_gain(new_cfg.click_volume)
+    if new_cfg.spectrum_keys is not None:
+        cfg.set("ui.spectrum_keys", new_cfg.spectrum_keys)
+    return {"status": "ok"}
 
 # Serve frontend if it exists
 frontend_path = root_path / "frontend" / "dist"

@@ -22,16 +22,31 @@ interface AppState {
   volume: number;
   filename: string;
   flags: Flag[];
+  dirty: boolean;
+  metronome_enabled: boolean;
+  click_gain: number;
   themes: Record<string, any>;
   currentTheme: string;
+  spectrum_keys: number;
+  fft_window: number;
+  octave_shift: number;
 
   fetchStatus: () => Promise<void>;
   fetchThemes: () => Promise<void>;
+  fetchConfig: () => Promise<void>;
   controlPlayback: (action: string, value?: number) => Promise<void>;
   browseFile: () => Promise<void>;
-  setTheme: (name: string) => void;
+  setTheme: (name: string) => Promise<void>;
   updatePosition: (pos: number) => void;
   setPlaying: (playing: boolean) => void;
+  updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
+  updateConfig: (cfg: { theme?: string, click_volume?: number, spectrum_keys?: number }) => Promise<void>;
+  addFlag: (t: number) => Promise<void>;
+  moveFlag: (idx: number, t: number) => Promise<void>;
+  removeFlag: (idx: number) => Promise<void>;
+  saveProject: () => Promise<void>;
+  setFFTWindow: (sec: number) => void;
+  setOctaveShift: (shift: number) => void;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -43,8 +58,14 @@ export const useStore = create<AppState>((set, get) => ({
   volume: 1.0,
   filename: '',
   flags: [],
+  dirty: false,
+  metronome_enabled: true,
+  click_gain: 0.3,
   themes: {},
   currentTheme: 'dark',
+  spectrum_keys: 37,
+  fft_window: 0.3,
+  octave_shift: 0,
 
   fetchStatus: async () => {
     try {
@@ -64,11 +85,24 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
 
+  fetchConfig: async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/config`);
+      set({
+        currentTheme: res.data.theme,
+        click_gain: res.data.click_volume,
+        spectrum_keys: res.data.spectrum_keys
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  },
+
   controlPlayback: async (action, value) => {
     try {
       await axios.post(`${API_BASE}/playback`, { action, value });
-      if (action === 'set_speed') set({ speed: value });
-      if (action === 'set_volume') set({ volume: value });
+      if (action === 'set_speed' && value !== undefined) set({ speed: value });
+      if (action === 'set_volume' && value !== undefined) set({ volume: value });
     } catch (e) {
       console.error(e);
     }
@@ -85,8 +119,13 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
 
-  setTheme: (name) => {
-    set({ currentTheme: name });
+  setTheme: async (name) => {
+    try {
+        await axios.post(`${API_BASE}/config`, { theme: name });
+        set({ currentTheme: name });
+    } catch (e) {
+        console.error(e);
+    }
   },
 
   updatePosition: (pos) => {
@@ -95,5 +134,65 @@ export const useStore = create<AppState>((set, get) => ({
 
   setPlaying: (playing) => {
     set({ playing });
-  }
+  },
+
+  updateMetronome: async (enabled, gain) => {
+    try {
+        await axios.post(`${API_BASE}/playback/metronome`, { enabled, gain });
+        if (enabled !== undefined) set({ metronome_enabled: enabled });
+        if (gain !== undefined) set({ click_gain: gain });
+    } catch (e) {
+        console.error(e);
+    }
+  },
+
+  updateConfig: async (cfg) => {
+    try {
+        await axios.post(`${API_BASE}/config`, cfg);
+        if (cfg.theme) set({ currentTheme: cfg.theme });
+        if (cfg.click_volume !== undefined) set({ click_gain: cfg.click_volume });
+        if (cfg.spectrum_keys !== undefined) set({ spectrum_keys: cfg.spectrum_keys });
+    } catch (e) {
+        console.error(e);
+    }
+  },
+
+  addFlag: async (t) => {
+    try {
+        await axios.post(`${API_BASE}/project/flags`, { t });
+        get().fetchStatus();
+    } catch (e) {
+        console.error(e);
+    }
+  },
+
+  moveFlag: async (idx, t) => {
+    try {
+        await axios.post(`${API_BASE}/project/flags/move`, { idx, t });
+        get().fetchStatus();
+    } catch (e) {
+        console.error(e);
+    }
+  },
+
+  removeFlag: async (idx) => {
+    try {
+        await axios.delete(`${API_BASE}/project/flags/${idx}`);
+        get().fetchStatus();
+    } catch (e) {
+        console.error(e);
+    }
+  },
+
+  saveProject: async () => {
+    try {
+        await axios.post(`${API_BASE}/project/save`);
+        set({ dirty: false });
+    } catch (e) {
+        console.error(e);
+    }
+  },
+
+  setFFTWindow: (sec) => set({ fft_window: sec }),
+  setOctaveShift: (shift) => set({ octave_shift: shift })
 }));

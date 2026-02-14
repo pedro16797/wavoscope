@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
-import { Play, Pause, Square, Volume2 } from 'lucide-react';
+import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown } from 'lucide-react';
+import { SettingsDialog } from './SettingsDialog';
 
 export const PlaybackBar: React.FC = () => {
-  const { loaded, position, duration, playing, speed, volume, filename, controlPlayback, browseFile, currentTheme, themes, setTheme } = useStore();
+  const {
+    loaded, position, duration, playing, speed, volume, filename,
+    controlPlayback, browseFile, currentTheme, themes, setTheme,
+    metronome_enabled, updateMetronome, fft_window, setFFTWindow,
+    octave_shift, setOctaveShift
+  } = useStore();
+
+  const [showSettings, setShowSettings] = useState(false);
   const theme = themes[currentTheme] || {};
 
   const formatTime = (sec: number) => {
@@ -15,12 +23,20 @@ export const PlaybackBar: React.FC = () => {
   if (!loaded) {
     return (
       <div className="p-4 flex items-center justify-between border-b" style={{ backgroundColor: theme.surface || '#252525', color: theme.text || '#fff' }}>
-        <button onClick={browseFile} className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm">Open Audio File</button>
-        <div className="text-sm opacity-50 italic">No audio loaded</div>
-        <select value={currentTheme} onChange={(e) => setTheme(e.target.value)}
-                className="bg-transparent border border-white/20 rounded text-[10px] p-1">
-            {Object.keys(themes).map(t => <option key={t} value={t} className="bg-neutral-800">{t}</option>)}
-        </select>
+        <div className="flex items-center gap-4">
+            <button onClick={browseFile} className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm">Open Audio File</button>
+            <div className="text-sm opacity-50 italic">No audio loaded</div>
+        </div>
+        <div className="flex items-center gap-4">
+            <select value={currentTheme} onChange={(e) => setTheme(e.target.value)}
+                    className="bg-transparent border border-white/20 rounded text-[10px] p-1">
+                {Object.keys(themes).map(t => <option key={t} value={t} className="bg-neutral-800">{t}</option>)}
+            </select>
+            <button onClick={() => setShowSettings(true)} className="p-2 hover:bg-white/10 rounded transition-colors">
+                <Settings size={18} />
+            </button>
+        </div>
+        {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
       </div>
     );
   }
@@ -36,7 +52,7 @@ export const PlaybackBar: React.FC = () => {
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col justify-center gap-1 min-w-0">
+      <div className="flex-1 flex flex-col justify-center gap-1 min-w-0 px-2">
         <div className="text-xs font-bold truncate opacity-80">{filename}</div>
         <div className="flex items-center gap-2 text-[10px] font-mono">
             <span className="w-10 text-right">{formatTime(position)}</span>
@@ -47,12 +63,40 @@ export const PlaybackBar: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-6 pr-2">
-        <div className="flex items-center gap-2">
-            <span className="text-[10px] opacity-60 font-bold">SPEED</span>
+      <div className="flex items-center gap-4 pr-2">
+        {/* Metronome */}
+        <button onClick={() => updateMetronome(!metronome_enabled)}
+                className={`p-2 rounded transition-colors ${metronome_enabled ? 'text-accent bg-accent/10' : 'opacity-40'}`}
+                title="Toggle Metronome">
+            <Timer size={18} />
+        </button>
+
+        {/* FFT Window */}
+        <div className="flex items-center gap-2 border-l border-white/10 pl-4">
+            <span className="text-[9px] opacity-60 font-bold">FFT</span>
+            <select value={fft_window} onChange={(e) => setFFTWindow(parseFloat(e.target.value))}
+                    className="bg-transparent border border-white/10 rounded text-[10px] p-1 outline-none">
+                <option value="0.1" className="bg-neutral-800">0.1s</option>
+                <option value="0.3" className="bg-neutral-800">0.3s</option>
+                <option value="0.5" className="bg-neutral-800">0.5s</option>
+                <option value="1.0" className="bg-neutral-800">1.0s</option>
+            </select>
+        </div>
+
+        {/* Octave Shift */}
+        <div className="flex items-center gap-1 border-l border-white/10 pl-4 mr-2">
+            <span className="text-[9px] opacity-60 font-bold mr-1">OCT</span>
+            <button onClick={() => setOctaveShift(octave_shift - 1)} className="p-1 hover:bg-white/10 rounded"><ChevronDown size={14}/></button>
+            <span className="text-[10px] font-mono w-4 text-center">{octave_shift > 0 ? `+${octave_shift}` : octave_shift}</span>
+            <button onClick={() => setOctaveShift(octave_shift + 1)} className="p-1 hover:bg-white/10 rounded"><ChevronUp size={14}/></button>
+        </div>
+
+        {/* Speed & Volume */}
+        <div className="flex items-center gap-2 border-l border-white/10 pl-4">
+            <span className="text-[9px] opacity-60 font-bold">SPEED</span>
             <input type="range" min="0.1" max="2" step="0.1" value={speed}
                    onChange={(e) => controlPlayback('set_speed', parseFloat(e.target.value))}
-                   className="w-20 accent-current" />
+                   className="w-16 accent-current" />
             <span className="text-[10px] font-mono w-8">{speed.toFixed(1)}x</span>
         </div>
         <div className="flex items-center gap-2">
@@ -61,11 +105,13 @@ export const PlaybackBar: React.FC = () => {
                    onChange={(e) => controlPlayback('set_volume', parseFloat(e.target.value))}
                    className="w-16 accent-current" />
         </div>
-        <select value={currentTheme} onChange={(e) => setTheme(e.target.value)}
-                className="bg-transparent border border-white/10 rounded text-[10px] p-1 outline-none">
-            {Object.keys(themes).map(t => <option key={t} value={t} className="bg-neutral-800">{t}</option>)}
-        </select>
+
+        <button onClick={() => setShowSettings(true)} className="p-2 hover:bg-white/10 rounded transition-colors">
+            <Settings size={18} />
+        </button>
       </div>
+
+      {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
     </div>
   );
 };

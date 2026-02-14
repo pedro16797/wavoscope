@@ -11,11 +11,16 @@ const freqToMidi = (freq: number) => 12 * Math.log2(freq / 440) + 69;
 export const Spectrum: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { loaded, position, currentTheme, themes } = useStore();
+  const { loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys } = useStore();
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
-  const [range] = useState({ low: midiToFreq(48), high: midiToFreq(84) }); // C2 to C5
 
   const theme = themes[currentTheme] || {};
+
+  const baseMidi = 48 + octave_shift * 12;
+  const range = {
+    low: midiToFreq(baseMidi),
+    high: midiToFreq(baseMidi + spectrum_keys)
+  };
 
   const updateSize = useCallback(() => {
     if (containerRef.current && canvasRef.current) {
@@ -37,6 +42,7 @@ export const Spectrum: React.FC = () => {
             const res = await axios.get(`http://127.0.0.1:8000/audio/spectrum`, {
                 params: {
                     position,
+                    window: fft_window,
                     low_hz: range.low,
                     high_hz: range.high,
                     width: canvasRef.current?.width || 1000
@@ -48,7 +54,7 @@ export const Spectrum: React.FC = () => {
         }
     };
     fetchSpectrum();
-  }, [loaded, position, range]);
+  }, [loaded, position, range.low, range.high, fft_window]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -64,8 +70,7 @@ export const Spectrum: React.FC = () => {
 
     // Draw piano-key grid
     const firstMidi = Math.round(freqToMidi(range.low));
-    const visibleKeys = 37; // Default from Qt version
-    for (let midi = firstMidi; midi < firstMidi + visibleKeys; midi++) {
+    for (let midi = firstMidi; midi < firstMidi + spectrum_keys; midi++) {
         const hz = midiToFreq(midi);
         const x = Math.log2(hz / range.low) * xScale;
         if (x < 0 || x > w) continue;
@@ -90,7 +95,6 @@ export const Spectrum: React.FC = () => {
         ctx.strokeStyle = theme.spectrum;
         ctx.lineWidth = 1;
 
-        // Simple normalization for visualization
         const minDb = Math.min(...data.db);
         const maxDb = Math.max(...data.db);
         const spanDb = Math.max(maxDb - minDb, 1e-3);
@@ -104,8 +108,9 @@ export const Spectrum: React.FC = () => {
         });
         ctx.stroke();
     }
-  }, [data, range, theme]);
+  }, [data, range.low, range.high, theme, spectrum_keys]);
 
+  const lastToneRef = useRef<number>(0);
   const handleMouseDown = (e: React.MouseEvent) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -114,7 +119,13 @@ export const Spectrum: React.FC = () => {
         const x = clientX - rect.left;
         const spanLog = Math.log2(range.high / range.low);
         const hz = range.low * Math.pow(2, (x * spanLog / rect.width));
-        axios.post(`http://127.0.0.1:8000/playback/tone`, { freq: hz, action: 'start' });
+
+        // Throttle to 50ms
+        const now = Date.now();
+        if (now - lastToneRef.current > 50) {
+            axios.post(`http://127.0.0.1:8000/playback/tone`, { freq: hz, action: 'start' });
+            lastToneRef.current = now;
+        }
     };
 
     playTone(e.clientX);
