@@ -1,16 +1,27 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-
 a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('config', 'config'), ('gui\\themes', 'gui\\themes'), ('resources', 'resources')],
-    hiddenimports=[],
-    hookspath=['.'],
+    datas=[
+        ('config', 'config'),
+        ('gui/themes', 'gui/themes'),
+        ('resources', 'resources'),
+        ('frontend/dist', 'frontend/dist')
+    ],
+    hiddenimports=[
+        'uvicorn.logging',
+        'uvicorn.protocols.http.auto',
+        'uvicorn.protocols.websockets.auto',
+        'uvicorn.lifespan.on',
+        'fastapi',
+        'websockets.legacy.server'
+    ],
+    hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=['PySide6', 'PyQt6', 'PyQt5'],
     noarchive=False,
     optimize=0,
 )
