@@ -9,20 +9,28 @@ We are currently in the process of migrating the graphical user interface from P
 
 ---
 
-## Current (Qt-based) Implementation
+## Modern (React + FastAPI) Implementation
 
-### Run the app
-```bash
-python -m wavoscope 
-```
+### Development
+1. **Frontend:**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+2. **Backend:**
+   ```bash
+   python main.py
+   ```
 
 ### Get requirements
 ```bash
 pip install -r requirements.txt
+pip install fastapi uvicorn websockets pywebview
 ```
 
 ### Build
-To create a standalone executable using Nuitka:
+To create a standalone executable using Nuitka (without Qt overhead):
 ```bash
-python -m nuitka --standalone --enable-plugin=pyside6 --include-package-data=wavoscope --include-qt-plugins=sensible,styles,imageformats --include-data-dir=resources=resources --noinclude-data-files="**/.git/**" --noinclude-data-files="**/venv/**" --noinclude-data-files="**/__pycache__/**" --noinclude-data-files="**/requirements.txt" --noinclude-data-files="**/Wavoscope.spec" --noinclude-data-files="**/README.md" --nofollow-import-to=pytest --windows-icon-from-ico=resources/icons/app-icon.png --output-dir=dist-nuitka --assume-yes-for-downloads --jobs=0 main.py
+python -m nuitka --standalone --include-package-data=wavoscope --include-data-dir=frontend/dist=frontend/dist --include-data-dir=resources=resources --noinclude-data-files="**/.git/**" --noinclude-data-files="**/venv/**" --noinclude-data-files="**/__pycache__/**" --windows-icon-from-ico=resources/icons/app-icon.png --output-dir=dist main.py
 ```

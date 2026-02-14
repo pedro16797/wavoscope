@@ -16,22 +16,19 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import List, Dict, Any
-
-from PySide6.QtCore import QObject, Signal
+from typing import List, Dict, Any, Callable
 
 from wavoscope.audio.audio_backend import AudioBackend
 from wavoscope.audio.waveform_cache import WaveformCache
 
 
-class Project(QObject):
-    # UI-facing signals
-    flag_added = Signal(float)
-    flag_removed = Signal(int)
-
+class Project:
     # ---------- construction / persistence ----------
     def __init__(self, audio_path: Path) -> None:
-        super().__init__()
+        self._callbacks: Dict[str, List[Callable]] = {
+            "flag_added": [],
+            "flag_removed": [],
+        }
         self.audio_path: Path = audio_path
         self.sidecar_path: Path = audio_path.with_suffix(audio_path.suffix + "oscope")
 
@@ -94,7 +91,7 @@ class Project(QObject):
         self._recompute_auto_names()
         self._clear_backend_cache()
         self.mark_dirty()
-        self.flag_added.emit(time)
+        self._emit("flag_added", time)
 
     def remove_flag(self, idx: int) -> None:
         """Delete flag by index."""
@@ -102,7 +99,7 @@ class Project(QObject):
         self._recompute_auto_names()
         self._clear_backend_cache()
         self.mark_dirty()
-        self.flag_removed.emit(idx)
+        self._emit("flag_removed", idx)
 
     def move_flag(self, idx: int, new_time: float) -> None:
         """Change flag time while enforcing ordering."""
@@ -239,4 +236,12 @@ class Project(QObject):
         self._recompute_auto_names()
         self._clear_backend_cache()
         self.mark_dirty()
-        self.flag_added.emit(left["t"])
+        self._emit("flag_added", left["t"])
+
+    def register_callback(self, event: str, callback: Callable) -> None:
+        if event in self._callbacks:
+            self._callbacks[event].append(callback)
+
+    def _emit(self, event: str, *args, **kwargs) -> None:
+        for callback in self._callbacks.get(event, []):
+            callback(*args, **kwargs)

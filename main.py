@@ -1,34 +1,44 @@
 import sys
+import os
+import threading
+import uvicorn
+import webview
 import argparse
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication
-from wavoscope.gui.main_window import MainWindow
-from wavoscope.gui.colours import load_palette
-from PySide6.QtGui import QPalette, QColor
+from pathlib import Path
+
+# Fix imports for wavoscope package
+root_path = Path(__file__).resolve().parent
+sys.path.append(str(root_path))
+
+def run_server():
+    from backend.main import app
+    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="error")
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--debug-latency", action="store_true",
-                        help="Show playback-line latency overlay")
+    parser.add_argument("--debug", action="store_true", help="Run in debug mode")
     cli_args, _ = parser.parse_known_args()
 
-    app = QApplication(sys.argv)
-    palette = load_palette("dark")
-    qpal = QPalette()
-    qpal.setColor(QPalette.Window, QColor(palette["background"]))
-    qpal.setColor(QPalette.WindowText, QColor(palette["text"]))
-    qpal.setColor(QPalette.Base, QColor(palette["background"]))
-    qpal.setColor(QPalette.AlternateBase, QColor(palette["background"]))
-    qpal.setColor(QPalette.Text, QColor(palette["text"]))
-    qpal.setColor(QPalette.Button, QColor(palette["background"]))
-    qpal.setColor(QPalette.ButtonText, QColor(palette["text"]))
-    app.setPalette(qpal)
-
-    app.setApplicationName("Wavoscope")
-    window = MainWindow(debug_latency=cli_args.debug_latency)
-    app.setWindowIcon(QIcon(f"./wavoscope/resources/icons/app-icon.svg"))
-    window.show()
-    sys.exit(app.exec())
+    # Start FastAPI in a background thread
+    server_thread = threading.Thread(target=run_server, daemon=True)
+    server_thread.start()
     
+    # Create and start the webview
+    # In production, we might point to the built index.html,
+    # but for now we point to the dev server or local FastAPI server
+    url = 'http://127.0.0.1:8000'
+
+    window = webview.create_window(
+        'Wavoscope',
+        url,
+        width=1200,
+        height=750,
+        min_size=(800, 600),
+        background_color='#1e1e1e'
+    )
+
+    # We can use window.toggle_fullscreen() etc. if needed
+    webview.start(debug=cli_args.debug)
+
 if __name__ == "__main__":
     main()

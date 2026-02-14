@@ -5,31 +5,27 @@ from __future__ import annotations
 
 import threading
 from pathlib import Path
-from typing import Callable, List, Tuple, Any
+from typing import Callable, List, Tuple, Any, Dict
 
 import numpy as np
-import sounddevice as sd
+try:
+    import sounddevice as sd
+except OSError:
+    sd = None
 import soundfile as sf
-from PySide6.QtCore import Signal, QObject
 from scipy.signal import ellip, sosfilt
 
 from wavoscope.audio.ringbuffer import RingBuffer
 from wavoscope.audio.synth import SimpleSynth
 
 
-class AudioBackend(QObject):
+class AudioBackend:
     """
     Thread-safe audio backend.
-
-    Emits
-    -----
-    finished : Signal()   – playback reached EOF
     """
 
-    finished = Signal()
-
     def __init__(self) -> None:
-        super().__init__()
+        self._callbacks: Dict[str, List[Callable]] = {"finished": []}
 
         self._data: np.ndarray | None = None          # mono float32
         self._sr: int = 44_100
@@ -118,6 +114,10 @@ class AudioBackend(QObject):
     # ---------- internal ----------
     def _start_stream(self) -> None:
         """Create (or re-create) the PortAudio output stream."""
+        if sd is None:
+            print("[AudioBackend] sounddevice/PortAudio not available. Audio output disabled.")
+            return
+
         if self._stream is not None:
             self._stream.stop()
             self._stream.close()
@@ -131,7 +131,15 @@ class AudioBackend(QObject):
         self._stream.start()
 
     def _on_finished(self) -> None:
-        self.finished.emit()
+        self._emit("finished")
+
+    def register_callback(self, event: str, callback: Callable) -> None:
+        if event in self._callbacks:
+            self._callbacks[event].append(callback)
+
+    def _emit(self, event: str, *args, **kwargs) -> None:
+        for callback in self._callbacks.get(event, []):
+            callback(*args, **kwargs)
 
     # ---------- real-time callback ----------
     def _audio_callback(
@@ -168,7 +176,7 @@ class AudioBackend(QObject):
             chunk = np.concatenate([chunk, pad])
             self._cursor = 0.0
             self._playing = False
-            self.finished.emit()
+            self._emit("finished")
         elif chunk.size > needed:
             chunk = chunk[:needed]
             padding = frames - needed
