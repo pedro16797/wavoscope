@@ -248,12 +248,29 @@ async def browse_file():
 @app.get("/themes")
 async def get_themes():
     themes_dir = root_path / "resources" / "themes"
-    themes = {}
+    raw_themes = {}
     for theme_file in themes_dir.glob("*.json"):
-        theme_name = theme_file.stem
         with open(theme_file, "r") as f:
-            themes[theme_name] = json.load(f)
-    return themes
+            raw_themes[theme_file.stem] = json.load(f)
+
+    resolved_themes = {}
+    def resolve(name, visited=None):
+        if visited is None: visited = set()
+        if name in visited: return {} # Circular
+        visited.add(name)
+
+        theme = raw_themes.get(name, {})
+        if "inherits" in theme:
+            parent = resolve(theme["inherits"], visited)
+            merged = parent.copy()
+            merged.update(theme)
+            return merged
+        return theme
+
+    for name in raw_themes:
+        resolved_themes[name] = resolve(name)
+
+    return resolved_themes
 
 class AppConfig(BaseModel):
     theme: Optional[str] = None

@@ -23,13 +23,15 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-surface border border-grid rounded-lg shadow-2xl w-full max-w-md overflow-hidden text-text flex flex-col max-h-[80vh]" onClick={e => e.stopPropagation()}>
-        <div className="p-4 border-b border-grid font-bold text-sm uppercase tracking-widest opacity-80">Settings</div>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-surface border border-grid rounded-lg shadow-2xl w-full max-w-md overflow-hidden text-text flex flex-col max-h-[80vh] isolation-auto"
+           style={{ backgroundColor: 'var(--color-surface)' }}
+           onClick={e => e.stopPropagation()}>
+        <div className="p-4 border-b border-grid font-bold text-sm uppercase tracking-widest opacity-80" style={{ backgroundColor: 'var(--color-surface)' }}>Settings</div>
 
-        <div className="flex border-b border-grid bg-background/30">
+        <div className="flex border-b border-grid" style={{ backgroundColor: 'var(--color-surface)' }}>
             <button onClick={() => setActiveTab('global')}
-                    className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'global' ? 'bg-white/5 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
+                    className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'global' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
                 Global
             </button>
             <button onClick={() => setActiveTab('keybinds')}
@@ -38,7 +40,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
             </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6" style={{ backgroundColor: 'var(--color-surface)' }}>
             {activeTab === 'global' ? (
                 <>
                     <div className="space-y-2">
@@ -86,8 +88,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
             )}
         </div>
 
-        <div className="p-4 bg-background/50 border-t border-grid flex items-center justify-end gap-2">
-            <button onClick={onClose} className="px-4 py-2 rounded hover:bg-white/5 text-xs transition-colors font-bold">Cancel</button>
+        <div className="p-4 border-t border-grid flex items-center justify-end gap-2" style={{ backgroundColor: 'var(--color-surface)' }}>
+            <button onClick={onClose} className="px-4 py-2 rounded hover:bg-white/10 text-xs transition-colors font-bold">Cancel</button>
             <button onClick={handleSave} className="px-4 py-2 rounded bg-accent text-background text-xs font-bold transition-colors shadow-lg active:scale-95">Apply Settings</button>
         </div>
       </div>
