@@ -3,7 +3,7 @@ import useStore from '../store'
 
 const Timeline = () => {
   const canvasRef = useRef(null)
-  const { viewport, flags, status } = useStore()
+  const { viewport, flags, status, seek, addFlag } = useStore()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -26,8 +26,11 @@ const Timeline = () => {
     ctx.font = '10px Arial'
 
     // Draw time markers
-    const step = Math.max(1, Math.floor(duration / 10))
-    for (let t = Math.floor(viewport.start); t <= viewport.end; t += step) {
+    const stepCandidates = [0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60]
+    let step = stepCandidates.find(s => (duration / s) <= 15) || 60
+
+    const firstMarker = Math.ceil(viewport.start / step) * step
+    for (let t = firstMarker; t <= viewport.end; t += step) {
       const x = ((t - viewport.start) / duration) * width
       ctx.beginPath()
       ctx.moveTo(x, 0)
@@ -35,7 +38,7 @@ const Timeline = () => {
       ctx.stroke()
 
       const minutes = Math.floor(t / 60)
-      const seconds = Math.floor(t % 60)
+      const seconds = (t % 60).toFixed(step < 1 ? 1 : 0)
       ctx.fillText(`${minutes}:${seconds.toString().padStart(2, '0')}`, x + 2, 12)
     }
 
@@ -67,16 +70,45 @@ const Timeline = () => {
       }
   }, [viewport, flags, status])
 
+  const getTimeAtX = (x) => {
+    const canvas = canvasRef.current
+    if (!canvas) return 0
+    return viewport.start + (x / canvas.width) * (viewport.end - viewport.start)
+  }
+
+  const handleClick = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    seek(getTimeAtX(x))
+  }
+
+  const handleDoubleClick = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const t = getTimeAtX(x)
+    addFlag({
+      t,
+      type: 'rhythm',
+      subdivision: 1,
+      name: '',
+      is_section_start: false,
+      shaded_subdivisions: false
+    })
+  }
+
   return (
     <canvas
       ref={canvasRef}
       width={1000}
       height={30}
+      onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
       style={{
         width: '100%',
         height: '30px',
         backgroundColor: 'var(--surface)',
-        borderBottom: '1px solid var(--grid)'
+        borderBottom: '1px solid var(--grid)',
+        cursor: 'crosshair'
       }}
     />
   )

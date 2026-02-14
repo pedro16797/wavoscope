@@ -35,7 +35,6 @@ const useStore = create((set, get) => ({
       if (response.ok) {
         const data = await response.json()
         set({ status: data })
-        // If duration is loaded and viewport isn't set, set it
         if (data.duration > 0 && get().viewport.end === 10 && get().viewport.start === 0) {
             set({ viewport: { start: 0, end: data.duration } })
         }
@@ -137,6 +136,16 @@ const useStore = create((set, get) => ({
 
   setVolume: async (volume) => {
     await fetch(`http://localhost:8000/set_volume?volume=${volume}`, { method: 'POST' })
+    get().fetchStatus()
+  },
+
+  setClickGain: async (gain) => {
+    await fetch(`http://localhost:8000/set_click_gain?gain=${gain}`, { method: 'POST' })
+    get().fetchStatus()
+  },
+
+  setMetronome: async (enabled) => {
+    await fetch(`http://localhost:8000/set_metronome?enabled=${enabled}`, { method: 'POST' })
     get().fetchStatus()
   },
 

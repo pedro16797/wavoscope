@@ -3,7 +3,7 @@ import useStore from '../store'
 
 const Waveform = () => {
   const canvasRef = useRef(null)
-  const { waveform, fetchWaveform, viewport, status, seek } = useStore()
+  const { waveform, fetchWaveform, viewport, setViewport, status, seek } = useStore()
 
   useEffect(() => {
     if (viewport.start !== undefined && viewport.end !== undefined) {
@@ -59,17 +59,60 @@ const Waveform = () => {
     seek(clickedTime)
   }
 
+  const handleWheel = (e) => {
+    if (status?.duration === undefined) return
+    e.preventDefault()
+
+    const canvas = canvasRef.current
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const mouseTime = viewport.start + (x / canvas.width) * (viewport.end - viewport.start)
+
+    let { start, end } = viewport
+    const duration = end - start
+
+    if (e.shiftKey) {
+        // Scroll
+        const delta = (e.deltaY / 100) * (duration / 5)
+        start = Math.max(0, Math.min(start + delta, status.duration - duration))
+        end = start + duration
+    } else {
+        // Zoom
+        const zoomFactor = e.deltaY > 0 ? 1.2 : 0.8
+        const newDuration = Math.max(0.1, Math.min(duration * zoomFactor, status.duration))
+
+        // Keep mouseTime at the same relative position
+        const ratio = (mouseTime - start) / duration
+        start = mouseTime - ratio * newDuration
+        end = start + newDuration
+
+        // Clamp
+        if (start < 0) {
+            start = 0
+            end = newDuration
+        }
+        if (end > status.duration) {
+            end = status.duration
+            start = Math.max(0, end - newDuration)
+        }
+    }
+
+    setViewport(start, end)
+  }
+
   return (
     <canvas
       ref={canvasRef}
       width={1000}
       height={200}
       onClick={handleClick}
+      onWheel={handleWheel}
       style={{
         width: '100%',
         height: '200px',
         backgroundColor: 'var(--background)',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        touchAction: 'none'
       }}
     />
   )

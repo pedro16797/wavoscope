@@ -1,5 +1,17 @@
 import sys
+from pathlib import Path
 from unittest.mock import MagicMock
+import types
+
+# Robust way to ensure 'wavoscope' is importable regardless of structure
+root = Path(__file__).resolve().parent.parent
+if str(root) not in sys.path:
+    sys.path.insert(0, str(root))
+
+if "wavoscope" not in sys.modules:
+    wavoscope = types.ModuleType("wavoscope")
+    wavoscope.__path__ = [str(root)]
+    sys.modules["wavoscope"] = wavoscope
 
 # Mock sounddevice and soundfile before they are imported by wavoscope
 sys.modules['sounddevice'] = MagicMock()

@@ -8,7 +8,10 @@ from pathlib import Path
 from typing import Callable, List, Tuple, Any
 
 import numpy as np
-import sounddevice as sd
+try:
+    import sounddevice as sd
+except OSError:
+    sd = None
 import soundfile as sf
 from scipy.signal import ellip, sosfilt
 
@@ -114,14 +117,22 @@ class AudioBackend:
         if self._stream is not None:
             self._stream.stop()
             self._stream.close()
+            self._stream = None
 
-        self._stream = sd.OutputStream(
-            samplerate=self._sr,
-            channels=1,
-            callback=self._audio_callback,
-            finished_callback=self._on_finished,
-        )
-        self._stream.start()
+        if sd is None:
+            print("[AudioBackend] sounddevice not available, audio output disabled.")
+            return
+
+        try:
+            self._stream = sd.OutputStream(
+                samplerate=self._sr,
+                channels=1,
+                callback=self._audio_callback,
+                finished_callback=self._on_finished,
+            )
+            self._stream.start()
+        except Exception as e:
+            print(f"[AudioBackend] Failed to start stream: {e}")
 
     def on_finished(self, callback: Callable[[], None]) -> None:
         """Register a callback for when playback reaches EOF."""

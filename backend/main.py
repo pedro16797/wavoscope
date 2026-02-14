@@ -50,6 +50,8 @@ class ProjectStatus(BaseModel):
     playing: bool
     speed: float
     volume: float
+    click_gain: float
+    metronome_enabled: bool
 
 class Flag(BaseModel):
     t: float
@@ -98,7 +100,9 @@ async def get_status():
         duration=current_project.duration,
         playing=current_project.backend._playing,
         speed=current_project.backend._speed,
-        volume=current_project.backend._volume
+        volume=current_project.backend._volume,
+        click_gain=current_project.backend._click_gain,
+        metronome_enabled=current_project.backend._metronome_enabled
     )
 
 @app.post("/play")
@@ -136,6 +140,20 @@ async def set_volume(volume: float):
     current_project.set_volume(volume)
     return {"message": f"Volume set to {volume}"}
 
+@app.post("/set_click_gain")
+async def set_click_gain(gain: float):
+    if not current_project:
+        raise HTTPException(status_code=404, detail="No project loaded")
+    current_project.backend.set_click_gain(gain)
+    return {"message": f"Click gain set to {gain}"}
+
+@app.post("/set_metronome")
+async def set_metronome(enabled: bool):
+    if not current_project:
+        raise HTTPException(status_code=404, detail="No project loaded")
+    current_project.backend.set_metronome_enabled(enabled)
+    return {"message": f"Metronome set to {enabled}"}
+
 @app.websocket("/ws/status")
 async def websocket_status(websocket: WebSocket):
     await websocket.accept()
@@ -148,7 +166,9 @@ async def websocket_status(websocket: WebSocket):
                     duration=current_project.duration,
                     playing=current_project.backend._playing,
                     speed=current_project.backend._speed,
-                    volume=current_project.backend._volume
+                    volume=current_project.backend._volume,
+                    click_gain=current_project.backend._click_gain,
+                    metronome_enabled=current_project.backend._metronome_enabled
                 )
                 await websocket.send_json(status.model_dump())
             await asyncio.sleep(0.05) # 20 Hz updates
