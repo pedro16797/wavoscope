@@ -11,7 +11,33 @@ We are currently in the process of migrating the graphical user interface from P
 
 ## Modern (React + FastAPI) Implementation
 
-### Development
+### Run the app
+The easiest way to run Wavoscope is using the provided scripts, which handle virtual environment setup and dependencies automatically:
+
+**Windows:**
+```batch
+run.bat
+```
+
+**Linux/macOS:**
+```bash
+./run.sh
+```
+
+### Build
+To create a standalone executable:
+
+**Windows:**
+```batch
+build.bat
+```
+
+**Linux/macOS:**
+```bash
+./build.sh
+```
+
+### Manual Development Setup
 1. **Frontend:**
    ```bash
    cd frontend
@@ -20,17 +46,6 @@ We are currently in the process of migrating the graphical user interface from P
    ```
 2. **Backend:**
    ```bash
+   pip install -r requirements.txt
    python main.py
    ```
-
-### Get requirements
-```bash
-pip install -r requirements.txt
-pip install fastapi uvicorn websockets pywebview
-```
-
-### Build
-To create a standalone executable using Nuitka (without Qt overhead):
-```bash
-python -m nuitka --standalone --include-package-data=wavoscope --include-data-dir=frontend/dist=frontend/dist --include-data-dir=resources=resources --noinclude-data-files="**/.git/**" --noinclude-data-files="**/venv/**" --noinclude-data-files="**/__pycache__/**" --windows-icon-from-ico=resources/icons/app-icon.png --output-dir=dist main.py
-```
