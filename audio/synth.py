@@ -6,7 +6,10 @@ from __future__ import annotations
 from typing import Any, Dict
 
 import numpy as np
-import sounddevice as sd
+try:
+    import sounddevice as sd
+except OSError:
+    sd = None
 
 
 class SimpleSynth:
@@ -20,12 +23,19 @@ class SimpleSynth:
         self.sr: int = sr
         self._active: Dict[float, float] = {}  # freq -> current phase (seconds)
 
-        self._stream = sd.OutputStream(
-            samplerate=self.sr,
-            channels=1,
-            callback=self._callback,
-        )
-        self._stream.start()
+        if sd is not None:
+            try:
+                self._stream = sd.OutputStream(
+                    samplerate=self.sr,
+                    channels=1,
+                    callback=self._callback,
+                )
+                self._stream.start()
+            except Exception as e:
+                print(f"[SimpleSynth] Failed to start stream: {e}")
+                self._stream = None
+        else:
+            self._stream = None
 
     # ---------- public ----------
     def start_tone(self, freq: float) -> None:

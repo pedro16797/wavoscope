@@ -1,34 +1,29 @@
 import sys
-import argparse
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication
-from wavoscope.gui.main_window import MainWindow
-from wavoscope.gui.colours import load_palette
-from PySide6.QtGui import QPalette, QColor
+import os
+import threading
+import webview
+import uvicorn
+import time
+from backend.main import app as fastapi_app
+
+def start_backend():
+    uvicorn.run(fastapi_app, host="127.0.0.1", port=8000, log_level="error")
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--debug-latency", action="store_true",
-                        help="Show playback-line latency overlay")
-    cli_args, _ = parser.parse_known_args()
+    # Start backend in a separate thread
+    t = threading.Thread(target=start_backend, daemon=True)
+    t.start()
 
-    app = QApplication(sys.argv)
-    palette = load_palette("dark")
-    qpal = QPalette()
-    qpal.setColor(QPalette.Window, QColor(palette["background"]))
-    qpal.setColor(QPalette.WindowText, QColor(palette["text"]))
-    qpal.setColor(QPalette.Base, QColor(palette["background"]))
-    qpal.setColor(QPalette.AlternateBase, QColor(palette["background"]))
-    qpal.setColor(QPalette.Text, QColor(palette["text"]))
-    qpal.setColor(QPalette.Button, QColor(palette["background"]))
-    qpal.setColor(QPalette.ButtonText, QColor(palette["text"]))
-    app.setPalette(qpal)
+    # Wait for backend to start
+    time.sleep(1)
 
-    app.setApplicationName("Wavoscope")
-    window = MainWindow(debug_latency=cli_args.debug_latency)
-    app.setWindowIcon(QIcon(f"./wavoscope/resources/icons/app-icon.svg"))
-    window.show()
-    sys.exit(app.exec())
+    # Launch pywebview
+    # In production, we would point to the built index.html or a local server
+    # For now, let's assume we serve the frontend from FastAPI or just point to the dev server if it was running.
+    # Actually, let's serve the frontend dist from FastAPI in the next step.
+
+    webview.create_window('Wavoscope', 'http://127.0.0.1:8000/index.html')
+    webview.start()
     
 if __name__ == "__main__":
     main()

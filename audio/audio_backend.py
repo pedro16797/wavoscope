@@ -5,31 +5,29 @@ from __future__ import annotations
 
 import threading
 from pathlib import Path
-from typing import Callable, List, Tuple, Any
+from typing import Callable, List, Tuple, Any, Dict
 
 import numpy as np
-import sounddevice as sd
+try:
+    import sounddevice as sd
+except OSError:
+    sd = None
 import soundfile as sf
-from PySide6.QtCore import Signal, QObject
 from scipy.signal import ellip, sosfilt
 
 from wavoscope.audio.ringbuffer import RingBuffer
 from wavoscope.audio.synth import SimpleSynth
 
 
-class AudioBackend(QObject):
+class AudioBackend:
     """
     Thread-safe audio backend.
-
-    Emits
-    -----
-    finished : Signal()   – playback reached EOF
     """
 
-    finished = Signal()
-
     def __init__(self) -> None:
-        super().__init__()
+        self._callbacks: Dict[str, List[Callable]] = {
+            "finished": []
+        }
 
         self._data: np.ndarray | None = None          # mono float32
         self._sr: int = 44_100
@@ -118,20 +116,33 @@ class AudioBackend(QObject):
     # ---------- internal ----------
     def _start_stream(self) -> None:
         """Create (or re-create) the PortAudio output stream."""
+        if sd is None:
+            print("[AudioBackend] sounddevice not available, skipping stream start")
+            return
+
         if self._stream is not None:
             self._stream.stop()
             self._stream.close()
 
-        self._stream = sd.OutputStream(
-            samplerate=self._sr,
-            channels=1,
-            callback=self._audio_callback,
-            finished_callback=self._on_finished,
-        )
-        self._stream.start()
+        try:
+            self._stream = sd.OutputStream(
+                samplerate=self._sr,
+                channels=1,
+                callback=self._audio_callback,
+                finished_callback=self._on_finished,
+            )
+            self._stream.start()
+        except Exception as e:
+            print(f"[AudioBackend] Failed to start stream: {e}")
+            self._stream = None
 
     def _on_finished(self) -> None:
-        self.finished.emit()
+        for cb in self._callbacks["finished"]:
+            cb()
+
+    def register_callback(self, name: str, callback: Callable) -> None:
+        if name in self._callbacks:
+            self._callbacks[name].append(callback)
 
     # ---------- real-time callback ----------
     def _audio_callback(
@@ -168,7 +179,7 @@ class AudioBackend(QObject):
             chunk = np.concatenate([chunk, pad])
             self._cursor = 0.0
             self._playing = False
-            self.finished.emit()
+            self._on_finished()
         elif chunk.size > needed:
             chunk = chunk[:needed]
             padding = frames - needed
