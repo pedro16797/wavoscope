@@ -30,7 +30,7 @@ if exist ".venv\Scripts\activate.bat" (
 
 REM Ensure requirements are installed
 echo Installing Python dependencies...
-pip install -r requirements.txt
+pip install -q -r requirements.txt
 
 REM Build Frontend
 echo Building React frontend...

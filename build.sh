@@ -21,7 +21,7 @@ fi
 
 # Ensure requirements are installed
 echo "Installing Python dependencies..."
-pip install -r requirements.txt
+pip install -q -r requirements.txt
 
 # Build Frontend
 echo "Building React frontend..."

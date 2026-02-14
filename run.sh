@@ -27,7 +27,7 @@ fi
 
 # Ensure requirements are installed and up to date
 echo "Checking dependencies..."
-pip install -r requirements.txt
+pip install -q -r requirements.txt
 
 # Build frontend if missing or outdated
 if [ ! -d "frontend/dist" ]; then
