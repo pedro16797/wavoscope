@@ -5,9 +5,15 @@ import { useKeyboardShortcuts } from './store/useKeyboardShortcuts';
 import { PlaybackBar } from './components/PlaybackBar';
 import { WaveformView } from './components/WaveformView';
 import { Spectrum } from './components/Spectrum';
+import { SettingsDialog } from './components/SettingsDialog';
+import { FlagDialog } from './components/FlagDialog';
 
 const App: React.FC = () => {
-  const { fetchThemes, fetchStatus, updatePosition, setPlaying, currentTheme, themes } = useStore();
+  const {
+    fetchThemes, fetchStatus, fetchConfig, updatePosition, setPlaying,
+    currentTheme, themes, showSettings, setShowSettings,
+    editingFlagIdx, setEditingFlagIdx, flags
+  } = useStore();
   const theme = themes[currentTheme] || {};
 
   useKeyboardShortcuts();
@@ -15,6 +21,7 @@ const App: React.FC = () => {
   useEffect(() => {
     fetchThemes();
     fetchStatus();
+    fetchConfig();
 
     const ws = new WebSocket('ws://127.0.0.1:8000/ws');
     ws.onmessage = (event) => {
@@ -23,7 +30,7 @@ const App: React.FC = () => {
         setPlaying(data.playing);
     };
     return () => ws.close();
-  }, [fetchThemes, fetchStatus, updatePosition, setPlaying]);
+  }, [fetchThemes, fetchStatus, fetchConfig, updatePosition, setPlaying]);
 
   useEffect(() => {
     if (theme) {
@@ -58,6 +65,11 @@ const App: React.FC = () => {
             </Panel>
           </PanelGroup>
       </div>
+
+      {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
+      {editingFlagIdx !== null && flags[editingFlagIdx] && (
+        <FlagDialog idx={editingFlagIdx} flag={flags[editingFlagIdx]} onClose={() => setEditingFlagIdx(null)} />
+      )}
     </div>
   );
 };

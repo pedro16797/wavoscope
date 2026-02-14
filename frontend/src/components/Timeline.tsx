@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
-import { FlagDialog } from './FlagDialog';
 
 interface TimelineProps {
   offset: number;
@@ -10,9 +9,8 @@ interface TimelineProps {
 export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { loaded, duration, currentTheme, themes, flags, addFlag, moveFlag } = useStore();
+  const { loaded, duration, currentTheme, themes, flags, addFlag, moveFlag, setEditingFlagIdx } = useStore();
   const [dragIdx, setDragIdx] = useState<number | null>(null);
-  const [editingIdx, setEditingIdx] = useState<number | null>(null);
 
   const theme = themes[currentTheme] || {};
 
@@ -139,21 +137,16 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     });
 
     if (foundIdx !== -1) {
-        setEditingIdx(foundIdx);
+        setEditingFlagIdx(foundIdx);
     }
   };
 
   return (
-    <>
-        <div ref={containerRef} className="h-10 w-full border-b select-none cursor-crosshair"
-            style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
-            onMouseDown={handleMouseDown}
-            onContextMenu={handleContextMenu}>
-            <canvas ref={canvasRef} className="w-full h-full block" />
-        </div>
-        {editingIdx !== null && (
-            <FlagDialog idx={editingIdx} flag={flags[editingIdx]} onClose={() => setEditingIdx(null)} />
-        )}
-    </>
+    <div ref={containerRef} className="h-10 w-full border-b select-none cursor-crosshair"
+        style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
+        onMouseDown={handleMouseDown}
+        onContextMenu={handleContextMenu}>
+        <canvas ref={canvasRef} className="w-full h-full block" />
+    </div>
   );
 };

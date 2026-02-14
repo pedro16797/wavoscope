@@ -186,6 +186,17 @@ async def move_flag(move: FlagMove):
     project.move_flag(move.idx, move.t)
     return {"status": "ok", "flags": project.flags}
 
+class FlagInsertN(BaseModel):
+    left_idx: int
+    count: int
+
+@app.post("/project/flags/insert_n")
+async def insert_n_flags(data: FlagInsertN):
+    if not project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    project.insert_equi_spaced_flags(data.left_idx, data.left_idx + 1, data.count)
+    return {"status": "ok", "flags": project.flags}
+
 @app.post("/project/save")
 async def save_project():
     if not project:

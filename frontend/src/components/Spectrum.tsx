@@ -39,7 +39,7 @@ export const Spectrum: React.FC = () => {
     if (!loaded) return;
     const fetchSpectrum = async () => {
         try {
-            const res = await axios.get(`http://127.0.0.1:8000/audio/spectrum`, {
+            const res = await axios.get(`/audio/spectrum`, {
                 params: {
                     position,
                     window: fft_window,
@@ -68,7 +68,6 @@ export const Spectrum: React.FC = () => {
     const spanLog = Math.max(Math.log2(range.high / range.low), 1e-3);
     const xScale = w / spanLog;
 
-    // Draw piano-key grid
     const firstMidi = Math.round(freqToMidi(range.low));
     for (let midi = firstMidi; midi < firstMidi + spectrum_keys; midi++) {
         const hz = midiToFreq(midi);
@@ -89,7 +88,6 @@ export const Spectrum: React.FC = () => {
         ctx.fillText(`${NOTE_NAMES[midi % 12]}${Math.floor(midi / 12) - 1}`, x + 4, 12);
     }
 
-    // Draw spectrum line
     if (data.freqs.length > 0) {
         ctx.globalAlpha = 1;
         ctx.strokeStyle = theme.spectrum;
@@ -120,10 +118,9 @@ export const Spectrum: React.FC = () => {
         const spanLog = Math.log2(range.high / range.low);
         const hz = range.low * Math.pow(2, (x * spanLog / rect.width));
 
-        // Throttle to 50ms
         const now = Date.now();
         if (now - lastToneRef.current > 50) {
-            axios.post(`http://127.0.0.1:8000/playback/tone`, { freq: hz, action: 'start' });
+            axios.post(`/playback/tone`, { freq: hz, action: 'start' });
             lastToneRef.current = now;
         }
     };
@@ -137,7 +134,7 @@ export const Spectrum: React.FC = () => {
     const onMouseUp = () => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
-        axios.post(`http://127.0.0.1:8000/playback/tone`, { action: 'stop' });
+        axios.post(`/playback/tone`, { action: 'stop' });
     };
 
     window.addEventListener('mousemove', onMouseMove);

@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useStore } from '../store/useStore';
 import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown } from 'lucide-react';
-import { SettingsDialog } from './SettingsDialog';
 
 export const PlaybackBar: React.FC = () => {
   const {
     loaded, position, duration, playing, speed, volume, filename,
     controlPlayback, browseFile, currentTheme, themes,
     metronome_enabled, updateMetronome, fft_window, setFFTWindow,
-    octave_shift, setOctaveShift
+    octave_shift, setOctaveShift, setShowSettings
   } = useStore();
 
-  const [showSettings, setShowSettings] = useState(false);
   const theme = themes[currentTheme] || {};
 
   const formatTime = (sec: number) => {
@@ -104,8 +102,6 @@ export const PlaybackBar: React.FC = () => {
             <Settings size={18} />
         </button>
       </div>
-
-      {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
     </div>
   );
 };

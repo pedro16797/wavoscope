@@ -35,7 +35,7 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
         try {
             const width = canvasRef.current?.width || 1000;
             const span = width / zoom;
-            const res = await axios.get(`http://127.0.0.1:8000/audio/waveform`, {
+            const res = await axios.get(`/audio/waveform`, {
                 params: {
                     start: offset,
                     end: offset + span,

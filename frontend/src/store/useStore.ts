@@ -31,6 +31,10 @@ interface AppState {
   fft_window: number;
   octave_shift: number;
 
+  // UI State
+  showSettings: boolean;
+  editingFlagIdx: number | null;
+
   fetchStatus: () => Promise<void>;
   fetchThemes: () => Promise<void>;
   fetchConfig: () => Promise<void>;
@@ -47,6 +51,9 @@ interface AppState {
   saveProject: () => Promise<void>;
   setFFTWindow: (sec: number) => void;
   setOctaveShift: (shift: number) => void;
+
+  setShowSettings: (show: boolean) => void;
+  setEditingFlagIdx: (idx: number | null) => void;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -66,6 +73,9 @@ export const useStore = create<AppState>((set, get) => ({
   spectrum_keys: 37,
   fft_window: 0.3,
   octave_shift: 0,
+
+  showSettings: false,
+  editingFlagIdx: null,
 
   fetchStatus: async () => {
     try {
@@ -194,5 +204,8 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   setFFTWindow: (sec) => set({ fft_window: sec }),
-  setOctaveShift: (shift) => set({ octave_shift: shift })
+  setOctaveShift: (shift) => set({ octave_shift: shift }),
+
+  setShowSettings: (show) => set({ showSettings: show }),
+  setEditingFlagIdx: (idx) => set({ editingFlagIdx: idx })
 }));
