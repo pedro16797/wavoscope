@@ -63,10 +63,25 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     </div>
                 </>
             ) : (
-                <div className="space-y-4 opacity-30 italic text-center py-10 text-xs">
-                    Keybind editing is coming soon in the React port.
-                    <br/>
-                    Use the legacy Qt GUI or edit config files for now.
+                <div className="space-y-4 text-xs">
+                    <div className="font-bold border-b border-grid pb-1 mb-2 opacity-50 uppercase tracking-tighter">Playback & Navigation</div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                        <span className="opacity-60">Play / Pause</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Space</span>
+                        <span className="opacity-60">Seek Forward</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">→</span>
+                        <span className="opacity-60">Seek Backward</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">←</span>
+                        <span className="opacity-60">Increase Speed</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">↑</span>
+                        <span className="opacity-60">Decrease Speed</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">↓</span>
+                        <span className="opacity-60">Open File</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Ctrl+O</span>
+                        <span className="opacity-60">Save Project</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Ctrl+S</span>
+                    </div>
+
+                    <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">Mouse Interactions</div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                        <span className="opacity-60">Zoom (Waveform)</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Wheel</span>
+                        <span className="opacity-60">Scroll (Waveform)</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Left Drag</span>
+                        <span className="opacity-60">Add Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Timeline Click</span>
+                        <span className="opacity-60">Edit Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Right Click</span>
+                    </div>
                 </div>
             )}
         </div>

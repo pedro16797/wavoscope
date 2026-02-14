@@ -6,7 +6,6 @@ a = Analysis(
     binaries=[],
     datas=[
         ('config', 'config'),
-        ('gui/themes', 'gui/themes'),
         ('resources', 'resources'),
         ('frontend/dist', 'frontend/dist')
     ],

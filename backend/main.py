@@ -14,12 +14,10 @@ import audio
 import session
 import utils
 import config
-import gui
 sys.modules["wavoscope.audio"] = audio
 sys.modules["wavoscope.session"] = session
 sys.modules["wavoscope.utils"] = utils
 sys.modules["wavoscope.config"] = config
-sys.modules["wavoscope.gui"] = gui
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -235,7 +233,7 @@ async def browse_file():
 
 @app.get("/themes")
 async def get_themes():
-    themes_dir = root_path / "gui" / "themes"
+    themes_dir = root_path / "resources" / "themes"
     themes = {}
     for theme_file in themes_dir.glob("*.json"):
         theme_name = theme_file.stem
