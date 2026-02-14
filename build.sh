@@ -1,6 +1,10 @@
 #!/bin/bash
 # Wavoscope Build Script
 
+set -e
+
+echo "Starting Wavoscope build..."
+
 # Check for virtual environment
 if [ ! -d ".venv" ]; then
     echo "Creating virtual environment..."
@@ -8,7 +12,12 @@ if [ ! -d ".venv" ]; then
 fi
 
 # Activate virtual environment
-source .venv/bin/activate
+if [ -f ".venv/bin/activate" ]; then
+    source .venv/bin/activate
+else
+    echo "[ERROR] Virtual environment activation script missing."
+    exit 1
+fi
 
 # Ensure requirements are installed
 echo "Installing Python dependencies..."
@@ -16,6 +25,11 @@ pip install -r requirements.txt
 
 # Build Frontend
 echo "Building React frontend..."
+if ! command -v npm &> /dev/null; then
+    echo "[ERROR] npm not found."
+    exit 1
+fi
+
 cd frontend
 npm install
 npm run build
