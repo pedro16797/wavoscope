@@ -29,7 +29,7 @@ fi
 echo "Checking dependencies..."
 pip install -r requirements.txt
 
-# Build frontend if missing
+# Build frontend if missing or outdated
 if [ ! -d "frontend/dist" ]; then
     echo "Frontend build missing. Building now..."
 

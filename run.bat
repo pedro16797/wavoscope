@@ -42,7 +42,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-REM Build frontend if missing
+REM Build frontend if missing or outdated
 if not exist "frontend\dist" (
     echo Frontend build missing. Building now...
 

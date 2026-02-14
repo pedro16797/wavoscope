@@ -42,7 +42,8 @@ build.bat
    ```bash
    cd frontend
    npm install
-   npm run dev
+   npm run build  # Generate production assets in dist/
+   npm run dev    # For live development
    ```
 2. **Backend:**
    ```bash
