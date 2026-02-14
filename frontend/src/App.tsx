@@ -19,6 +19,11 @@ const App: React.FC = () => {
   useKeyboardShortcuts();
 
   useEffect(() => {
+    // Expose setShowSettings to native menu
+    (window as any).setShowSettings = setShowSettings;
+  }, [setShowSettings]);
+
+  useEffect(() => {
     fetchThemes();
     fetchStatus();
     fetchConfig();
@@ -67,8 +72,12 @@ const App: React.FC = () => {
       </div>
 
       {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
-      {editingFlagIdx !== null && flags[editingFlagIdx] && (
-        <FlagDialog idx={editingFlagIdx} flag={flags[editingFlagIdx]} onClose={() => setEditingFlagIdx(null)} />
+      {editingFlagIdx !== null && (
+        <FlagDialog
+          idx={editingFlagIdx}
+          flag={flags[editingFlagIdx]}
+          onClose={() => setEditingFlagIdx(null)}
+        />
       )}
     </div>
   );

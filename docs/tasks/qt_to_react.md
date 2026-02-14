@@ -83,3 +83,22 @@ The current implementation performs the following functionalities that must be p
 -   [x] Sync playback cursor between backend and frontend with low latency.
 -   [x] Implement "Native-like" features: Menus, shortcuts, and "Unsaved Changes" dialog using web tech.
 -   [x] Bundle the application using `pywebview` and Nuitka/PyInstaller.
+
+## Remaining Issues & Polish (Next Steps)
+
+1.  **Flag Context Menu Parity:**
+    - [x] Right-clicking a flag opens the `FlagDialog`.
+    - [x] The dialog includes: Name, Time, Subdivision, Section Start toggle, and "Shade 8th notes" toggle.
+    - [x] Add "Delete" as a clear option in the dialog.
+    - [ ] *Improvement:* Use a floating context menu (Edit, Delete) before opening the full modal dialog to better match the Qt UX.
+
+2.  **Settings Panel Accessibility:**
+    - [ ] Ensure the Settings dialog is easily accessible (e.g., via a dedicated gear icon in the Playback Bar).
+    - [ ] Verify all tabs: Global (Theme, Click Volume, Visible Keys) and Keybinds.
+
+3.  **UI Cleanup:**
+    - [ ] Remove redundant "Open Audio" button in the Playback Bar; rely on the native `File > Open` menu.
+    - [ ] Replace FFT window size dropdown with a bandwidth slider for finer control.
+
+4.  **Legacy Cleanup:**
+    - [ ] Once functional parity is 100% verified, remove the legacy `gui/` directory and Qt-related resource files (`resources.qrc`, etc.).

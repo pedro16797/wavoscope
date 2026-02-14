@@ -10,6 +10,13 @@ interface FlagDialogProps {
 
 export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) => {
   const { fetchStatus, duration, flags } = useStore();
+
+  if (!flag) {
+    console.error("FlagDialog opened but flag is missing at index", idx);
+    onClose();
+    return null;
+  }
+
   const [name, setName] = useState(flag.name || '');
   const [t, setT] = useState(flag.t);
   const [subdivision, setSubdivision] = useState(flag.subdivision || 0);
