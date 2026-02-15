@@ -39,13 +39,11 @@ def main():
     from webview.menu import Menu, MenuAction, MenuSeparator
 
     class Api:
-        def __init__(self):
-            self.window = None
-
         def browse(self):
-            if not self.window: return
+            if not webview.windows: return
+            window = webview.windows[0]
             file_types = ('Audio Files (*.wav;*.mp3;*.flac;*.ogg)', 'All files (*.*)')
-            res = self.window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+            res = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
             if res:
                 file_path = res[0]
                 try:
@@ -64,7 +62,6 @@ def main():
         background_color='#1e1e1e',
         js_api=api
     )
-    api.window = window
 
     def open_file():
         api.browse()
