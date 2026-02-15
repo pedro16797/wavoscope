@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import { useStore } from './store/useStore';
 import { useKeyboardShortcuts } from './store/useKeyboardShortcuts';
+import { useAudioWebSocket } from './hooks/useAudioWebSocket';
+import { useTheme } from './hooks/useTheme';
 import { PlaybackBar } from './components/PlaybackBar';
 import { WaveformView } from './components/WaveformView';
 import { Spectrum } from './components/Spectrum';
@@ -10,42 +12,18 @@ import { FlagDialog } from './components/FlagDialog';
 
 const App: React.FC = () => {
   const {
-    fetchThemes, fetchStatus, fetchConfig, updatePosition, setPlaying,
-    currentTheme, themes, showSettings, setShowSettings,
+    showSettings, setShowSettings,
     editingFlagIdx, setEditingFlagIdx, flags
   } = useStore();
-  const theme = themes[currentTheme] || {};
 
   useKeyboardShortcuts();
+  useAudioWebSocket();
+  useTheme();
 
   useEffect(() => {
     // Expose setShowSettings to native menu
-    (window as any).setShowSettings = setShowSettings;
+    (window as Window & { setShowSettings?: (show: boolean) => void }).setShowSettings = setShowSettings;
   }, [setShowSettings]);
-
-  useEffect(() => {
-    fetchThemes();
-    fetchStatus();
-    fetchConfig();
-
-    const ws = new WebSocket('ws://127.0.0.1:8000/ws');
-    ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        updatePosition(data.position);
-        setPlaying(data.playing);
-    };
-    return () => ws.close();
-  }, [fetchThemes, fetchStatus, fetchConfig, updatePosition, setPlaying]);
-
-  useEffect(() => {
-    if (theme) {
-        document.documentElement.style.setProperty('--color-background', theme.background || '#1e1e1e');
-        document.documentElement.style.setProperty('--color-surface', theme.surface || '#252525');
-        document.documentElement.style.setProperty('--color-accent', theme.accent || '#00aaff');
-        document.documentElement.style.setProperty('--color-grid', theme.grid || '#404040');
-        document.documentElement.style.setProperty('--color-text', theme.text || '#e0e0e0');
-    }
-  }, [theme]);
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden text-sm select-none"

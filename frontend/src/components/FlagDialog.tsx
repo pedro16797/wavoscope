@@ -11,17 +11,17 @@ interface FlagDialogProps {
 export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) => {
   const { fetchStatus, duration, flags } = useStore();
 
+  const [name, setName] = useState(flag?.name || '');
+  const [t, setT] = useState(flag?.t || 0);
+  const [subdivision, setSubdivision] = useState(flag?.subdivision || 0);
+  const [sectionStart, setSectionStart] = useState(flag?.is_section_start || false);
+  const [shaded, setShaded] = useState(flag?.shaded_subdivisions || false);
+
   if (!flag) {
     console.error("FlagDialog opened but flag is missing at index", idx);
     onClose();
     return null;
   }
-
-  const [name, setName] = useState(flag.name || '');
-  const [t, setT] = useState(flag.t);
-  const [subdivision, setSubdivision] = useState(flag.subdivision || 0);
-  const [sectionStart, setSectionStart] = useState(flag.is_section_start || false);
-  const [shaded, setShaded] = useState(flag.shaded_subdivisions || false);
 
   const handleSave = async () => {
     try {

@@ -19,6 +19,12 @@ class WaveformCache:
         self.sr: int = sr
         self._cache: dict[Tuple[int, int], Tuple[float, float]] = {}
 
+        # Pre-calculate percentiles for normalization
+        if len(self.y) > 0:
+            self.low_clip, self.high_clip = np.percentile(self.y, [0.1, 99.9])
+        else:
+            self.low_clip, self.high_clip = -1.0, 1.0
+
     # ---------- public ----------
     def bars(
         self, start_s: float, end_s: float, n_bars: int
@@ -37,32 +43,32 @@ class WaveformCache:
         if start_idx >= end_idx:
             return []
 
+        # Vectorized bucket calculation
         step = max(1, (end_idx - start_idx) // n_bars)
-        idx = np.arange(start_idx, end_idx, step, dtype=np.int64)
-        ends = np.minimum(idx + step, end_idx)
+        indices = np.arange(start_idx, end_idx, step, dtype=np.int64)
+        if len(indices) > n_bars:
+            indices = indices[:n_bars]
 
-        # Pre-allocate
-        mins = np.empty(len(idx), dtype=np.float32)
-        maxs = np.empty(len(idx), dtype=np.float32)
-        avgs = np.empty(len(idx), dtype=np.float32)
+        # Use reduceat for fast min/max/mean
+        mins = np.minimum.reduceat(self.y, indices)
+        maxs = np.maximum.reduceat(self.y, indices)
 
-        for i, (s, e) in enumerate(zip(idx, ends)):
-            bucket = self.y[s:e]
-            mins[i] = np.min(bucket)
-            maxs[i] = np.max(bucket)
-            avgs[i] = np.mean(np.abs(bucket))
+        # For mean of absolute values, we use add.reduceat on abs(y)
+        abs_y = np.abs(self.y)
+        sums = np.add.reduceat(abs_y, indices)
+
+        # Calculate actual bucket sizes for the means
+        bucket_sizes = np.diff(np.append(indices, end_idx))
+        avgs = sums / bucket_sizes
 
         # Crest factor -> intensity for colour alpha
         crest = (np.abs(mins) + np.abs(maxs)) * 0.5
         intensity = np.clip(4 * avgs / (1e-12 + crest), 0, 1)
         intensity = (intensity + 2) / 3  # remap 0…1 → 0.66…1
 
-        # Normalise waveform range to [-1, 1]
-        low_clip, high_clip = np.percentile(
-            self.y[start_idx:end_idx], [0.1, 99.9]
-        )
-        span = max(high_clip - low_clip, 1e-6)
-        mins_norm = (np.clip(mins, low_clip, high_clip) - low_clip) / span * 2 - 1
-        maxs_norm = (np.clip(maxs, low_clip, high_clip) - low_clip) / span * 2 - 1
+        # Normalise waveform range to [-1, 1] using pre-calculated clips
+        span = max(self.high_clip - self.low_clip, 1e-6)
+        mins_norm = (np.clip(mins, self.low_clip, self.high_clip) - self.low_clip) / span * 2 - 1
+        maxs_norm = (np.clip(maxs, self.low_clip, self.high_clip) - self.low_clip) / span * 2 - 1
 
         return list(zip(mins_norm.tolist(), maxs_norm.tolist(), intensity.tolist()))

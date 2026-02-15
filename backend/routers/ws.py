@@ -1,0 +1,30 @@
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+import asyncio
+from backend import state
+
+router = APIRouter(tags=["websocket"])
+
+@router.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    last_state = {"position": -1.0, "playing": False}
+    try:
+        while True:
+            if state.project:
+                pos = state.project.position
+                playing = state.project.backend._playing
+
+                # Only send if something meaningful changed
+                # Position update at ~30fps is fine during playback,
+                # but if paused and not seeking, no need to spam.
+                if playing or abs(pos - last_state["position"]) > 1e-4 or playing != last_state["playing"]:
+                    await websocket.send_json({
+                        "position": pos,
+                        "playing": playing
+                    })
+                    last_state["position"] = pos
+                    last_state["playing"] = playing
+
+            await asyncio.sleep(0.03) # 30fps update
+    except WebSocketDisconnect:
+        pass

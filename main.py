@@ -1,5 +1,4 @@
 import sys
-import os
 import threading
 import uvicorn
 import webview
@@ -20,7 +19,7 @@ def on_closing():
         res = requests.get('http://127.0.0.1:8000/status')
         if res.status_code == 200 and res.json().get('dirty'):
             return webview.windows[0].confirm('You have unsaved changes. Save before closing?')
-    except:
+    except Exception:
         pass
     return True
 
@@ -46,7 +45,7 @@ def main():
             if resp.status_code == 200:
                 print("[Main] Backend is UP")
                 break
-        except:
+        except Exception:
             pass
         time.sleep(1)
 

@@ -12,6 +12,8 @@ This document outlines the directory structure and the purpose of each component
     -   `waveform_cache.py`: Manages the generation and caching of waveform data for efficient display.
 -   **`backend/`**: The modern FastAPI-based web backend.
     -   `main.py`: Entry point for the FastAPI server, serving API endpoints and frontend assets.
+    -   `state.py`: Shared global state (the active `Project` instance).
+    -   `routers/`: Modular FastAPI routers for different API domains (audio, playback, project, etc.).
 -   **`cli/`**: Contains command-line interface utilities.
     -   `flag_cli.py`: Utilities for managing flags via the terminal.
 -   **`config/`**: Configuration files and default settings for the application.

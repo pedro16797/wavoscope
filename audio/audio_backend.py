@@ -6,6 +6,7 @@ from __future__ import annotations
 import threading
 from pathlib import Path
 from typing import Callable, List, Tuple, Any, Dict
+import bisect
 
 import numpy as np
 try:
@@ -13,7 +14,6 @@ try:
 except OSError:
     sd = None
 import soundfile as sf
-from scipy.signal import ellip, sosfilt
 
 from audio.ringbuffer import RingBuffer
 from audio.synth import SimpleSynth
@@ -48,6 +48,11 @@ class AudioBackend:
         self._metronome_enabled: bool = True
 
         self._subdivision_ticks_between: Callable[[float, float], List[Tuple[float, bool]]] | None = None
+
+        # Pre-calculated click waveforms
+        self._strong_click: np.ndarray = np.zeros(0, dtype=np.float32)
+        self._weak_click: np.ndarray = np.zeros(0, dtype=np.float32)
+        self._precalculate_clicks()
 
     # ---------- file I/O ----------
     def open_file(self, path: Path) -> None:
@@ -93,6 +98,7 @@ class AudioBackend:
 
     def set_click_gain(self, gain: float) -> None:
         self._click_gain = max(0.0, min(gain, 1.0))
+        self._precalculate_clicks()
 
     def set_tick_provider(self, fn: Callable[[float, float], list[tuple[float, bool]]]) -> None:
         """Inject Project.subdivision_ticks_between for metronome clicks."""
@@ -201,6 +207,21 @@ class AudioBackend:
         self._cursor += frames / self._sr * self._speed
 
     # ---------- metronome ----------
+    def _precalculate_clicks(self) -> None:
+        """Create strong/weak click waveforms to avoid generation in audio thread."""
+        dur_s = 0.1
+        click_dur = int(dur_s * self._sr)
+        t = np.arange(click_dur) / self._sr
+        envelope = np.exp(-t * 20)  # Sharper decay for better transient
+
+        def gen_click(freq: float) -> np.ndarray:
+            fundamental = np.sin(2 * np.pi * freq * t)
+            harmonic = 0.3 * np.sin(2 * np.pi * freq * 2 * t)
+            return ((fundamental + harmonic) * envelope).astype(np.float32)
+
+        self._strong_click = gen_click(self._strong_freq)
+        self._weak_click = gen_click(self._weak_freq)
+
     def _add_metronome_clicks(
         self, outdata: np.ndarray, frames: int
     ) -> None:
@@ -218,35 +239,33 @@ class AudioBackend:
                 continue
 
             offset = int((tick_time - callback_start) * self._sr)
-            click_dur = min(int(0.1 * self._sr), frames - offset)
-            if click_dur <= 0:
+            if offset < 0 or offset >= frames:
                 continue
 
-            # Determine shading from neighbouring flags
+            # Determine shading efficiently
             shaded = False
             if hasattr(self._subdivision_ticks_between, "__self__"):
-                flags = getattr(self._subdivision_ticks_between, "__self__").flags
-                for prev, nxt in zip(flags, flags[1:]):
-                    if prev.get("type") != "rhythm":
-                        continue
-                    subdiv = prev.get("subdivision", 1)
-                    if subdiv <= 1 or not (prev["t"] <= tick_time < nxt["t"]):
-                        continue
+                project = getattr(self._subdivision_ticks_between, "__self__")
+                flags = project.flags
+                if flags:
+                    # Find insertion point to get current/next flag
+                    times = [f["t"] for f in flags]
+                    idx = bisect.bisect_right(times, tick_time) - 1
 
-                    span = nxt["t"] - prev["t"]
-                    step = span / subdiv
-                    k = int((tick_time - prev["t"]) / step)
-                    shaded = prev.get("shaded_subdivisions", False) and k % 2 == 1
-                    break
+                    if 0 <= idx < len(flags) - 1:
+                        prev = flags[idx]
+                        nxt = flags[idx + 1]
+                        if prev.get("type") == "rhythm":
+                            subdiv = prev.get("subdivision", 1)
+                            if subdiv > 1:
+                                span = nxt["t"] - prev["t"]
+                                step = span / subdiv
+                                k = int((tick_time - prev["t"] + 1e-6) / step)
+                                shaded = prev.get("shaded_subdivisions", False) and k % 2 == 1
 
             volume = self._click_gain * (0.5 if shaded else 1.0)
-            freq = self._strong_freq if is_strong else self._weak_freq
+            click_src = self._strong_click if is_strong else self._weak_click
 
-            t = np.arange(click_dur) / self._sr
-            envelope = np.exp(-t * 10)
-            fundamental = np.sin(2 * np.pi * freq * t)
-            harmonic = 0.3 * np.sin(2 * np.pi * freq * 2 * t)
-            click = (fundamental + harmonic) * envelope * volume
-            click = np.clip(click, -0.8, 0.8)
-
-            outdata[offset : offset + click_dur, 0] += click
+            click_dur = min(len(click_src), frames - offset)
+            if click_dur > 0:
+                outdata[offset : offset + click_dur, 0] += click_src[:click_dur] * volume

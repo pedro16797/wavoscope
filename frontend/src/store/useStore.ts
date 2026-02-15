@@ -25,7 +25,7 @@ interface AppState {
   dirty: boolean;
   metronome_enabled: boolean;
   click_gain: number;
-  themes: Record<string, any>;
+  themes: Record<string, Record<string, string>>;
   currentTheme: string;
   spectrum_keys: number;
   fft_window: number;
@@ -120,10 +120,11 @@ export const useStore = create<AppState>((set, get) => ({
 
   browseFile: async () => {
     console.log("Store: browseFile called");
+    const pywindow = window as Window & { pywebview?: { api: { browse: () => Promise<void> } } };
     try {
-      if ((window as any).pywebview?.api?.browse) {
+      if (pywindow.pywebview?.api?.browse) {
         console.log("Store: Using pywebview API to browse");
-        await (window as any).pywebview.api.browse();
+        await pywindow.pywebview.api.browse();
         console.log("Store: Browse finished, fetching status");
         await get().fetchStatus();
       } else {

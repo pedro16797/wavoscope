@@ -13,8 +13,6 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
-  const theme = themes[currentTheme] || {};
-
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current && canvasRef.current) {
@@ -33,7 +31,8 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const theme = themes[currentTheme];
+    if (!canvas || !theme) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -86,7 +85,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
             ctx.fillText(label, x - textWidth/2, 30);
         }
     });
-  }, [offset, zoom, theme, duration, flags, dragIdx, size]);
+  }, [offset, zoom, themes, currentTheme, duration, flags, dragIdx, size]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!loaded) return;
