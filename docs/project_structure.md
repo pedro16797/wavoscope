@@ -16,12 +16,11 @@ This document outlines the directory structure and the purpose of each component
     -   `flag_cli.py`: Utilities for managing flags via the terminal.
 -   **`config/`**: Configuration files and default settings for the application.
 -   **`docs/`**: Project documentation, including task roadmaps and structure guides.
--   **`frontend/`**: The modern React-based graphical user interface.
+-   **`frontend/`**: The React-based graphical user interface.
     -   `src/components/`: React components (Waveform, Spectrum, Timeline, PlaybackBar).
     -   `src/store/`: Frontend state management (Zustand).
     -   `dist/`: Built production assets.
--   **`gui/`**: The legacy PySide6 (Qt) graphical user interface (maintained for transition).
--   **`resources/`**: Static assets like icons (SVG) and application resources.
+-   **`resources/`**: Static assets like icons (SVG), themes (JSON), and application resources.
 -   **`session/`**: Handles project persistence and high-level state.
     -   `project.py`: The `Project` class which ties audio, metadata (flags), and caching together.
 -   **`utils/`**: General helper functions and shared utilities.
@@ -34,4 +33,3 @@ This document outlines the directory structure and the purpose of each component
 -   **`AGENTS.md`**: Guidance and roadmap for AI agents working on the project.
 -   **`Readme.md`**: General project overview and setup instructions.
 -   **`requirements.txt`**: Python dependencies.
--   **`Wavoscope.spec`**: PyInstaller specification file for building the executable.

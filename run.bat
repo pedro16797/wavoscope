@@ -35,14 +35,14 @@ if exist ".venv\Scripts\activate.bat" (
 
 REM Ensure requirements are installed and up to date
 echo Checking dependencies...
-pip install -r requirements.txt
+pip install -q -r requirements.txt
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to install dependencies.
     pause
     exit /b 1
 )
 
-REM Build frontend if missing
+REM Build frontend if missing or outdated
 if not exist "frontend\dist" (
     echo Frontend build missing. Building now...
 
@@ -54,7 +54,7 @@ if not exist "frontend\dist" (
     )
 
     cd frontend
-    call npm install
+    call npm install --no-fund --no-audit
     if !errorlevel! neq 0 (
         echo [ERROR] npm install failed.
         cd ..

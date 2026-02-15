@@ -9,3 +9,6 @@ uvicorn
 websockets
 python-multipart
 pywebview
+nuitka
+imageio
+requests

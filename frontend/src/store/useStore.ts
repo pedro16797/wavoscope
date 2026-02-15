@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = window.location.origin.includes(':5173') ? 'http://127.0.0.1:8000' : '';
 
 export interface Flag {
   t: number;
@@ -119,13 +119,23 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   browseFile: async () => {
+    console.log("Store: browseFile called");
     try {
-      const res = await axios.get(`${API_BASE}/browse`);
-      if (res.data.status === 'loaded') {
-        get().fetchStatus();
+      if ((window as any).pywebview?.api?.browse) {
+        console.log("Store: Using pywebview API to browse");
+        await (window as any).pywebview.api.browse();
+        console.log("Store: Browse finished, fetching status");
+        await get().fetchStatus();
+      } else {
+        console.log("Store: pywebview API not found, falling back to /browse endpoint");
+        const res = await axios.get(`${API_BASE}/browse`);
+        console.log("Store: /browse response:", res.data);
+        if (res.data.status === 'loaded') {
+          await get().fetchStatus();
+        }
       }
     } catch (e) {
-      console.error(e);
+      console.error("Store: Failed to browse or load file:", e);
     }
   },
 

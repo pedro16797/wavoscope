@@ -9,17 +9,6 @@ from typing import Optional, Dict, Any, List
 root_path = Path(__file__).resolve().parent.parent
 sys.path.append(str(root_path))
 
-# Mapping hack for wavoscope.*
-import audio
-import session
-import utils
-import config
-import gui
-sys.modules["wavoscope.audio"] = audio
-sys.modules["wavoscope.session"] = session
-sys.modules["wavoscope.utils"] = utils
-sys.modules["wavoscope.config"] = config
-sys.modules["wavoscope.gui"] = gui
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -204,6 +193,32 @@ async def save_project():
     project.save()
     return {"status": "ok"}
 
+class OpenProject(BaseModel):
+    path: str
+
+@app.post("/project/open")
+async def open_project(data: OpenProject):
+    print(f"[Backend] open_project called for: {data.path}")
+    global project
+    path = Path(data.path)
+    if not path.exists():
+        print(f"[Backend] Error: File not found at {data.path}")
+        raise HTTPException(status_code=404, detail=f"File not found: {data.path}")
+
+    try:
+        print("[Backend] Initializing new Project object...")
+        new_project = Project(path)
+        print("[Backend] Calling open_file on project...")
+        new_project.open_file(path)
+        project = new_project
+        print("[Backend] Project loaded successfully")
+        return {"status": "ok", "filename": path.name}
+    except Exception as e:
+        print(f"[Backend] Exception during open_project: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -235,13 +250,30 @@ async def browse_file():
 
 @app.get("/themes")
 async def get_themes():
-    themes_dir = root_path / "gui" / "themes"
-    themes = {}
+    themes_dir = root_path / "resources" / "themes"
+    raw_themes = {}
     for theme_file in themes_dir.glob("*.json"):
-        theme_name = theme_file.stem
         with open(theme_file, "r") as f:
-            themes[theme_name] = json.load(f)
-    return themes
+            raw_themes[theme_file.stem] = json.load(f)
+
+    resolved_themes = {}
+    def resolve(name, visited=None):
+        if visited is None: visited = set()
+        if name in visited: return {} # Circular
+        visited.add(name)
+
+        theme = raw_themes.get(name, {})
+        if "inherits" in theme:
+            parent = resolve(theme["inherits"], visited)
+            merged = parent.copy()
+            merged.update(theme)
+            return merged
+        return theme
+
+    for name in raw_themes:
+        resolved_themes[name] = resolve(name)
+
+    return resolved_themes
 
 class AppConfig(BaseModel):
     theme: Optional[str] = None
@@ -287,4 +319,5 @@ if frontend_path.exists():
 
 if __name__ == "__main__":
     import uvicorn
+    print("[Backend] Starting FastAPI server on http://127.0.0.1:8000")
     uvicorn.run(app, host="127.0.0.1", port=8000)

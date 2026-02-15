@@ -4,12 +4,12 @@ Wavoscope is a tool designed to assist musicians in transcribing audio by provid
 
 > **Note to Contributors & Agents:** Please refer to [AGENTS.md](AGENTS.md) for current project goals and development guidance.
 
-## Project Status: GUI Migration
-We are currently in the process of migrating the graphical user interface from PySide6 (Qt) to a modern, browser-based React architecture. This change aims to reduce distribution size and improve UI flexibility.
+## Architecture
+Wavoscope uses a modern, browser-based React architecture for the frontend and a Python FastAPI backend. This provides a lightweight distribution (<50MB) and a highly responsive, flexible user interface.
 
 ---
 
-## Modern (React + FastAPI) Implementation
+## Getting Started
 
 ### Run the app
 The easiest way to run Wavoscope is using the provided scripts, which handle virtual environment setup and dependencies automatically:
@@ -42,7 +42,8 @@ build.bat
    ```bash
    cd frontend
    npm install
-   npm run dev
+   npm run build  # Generate production assets in dist/
+   npm run dev    # For live development
    ```
 2. **Backend:**
    ```bash

@@ -30,7 +30,7 @@ if exist ".venv\Scripts\activate.bat" (
 
 REM Ensure requirements are installed
 echo Installing Python dependencies...
-pip install -r requirements.txt
+pip install -q -r requirements.txt
 
 REM Build Frontend
 echo Building React frontend...
@@ -43,14 +43,13 @@ if !errorlevel! neq 0 (
 )
 
 cd frontend
-call npm install
+call npm install --no-fund --no-audit
 call npm run build
 cd ..
 
 REM Build Executable with Nuitka
 echo Building standalone executable...
 python -m nuitka --standalone ^
-    --include-package-data=wavoscope ^
     --include-data-dir=frontend/dist=frontend/dist ^
     --include-data-dir=resources=resources ^
     --noinclude-data-files="**/.git/**" ^
