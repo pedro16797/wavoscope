@@ -54,7 +54,7 @@ if not exist "frontend\dist" (
     )
 
     cd frontend
-    call npm install
+    call npm install --no-fund --no-audit
     if !errorlevel! neq 0 (
         echo [ERROR] npm install failed.
         cd ..

@@ -31,7 +31,7 @@ if ! command -v npm &> /dev/null; then
 fi
 
 cd frontend
-npm install
+npm install --no-fund --no-audit
 npm run build
 cd ..
 

@@ -43,7 +43,7 @@ if !errorlevel! neq 0 (
 )
 
 cd frontend
-call npm install
+call npm install --no-fund --no-audit
 call npm run build
 cd ..
 
