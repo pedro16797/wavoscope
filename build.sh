@@ -38,7 +38,6 @@ cd ..
 # Build Executable with Nuitka
 echo "Building standalone executable..."
 python3 -m nuitka --standalone \
-    --include-package-data=wavoscope \
     --include-data-dir=frontend/dist=frontend/dist \
     --include-data-dir=resources=resources \
     --noinclude-data-files="**/.git/**" \

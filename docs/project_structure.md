@@ -33,4 +33,3 @@ This document outlines the directory structure and the purpose of each component
 -   **`AGENTS.md`**: Guidance and roadmap for AI agents working on the project.
 -   **`Readme.md`**: General project overview and setup instructions.
 -   **`requirements.txt`**: Python dependencies.
--   **`Wavoscope.spec`**: PyInstaller specification file for building the executable.
