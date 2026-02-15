@@ -52,6 +52,26 @@ async def move_flag(move: FlagMove):
     state.project.move_flag(move.idx, move.t)
     return {"status": "ok", "flags": state.project.flags}
 
+@router.patch("/flags/{idx}")
+async def update_flag(idx: int, flag: FlagData):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    try:
+        state.project.update_flag(
+            idx,
+            flag.t,
+            flag.type,
+            flag.subdivision,
+            flag.name,
+            flag.is_section_start,
+            flag.shaded_subdivisions
+        )
+        return {"status": "ok", "flags": state.project.flags}
+    except Exception as e:
+        print(f"[Backend] Error in update_flag: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
 class FlagInsertN(BaseModel):
     left_idx: int
     count: int

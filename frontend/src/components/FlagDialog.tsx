@@ -25,16 +25,14 @@ export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) =>
 
   const handleSave = async () => {
     try {
-        await axios.post('/project/flags', {
+        await axios.patch(`/project/flags/${idx}`, {
             t,
             name,
             subdivision,
+            type: flag.type,
             is_section_start: sectionStart,
             shaded_subdivisions: shaded
         });
-        if (Math.abs(t - flag.t) > 0.001) {
-            await axios.delete(`/project/flags/${idx}`);
-        }
         fetchStatus();
         onClose();
     } catch (e) {

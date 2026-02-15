@@ -137,6 +137,33 @@ class Project:
                 self._clear_backend_cache()
                 self.mark_dirty()
 
+    def update_flag(
+        self,
+        idx: int,
+        time: float,
+        kind: str = "rhythm",
+        subdivision: int = 0,
+        name: str = "",
+        section_start: bool = False,
+        shaded: bool = False,
+    ) -> None:
+        """Update all properties of a flag at index."""
+        with self._lock:
+            flags = self.session_data.setdefault("flags", [])
+            if 0 <= idx < len(flags):
+                flags[idx] = {
+                    "t": time,
+                    "type": kind,
+                    "subdivision": subdivision,
+                    "name": name,
+                    "is_section_start": section_start,
+                    "shaded_subdivisions": shaded,
+                }
+                flags.sort(key=lambda f: f["t"])
+                self._recompute_auto_names()
+                self._clear_backend_cache()
+                self.mark_dirty()
+
     # ---------- playback passthrough ----------
     def seek(self, time: float) -> None: self.backend.seek(time)
     def pause(self) -> None: self.backend.pause()
