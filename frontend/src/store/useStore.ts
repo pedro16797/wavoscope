@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const API_BASE = window.location.origin.includes(':5173') ? 'http://127.0.0.1:8000' : '';
+export const API_BASE = window.location.origin.includes(':5173') ? 'http://127.0.0.1:8000' : '';
 
 export interface Flag {
   t: number;

@@ -60,7 +60,11 @@ class Config:
                 node = {}
                 break
 
-        return default if node == {} else node
+        res = node
+        if isinstance(res, dict) and "default" in res:
+            res = res["default"]
+
+        return default if res == {} else res
 
     def set(self, key: str, value: Any) -> None:
         """Store `value` under `key` and flush to disk."""

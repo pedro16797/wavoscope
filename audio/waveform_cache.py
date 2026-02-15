@@ -28,9 +28,9 @@ class WaveformCache:
     # ---------- public ----------
     def bars(
         self, start_s: float, end_s: float, n_bars: int
-    ) -> List[Tuple[float, float, float]]:
+    ) -> List[Tuple[float, float, float, float]]:
         """
-        Return [(min_norm, max_norm, intensity), …] for `n_bars`
+        Return [(min_norm, max_norm, rms_norm, intensity), …] for `n_bars`
         covering the given time span.
 
         `intensity` is derived from crest factor and used for colour modulation.
@@ -71,4 +71,8 @@ class WaveformCache:
         mins_norm = (np.clip(mins, self.low_clip, self.high_clip) - self.low_clip) / span * 2 - 1
         maxs_norm = (np.clip(maxs, self.low_clip, self.high_clip) - self.low_clip) / span * 2 - 1
 
-        return list(zip(mins_norm.tolist(), maxs_norm.tolist(), intensity.tolist()))
+        # RMS (average absolute value) normalized relative to the same span
+        # Since avgs is positive, rms_norm represents the distance from center
+        rms_norm = np.clip(avgs / (span / 2), 0, 1)
+
+        return list(zip(mins_norm.tolist(), maxs_norm.tolist(), rms_norm.tolist(), intensity.tolist()))

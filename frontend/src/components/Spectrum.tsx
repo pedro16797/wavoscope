@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { useStore } from '../store/useStore';
+import { useStore, API_BASE } from '../store/useStore';
 import axios from 'axios';
 
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -23,10 +23,11 @@ export const Spectrum: React.FC = () => {
 
   const updateSize = useCallback(() => {
     if (containerRef.current && canvasRef.current) {
+      const dpr = window.devicePixelRatio || 1;
       const w = containerRef.current.clientWidth;
       const h = containerRef.current.clientHeight;
-      canvasRef.current.width = w;
-      canvasRef.current.height = h;
+      canvasRef.current.width = w * dpr;
+      canvasRef.current.height = h * dpr;
       setSize({ width: w, height: h });
     }
   }, []);
@@ -42,13 +43,14 @@ export const Spectrum: React.FC = () => {
     if (!loaded) return;
     const fetchSpectrum = async () => {
         try {
-            const res = await axios.get(`/audio/spectrum`, {
+            const width = size.width || 1000;
+            const res = await axios.get(`${API_BASE}/audio/spectrum`, {
                 params: {
                     position,
                     window: fft_window,
                     low_hz: range.low,
                     high_hz: range.high,
-                    width: canvasRef.current?.width || 1000
+                    width: width
                 }
             });
             setData(res.data);
@@ -57,18 +59,20 @@ export const Spectrum: React.FC = () => {
         }
     };
     fetchSpectrum();
-  }, [loaded, position, range.low, range.high, fft_window]);
+  }, [loaded, position, range.low, range.high, fft_window, size.width]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const theme = themes[currentTheme];
-    if (!canvas || !theme?.spectrum) return;
+    if (!canvas || !theme?.spectrum || size.width === 0) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const h = canvas.height;
-    const w = canvas.width;
+    const dpr = window.devicePixelRatio || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, size.width, size.height);
+    const h = size.height;
+    const w = size.width;
     const spanLog = Math.max(Math.log2(range.high / range.low), 1e-3);
     const xScale = w / spanLog;
 
@@ -104,7 +108,8 @@ export const Spectrum: React.FC = () => {
         ctx.beginPath();
         data.freqs.forEach((f, i) => {
             const px = Math.log2(f / range.low) * xScale;
-            const py = h - ((data.db[i] - minDb) / spanDb) * h;
+            // Draw with a small vertical margin to avoid clipping at the edges
+            const py = (h * 0.95) - ((data.db[i] - minDb) / spanDb) * (h * 0.9);
             if (i === 0) ctx.moveTo(px, py);
             else ctx.lineTo(px, py);
         });
@@ -133,9 +138,9 @@ export const Spectrum: React.FC = () => {
         const now = Date.now();
         if (now - lastToneRef.current > 30) {
             if (currentHzRef.current > 0) {
-                axios.post(`/playback/tone`, { freq: currentHzRef.current, action: 'stop' });
+                axios.post(`${API_BASE}/playback/tone`, { freq: currentHzRef.current, action: 'stop' });
             }
-            axios.post(`/playback/tone`, { freq: snappedHz, action: 'start' });
+            axios.post(`${API_BASE}/playback/tone`, { freq: snappedHz, action: 'start' });
             currentHzRef.current = snappedHz;
             lastToneRef.current = now;
         }
@@ -150,7 +155,7 @@ export const Spectrum: React.FC = () => {
     const onMouseUp = () => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
-        axios.post(`/playback/tone`, { action: 'stop' });
+        axios.post(`${API_BASE}/playback/tone`, { action: 'stop' });
         currentHzRef.current = 0;
     };
 

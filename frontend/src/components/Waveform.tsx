@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useStore } from '../store/useStore';
+import { useStore, API_BASE } from '../store/useStore';
 import axios from 'axios';
 
 interface WaveformProps {
@@ -17,10 +17,11 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
 
   const updateSize = React.useCallback(() => {
     if (containerRef.current && canvasRef.current) {
+      const dpr = window.devicePixelRatio || 1;
       const w = containerRef.current.clientWidth;
       const h = containerRef.current.clientHeight;
-      canvasRef.current.width = w;
-      canvasRef.current.height = h;
+      canvasRef.current.width = w * dpr;
+      canvasRef.current.height = h * dpr;
       setSize({ width: w, height: h });
     }
   }, []);
@@ -36,9 +37,9 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
     if (!loaded) return;
     const fetchBars = async () => {
         try {
-            const width = canvasRef.current?.width || 1000;
+            const width = size.width || 1000;
             const span = width / zoom;
-            const res = await axios.get(`/audio/waveform`, {
+            const res = await axios.get(`${API_BASE}/audio/waveform`, {
                 params: {
                     start: offset,
                     end: offset + span,
@@ -51,23 +52,28 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
         }
     };
     fetchBars();
-  }, [loaded, offset, zoom, duration]);
+  }, [loaded, offset, zoom, duration, size.width]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const theme = themes[currentTheme];
-    if (!canvas || !theme?.waveform) return;
+    if (!canvas || !theme?.waveform || size.width === 0) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const midY = canvas.height / 2;
+    const dpr = window.devicePixelRatio || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, size.width, size.height);
+
+    const midY = size.height / 2;
     const scaleY = midY * 0.9;
 
-    const barWidth = canvas.width / Math.max(bars.length, 1);
+    const barWidth = size.width / Math.max(bars.length, 1);
+
+    // First pass: Peak envelope (semi-transparent)
     bars.forEach((bar, i) => {
-        const [min, max, intensity] = bar;
-        ctx.globalAlpha = intensity;
+        const [min, max, , intensity] = bar;
+        ctx.globalAlpha = intensity * 0.3;
         ctx.strokeStyle = theme.waveform;
         ctx.lineWidth = Math.max(1, barWidth);
         ctx.beginPath();
@@ -76,14 +82,26 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
         ctx.stroke();
     });
 
+    // Second pass: RMS envelope (more opaque)
+    bars.forEach((bar, i) => {
+        const [, , rms, intensity] = bar;
+        ctx.globalAlpha = intensity;
+        ctx.strokeStyle = theme.waveform;
+        ctx.lineWidth = Math.max(1, barWidth);
+        ctx.beginPath();
+        ctx.moveTo(i * barWidth, midY - rms * scaleY);
+        ctx.lineTo(i * barWidth, midY + rms * scaleY);
+        ctx.stroke();
+    });
+
     const cursorX = (position - offset) * zoom;
-    if (cursorX >= 0 && cursorX <= canvas.width) {
+    if (cursorX >= 0 && cursorX <= size.width) {
         ctx.globalAlpha = 1;
         ctx.strokeStyle = theme.accent;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(cursorX, 0);
-        ctx.lineTo(cursorX, canvas.height);
+        ctx.lineTo(cursorX, size.height);
         ctx.stroke();
     }
   }, [bars, position, themes, currentTheme, offset, zoom, size]);
