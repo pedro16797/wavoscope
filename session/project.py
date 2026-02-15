@@ -15,6 +15,7 @@ project.save()                  # writes .oscope
 from __future__ import annotations
 
 import json
+import threading
 from pathlib import Path
 from typing import List, Dict, Any, Callable
 
@@ -37,47 +38,51 @@ class Project:
 
         self.wave_cache: WaveformCache | None = None
         self._dirty: bool = False
+        self._lock = threading.Lock()
 
     # ---------- file handling ----------
     def open_file(self, path: Path) -> None:
         """Close current audio, open new file, build cache."""
-        print(f"[Project] Opening file: {path}")
-        # Stop ongoing playback
-        if self.backend._playing:
-            self.backend.pause()
-        self.backend.close()
+        with self._lock:
+            print(f"[Project] Opening file: {path}")
+            # Stop ongoing playback
+            if self.backend._playing:
+                self.backend.pause()
+            self.backend.close()
 
-        # Load new audio
-        try:
-            print("[Project] Loading audio into backend...")
-            self.backend.open_file(path)
-            print(f"[Project] Audio loaded. SR={self.backend._sr}, Duration={self.backend.duration:.2f}s")
+            # Load new audio
+            try:
+                print("[Project] Loading audio into backend...")
+                self.backend.open_file(path)
+                print(f"[Project] Audio loaded. SR={self.backend._sr}, Duration={self.backend.duration:.2f}s")
 
-            print("[Project] Building waveform cache...")
-            self.wave_cache = WaveformCache(self.backend._data, self.backend._sr)
-            print("[Project] Waveform cache built")
-        except Exception as e:
-            print(f"[Project] ERROR loading audio: {e}")
-            import traceback
-            traceback.print_exc()
-            raise
+                print("[Project] Building waveform cache...")
+                self.wave_cache = WaveformCache(self.backend._data, self.backend._sr)
+                print("[Project] Waveform cache built")
+            except Exception as e:
+                print(f"[Project] ERROR loading audio: {e}")
+                import traceback
+                traceback.print_exc()
+                raise
 
-        # Reset caches
-        self._spectrum_cache: Dict[str, Any] = {}
+            # Reset caches
+            self._spectrum_cache: Dict[str, Any] = {}
 
     def save(self) -> None:
         """Write current session data to .oscope file."""
-        try:
-            self.sidecar_path.write_text(json.dumps(self.session_data, indent=2))
-            self._dirty = False
-        except Exception as e:
-            print(f"[Project] Error saving sidecar: {e}")
+        with self._lock:
+            try:
+                self.sidecar_path.write_text(json.dumps(self.session_data, indent=2))
+                self._dirty = False
+            except Exception as e:
+                print(f"[Project] Error saving sidecar: {e}")
 
     # ---------- flag API ----------
     @property
     def flags(self) -> List[Dict[str, Any]]:
-        """Live, sorted list of flags (in-place edits are allowed)."""
-        return self.session_data.setdefault("flags", [])
+        """Live, sorted list of flags (returns a copy for thread safety)."""
+        with self._lock:
+            return list(self.session_data.setdefault("flags", []))
 
     def add_flag(
         self,
@@ -89,41 +94,48 @@ class Project:
         shaded: bool = False,
     ) -> None:
         """Insert and sort a new flag, skipping duplicates < 1 ms."""
-        if any(abs(f["t"] - time) < 0.001 for f in self.flags):
-            return
+        with self._lock:
+            flags = self.session_data.setdefault("flags", [])
+            if any(abs(f["t"] - time) < 0.001 for f in flags):
+                return
 
-        self.flags.append(
-            {
-                "t": time,
-                "type": kind,
-                "subdivision": subdivision,
-                "name": name,
-                "is_section_start": section_start,
-                "shaded_subdivisions": shaded,
-            }
-        )
-        self.flags.sort(key=lambda f: f["t"])
-        self._recompute_auto_names()
-        self._clear_backend_cache()
-        self.mark_dirty()
-        self._emit("flag_added", time)
-
-    def remove_flag(self, idx: int) -> None:
-        """Delete flag by index."""
-        self.flags.pop(idx)
-        self._recompute_auto_names()
-        self._clear_backend_cache()
-        self.mark_dirty()
-        self._emit("flag_removed", idx)
-
-    def move_flag(self, idx: int, new_time: float) -> None:
-        """Change flag time while enforcing ordering."""
-        if 0 <= idx < len(self.flags):
-            self.flags[idx]["t"] = new_time
-            self.flags.sort(key=lambda f: f["t"])
+            flags.append(
+                {
+                    "t": time,
+                    "type": kind,
+                    "subdivision": subdivision,
+                    "name": name,
+                    "is_section_start": section_start,
+                    "shaded_subdivisions": shaded,
+                }
+            )
+            flags.sort(key=lambda f: f["t"])
             self._recompute_auto_names()
             self._clear_backend_cache()
             self.mark_dirty()
+            self._emit("flag_added", time)
+
+    def remove_flag(self, idx: int) -> None:
+        """Delete flag by index."""
+        with self._lock:
+            flags = self.session_data.setdefault("flags", [])
+            if 0 <= idx < len(flags):
+                flags.pop(idx)
+                self._recompute_auto_names()
+                self._clear_backend_cache()
+                self.mark_dirty()
+                self._emit("flag_removed", idx)
+
+    def move_flag(self, idx: int, new_time: float) -> None:
+        """Change flag time while enforcing ordering."""
+        with self._lock:
+            flags = self.session_data.setdefault("flags", [])
+            if 0 <= idx < len(flags):
+                flags[idx]["t"] = new_time
+                flags.sort(key=lambda f: f["t"])
+                self._recompute_auto_names()
+                self._clear_backend_cache()
+                self.mark_dirty()
 
     # ---------- playback passthrough ----------
     def seek(self, time: float) -> None: self.backend.seek(time)
@@ -191,7 +203,7 @@ class Project:
                 return json.loads(self.sidecar_path.read_text())
             except Exception as e:
                 print(f"[Project] Error loading sidecar {self.sidecar_path}: {e}")
-        return {"labels": [], "loopPoints": [], "lastView": {}}
+        return {"labels": [], "loopPoints": [], "lastView": {}, "flags": []}
 
     def mark_dirty(self) -> None:
         self._dirty = True
@@ -225,36 +237,38 @@ class Project:
         """
         Insert `count` evenly-spaced rhythm flags between two existing flags.
         """
-        if not (0 <= left_idx < len(self.flags) and 0 <= right_idx < len(self.flags)):
-            return
+        with self._lock:
+            flags = self.session_data.setdefault("flags", [])
+            if not (0 <= left_idx < len(flags) and 0 <= right_idx < len(flags)):
+                return
 
-        left = self.flags[left_idx]
-        right = self.flags[right_idx]
-        if right["t"] <= left["t"]:
-            return
+            left = flags[left_idx]
+            right = flags[right_idx]
+            if right["t"] <= left["t"]:
+                return
 
-        span = right["t"] - left["t"]
-        step = span / (count + 1)
-        subdivision = left.get("subdivision", 0)
+            span = right["t"] - left["t"]
+            step = span / (count + 1)
+            subdivision = left.get("subdivision", 0)
 
-        for i in range(1, count + 1):
-            t = left["t"] + i * step
-            self.flags.append(
-                {
-                    "t": t,
-                    "type": "rhythm",
-                    "subdivision": subdivision,
-                    "name": "",
-                    "is_section_start": False,
-                    "shaded_subdivisions": False,
-                }
-            )
+            for i in range(1, count + 1):
+                t = left["t"] + i * step
+                flags.append(
+                    {
+                        "t": t,
+                        "type": "rhythm",
+                        "subdivision": subdivision,
+                        "name": "",
+                        "is_section_start": False,
+                        "shaded_subdivisions": False,
+                    }
+                )
 
-        self.flags.sort(key=lambda f: f["t"])
-        self._recompute_auto_names()
-        self._clear_backend_cache()
-        self.mark_dirty()
-        self._emit("flag_added", left["t"])
+            flags.sort(key=lambda f: f["t"])
+            self._recompute_auto_names()
+            self._clear_backend_cache()
+            self.mark_dirty()
+            self._emit("flag_added", left["t"])
 
     def register_callback(self, event: str, callback: Callable) -> None:
         if event in self._callbacks:
