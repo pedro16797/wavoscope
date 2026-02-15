@@ -198,17 +198,23 @@ class OpenProject(BaseModel):
 
 @app.post("/project/open")
 async def open_project(data: OpenProject):
+    print(f"[Backend] open_project called for: {data.path}")
     global project
     path = Path(data.path)
     if not path.exists():
+        print(f"[Backend] Error: File not found at {data.path}")
         raise HTTPException(status_code=404, detail=f"File not found: {data.path}")
 
     try:
+        print("[Backend] Initializing new Project object...")
         new_project = Project(path)
+        print("[Backend] Calling open_file on project...")
         new_project.open_file(path)
         project = new_project
+        print("[Backend] Project loaded successfully")
         return {"status": "ok", "filename": path.name}
     except Exception as e:
+        print(f"[Backend] Exception during open_project: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -313,4 +319,5 @@ if frontend_path.exists():
 
 if __name__ == "__main__":
     import uvicorn
+    print("[Backend] Starting FastAPI server on http://127.0.0.1:8000")
     uvicorn.run(app, host="127.0.0.1", port=8000)

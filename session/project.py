@@ -41,14 +41,26 @@ class Project:
     # ---------- file handling ----------
     def open_file(self, path: Path) -> None:
         """Close current audio, open new file, build cache."""
+        print(f"[Project] Opening file: {path}")
         # Stop ongoing playback
         if self.backend._playing:
             self.backend.pause()
         self.backend.close()
 
         # Load new audio
-        self.backend.open_file(path)
-        self.wave_cache = WaveformCache(self.backend._data, self.backend._sr)
+        try:
+            print("[Project] Loading audio into backend...")
+            self.backend.open_file(path)
+            print(f"[Project] Audio loaded. SR={self.backend._sr}, Duration={self.backend.duration:.2f}s")
+
+            print("[Project] Building waveform cache...")
+            self.wave_cache = WaveformCache(self.backend._data, self.backend._sr)
+            print("[Project] Waveform cache built")
+        except Exception as e:
+            print(f"[Project] ERROR loading audio: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
 
         # Reset caches
         self._spectrum_cache: Dict[str, Any] = {}
