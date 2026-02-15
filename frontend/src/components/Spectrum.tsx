@@ -15,8 +15,6 @@ export const Spectrum: React.FC = () => {
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
   const [size, setSize] = useState({ width: 0, height: 0 });
 
-  const theme = themes[currentTheme] || {};
-
   const baseMidi = 48 + octave_shift * 12;
   const range = {
     low: midiToFreq(baseMidi),
@@ -63,7 +61,8 @@ export const Spectrum: React.FC = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !theme.spectrum) return;
+    const theme = themes[currentTheme];
+    if (!canvas || !theme?.spectrum) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -111,7 +110,7 @@ export const Spectrum: React.FC = () => {
         });
         ctx.stroke();
     }
-  }, [data, range.low, range.high, theme, spectrum_keys, size]);
+  }, [data, range.low, range.high, themes, currentTheme, spectrum_keys, size]);
 
   const lastToneRef = useRef<number>(0);
   const currentHzRef = useRef<number>(0);

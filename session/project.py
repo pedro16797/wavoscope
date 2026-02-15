@@ -67,8 +67,11 @@ class Project:
 
     def save(self) -> None:
         """Write current session data to .oscope file."""
-        self.sidecar_path.write_text(json.dumps(self.session_data, indent=2))
-        self._dirty = False
+        try:
+            self.sidecar_path.write_text(json.dumps(self.session_data, indent=2))
+            self._dirty = False
+        except Exception as e:
+            print(f"[Project] Error saving sidecar: {e}")
 
     # ---------- flag API ----------
     @property
@@ -184,7 +187,10 @@ class Project:
     # ---------- internal utilities ----------
     def _load_or_create_sidecar(self) -> dict[str, Any]:
         if self.sidecar_path.exists():
-            return json.loads(self.sidecar_path.read_text())
+            try:
+                return json.loads(self.sidecar_path.read_text())
+            except Exception as e:
+                print(f"[Project] Error loading sidecar {self.sidecar_path}: {e}")
         return {"labels": [], "loopPoints": [], "lastView": {}}
 
     def mark_dirty(self) -> None:

@@ -12,10 +12,8 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { loaded, position, duration, currentTheme, themes, controlPlayback } = useStore();
-  const [bars, setBars] = React.useState<any[]>([]);
+  const [bars, setBars] = React.useState<number[][]>([]);
   const [size, setSize] = React.useState({ width: 0, height: 0 });
-
-  const theme = themes[currentTheme] || {};
 
   const updateSize = React.useCallback(() => {
     if (containerRef.current && canvasRef.current) {
@@ -57,7 +55,8 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !theme.waveform) return;
+    const theme = themes[currentTheme];
+    if (!canvas || !theme?.waveform) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -87,7 +86,7 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
         ctx.lineTo(cursorX, canvas.height);
         ctx.stroke();
     }
-  }, [bars, position, theme, offset, zoom, size]);
+  }, [bars, position, themes, currentTheme, offset, zoom, size]);
 
   const handleWheel = (e: React.WheelEvent) => {
     if (!canvasRef.current) return;

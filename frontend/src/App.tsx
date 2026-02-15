@@ -14,13 +14,12 @@ const App: React.FC = () => {
     currentTheme, themes, showSettings, setShowSettings,
     editingFlagIdx, setEditingFlagIdx, flags
   } = useStore();
-  const theme = themes[currentTheme] || {};
 
   useKeyboardShortcuts();
 
   useEffect(() => {
     // Expose setShowSettings to native menu
-    (window as any).setShowSettings = setShowSettings;
+    (window as Window & { setShowSettings?: (show: boolean) => void }).setShowSettings = setShowSettings;
   }, [setShowSettings]);
 
   useEffect(() => {
@@ -38,6 +37,7 @@ const App: React.FC = () => {
   }, [fetchThemes, fetchStatus, fetchConfig, updatePosition, setPlaying]);
 
   useEffect(() => {
+    const theme = themes[currentTheme];
     if (theme) {
         document.documentElement.style.setProperty('--color-background', theme.background || '#1e1e1e');
         document.documentElement.style.setProperty('--color-surface', theme.surface || '#252525');
@@ -45,7 +45,7 @@ const App: React.FC = () => {
         document.documentElement.style.setProperty('--color-grid', theme.grid || '#404040');
         document.documentElement.style.setProperty('--color-text', theme.text || '#e0e0e0');
     }
-  }, [theme]);
+  }, [themes, currentTheme]);
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden text-sm select-none"
