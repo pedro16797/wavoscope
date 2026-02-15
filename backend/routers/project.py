@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from pathlib import Path
+import traceback
 from backend import state
 from session.project import Project
 
@@ -18,15 +19,20 @@ class FlagData(BaseModel):
 async def add_flag(flag: FlagData):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    state.project.add_flag(
-        flag.t,
-        flag.type,
-        flag.subdivision,
-        flag.name,
-        flag.is_section_start,
-        flag.shaded_subdivisions
-    )
-    return {"status": "ok", "flags": state.project.flags}
+    try:
+        state.project.add_flag(
+            flag.t,
+            flag.type,
+            flag.subdivision,
+            flag.name,
+            flag.is_section_start,
+            flag.shaded_subdivisions
+        )
+        return {"status": "ok", "flags": state.project.flags}
+    except Exception as e:
+        print(f"[Backend] Error in add_flag: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/flags/{idx}")
 async def remove_flag(idx: int):
@@ -54,8 +60,13 @@ class FlagInsertN(BaseModel):
 async def insert_n_flags(data: FlagInsertN):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    state.project.insert_equi_spaced_flags(data.left_idx, data.left_idx + 1, data.count)
-    return {"status": "ok", "flags": state.project.flags}
+    try:
+        state.project.insert_equi_spaced_flags(data.left_idx, data.left_idx + 1, data.count)
+        return {"status": "ok", "flags": state.project.flags}
+    except Exception as e:
+        print(f"[Backend] Error in insert_n_flags: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/save")
 async def save_project():

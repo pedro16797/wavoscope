@@ -38,7 +38,7 @@ class Project:
 
         self.wave_cache: WaveformCache | None = None
         self._dirty: bool = False
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
 
     # ---------- file handling ----------
     def open_file(self, path: Path) -> None:
