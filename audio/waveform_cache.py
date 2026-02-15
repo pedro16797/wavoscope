@@ -66,13 +66,12 @@ class WaveformCache:
         intensity = np.clip(4 * avgs / (1e-12 + crest), 0, 1)
         intensity = (intensity + 2) / 3  # remap 0…1 → 0.66…1
 
-        # Normalise waveform range to [-1, 1] using pre-calculated clips
-        span = max(self.high_clip - self.low_clip, 1e-6)
-        mins_norm = (np.clip(mins, self.low_clip, self.high_clip) - self.low_clip) / span * 2 - 1
-        maxs_norm = (np.clip(maxs, self.low_clip, self.high_clip) - self.low_clip) / span * 2 - 1
+        # Normalise waveform range to [-1, 1] symmetrically around 0
+        limit = max(abs(self.low_clip), abs(self.high_clip), 1e-6)
+        mins_norm = np.clip(mins, -limit, limit) / limit
+        maxs_norm = np.clip(maxs, -limit, limit) / limit
 
-        # RMS (average absolute value) normalized relative to the same span
-        # Since avgs is positive, rms_norm represents the distance from center
-        rms_norm = np.clip(avgs / (span / 2), 0, 1)
+        # RMS (average absolute value) normalized relative to the same limit
+        rms_norm = np.clip(avgs / limit, 0, 1)
 
         return list(zip(mins_norm.tolist(), maxs_norm.tolist(), rms_norm.tolist(), intensity.tolist()))

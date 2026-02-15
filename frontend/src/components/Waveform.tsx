@@ -66,7 +66,8 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
     ctx.clearRect(0, 0, size.width, size.height);
 
     const midY = size.height / 2;
-    const scaleY = midY * 0.9;
+    // Use 80% of half-height to ensure a healthy margin and prevent feeling "too tall"
+    const scaleY = midY * 0.8;
 
     const barWidth = size.width / Math.max(bars.length, 1);
 
