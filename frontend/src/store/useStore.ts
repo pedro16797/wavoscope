@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = window.location.origin.includes(':5173') ? 'http://127.0.0.1:8000' : '';
 
 export interface Flag {
   t: number;
@@ -122,15 +122,15 @@ export const useStore = create<AppState>((set, get) => ({
     try {
       if ((window as any).pywebview?.api?.browse) {
         await (window as any).pywebview.api.browse();
-        get().fetchStatus();
+        await get().fetchStatus();
       } else {
         const res = await axios.get(`${API_BASE}/browse`);
         if (res.data.status === 'loaded') {
-          get().fetchStatus();
+          await get().fetchStatus();
         }
       }
     } catch (e) {
-      console.error(e);
+      console.error("Failed to browse or load file:", e);
     }
   },
 

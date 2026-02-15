@@ -210,11 +210,17 @@ async def open_project(data: OpenProject):
     global project
     path = Path(data.path)
     if not path.exists():
-        raise HTTPException(status_code=404, detail="File not found")
+        raise HTTPException(status_code=404, detail=f"File not found: {data.path}")
 
-    project = Project(path)
-    project.open_file(path)
-    return {"status": "ok", "filename": path.name}
+    try:
+        new_project = Project(path)
+        new_project.open_file(path)
+        project = new_project
+        return {"status": "ok", "filename": path.name}
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):

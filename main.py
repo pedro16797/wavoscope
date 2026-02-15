@@ -47,9 +47,12 @@ def main():
             if res:
                 file_path = res[0]
                 try:
-                    requests.post('http://127.0.0.1:8000/project/open', json={'path': file_path})
+                    resp = requests.post('http://127.0.0.1:8000/project/open', json={'path': file_path})
+                    resp.raise_for_status()
                 except Exception as e:
                     print(f"Error opening file: {e}")
+                    if hasattr(e, 'response') and e.response is not None:
+                        print(f"Response: {e.response.text}")
 
     api = Api()
 

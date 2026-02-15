@@ -13,6 +13,7 @@ export const Spectrum: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys } = useStore();
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
   const theme = themes[currentTheme] || {};
 
@@ -24,8 +25,11 @@ export const Spectrum: React.FC = () => {
 
   const updateSize = useCallback(() => {
     if (containerRef.current && canvasRef.current) {
-      canvasRef.current.width = containerRef.current.clientWidth;
-      canvasRef.current.height = containerRef.current.clientHeight;
+      const w = containerRef.current.clientWidth;
+      const h = containerRef.current.clientHeight;
+      canvasRef.current.width = w;
+      canvasRef.current.height = h;
+      setSize({ width: w, height: h });
     }
   }, []);
 
@@ -107,7 +111,7 @@ export const Spectrum: React.FC = () => {
         });
         ctx.stroke();
     }
-  }, [data, range.low, range.high, theme, spectrum_keys]);
+  }, [data, range.low, range.high, theme, spectrum_keys, size]);
 
   const lastToneRef = useRef<number>(0);
   const currentHzRef = useRef<number>(0);

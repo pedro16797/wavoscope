@@ -11,14 +11,18 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { loaded, duration, currentTheme, themes, flags, addFlag, moveFlag, setEditingFlagIdx } = useStore();
   const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
   const theme = themes[currentTheme] || {};
 
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current && canvasRef.current) {
-        canvasRef.current.width = containerRef.current.clientWidth;
-        canvasRef.current.height = containerRef.current.clientHeight;
+        const w = containerRef.current.clientWidth;
+        const h = containerRef.current.clientHeight;
+        canvasRef.current.width = w;
+        canvasRef.current.height = h;
+        setSize({ width: w, height: h });
       }
     };
     const observer = new ResizeObserver(updateSize);
@@ -82,7 +86,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
             ctx.fillText(label, x - textWidth/2, 30);
         }
     });
-  }, [offset, zoom, theme, duration, flags, dragIdx]);
+  }, [offset, zoom, theme, duration, flags, dragIdx, size]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!loaded) return;
