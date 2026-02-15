@@ -34,6 +34,7 @@ class Project:
         self.sidecar_path: Path = audio_path.with_suffix(audio_path.suffix + "oscope")
 
         self.backend: AudioBackend = AudioBackend()
+        self.backend.set_tick_provider(self.subdivision_ticks_between)
         self.session_data: Dict[str, Any] = self._load_or_create_sidecar()
 
         self.wave_cache: WaveformCache | None = None
@@ -192,34 +193,39 @@ class Project:
         honouring subdivision flags.
         """
         ticks: list[tuple[float, bool]] = []
+        flags = self.flags
 
         # Iterate over neighbouring flag pairs
-        for prev, nxt in zip(self.flags, self.flags[1:]):
+        for i, prev in enumerate(flags):
             if prev["type"] != "rhythm":
                 continue
 
-            # Resolve subdivision (walk backwards if not explicitly set)
-            subdiv = prev.get("subdivision", 0)
-            if subdiv == 0:
-                for p in reversed(self.flags[: self.flags.index(prev) + 1]):
-                    if p["type"] == "rhythm" and p.get("subdivision", 0) != 0:
-                        subdiv = p["subdivision"]
-                        break
-                else:
-                    subdiv = 1
+            # Every rhythm flag itself is a strong tick
+            if start <= prev["t"] < end:
+                ticks.append((prev["t"], True))
 
-            if subdiv <= 1:
-                if start <= prev["t"] < end:
-                    ticks.append((prev["t"], True))
-                continue
+            # Subdivisions only exist between this and the next flag
+            if i + 1 < len(flags):
+                nxt = flags[i + 1]
 
-            # Evenly spaced ticks within the span
-            span = nxt["t"] - prev["t"]
-            step = span / subdiv
-            for k in range(subdiv):
-                tick_time = prev["t"] + k * step
-                if start <= tick_time < end:
-                    ticks.append((tick_time, k == 0))  # first tick is strong
+                # Resolve subdivision (walk backwards if not explicitly set)
+                subdiv = prev.get("subdivision", 0)
+                if subdiv == 0:
+                    for p in reversed(flags[: i + 1]):
+                        if p["type"] == "rhythm" and p.get("subdivision", 0) != 0:
+                            subdiv = p["subdivision"]
+                            break
+                    else:
+                        subdiv = 1
+
+                if subdiv > 1:
+                    span = nxt["t"] - prev["t"]
+                    step = span / subdiv
+                    # k=0 is the main flag (already added), so start from 1
+                    for k in range(1, subdiv):
+                        tick_time = prev["t"] + k * step
+                        if start <= tick_time < end:
+                            ticks.append((tick_time, False))
 
         return sorted(ticks, key=lambda t: t[0])
 
