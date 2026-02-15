@@ -5,13 +5,13 @@ from pathlib import Path
 root_path = Path(__file__).resolve().parent.parent
 sys.path.append(str(root_path))
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi import FastAPI  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
+from fastapi.responses import FileResponse  # noqa: E402
 
-from backend import state
-from backend.routers import playback, audio, project, config, themes, ws
+from backend import state  # noqa: E402
+from backend.routers import playback, audio, project, config, themes, ws  # noqa: E402
 
 app = FastAPI()
 

@@ -17,8 +17,10 @@ async def get_themes():
 
     resolved_themes = {}
     def resolve(name, visited=None):
-        if visited is None: visited = set()
-        if name in visited: return {} # Circular
+        if visited is None:
+            visited = set()
+        if name in visited:
+            return {} # Circular
         visited.add(name)
 
         theme = raw_themes.get(name, {})

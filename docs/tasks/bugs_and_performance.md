@@ -12,7 +12,7 @@ Conduct a thorough audit of the Wavoscope codebase to identify and fix bugs, and
 - [x] Audit and remove any remaining legacy Qt-related code that is no longer used.
 
 ### 1. Static Analysis & Code Quality
-- [ ] Run static analysis tools for Python (e.g., `ruff`, `mypy`) to identify potential bugs and code quality issues.
+- [x] Run static analysis tools for Python (e.g., `ruff`, `mypy`) to identify potential bugs and code quality issues.
 - [x] Implement linting and type checking for the React frontend (e.g., `eslint`, `tsc`).
 - [x] Refactor complex methods and improve docstring/JSDoc coverage.
 - [x] Ensure consistent naming conventions and code style across the project.

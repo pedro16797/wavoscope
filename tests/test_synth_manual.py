@@ -1,5 +1,4 @@
 import time
-import numpy as np
 from audio.synth import SimpleSynth
 
 def test_synth():
