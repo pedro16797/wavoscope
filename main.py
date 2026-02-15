@@ -35,6 +35,26 @@ def main():
 
     url = 'http://127.0.0.1:8000'
 
+    # Native Menu and API Setup
+    from webview.menu import Menu, MenuAction, MenuSeparator
+
+    class Api:
+        def __init__(self):
+            self.window = None
+
+        def browse(self):
+            if not self.window: return
+            file_types = ('Audio Files (*.wav;*.mp3;*.flac;*.ogg)', 'All files (*.*)')
+            res = self.window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+            if res:
+                file_path = res[0]
+                try:
+                    requests.post('http://127.0.0.1:8000/project/open', json={'path': file_path})
+                except Exception as e:
+                    print(f"Error opening file: {e}")
+
+    api = Api()
+
     window = webview.create_window(
         'Wavoscope',
         url,
@@ -44,22 +64,7 @@ def main():
         background_color='#1e1e1e',
         js_api=api
     )
-
-    # Native Menu
-    from webview.menu import Menu, MenuAction, MenuSeparator
-
-    class Api:
-        def browse(self):
-            file_types = ('Audio Files (*.wav;*.mp3;*.flac;*.ogg)', 'All files (*.*)')
-            res = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
-            if res:
-                file_path = res[0]
-                try:
-                    requests.post('http://127.0.0.1:8000/project/open', json={'path': file_path})
-                except Exception as e:
-                    print(f"Error opening file: {e}")
-
-    api = Api()
+    api.window = window
 
     def open_file():
         api.browse()
