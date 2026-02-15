@@ -9,15 +9,6 @@ from typing import Optional, Dict, Any, List
 root_path = Path(__file__).resolve().parent.parent
 sys.path.append(str(root_path))
 
-# Mapping hack for wavoscope.*
-import audio
-import session
-import utils
-import config
-sys.modules["wavoscope.audio"] = audio
-sys.modules["wavoscope.session"] = session
-sys.modules["wavoscope.utils"] = utils
-sys.modules["wavoscope.config"] = config
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware

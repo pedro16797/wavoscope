@@ -15,8 +15,8 @@ except OSError:
 import soundfile as sf
 from scipy.signal import ellip, sosfilt
 
-from wavoscope.audio.ringbuffer import RingBuffer
-from wavoscope.audio.synth import SimpleSynth
+from audio.ringbuffer import RingBuffer
+from audio.synth import SimpleSynth
 
 
 class AudioBackend:

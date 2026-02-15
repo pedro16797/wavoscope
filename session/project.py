@@ -18,8 +18,8 @@ import json
 from pathlib import Path
 from typing import List, Dict, Any, Callable
 
-from wavoscope.audio.audio_backend import AudioBackend
-from wavoscope.audio.waveform_cache import WaveformCache
+from audio.audio_backend import AudioBackend
+from audio.waveform_cache import WaveformCache
 
 
 class Project:

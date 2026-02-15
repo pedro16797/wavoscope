@@ -3,8 +3,8 @@ Command-line tool to add or list flags in a .oscope side-car file.
 
 Examples
 --------
-$ python -m wavoscope.cli.flag_cli song.wav --add 12.5 rhythm "Verse 1"
-$ python -m wavoscope.cli.flag_cli song.wav --list
+$ python cli/flag_cli.py song.wav --add 12.5 rhythm "Verse 1"
+$ python cli/flag_cli.py song.wav --list
 """
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ import argparse
 import json
 from pathlib import Path
 
-from wavoscope.session.project import Project
+from session.project import Project
 
 
 def main() -> None:
