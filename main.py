@@ -43,7 +43,7 @@ def main():
             if not webview.windows: return
             window = webview.windows[0]
             file_types = ('Audio Files (*.wav;*.mp3;*.flac;*.ogg)', 'All files (*.*)')
-            res = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+            res = window.create_file_dialog(webview.FileDialog.OPEN, allow_multiple=False, file_types=file_types)
             if res:
                 file_path = res[0]
                 try:
