@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { useStore, type HarmonyFlag, type Chord, formatChord } from '../store/useStore';
+import { useStore } from '../store/useStore';
+import type { HarmonyFlag, Chord } from '../store/types';
+import { formatChord } from '../store/utils';
 
 interface ChordDialogProps {
   idx: number;
