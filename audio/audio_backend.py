@@ -11,6 +11,7 @@ import traceback
 
 import numpy as np
 import python_stretch.Signalsmith as ps
+import scipy.signal
 try:
     import sounddevice as sd
 except OSError:
@@ -61,6 +62,18 @@ class AudioBackend:
         self._weak_freq: float = 800.0
         self._metronome_enabled: bool = True
 
+        # Filter state
+        self._filter_enabled: bool = False
+        self._filter_low: float = 20.0
+        self._filter_high: float = 20000.0
+        self._filter_sos: np.ndarray | None = None
+        self._filter_zi: np.ndarray | None = None
+
+        # Looping state
+        self._loop_enabled: bool = False
+        self._loop_provider: Callable[[float], Tuple[float, float]] | None = None
+        self._active_loop_range: Tuple[float, float] | None = None
+
         self._subdivision_ticks_between: Callable[[float, float], List[Tuple[float, bool]]] | None = None
 
         # Pre-calculated click waveforms
@@ -77,6 +90,7 @@ class AudioBackend:
                 data = data.mean(axis=1)
             self._data = data.astype(np.float32)
             self._sr = sr
+            self._update_filter_coeffs()
             self._cursor = 0.0
             self._read_sample_idx = 0
             self._playing = False
@@ -107,6 +121,10 @@ class AudioBackend:
     def seek(self, sec: float) -> None:
         with self._lock:
             self._cursor = max(0.0, min(sec, self.duration))
+            self._active_loop_range = None
+            if self._filter_sos is not None:
+                self._filter_zi = scipy.signal.sosfilt_zi(self._filter_sos)
+
             self._read_sample_idx = int(self._cursor * self._sr)
             self._tsm_buffer.clear()
             self._last_tsm_overlap = None
@@ -228,6 +246,19 @@ class AudioBackend:
             if not self._playing or self._data is None:
                 return
 
+            # Handle Looping
+            if self._loop_enabled and self._loop_provider:
+                if self._active_loop_range is None:
+                    self._active_loop_range = self._loop_provider(self._cursor)
+
+                lstart, lend = self._active_loop_range
+                if self._cursor >= lend - 0.001:
+                    self._cursor = lstart
+                    self._read_sample_idx = int(self._cursor * self._sr)
+                    self._tsm_buffer.clear()
+                    self._last_tsm_overlap = None
+                    self.clear_tick_cache()
+
             to_read = 0
             if self._speed == 1.0:
                 # 1. Bypass Mode: read directly from source for zero-latency, zero-artifact playback
@@ -235,7 +266,13 @@ class AudioBackend:
                 end_idx = min(start_idx + frames, len(self._data))
                 to_read = end_idx - start_idx
                 if to_read > 0:
-                    outdata[:to_read, 0] = self._data[start_idx:end_idx] * self._volume
+                    chunk = self._data[start_idx:end_idx]
+
+                    # Band-pass filter
+                    if self._filter_enabled and self._filter_sos is not None:
+                        chunk, self._filter_zi = scipy.signal.sosfilt(self._filter_sos, chunk, zi=self._filter_zi)
+
+                    outdata[:to_read, 0] = chunk * self._volume
                     self._read_sample_idx = end_idx
             else:
                 # 2. TSM / Enhancement Mode
@@ -303,6 +340,11 @@ class AudioBackend:
 
                 # Read from TSM buffer
                 samples, to_read = self._tsm_buffer.read(frames)
+
+                # Band-pass filter
+                if self._filter_enabled and self._filter_sos is not None:
+                    samples, self._filter_zi = scipy.signal.sosfilt(self._filter_sos, samples, zi=self._filter_zi)
+
                 outdata[:, 0] = samples * self._volume
 
             # 3. Metronome overlay
@@ -399,3 +441,32 @@ class AudioBackend:
             click_dur = min(len(click_src), frames - offset)
             if click_dur > 0:
                 outdata[offset : offset + click_dur, 0] += click_src[:click_dur] * volume
+
+    # ---------- loop & filter setters ----------
+    def set_loop_enabled(self, enabled: bool) -> None:
+        self._loop_enabled = enabled
+        if not enabled:
+            self._active_loop_range = None
+
+    def set_loop_provider(self, fn: Callable[[float], Tuple[float, float]]) -> None:
+        self._loop_provider = fn
+
+    def set_filter_params(self, enabled: bool, low: float, high: float) -> None:
+        with self._lock:
+            self._filter_enabled = enabled
+            self._filter_low = low
+            self._filter_high = high
+            self._update_filter_coeffs()
+
+    def _update_filter_coeffs(self) -> None:
+        if not self._filter_enabled:
+            self._filter_sos = None
+            self._filter_zi = None
+            return
+
+        # Bandpass filter
+        nyq = 0.5 * self._sr
+        low = max(0.001, self._filter_low / nyq)
+        high = min(0.999, self._filter_high / nyq)
+        self._filter_sos = scipy.signal.butter(4, [low, high], btype='band', output='sos')
+        self._filter_zi = scipy.signal.sosfilt_zi(self._filter_sos)
