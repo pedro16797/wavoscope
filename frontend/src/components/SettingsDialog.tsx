@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
+import { ChevronDown } from 'lucide-react';
 
 interface SettingsDialogProps {
   onClose: () => void;
@@ -12,6 +13,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const [theme, setTheme] = useState(currentTheme);
   const [clickVol, setClickVol] = useState(click_gain * 100);
   const [keys, setKeys] = useState(spectrum_keys);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleSave = () => {
     updateConfig({
@@ -48,11 +50,28 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                 <>
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-bold opacity-50">UI Theme</label>
-                        <select value={theme} onChange={(e) => setTheme(e.target.value)}
-                                className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm text-text"
-                                style={{ borderWidth: 'var(--ui-border)' }}>
-                            {Object.keys(themes).map(t => <option key={t} value={t} className="bg-surface text-text">{t}</option>)}
-                        </select>
+                        <div className="relative">
+                            <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 flex justify-between items-center text-sm text-text outline-none focus:border-accent transition-colors"
+                                    style={{ borderWidth: 'var(--ui-border)' }}>
+                                <span>{theme}</span>
+                                <ChevronDown size={14} className={`transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            {isDropdownOpen && (
+                                <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-grid rounded-[var(--ui-radius)] shadow-2xl z-50 overflow-hidden"
+                                     style={{ backgroundColor: 'var(--color-surface)', borderWidth: 'var(--ui-border)' }}>
+                                    <div className="max-h-48 overflow-y-auto">
+                                        {Object.keys(themes).map(t => (
+                                            <button key={t}
+                                                    onClick={() => { setTheme(t); setIsDropdownOpen(false); }}
+                                                    className={`w-full text-left px-3 py-2 text-sm transition-colors ${theme === t ? 'bg-accent text-background font-bold' : 'hover:bg-accent/20 text-text'}`}>
+                                                {t}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-bold opacity-50 flex justify-between">
