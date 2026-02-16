@@ -41,16 +41,19 @@ The current playback engine uses a crude mirroring/padding technique to handle s
 -   [x] Implement smooth speed transitions and verify stability across the 0.1x - 4.0x range.
 
 ### 2. MVP: NovaSR Enhancement
--   [x] Integrate the NovaSR model and its required dependencies (`torch`, `safetensors`).
+-   [x] Integrate the NovaSR model and its required dependencies (`onnxruntime`, `soxr`).
 -   [x] Implement the super-resolution stage in the audio pipeline: `Source -> TSM -> NovaSR -> Output`.
 -   [x] Add a "High Quality Enhancement" toggle in the frontend Settings.
 
 ### 3. Performance & Quality Validation
 -   [x] Test the integrated pipeline on real-world music transcription scenarios.
 -   [x] Verify that CPU/RAM usage remains acceptable for real-time desktop use.
+-   [x] Implement 1.0x bypass and artifact-free chunking (cross-fading).
 -   [x] Document any remaining limitations or future optimization paths.
 
 ## Implementation Notes
 - **TSM**: Uses `Signalsmith Stretch` via `python-stretch`. Implemented with a `RingBuffer` to handle variable output length.
 - **NovaSR**: Implemented using `onnxruntime` with a bundled ONNX model (`resources/models/novasr.onnx`). Uses `soxr.ResampleStream` for stateful resampling between original SR, 16kHz (model input), and 48kHz (model output). This approach avoids heavy PyTorch dependencies and ensures compatibility with standalone builds.
-- **Configuration**: Managed via `high_quality_enhancement` setting in `utils/config.py` and exposed in the React frontend.
+- **1.0x Bypass**: To ensure zero-latency and bit-perfect playback at normal speed, the `_audio_callback` implements a direct-read bypass when `speed == 1.0`.
+- **Artifact Resolution**: To eliminate "pulsating clicks" at chunk boundaries, the backend uses a 512-sample overlap-add/cross-fade mechanism between processed audio blocks.
+- **Configuration Propagation**: Managed via `high_quality_enhancement` setting. A bug in the FastAPI routers was identified where the setting was not being correctly passed to the `AudioBackend`; this was resolved by updating the `AppConfig` model and `update_config` router.

@@ -35,6 +35,13 @@ class Project:
 
         self.backend: AudioBackend = AudioBackend()
         self.backend.set_tick_provider(self.subdivision_ticks_between)
+
+        # Apply global config to backend
+        from utils.config import Config
+        cfg = Config()
+        self.backend.set_click_gain(cfg.get("ui.click_volume", 0.3))
+        self.backend.set_novasr_enabled(cfg.get("ui.high_quality_enhancement", False))
+
         self.session_data: Dict[str, Any] = self._load_or_create_sidecar()
 
         self.wave_cache: WaveformCache | None = None
