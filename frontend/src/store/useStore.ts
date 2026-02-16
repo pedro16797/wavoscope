@@ -116,7 +116,7 @@ interface AppState {
   harmony_flags: HarmonyFlag[];
   dirty: boolean;
   metronome_enabled: boolean;
-  click_gain: number;
+  click_volume: number;
   loop_mode: string;
   loop_range: [number, number];
   filter_enabled: boolean;
@@ -179,7 +179,7 @@ export const useStore = create<AppState>((set, get) => ({
   harmony_flags: [],
   dirty: false,
   metronome_enabled: true,
-  click_gain: 0.3,
+  click_volume: 0.3,
   loop_mode: 'none',
   loop_range: [0, 0],
   filter_enabled: false,
@@ -203,7 +203,7 @@ export const useStore = create<AppState>((set, get) => ({
       const res = await axios.get(`${API_BASE}/status`);
       set(res.data);
     } catch (e) {
-      console.error(e);
+      console.error("[Store] Failed to fetch status:", e);
     }
   },
 
@@ -212,7 +212,7 @@ export const useStore = create<AppState>((set, get) => ({
       const res = await axios.get(`${API_BASE}/themes`);
       set({ themes: res.data });
     } catch (e) {
-      console.error(e);
+      console.error("[Store] Failed to fetch themes:", e);
     }
   },
 
@@ -221,12 +221,12 @@ export const useStore = create<AppState>((set, get) => ({
       const res = await axios.get(`${API_BASE}/config`);
       set({
         currentTheme: res.data.theme,
-        click_gain: res.data.click_volume,
+        click_volume: res.data.click_volume,
         spectrum_keys: res.data.spectrum_keys,
         high_quality_enhancement: res.data.high_quality_enhancement
       });
     } catch (e) {
-      console.error(e);
+      console.error("[Store] Failed to fetch config:", e);
     }
   },
 
@@ -236,29 +236,24 @@ export const useStore = create<AppState>((set, get) => ({
       if (action === 'set_speed' && value !== undefined) set({ speed: value });
       if (action === 'set_volume' && value !== undefined) set({ volume: value });
     } catch (e) {
-      console.error(e);
+      console.error(`[Store] Failed to control playback (${action}):`, e);
     }
   },
 
   browseFile: async () => {
-    console.log("Store: browseFile called");
     const pywindow = window as Window & { pywebview?: { api: { browse: () => Promise<void> } } };
     try {
       if (pywindow.pywebview?.api?.browse) {
-        console.log("Store: Using pywebview API to browse");
         await pywindow.pywebview.api.browse();
-        console.log("Store: Browse finished, fetching status");
         await get().fetchStatus();
       } else {
-        console.log("Store: pywebview API not found, falling back to /browse endpoint");
         const res = await axios.get(`${API_BASE}/browse`);
-        console.log("Store: /browse response:", res.data);
         if (res.data.status === 'loaded') {
           await get().fetchStatus();
         }
       }
     } catch (e) {
-      console.error("Store: Failed to browse or load file:", e);
+      console.error("[Store] Failed to browse or load file:", e);
     }
   },
 
@@ -267,7 +262,7 @@ export const useStore = create<AppState>((set, get) => ({
         await axios.post(`${API_BASE}/config`, { theme: name });
         set({ currentTheme: name });
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to set theme:", e);
     }
   },
 
@@ -280,7 +275,7 @@ export const useStore = create<AppState>((set, get) => ({
         await get().fetchStatus();
         return { t, chord };
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to add harmony flag:", e);
         return null;
     }
   },
@@ -290,7 +285,7 @@ export const useStore = create<AppState>((set, get) => ({
         await axios.post(`${API_BASE}/project/harmony_flags/move`, { idx, t });
         get().fetchStatus();
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to move harmony flag:", e);
     }
   },
 
@@ -299,7 +294,7 @@ export const useStore = create<AppState>((set, get) => ({
         await axios.delete(`${API_BASE}/project/harmony_flags/${idx}`);
         get().fetchStatus();
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to remove harmony flag:", e);
     }
   },
 
@@ -308,7 +303,7 @@ export const useStore = create<AppState>((set, get) => ({
         await axios.patch(`${API_BASE}/project/harmony_flags/${idx}`, { t, chord });
         get().fetchStatus();
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to update harmony flag:", e);
     }
   },
 
@@ -317,7 +312,7 @@ export const useStore = create<AppState>((set, get) => ({
         const res = await axios.get(`${API_BASE}/project/analyze_chord`, { params: { t } });
         return res.data;
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to analyze chord:", e);
         return {
             root: 'C',
             accidental: '',
@@ -339,13 +334,13 @@ export const useStore = create<AppState>((set, get) => ({
     set({ playing });
   },
 
-  updateMetronome: async (enabled, gain) => {
+  updateMetronome: async (enabled, volume) => {
     try {
-        await axios.post(`${API_BASE}/playback/metronome`, { enabled, gain });
+        await axios.post(`${API_BASE}/playback/metronome`, { enabled, volume });
         if (enabled !== undefined) set({ metronome_enabled: enabled });
-        if (gain !== undefined) set({ click_gain: gain });
+        if (volume !== undefined) set({ click_volume: volume });
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to update metronome:", e);
     }
   },
 
@@ -353,11 +348,11 @@ export const useStore = create<AppState>((set, get) => ({
     try {
         await axios.post(`${API_BASE}/config`, cfg);
         if (cfg.theme) set({ currentTheme: cfg.theme });
-        if (cfg.click_volume !== undefined) set({ click_gain: cfg.click_volume });
+        if (cfg.click_volume !== undefined) set({ click_volume: cfg.click_volume });
         if (cfg.spectrum_keys !== undefined) set({ spectrum_keys: cfg.spectrum_keys });
         if (cfg.high_quality_enhancement !== undefined) set({ high_quality_enhancement: cfg.high_quality_enhancement });
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to update config:", e);
     }
   },
 
@@ -366,7 +361,7 @@ export const useStore = create<AppState>((set, get) => ({
         await axios.post(`${API_BASE}/project/flags`, { t });
         get().fetchStatus();
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to add flag:", e);
     }
   },
 
@@ -375,7 +370,7 @@ export const useStore = create<AppState>((set, get) => ({
         await axios.post(`${API_BASE}/project/flags/move`, { idx, t });
         get().fetchStatus();
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to move flag:", e);
     }
   },
 
@@ -384,7 +379,7 @@ export const useStore = create<AppState>((set, get) => ({
         await axios.delete(`${API_BASE}/project/flags/${idx}`);
         get().fetchStatus();
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to remove flag:", e);
     }
   },
 
@@ -394,7 +389,7 @@ export const useStore = create<AppState>((set, get) => ({
         set({ loop_mode: mode });
         get().fetchStatus();
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to set loop mode:", e);
     }
   },
 
@@ -430,7 +425,7 @@ export const useStore = create<AppState>((set, get) => ({
     try {
         await axios.post(`${API_BASE}/playback/filter`, filter);
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to update filter:", e);
     }
   },
 
@@ -439,7 +434,7 @@ export const useStore = create<AppState>((set, get) => ({
         await axios.post(`${API_BASE}/project/save`);
         set({ dirty: false });
     } catch (e) {
-        console.error(e);
+        console.error("[Store] Failed to save project:", e);
     }
   },
 

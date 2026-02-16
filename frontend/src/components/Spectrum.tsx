@@ -79,8 +79,8 @@ export const Spectrum: React.FC = () => {
     fetchSpectrum(position, fft_window, range.low, range.high, size.width || 1000);
   }, [loaded, position, range.low, range.high, fft_window, size.width]);
 
+  const harmony_flags = useStore(state => state.harmony_flags);
   const activeChordNotes = useMemo(() => {
-    const { harmony_flags } = useStore.getState();
     // Find the last flag before or at the current position
     let activeFlag = null;
     for (const f of harmony_flags) {
@@ -88,7 +88,7 @@ export const Spectrum: React.FC = () => {
         else break;
     }
     return activeFlag ? getChordMidiNotes(activeFlag.chord) : [];
-  }, [position, useStore.getState().harmony_flags]);
+  }, [position, harmony_flags]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

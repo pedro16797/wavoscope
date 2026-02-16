@@ -46,6 +46,13 @@ class SimpleSynth:
         """Silence every active tone."""
         self._active.clear()
 
+    def close(self) -> None:
+        """Stop and close the audio stream."""
+        if hasattr(self, "_stream") and self._stream is not None:
+            self._stream.stop()
+            self._stream.close()
+            self._stream = None
+
     # ---------- audio callback ----------
     def _callback(
         self,
