@@ -22,22 +22,22 @@ export const PlaybackBar: React.FC = () => {
   const progressPercent = duration > 0 ? (position / duration) * 100 : 0;
 
   return (
-    <div className="p-2 flex items-center gap-4 border-b select-none h-16 shrink-0" style={{ backgroundColor: theme.surface, color: theme.text }}>
+    <div className="p-2 flex items-center gap-4 border-b-[width:var(--ui-border)] select-none h-16 shrink-0 bg-surface" style={{ color: theme.text }}>
       <div className="flex items-center gap-1">
-        <button onClick={browseFile} className="p-2 hover:bg-white/10 rounded transition-colors" title="Open Audio File">
+        <button onClick={browseFile} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors" title="Open Audio File">
             <FolderOpen size={20} />
         </button>
         <button onClick={saveProject} disabled={!loaded}
-                className={`p-2 hover:bg-white/10 rounded transition-colors mr-2 ${!loaded ? 'opacity-20' : (dirty ? 'text-accent' : 'opacity-60')}`}
+                className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : (dirty ? 'text-accent' : 'opacity-60')}`}
                 title={dirty ? "Save Project (Unsaved changes)" : "Save Project"}>
             <Save size={20} />
         </button>
         {loaded && (
             <>
-                <button onClick={() => controlPlayback(playing ? 'pause' : 'play')} className="p-2 hover:bg-white/10 rounded transition-colors">
+                <button onClick={() => controlPlayback(playing ? 'pause' : 'play')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
                 {playing ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
                 </button>
-                <button onClick={() => controlPlayback('stop')} className="p-2 hover:bg-white/10 rounded transition-colors">
+                <button onClick={() => controlPlayback('stop')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
                 <Square size={20} fill="currentColor" />
                 </button>
             </>
@@ -80,15 +80,15 @@ export const PlaybackBar: React.FC = () => {
         </div>
 
         {/* Octave Shift */}
-        <div className="flex items-center gap-1 border-l border-white/10 pl-4 mr-2">
+        <div className="flex items-center gap-1 border-l-[width:var(--ui-border)] border-white/10 pl-4 mr-2">
             <span className="text-[9px] opacity-60 font-bold mr-1">OCT</span>
-            <button onClick={() => setOctaveShift(octave_shift - 1)} className="p-1 hover:bg-white/10 rounded"><ChevronDown size={14}/></button>
+            <button onClick={() => setOctaveShift(octave_shift - 1)} className="p-1 hover:bg-white/10 rounded-[var(--ui-radius)]"><ChevronDown size={14}/></button>
             <span className="text-[10px] font-mono w-4 text-center">{octave_shift > 0 ? `+${octave_shift}` : octave_shift}</span>
-            <button onClick={() => setOctaveShift(octave_shift + 1)} className="p-1 hover:bg-white/10 rounded"><ChevronUp size={14}/></button>
+            <button onClick={() => setOctaveShift(octave_shift + 1)} className="p-1 hover:bg-white/10 rounded-[var(--ui-radius)]"><ChevronUp size={14}/></button>
         </div>
 
         {/* Speed & Volume */}
-        <div className="flex items-center gap-2 border-l border-white/10 pl-4">
+        <div className="flex items-center gap-2 border-l-[width:var(--ui-border)] border-white/10 pl-4">
             <span className="text-[9px] opacity-60 font-bold">SPEED</span>
             <input type="range" min="0.1" max="2" step="0.1" value={speed}
                    onChange={(e) => controlPlayback('set_speed', parseFloat(e.target.value))}
@@ -102,7 +102,7 @@ export const PlaybackBar: React.FC = () => {
                    className="w-16 accent-current" />
         </div>
 
-        <button onClick={() => setShowSettings(true)} className="p-2 hover:bg-white/10 rounded transition-colors" title="Settings">
+        <button onClick={() => setShowSettings(true)} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors" title="Settings">
             <Settings size={18} />
         </button>
       </div>

@@ -24,12 +24,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-surface border border-grid rounded-lg shadow-2xl w-full max-w-md overflow-hidden text-text flex flex-col max-h-[80vh] isolation-auto"
-           style={{ backgroundColor: 'var(--color-surface)' }}
+      <div className="bg-surface border-[width:var(--ui-border)] border-grid rounded-[var(--ui-radius)] shadow-2xl w-full max-w-md overflow-hidden text-text flex flex-col max-h-[80vh] isolation-auto"
            onClick={e => e.stopPropagation()}>
-        <div className="p-4 border-b border-grid font-bold text-sm uppercase tracking-widest opacity-80" style={{ backgroundColor: 'var(--color-surface)' }}>Settings</div>
+        <div className="p-4 border-b-[width:var(--ui-border)] border-grid font-bold text-sm uppercase tracking-widest opacity-80 bg-surface">Settings</div>
 
-        <div className="flex border-b border-grid" style={{ backgroundColor: 'var(--color-surface)' }}>
+        <div className="flex border-b-[width:var(--ui-border)] border-grid bg-surface">
             <button onClick={() => setActiveTab('global')}
                     className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'global' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
                 Global
@@ -40,13 +39,13 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
             </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6" style={{ backgroundColor: 'var(--color-surface)' }}>
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-surface">
             {activeTab === 'global' ? (
                 <>
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-bold opacity-50">UI Theme</label>
                         <select value={theme} onChange={(e) => setTheme(e.target.value)}
-                                className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm text-text">
+                                className="w-full bg-background border-[width:var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm text-text">
                             {Object.keys(themes).map(t => <option key={t} value={t} className="bg-surface text-text">{t}</option>)}
                         </select>
                     </div>
@@ -61,7 +60,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-bold opacity-50">Visible Piano Keys</label>
                         <input type="number" min="12" max="120" value={keys} onChange={(e) => setKeys(parseInt(e.target.value))}
-                               className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm font-mono" />
+                               className="w-full bg-background border-[width:var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text" />
                     </div>
                 </>
             ) : (
@@ -88,9 +87,9 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
             )}
         </div>
 
-        <div className="p-4 border-t border-grid flex items-center justify-end gap-2" style={{ backgroundColor: 'var(--color-surface)' }}>
-            <button onClick={onClose} className="px-4 py-2 rounded hover:bg-white/10 text-xs transition-colors font-bold">Cancel</button>
-            <button onClick={handleSave} className="px-4 py-2 rounded bg-accent text-background text-xs font-bold transition-colors shadow-lg active:scale-95">Apply Settings</button>
+        <div className="p-4 border-t-[width:var(--ui-border)] border-grid flex items-center justify-end gap-2 bg-surface">
+            <button onClick={onClose} className="px-4 py-2 rounded-[var(--ui-radius)] hover:bg-white/10 text-xs transition-colors font-bold">Cancel</button>
+            <button onClick={handleSave} className="px-4 py-2 rounded-[var(--ui-radius)] bg-accent text-background text-xs font-bold transition-colors shadow-lg active:scale-95">Apply Settings</button>
         </div>
       </div>
     </div>

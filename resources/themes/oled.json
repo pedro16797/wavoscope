@@ -11,5 +11,7 @@
     "waveform": "#888",
     "spectrum": "#800",
     "flagRhythm": "#800",
-    "flagHarmony": "#a00"
+    "flagHarmony": "#a00",
+    "radius": "0px",
+    "font": "monospace"
 }
