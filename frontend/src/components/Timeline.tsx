@@ -13,7 +13,8 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
   const {
     loaded, duration, currentTheme, themes, flags, harmony_flags,
     addFlag, moveFlag, setEditingFlagIdx,
-    addHarmonyFlag, moveHarmonyFlag, setEditingHarmonyFlagIdx
+    addHarmonyFlag, moveHarmonyFlag, setEditingHarmonyFlagIdx,
+    loop_mode, loop_range
   } = useStore();
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dragHarmonyIdx, setDragHarmonyIdx] = useState<number | null>(null);
@@ -73,6 +74,33 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
             ctx.fillText(`${m}:${s.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`, x + 4, 15);
         } else {
             ctx.fillText(`${m}:${s.toString().padStart(2, '0')}`, x + 4, 15);
+        }
+    }
+
+    // Draw Loop Range
+    if (loaded && loop_mode !== 'none' && loop_range) {
+        const [lStart, lEnd] = loop_range;
+        const xStart = (lStart - offset) * zoom;
+        const xEnd = (lEnd - offset) * zoom;
+
+        if (xEnd > 0 && xStart < size.width) {
+            ctx.fillStyle = (theme.accent || '#00aaff') + '22';
+            const drawXStart = Math.max(0, xStart);
+            const drawXEnd = Math.min(size.width, xEnd);
+            ctx.fillRect(drawXStart, 0, drawXEnd - drawXStart, size.height);
+
+            ctx.strokeStyle = (theme.accent || '#00aaff') + '44';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            if (xStart >= 0 && xStart <= size.width) {
+                ctx.moveTo(xStart, 0);
+                ctx.lineTo(xStart, size.height);
+            }
+            if (xEnd >= 0 && xEnd <= size.width) {
+                ctx.moveTo(xEnd, 0);
+                ctx.lineTo(xEnd, size.height);
+            }
+            ctx.stroke();
         }
     }
 
@@ -163,7 +191,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
             }
         }
     });
-  }, [offset, zoom, themes, currentTheme, duration, flags, harmony_flags, dragIdx, dragHarmonyIdx, size]);
+  }, [offset, zoom, themes, currentTheme, duration, flags, harmony_flags, dragIdx, dragHarmonyIdx, size, loop_mode, loop_range]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!loaded) return;

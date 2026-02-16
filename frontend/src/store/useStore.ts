@@ -117,6 +117,8 @@ interface AppState {
   dirty: boolean;
   metronome_enabled: boolean;
   click_gain: number;
+  loop_mode: string;
+  loop_range: [number, number];
   themes: Record<string, Record<string, string>>;
   currentTheme: string;
   spectrum_keys: number;
@@ -141,6 +143,7 @@ interface AppState {
   addFlag: (t: number) => Promise<void>;
   moveFlag: (idx: number, t: number) => Promise<void>;
   removeFlag: (idx: number) => Promise<void>;
+  setLoopMode: (mode: string) => Promise<void>;
 
   addHarmonyFlag: (t: number, chord?: Chord) => Promise<HarmonyFlag | null>;
   moveHarmonyFlag: (idx: number, t: number) => Promise<void>;
@@ -170,6 +173,8 @@ export const useStore = create<AppState>((set, get) => ({
   dirty: false,
   metronome_enabled: true,
   click_gain: 0.3,
+  loop_mode: 'none',
+  loop_range: [0, 0],
   themes: {},
   currentTheme: 'dark',
   spectrum_keys: 37,
@@ -362,6 +367,16 @@ export const useStore = create<AppState>((set, get) => ({
   removeFlag: async (idx) => {
     try {
         await axios.delete(`${API_BASE}/project/flags/${idx}`);
+        get().fetchStatus();
+    } catch (e) {
+        console.error(e);
+    }
+  },
+
+  setLoopMode: async (mode) => {
+    try {
+        await axios.post(`${API_BASE}/playback/loop`, { mode });
+        set({ loop_mode: mode });
         get().fetchStatus();
     } catch (e) {
         console.error(e);

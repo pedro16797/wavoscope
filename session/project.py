@@ -16,8 +16,9 @@ from __future__ import annotations
 
 import json
 import threading
+import bisect
 from pathlib import Path
-from typing import List, Dict, Any, Callable
+from typing import List, Dict, Any, Callable, Tuple
 
 from audio.audio_backend import AudioBackend
 from audio.waveform_cache import WaveformCache
@@ -35,6 +36,8 @@ class Project:
 
         self.backend: AudioBackend = AudioBackend()
         self.backend.set_tick_provider(self.subdivision_ticks_between)
+        self.backend.set_loop_provider(self.get_loop_range)
+        self.loop_mode: str = "none"
         self.session_data: Dict[str, Any] = self._load_or_create_sidecar()
 
         self.wave_cache: WaveformCache | None = None
@@ -232,11 +235,54 @@ class Project:
     def set_speed(self, speed: float) -> None: self.backend.set_speed(speed)
     def set_volume(self, volume: float) -> None: self.backend.set_volume(volume)
 
+    def set_loop_mode(self, mode: str) -> None:
+        """Change looping mode and update backend."""
+        with self._lock:
+            self.loop_mode = mode
+            self.backend.set_loop_enabled(mode != "none")
+
     # ---------- derived read-only properties ----------
     @property
     def position(self) -> float: return self.backend.position
     @property
     def duration(self) -> float: return self.backend.duration
+
+    def get_loop_range(self, pos: float | None = None) -> Tuple[float, float]:
+        """Return (start, end) times for the current loop mode and position."""
+        with self._lock:
+            if pos is None:
+                pos = self.backend.position
+
+            duration = self.duration
+            if self.loop_mode == "none":
+                return (0.0, duration)
+
+            if self.loop_mode == "whole":
+                return (0.0, duration)
+
+            flags = self.flags
+            if self.loop_mode == "section":
+                section_starts = [f["t"] for f in flags if f.get("is_section_start")]
+                if not section_starts:
+                    return (0.0, duration)
+
+                idx = bisect.bisect_right(section_starts, pos) - 1
+                start = section_starts[idx] if idx >= 0 else 0.0
+                end = section_starts[idx + 1] if idx + 1 < len(section_starts) else duration
+                return (start, end)
+
+            if self.loop_mode == "bar":
+                times = [f["t"] for f in flags if f.get("type") == "rhythm"]
+                if not times:
+                    return (0.0, duration)
+
+                idx = bisect.bisect_right(times, pos) - 1
+                start = times[idx] if idx >= 0 else 0.0
+                end = times[idx + 1] if idx + 1 < len(times) else duration
+                return (start, end)
+
+            return (0.0, duration)
+
     @property
     def _data(self) -> Any: return self.backend._data
     @property
@@ -307,6 +353,7 @@ class Project:
 
     def _clear_backend_cache(self) -> None:
         self.backend.clear_tick_cache()
+        self.backend.reset_loop_range()
 
     def _recompute_auto_names(self) -> None:
         """Auto-generate A, A-01, A-02… names for rhythm flags."""

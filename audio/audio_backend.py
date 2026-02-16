@@ -48,6 +48,9 @@ class AudioBackend:
         self._metronome_enabled: bool = True
 
         self._subdivision_ticks_between: Callable[[float, float], List[Tuple[float, bool]]] | None = None
+        self._loop_provider: Callable[[float], Tuple[float, float]] | None = None
+        self._loop_enabled: bool = False
+        self._active_loop_range: Tuple[float, float] | None = None
 
         # Pre-calculated click waveforms
         self._strong_click: np.ndarray = np.zeros(0, dtype=np.float32)
@@ -78,6 +81,7 @@ class AudioBackend:
     # ---------- playback control ----------
     def seek(self, sec: float) -> None:
         self._cursor = max(0.0, min(sec, self.duration))
+        self._active_loop_range = None
         self.clear_tick_cache()
 
     def play(self) -> None:
@@ -103,6 +107,17 @@ class AudioBackend:
     def set_tick_provider(self, fn: Callable[[float, float], list[tuple[float, bool]]]) -> None:
         """Inject Project.subdivision_ticks_between for metronome clicks."""
         self._subdivision_ticks_between = fn
+
+    def set_loop_provider(self, fn: Callable[[float], Tuple[float, float]]) -> None:
+        """Inject Project.get_loop_range."""
+        self._loop_provider = fn
+
+    def set_loop_enabled(self, enabled: bool) -> None:
+        self._loop_enabled = enabled
+        self._active_loop_range = None
+
+    def reset_loop_range(self) -> None:
+        self._active_loop_range = None
 
     def clear_tick_cache(self) -> None:
         if hasattr(self, "_last_tick_time"):
@@ -164,6 +179,16 @@ class AudioBackend:
 
         if not self._playing or self._data is None:
             return
+
+        # Handle Looping
+        if self._loop_enabled and self._loop_provider:
+            if self._active_loop_range is None:
+                self._active_loop_range = self._loop_provider(self._cursor)
+
+            lstart, lend = self._active_loop_range
+            if self._cursor >= lend - 0.001:
+                self._cursor = lstart
+                self.clear_tick_cache()
 
         # Compute how many source samples we need
         needed = int(frames * self._speed)
