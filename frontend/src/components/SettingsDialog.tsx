@@ -46,8 +46,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-bold opacity-50">UI Theme</label>
                         <select value={theme} onChange={(e) => setTheme(e.target.value)}
-                                className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm">
-                            {Object.keys(themes).map(t => <option key={t} value={t} className="bg-neutral-800">{t}</option>)}
+                                className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm text-text">
+                            {Object.keys(themes).map(t => <option key={t} value={t} className="bg-surface text-text">{t}</option>)}
                         </select>
                     </div>
                     <div className="space-y-2">

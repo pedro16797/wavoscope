@@ -99,23 +99,9 @@ def main():
         # But we can call a function in the window
         window.evaluate_js("window.setShowSettings(true)")
 
-    menu_items = [
-        Menu(
-            'File',
-            [
-                MenuAction('Open...', open_file),
-                MenuAction('Save', save_file),
-                MenuSeparator(),
-                MenuAction('Settings...', open_settings),
-                MenuSeparator(),
-                MenuAction('Exit', window.destroy),
-            ],
-        )
-    ]
-
     window.events.closing += on_closing
 
-    webview.start(debug=cli_args.debug, menu=menu_items)
+    webview.start(debug=cli_args.debug)
 
 if __name__ == "__main__":
     main()

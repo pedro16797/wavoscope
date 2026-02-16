@@ -83,17 +83,17 @@ export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) =>
             <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold opacity-50">Name</label>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                       className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm" />
+                       className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm text-text" />
             </div>
             <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold opacity-50">Time (s)</label>
                 <input type="number" step="0.001" min="0" max={duration} value={t} onChange={(e) => setT(parseFloat(e.target.value))}
-                       className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm font-mono" />
+                       className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm font-mono text-text" />
             </div>
             <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold opacity-50">Subdivision</label>
                 <input type="number" min="0" max="32" value={subdivision} onChange={(e) => setSubdivision(parseInt(e.target.value))}
-                       className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm" />
+                       className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm text-text" />
             </div>
             <div className="flex items-center gap-4 py-2">
                 <label className="flex items-center gap-2 cursor-pointer">

@@ -33,8 +33,7 @@ export const useKeyboardShortcuts = () => {
         case 's':
           if (e.ctrlKey || e.metaKey) {
             e.preventDefault();
-            useStore.getState().controlPlayback('save'); // Assuming save action exists or use specialized endpoint
-            axios.post('http://127.0.0.1:8000/project/save');
+            useStore.getState().saveProject();
           }
           break;
         case 'o':
@@ -51,4 +50,3 @@ export const useKeyboardShortcuts = () => {
   }, [loaded, playing, controlPlayback, position, duration, speed, browseFile]);
 };
 
-import axios from 'axios';

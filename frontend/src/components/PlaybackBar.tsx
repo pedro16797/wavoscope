@@ -1,13 +1,14 @@
 import React from 'react';
 import { useStore } from '../store/useStore';
-import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen } from 'lucide-react';
+import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen, Save } from 'lucide-react';
 
 export const PlaybackBar: React.FC = () => {
   const {
     loaded, position, duration, playing, speed, volume, filename,
     controlPlayback, currentTheme, themes,
     metronome_enabled, updateMetronome, fft_window, setFFTWindow,
-    octave_shift, setOctaveShift, setShowSettings, browseFile
+    octave_shift, setOctaveShift, setShowSettings, browseFile,
+    saveProject, dirty
   } = useStore();
 
   const theme = themes[currentTheme] || {};
@@ -22,9 +23,14 @@ export const PlaybackBar: React.FC = () => {
 
   return (
     <div className="p-2 flex items-center gap-4 border-b select-none h-16 shrink-0" style={{ backgroundColor: theme.surface, color: theme.text }}>
-      <div className="flex items-center gap-2">
-        <button onClick={browseFile} className="p-2 hover:bg-white/10 rounded transition-colors mr-2" title="Open Audio File">
+      <div className="flex items-center gap-1">
+        <button onClick={browseFile} className="p-2 hover:bg-white/10 rounded transition-colors" title="Open Audio File">
             <FolderOpen size={20} />
+        </button>
+        <button onClick={saveProject} disabled={!loaded}
+                className={`p-2 hover:bg-white/10 rounded transition-colors mr-2 ${!loaded ? 'opacity-20' : (dirty ? 'text-accent' : 'opacity-60')}`}
+                title={dirty ? "Save Project (Unsaved changes)" : "Save Project"}>
+            <Save size={20} />
         </button>
         {loaded && (
             <>
