@@ -1,58 +1,30 @@
-import torch
+import onnxruntime as ort
 import numpy as np
 import soxr
-from .model import SynthesizerTrn
+from pathlib import Path
 
 class NovaSR:
-    def __init__(self, ckpt_path=None):
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+    def __init__(self, model_path=None):
         self._resampler_in = None
         self._resampler_out = None
         self._current_sr = None
 
-        self.hps = {
-            "train": {"segment_size": 9600},
-            "data": {"hop_length": 320, "n_mel_channels": 128},
-            "model": {
-                "resblock": "0",
-                "resblock_kernel_sizes": [11],
-                "resblock_dilation_sizes": [[1,3,5]],
-                "upsample_initial_channel": 32,
-            }
-        }
+        if model_path is None:
+            # Default to bundled path relative to this file: ../../resources/models/novasr.onnx
+            model_path = Path(__file__).parents[2] / "resources" / "models" / "novasr.onnx"
 
-        if ckpt_path is None:
-            try:
-                from huggingface_hub import hf_hub_download
-                ckpt_path = hf_hub_download(repo_id="drbaph/NovaSR", filename="NovaSR.safetensors")
-            except Exception as e:
-                print(f"[NovaSR] Failed to download weights: {e}")
-                raise
+        if not model_path.exists():
+            # Fallback for dev environment or when running from root
+            alt_path = Path("resources/models/novasr.onnx")
+            if alt_path.exists():
+                model_path = alt_path
 
-        self.model = self._load_model(ckpt_path).eval()
-        if self.device.type == 'cuda':
-            self.model = self.model.half()
-            self.half = True
-        else:
-            self.half = False
+        if not model_path.exists():
+             raise FileNotFoundError(f"NovaSR model not found at {model_path}")
 
-    def _load_model(self, ckpt_path):
-        model = SynthesizerTrn(
-            self.hps['data']['n_mel_channels'],
-            self.hps['train']['segment_size'] // self.hps['data']['hop_length'],
-            **self.hps['model']
-        ).to(self.device)
-
-        if ckpt_path.endswith(".safetensors"):
-            from safetensors.torch import load_file
-            state_dict = load_file(ckpt_path, device="cpu")
-        else:
-            state_dict = torch.load(ckpt_path, map_location='cpu')
-
-        model.dec.remove_weight_norm()
-        model.load_state_dict(state_dict, strict=True)
-        return model
+        self.session = ort.InferenceSession(str(model_path))
+        self.input_name = self.session.get_inputs()[0].name
+        self.output_name = self.session.get_outputs()[0].name
 
     def reset(self):
         """Reset resamplers state."""
@@ -63,7 +35,7 @@ class NovaSR:
     def enhance(self, audio: np.ndarray, sr: int) -> np.ndarray:
         """
         Enhance audio: Resample to 16kHz -> NovaSR -> Resample back to original SR.
-        Uses stateful soxr resamplers.
+        Uses stateful soxr resamplers and ONNX Runtime for inference.
         """
         if self._current_sr != sr:
             self._resampler_in = soxr.ResampleStream(sr, 16000, 1)
@@ -73,18 +45,16 @@ class NovaSR:
         # 1. Resample to 16kHz
         audio_16k = self._resampler_in.resample_chunk(audio)
 
-        # 2. Tensorize
+        # 2. Inference
         if audio_16k.size == 0:
              return np.zeros(0, dtype=np.float32)
 
-        x = torch.from_numpy(audio_16k).float().to(self.device).view(1, 1, -1)
-        if self.half:
-            x = x.half()
+        # NovaSR expects [Batch, Channels, Time]
+        x = audio_16k.reshape(1, 1, -1).astype(np.float32)
 
-        with torch.no_grad():
-            y = self.model(x)
+        y = self.session.run([self.output_name], {self.input_name: x})[0]
 
-        audio_48k = y.view(-1).cpu().float().numpy()
+        audio_48k = y.flatten()
 
         # 3. Resample back to original SR
         audio_out = self._resampler_out.resample_chunk(audio_48k)

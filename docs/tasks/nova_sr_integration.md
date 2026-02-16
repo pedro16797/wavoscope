@@ -52,5 +52,5 @@ The current playback engine uses a crude mirroring/padding technique to handle s
 
 ## Implementation Notes
 - **TSM**: Uses `Signalsmith Stretch` via `python-stretch`. Implemented with a `RingBuffer` to handle variable output length.
-- **NovaSR**: Model architecture vended into `audio/novasr/`. Uses `soxr.ResampleStream` for stateful resampling between original SR, 16kHz (model input), and 48kHz (model output).
+- **NovaSR**: Implemented using `onnxruntime` with a bundled ONNX model (`resources/models/novasr.onnx`). Uses `soxr.ResampleStream` for stateful resampling between original SR, 16kHz (model input), and 48kHz (model output). This approach avoids heavy PyTorch dependencies and ensures compatibility with standalone builds.
 - **Configuration**: Managed via `high_quality_enhancement` setting in `utils/config.py` and exposed in the React frontend.

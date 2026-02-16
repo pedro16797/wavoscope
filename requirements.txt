@@ -13,8 +13,5 @@ nuitka
 imageio
 requests
 python-stretch
-torch --index-url https://download.pytorch.org/whl/cpu
-safetensors
-einops
-huggingface_hub
+onnxruntime
 soxr

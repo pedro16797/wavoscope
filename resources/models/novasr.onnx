@@ -1,0 +1,1954 @@
+
+pytorch
+2.10.0+cpu:\xff\xdc
+\x8d
+inputval_0node_Shape_0"Shape*
+
+end\xa0*
+start\xa0J\x84
+	namespacew_empty_nn_module_stack_from_metadata_hook: _empty_nn_module_stack_from_metadata_hook/sym_size_int_15: aten.sym_size.intJd
+pkg.torch.onnx.class_hierarchyB['_empty_nn_module_stack_from_metadata_hook', 'aten.sym_size.int']J\x8b
+pkg.torch.onnx.fx_nodeq%sym_size_int_15 : [num_users=7] = call_function[target=torch.ops.aten.sym_size.int](args = (%x, 2), kwargs = {})J^
+pkg.torch.onnx.name_scopes@['_empty_nn_module_stack_from_metadata_hook', 'sym_size_int_15']Js
+pkg.torch.onnx.stack_traceUFile "torch/fx/passes/runtime_assert.py", line 24, in insert_deferred_runtime_asserts
+\x87
+val_0sym_size_int_15node_sym_size_int_15"SqueezeJ\x84
+	namespacew_empty_nn_module_stack_from_metadata_hook: _empty_nn_module_stack_from_metadata_hook/sym_size_int_15: aten.sym_size.intJd
+pkg.torch.onnx.class_hierarchyB['_empty_nn_module_stack_from_metadata_hook', 'aten.sym_size.int']J\x8b
+pkg.torch.onnx.fx_nodeq%sym_size_int_15 : [num_users=7] = call_function[target=torch.ops.aten.sym_size.int](args = (%x, 2), kwargs = {})J^
+pkg.torch.onnx.name_scopes@['_empty_nn_module_stack_from_metadata_hook', 'sym_size_int_15']Js
+pkg.torch.onnx.stack_traceUFile "torch/fx/passes/runtime_assert.py", line 24, in insert_deferred_runtime_asserts
+\xf9
+val_4
+sym_size_int_15mul_181node_mul_181"MulJ\x82
+	namespaceu_empty_nn_module_stack_from_metadata_hook: _empty_nn_module_stack_from_metadata_hook/mul_181: <built-in function mul>Jj
+pkg.torch.onnx.class_hierarchyH['_empty_nn_module_stack_from_metadata_hook', '<built-in function mul>']J\x84
+pkg.torch.onnx.fx_nodej%mul_181 : [num_users=3] = call_function[target=operator.mul](args = (192, %sym_size_int_15), kwargs = {})JV
+pkg.torch.onnx.name_scopes8['_empty_nn_module_stack_from_metadata_hook', 'mul_181']Js
+pkg.torch.onnx.stack_traceUFile "torch/fx/passes/runtime_assert.py", line 24, in insert_deferred_runtime_asserts
+\xf8
+val_11
+sym_size_int_15mul_184node_mul_184"MulJ\x82
+	namespaceu_empty_nn_module_stack_from_metadata_hook: _empty_nn_module_stack_from_metadata_hook/mul_184: <built-in function mul>Jj
+pkg.torch.onnx.class_hierarchyH['_empty_nn_module_stack_from_metadata_hook', '<built-in function mul>']J\x82
+pkg.torch.onnx.fx_nodeh%mul_184 : [num_users=7] = call_function[target=operator.mul](args = (3, %sym_size_int_15), kwargs = {})JV
+pkg.torch.onnx.name_scopes8['_empty_nn_module_stack_from_metadata_hook', 'mul_184']Js
+pkg.torch.onnx.stack_traceUFile "torch/fx/passes/runtime_assert.py", line 24, in insert_deferred_runtime_asserts
+\xd5
+input
+dec.conv_pre.weight
+dec.conv_pre.biasconv1dnode_conv1d"Conv*
+group\xa0*
+pads@@\xa0*
+auto_pad"NOTSET\xa0*
+strides@\xa0*
+	dilations@\xa0J\x9a
+	namespace\x8c: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.conv_pre: torch.nn.modules.conv.Conv1d/conv1d: aten.conv1d.defaultJ\x9e
+pkg.torch.onnx.class_hierarchy|['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'torch.nn.modules.conv.Conv1d', 'aten.conv1d.default']J\xba
+pkg.torch.onnx.fx_node\x9f%conv1d : [num_users=2] = call_function[target=torch.ops.aten.conv1d.default](args = (%x, %p_dec_conv_pre_weight, %p_dec_conv_pre_bias, [1], [3]), kwargs = {})JC
+pkg.torch.onnx.name_scopes%['', 'dec', 'dec.conv_pre', 'conv1d']J\xf2
+pkg.torch.onnx.stack_trace\xd3  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 84, in forward
+    x = self.conv_pre(x)
+
+\x9a
+sym_size_int_15val_13node_Cast_13"Cast*
+to\xa0Jw
+	namespacej: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/truediv: <built-in function truediv>J\x86
+pkg.torch.onnx.class_hierarchyd['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', '<built-in function truediv>']J\x8d
+pkg.torch.onnx.fx_nodes%truediv : [num_users=1] = call_function[target=operator.truediv](args = (%sym_size_int_15, %mul_184), kwargs = {})J4
+pkg.torch.onnx.name_scopes['', 'dec', 'truediv']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\x92
+mul_184val_14node_Cast_14"Cast*
+to\xa0Jw
+	namespacej: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/truediv: <built-in function truediv>J\x86
+pkg.torch.onnx.class_hierarchyd['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', '<built-in function truediv>']J\x8d
+pkg.torch.onnx.fx_nodes%truediv : [num_users=1] = call_function[target=operator.truediv](args = (%sym_size_int_15, %mul_184), kwargs = {})J4
+pkg.torch.onnx.name_scopes['', 'dec', 'truediv']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\x8e
+val_13
+val_14truedivnode_truediv"DivJw
+	namespacej: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/truediv: <built-in function truediv>J\x86
+pkg.torch.onnx.class_hierarchyd['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', '<built-in function truediv>']J\x8d
+pkg.torch.onnx.fx_nodes%truediv : [num_users=1] = call_function[target=operator.truediv](args = (%sym_size_int_15, %mul_184), kwargs = {})J4
+pkg.torch.onnx.name_scopes['', 'dec', 'truediv']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\x9e
+val_16
+mul_184
+val_18arangenode_arange"RangeJn
+	namespacea: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/arange: aten.arange.defaultJ~
+pkg.torch.onnx.class_hierarchy\['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.arange.default']J\xa7
+pkg.torch.onnx.fx_node\x8c%arange : [num_users=1] = call_function[target=torch.ops.aten.arange.default](args = (%mul_184,), kwargs = {device: cpu, pin_memory: False})J3
+pkg.torch.onnx.name_scopes['', 'dec', 'arange']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\x9d
+arange_to_copynode__to_copy"Cast*
+to\xa0Jr
+	namespacee: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/_to_copy: aten._to_copy.defaultJ\x80
+pkg.torch.onnx.class_hierarchy^['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten._to_copy.default']J\xa0
+pkg.torch.onnx.fx_node\x85%_to_copy : [num_users=1] = call_function[target=torch.ops.aten._to_copy.default](args = (%arange,), kwargs = {dtype: torch.float32})J5
+pkg.torch.onnx.name_scopes['', 'dec', '_to_copy']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xea
+_to_copy
+val_19add_7
+node_add_7"AddJi
+	namespace\: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/add_7: aten.add.TensorJz
+pkg.torch.onnx.class_hierarchyX['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.add.Tensor']J\x88
+pkg.torch.onnx.fx_noden%add_7 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%_to_copy, 0.5), kwargs = {})J2
+pkg.torch.onnx.name_scopes['', 'dec', 'add_7']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xef
+add_7
+truedivmul_11node_mul_11"MulJj
+	namespace]: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/mul_11: aten.mul.TensorJz
+pkg.torch.onnx.class_hierarchyX['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.mul.Tensor']J\x8b
+pkg.torch.onnx.fx_nodeq%mul_11 : [num_users=1] = call_function[target=torch.ops.aten.mul.Tensor](args = (%add_7, %truediv), kwargs = {})J3
+pkg.torch.onnx.name_scopes['', 'dec', 'mul_11']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xe6
+mul_11
+val_19sub_5
+node_sub_5"SubJi
+	namespace\: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/sub_5: aten.sub.TensorJz
+pkg.torch.onnx.class_hierarchyX['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.sub.Tensor']J\x86
+pkg.torch.onnx.fx_nodel%sub_5 : [num_users=1] = call_function[target=torch.ops.aten.sub.Tensor](args = (%mul_11, 0.5), kwargs = {})J2
+pkg.torch.onnx.name_scopes['', 'dec', 'sub_5']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xee
+sub_5
+val_20clamp
+node_clamp"ClipJl
+	namespace_: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/clamp: aten.clamp.defaultJ}
+pkg.torch.onnx.class_hierarchy[['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.clamp.default']J\x88
+pkg.torch.onnx.fx_noden%clamp : [num_users=1] = call_function[target=torch.ops.aten.clamp.default](args = (%sub_5, 0.0), kwargs = {})J2
+pkg.torch.onnx.name_scopes['', 'dec', 'clamp']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\x8c
+mul_184
+val_21val_22node_Reshape_22"Reshape*
+	allowzero \xa0Jj
+	namespace]: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/view: aten.view.defaultJ|
+pkg.torch.onnx.class_hierarchyZ['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.view.default']J\x8d
+pkg.torch.onnx.fx_nodes%view : [num_users=2] = call_function[target=torch.ops.aten.view.default](args = (%clamp, [%mul_184]), kwargs = {})J1
+pkg.torch.onnx.name_scopes['', 'dec', 'view']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\x82
+clamp
+val_22view	node_view"Reshape*
+	allowzero\xa0Jj
+	namespace]: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/view: aten.view.defaultJ|
+pkg.torch.onnx.class_hierarchyZ['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.view.default']J\x8d
+pkg.torch.onnx.fx_nodes%view : [num_users=2] = call_function[target=torch.ops.aten.view.default](args = (%clamp, [%mul_184]), kwargs = {})J1
+pkg.torch.onnx.name_scopes['', 'dec', 'view']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xa1
+view
+_to_copy_1node__to_copy_1"Cast*
+to\xa0Jt
+	namespaceg: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/_to_copy_1: aten._to_copy.defaultJ\x80
+pkg.torch.onnx.class_hierarchy^['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten._to_copy.default']J\x9e
+pkg.torch.onnx.fx_node\x83%_to_copy_1 : [num_users=3] = call_function[target=torch.ops.aten._to_copy.default](args = (%view,), kwargs = {dtype: torch.int64})J7
+pkg.torch.onnx.name_scopes['', 'dec', '_to_copy_1']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xf1
+
+_to_copy_1
+val_18add_20node_add_20"AddJj
+	namespace]: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/add_20: aten.add.TensorJz
+pkg.torch.onnx.class_hierarchyX['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.add.Tensor']J\x89
+pkg.torch.onnx.fx_nodeo%add_20 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%_to_copy_1, 1), kwargs = {})J3
+pkg.torch.onnx.name_scopes['', 'dec', 'add_20']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xff
+sym_size_int_15
+val_18sub_11node_sub_11"SubJr
+	namespacee: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/sub_11: <built-in function sub>J\x82
+pkg.torch.onnx.class_hierarchy`['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', '<built-in function sub>']J\x81
+pkg.torch.onnx.fx_nodeg%sub_11 : [num_users=1] = call_function[target=operator.sub](args = (%sym_size_int_15, 1), kwargs = {})J3
+pkg.torch.onnx.name_scopes['', 'dec', 'sub_11']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\x86
+add_20
+ 
+sub_11clamp_1node_clamp_1"ClipJn
+	namespacea: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/clamp_1: aten.clamp.defaultJ}
+pkg.torch.onnx.class_hierarchy[['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.clamp.default']J\x95
+pkg.torch.onnx.fx_node{%clamp_1 : [num_users=1] = call_function[target=torch.ops.aten.clamp.default](args = (%add_20, None, %sub_11), kwargs = {})J4
+pkg.torch.onnx.name_scopes['', 'dec', 'clamp_1']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xcb
+conv1dval_25node_Transpose_25"	Transpose*
+perm@@ @\xa0J{
+	namespacen: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/_unsafe_index: aten._unsafe_index.TensorJ\x84
+pkg.torch.onnx.class_hierarchyb['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten._unsafe_index.Tensor']J\xaf
+pkg.torch.onnx.fx_node\x94%_unsafe_index : [num_users=2] = call_function[target=torch.ops.aten._unsafe_index.Tensor](args = (%conv1d, [None, None, %_to_copy_1]), kwargs = {})J:
+pkg.torch.onnx.name_scopes['', 'dec', '_unsafe_index']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xc6
+
+_to_copy_1
+val_21val_30node_Unsqueeze_30"	UnsqueezeJ{
+	namespacen: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/_unsafe_index: aten._unsafe_index.TensorJ\x84
+pkg.torch.onnx.class_hierarchyb['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten._unsafe_index.Tensor']J\xaf
+pkg.torch.onnx.fx_node\x94%_unsafe_index : [num_users=2] = call_function[target=torch.ops.aten._unsafe_index.Tensor](args = (%conv1d, [None, None, %_to_copy_1]), kwargs = {})J:
+pkg.torch.onnx.name_scopes['', 'dec', '_unsafe_index']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xd3
+val_25
+val_30val_32node_GatherND_32"GatherND*
+
+batch_dims \xa0J{
+	namespacen: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/_unsafe_index: aten._unsafe_index.TensorJ\x84
+pkg.torch.onnx.class_hierarchyb['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten._unsafe_index.Tensor']J\xaf
+pkg.torch.onnx.fx_node\x94%_unsafe_index : [num_users=2] = call_function[target=torch.ops.aten._unsafe_index.Tensor](args = (%conv1d, [None, None, %_to_copy_1]), kwargs = {})J:
+pkg.torch.onnx.name_scopes['', 'dec', '_unsafe_index']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xd3
+val_32_unsafe_indexnode__unsafe_index"	Transpose*
+perm@@@ \xa0J{
+	namespacen: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/_unsafe_index: aten._unsafe_index.TensorJ\x84
+pkg.torch.onnx.class_hierarchyb['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten._unsafe_index.Tensor']J\xaf
+pkg.torch.onnx.fx_node\x94%_unsafe_index : [num_users=2] = call_function[target=torch.ops.aten._unsafe_index.Tensor](args = (%conv1d, [None, None, %_to_copy_1]), kwargs = {})J:
+pkg.torch.onnx.name_scopes['', 'dec', '_unsafe_index']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xc6
+clamp_1
+val_21val_37node_Unsqueeze_37"	UnsqueezeJ}
+	namespacep: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/_unsafe_index_1: aten._unsafe_index.TensorJ\x84
+pkg.torch.onnx.class_hierarchyb['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten._unsafe_index.Tensor']J\xae
+pkg.torch.onnx.fx_node\x93%_unsafe_index_1 : [num_users=1] = call_function[target=torch.ops.aten._unsafe_index.Tensor](args = (%conv1d, [None, None, %clamp_1]), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'dec', '_unsafe_index_1']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xd6
+val_25
+val_37val_39node_GatherND_39"GatherND*
+
+batch_dims \xa0J}
+	namespacep: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/_unsafe_index_1: aten._unsafe_index.TensorJ\x84
+pkg.torch.onnx.class_hierarchyb['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten._unsafe_index.Tensor']J\xae
+pkg.torch.onnx.fx_node\x93%_unsafe_index_1 : [num_users=1] = call_function[target=torch.ops.aten._unsafe_index.Tensor](args = (%conv1d, [None, None, %clamp_1]), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'dec', '_unsafe_index_1']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xda
+val_39_unsafe_index_1node__unsafe_index_1"	Transpose*
+perm@@@ \xa0J}
+	namespacep: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/_unsafe_index_1: aten._unsafe_index.TensorJ\x84
+pkg.torch.onnx.class_hierarchyb['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten._unsafe_index.Tensor']J\xae
+pkg.torch.onnx.fx_node\x93%_unsafe_index_1 : [num_users=1] = call_function[target=torch.ops.aten._unsafe_index.Tensor](args = (%conv1d, [None, None, %clamp_1]), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'dec', '_unsafe_index_1']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xb2
+
+_to_copy_1convert_element_type_default!node_convert_element_type_default"Cast*
+to\xa0J\x94
+	namespace\x86: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/convert_element_type_default: prims.convert_element_type.defaultJ\x8d
+pkg.torch.onnx.class_hierarchyk['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'prims.convert_element_type.default']J\xc5
+pkg.torch.onnx.fx_node\xaa%convert_element_type_default : [num_users=1] = call_function[target=torch.ops.prims.convert_element_type.default](args = (%_to_copy_1,), kwargs = {dtype: torch.float32})JI
+pkg.torch.onnx.name_scopes+['', 'dec', 'convert_element_type_default']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\x98
+view
+convert_element_type_defaultsub_15node_sub_15"SubJj
+	namespace]: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/sub_15: aten.sub.TensorJz
+pkg.torch.onnx.class_hierarchyX['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.sub.Tensor']J\xa0
+pkg.torch.onnx.fx_node\x85%sub_15 : [num_users=1] = call_function[target=torch.ops.aten.sub.Tensor](args = (%view, %convert_element_type_default), kwargs = {})J3
+pkg.torch.onnx.name_scopes['', 'dec', 'sub_15']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\x87
+sub_15
+val_20
+val_41clamp_2node_clamp_2"ClipJn
+	namespacea: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/clamp_2: aten.clamp.defaultJ}
+pkg.torch.onnx.class_hierarchy[['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.clamp.default']J\x90
+pkg.torch.onnx.fx_nodev%clamp_2 : [num_users=1] = call_function[target=torch.ops.aten.clamp.default](args = (%sub_15, 0.0, 1.0), kwargs = {})J4
+pkg.torch.onnx.name_scopes['', 'dec', 'clamp_2']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\x90
+_unsafe_index_1
+_unsafe_indexsub_18node_sub_18"SubJj
+	namespace]: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/sub_18: aten.sub.TensorJz
+pkg.torch.onnx.class_hierarchyX['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.sub.Tensor']J\x9c
+pkg.torch.onnx.fx_node\x81%sub_18 : [num_users=1] = call_function[target=torch.ops.aten.sub.Tensor](args = (%_unsafe_index_1, %_unsafe_index), kwargs = {})J3
+pkg.torch.onnx.name_scopes['', 'dec', 'sub_18']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xf1
+sub_18
+clamp_2mul_30node_mul_30"MulJj
+	namespace]: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/mul_30: aten.mul.TensorJz
+pkg.torch.onnx.class_hierarchyX['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.mul.Tensor']J\x8c
+pkg.torch.onnx.fx_noder%mul_30 : [num_users=1] = call_function[target=torch.ops.aten.mul.Tensor](args = (%sub_18, %clamp_2), kwargs = {})J3
+pkg.torch.onnx.name_scopes['', 'dec', 'mul_30']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xfd
+_unsafe_index
+mul_30add_41node_add_41"AddJj
+	namespace]: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/add_41: aten.add.TensorJz
+pkg.torch.onnx.class_hierarchyX['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.add.Tensor']J\x92
+pkg.torch.onnx.fx_nodex%add_41 : [num_users=2] = call_function[target=torch.ops.aten.add.Tensor](args = (%_unsafe_index, %mul_30), kwargs = {})J3
+pkg.torch.onnx.name_scopes['', 'dec', 'add_41']J\x97
+pkg.torch.onnx.stack_trace\xf8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 85, in forward
+    x = F.interpolate(x, int(x.shape[-1] * 3), mode='linear')
+
+\xdb
+add_41
+slice_4conv1d_1node_Conv_345"Conv*
+group \xa0*
+pads@@\xa0*
+auto_pad"NOTSET\xa0*
+strides@\xa0*
+	dilations@\xa0J\xa7
+	namespace\x99: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.upsample: audio.novasr.resample.UpSample1d/conv1d_1: aten.conv1d.defaultJL
+!pkg.onnxscript.rewriter.rule_name'RemoveOptionalBiasFromConv, FuseConvPadJ\xe6
+pkg.torch.onnx.class_hierarchy\xc3['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten.conv1d.default']J\xa9
+pkg.torch.onnx.fx_node\x8e%conv1d_1 : [num_users=1] = call_function[target=torch.ops.aten.conv1d.default](args = (%pad, %slice_4, None, [1], [0], [1], 32), kwargs = {})J\x93
+pkg.torch.onnx.name_scopesu['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.upsample', 'conv1d_1']J\xaf
+pkg.torch.onnx.stack_trace\x90  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 24, in _polyphase_upsample_fused
+    out = F.conv1d(x, weight, groups=x.shape[1], stride=1)
+
+\xcf
+val_105
+val_106
+val_117
+val_22val_109node_Concat_109"Concat*
+axis \xa0J\xa3
+	namespace\x95: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.upsample: audio.novasr.resample.UpSample1d/view_2: aten.view.defaultJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten.view.default']J\x9d
+pkg.torch.onnx.fx_node\x82%view_2 : [num_users=1] = call_function[target=torch.ops.aten.view.default](args = (%conv1d_1, [1, 32, 2, %mul_184]), kwargs = {})J\x91
+pkg.torch.onnx.name_scopess['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.upsample', 'view_2']J\xb9
+pkg.torch.onnx.stack_trace\x9a  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xc0
+conv1d_1
+val_109view_2node_view_2"Reshape*
+	allowzero\xa0J\xa3
+	namespace\x95: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.upsample: audio.novasr.resample.UpSample1d/view_2: aten.view.defaultJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten.view.default']J\x9d
+pkg.torch.onnx.fx_node\x82%view_2 : [num_users=1] = call_function[target=torch.ops.aten.view.default](args = (%conv1d_1, [1, 32, 2, %mul_184]), kwargs = {})J\x91
+pkg.torch.onnx.name_scopess['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.upsample', 'view_2']J\xb9
+pkg.torch.onnx.stack_trace\x9a  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xb7
+view_2	transposenode_transpose"	Transpose*
+perm@ @@@\xa0J\xa7
+	namespace\x99: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.upsample: audio.novasr.resample.UpSample1d/transpose: aten.transpose.intJ\xe5
+pkg.torch.onnx.class_hierarchy\xc2['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten.transpose.int']J\x8e
+pkg.torch.onnx.fx_nodet%transpose : [num_users=1] = call_function[target=torch.ops.aten.transpose.int](args = (%view_2, 2, 3), kwargs = {})J\x94
+pkg.torch.onnx.name_scopesv['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.upsample', 'transpose']J\xb9
+pkg.torch.onnx.stack_trace\x9a  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xa9
+mul_181
+val_1floordivnode_floordiv"DivJ\xb0
+	namespace\xa2: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.upsample: audio.novasr.resample.UpSample1d/floordiv: <built-in function floordiv>J\xef
+pkg.torch.onnx.class_hierarchy\xcc['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', '<built-in function floordiv>']J\x81
+pkg.torch.onnx.fx_nodeg%floordiv : [num_users=1] = call_function[target=operator.floordiv](args = (%mul_181, 32), kwargs = {})J\x93
+pkg.torch.onnx.name_scopesu['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.upsample', 'floordiv']J\xb9
+pkg.torch.onnx.stack_trace\x9a  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xf2
+floordiv
+val_21val_113node_Reshape_113"Reshape*
+	allowzero \xa0J\xb3
+	namespace\xa5: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.upsample: audio.novasr.resample.UpSample1d/_unsafe_view_1: aten._unsafe_view.defaultJ\xec
+pkg.torch.onnx.class_hierarchy\xc9['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten._unsafe_view.default']J\xaa
+pkg.torch.onnx.fx_node\x8f%_unsafe_view_1 : [num_users=1] = call_function[target=torch.ops.aten._unsafe_view.default](args = (%clone_1, [1, 32, %floordiv]), kwargs = {})J\x99
+pkg.torch.onnx.name_scopes{['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.upsample', '_unsafe_view_1']J\xb9
+pkg.torch.onnx.stack_trace\x9a  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xf4
+val_105
+val_106
+val_113val_114node_Concat_114"Concat*
+axis \xa0J\xb3
+	namespace\xa5: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.upsample: audio.novasr.resample.UpSample1d/_unsafe_view_1: aten._unsafe_view.defaultJ\xec
+pkg.torch.onnx.class_hierarchy\xc9['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten._unsafe_view.default']J\xaa
+pkg.torch.onnx.fx_node\x8f%_unsafe_view_1 : [num_users=1] = call_function[target=torch.ops.aten._unsafe_view.default](args = (%clone_1, [1, 32, %floordiv]), kwargs = {})J\x99
+pkg.torch.onnx.name_scopes{['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.upsample', '_unsafe_view_1']J\xb9
+pkg.torch.onnx.stack_trace\x9a  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xfe
+	transpose
+val_114_unsafe_view_1node__unsafe_view_1"Reshape*
+	allowzero\xa0J\xb3
+	namespace\xa5: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.upsample: audio.novasr.resample.UpSample1d/_unsafe_view_1: aten._unsafe_view.defaultJ\xec
+pkg.torch.onnx.class_hierarchy\xc9['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten._unsafe_view.default']J\xaa
+pkg.torch.onnx.fx_node\x8f%_unsafe_view_1 : [num_users=1] = call_function[target=torch.ops.aten._unsafe_view.default](args = (%clone_1, [1, 32, %floordiv]), kwargs = {})J\x99
+pkg.torch.onnx.name_scopes{['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.upsample', '_unsafe_view_1']J\xb9
+pkg.torch.onnx.stack_trace\x9a  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xa0
+_unsafe_view_1
+val_117
+val_121
+val_117
+val_105slice_5node_slice_5"SliceJ\xa4
+	namespace\x96: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.upsample: audio.novasr.resample.UpSample1d/slice_5: aten.slice.TensorJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten.slice.Tensor']J\x97
+pkg.torch.onnx.fx_node}%slice_5 : [num_users=2] = call_function[target=torch.ops.aten.slice.Tensor](args = (%_unsafe_view_1, 2, 2, -2), kwargs = {})J\x92
+pkg.torch.onnx.name_scopest['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.upsample', 'slice_5']J\x8e
+pkg.torch.onnx.stack_trace\xef  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 28, in _polyphase_upsample_fused
+    return out[..., 2:-2]
+
+\xdd
+mul_80
+slice_5mul_81node_mul_81"MulJ\x9e
+	namespace\x90: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.act: audio.novasr.activations.SnakeBeta/mul_81: aten.mul.TensorJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.activations.SnakeBeta', 'aten.mul.Tensor']J\x8c
+pkg.torch.onnx.fx_noder%mul_81 : [num_users=1] = call_function[target=torch.ops.aten.mul.Tensor](args = (%mul_80, %slice_5), kwargs = {})J\x8c
+pkg.torch.onnx.name_scopesn['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.act', 'mul_81']J\x89
+pkg.torch.onnx.stack_trace\xea  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 28, in forward
+    x = self.act(x)
+  File "/app/audio/novasr/activations.py", line 62, in forward
+    return snake_fast_inference(x, self.a_eff, self.inv_2b)
+  File "/app/audio/novasr/activations.py", line 6, in snake_fast_inference
+    return x + (1.0 - torch.cos(2.0 * a * x)) * inv_2b
+
+\xbf
+mul_81cosnode_cos"CosJ\x9c
+	namespace\x8e: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.act: audio.novasr.activations.SnakeBeta/cos: aten.cos.defaultJ\xe5
+pkg.torch.onnx.class_hierarchy\xc2['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.activations.SnakeBeta', 'aten.cos.default']J\x81
+pkg.torch.onnx.fx_nodeg%cos : [num_users=1] = call_function[target=torch.ops.aten.cos.default](args = (%mul_81,), kwargs = {})J\x89
+pkg.torch.onnx.name_scopesk['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.act', 'cos']J\x89
+pkg.torch.onnx.stack_trace\xea  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 28, in forward
+    x = self.act(x)
+  File "/app/audio/novasr/activations.py", line 62, in forward
+    return snake_fast_inference(x, self.a_eff, self.inv_2b)
+  File "/app/audio/novasr/activations.py", line 6, in snake_fast_inference
+    return x + (1.0 - torch.cos(2.0 * a * x)) * inv_2b
+
+\xd1
+val_41
+cossub_31node_sub_31"SubJ\x9e
+	namespace\x90: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.act: audio.novasr.activations.SnakeBeta/sub_31: aten.sub.TensorJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.activations.SnakeBeta', 'aten.sub.Tensor']J\x84
+pkg.torch.onnx.fx_nodej%sub_31 : [num_users=1] = call_function[target=torch.ops.aten.sub.Tensor](args = (1.0, %cos), kwargs = {})J\x8c
+pkg.torch.onnx.name_scopesn['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.act', 'sub_31']J\x89
+pkg.torch.onnx.stack_trace\xea  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 28, in forward
+    x = self.act(x)
+  File "/app/audio/novasr/activations.py", line 62, in forward
+    return snake_fast_inference(x, self.a_eff, self.inv_2b)
+  File "/app/audio/novasr/activations.py", line 6, in snake_fast_inference
+    return x + (1.0 - torch.cos(2.0 * a * x)) * inv_2b
+
+\xdb
+sub_31
+mul_79mul_91node_mul_91"MulJ\x9e
+	namespace\x90: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.act: audio.novasr.activations.SnakeBeta/mul_91: aten.mul.TensorJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.activations.SnakeBeta', 'aten.mul.Tensor']J\x8b
+pkg.torch.onnx.fx_nodeq%mul_91 : [num_users=1] = call_function[target=torch.ops.aten.mul.Tensor](args = (%sub_31, %mul_79), kwargs = {})J\x8c
+pkg.torch.onnx.name_scopesn['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.act', 'mul_91']J\x89
+pkg.torch.onnx.stack_trace\xea  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 28, in forward
+    x = self.act(x)
+  File "/app/audio/novasr/activations.py", line 62, in forward
+    return snake_fast_inference(x, self.a_eff, self.inv_2b)
+  File "/app/audio/novasr/activations.py", line 6, in snake_fast_inference
+    return x + (1.0 - torch.cos(2.0 * a * x)) * inv_2b
+
+\xdd
+slice_5
+mul_91add_82node_add_82"AddJ\x9e
+	namespace\x90: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.act: audio.novasr.activations.SnakeBeta/add_82: aten.add.TensorJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.activations.SnakeBeta', 'aten.add.Tensor']J\x8c
+pkg.torch.onnx.fx_noder%add_82 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%slice_5, %mul_91), kwargs = {})J\x8c
+pkg.torch.onnx.name_scopesn['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.act', 'add_82']J\x89
+pkg.torch.onnx.stack_trace\xea  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 28, in forward
+    x = self.act(x)
+  File "/app/audio/novasr/activations.py", line 62, in forward
+    return snake_fast_inference(x, self.a_eff, self.inv_2b)
+  File "/app/audio/novasr/activations.py", line 6, in snake_fast_inference
+    return x + (1.0 - torch.cos(2.0 * a * x)) * inv_2b
+
+\xd6
+add_82
+slice_7conv1d_2node_Conv_346"Conv*
+group \xa0*
+pads@@\xa0*
+auto_pad"NOTSET\xa0*
+strides@\xa0*
+	dilations@\xa0J\x83
+	namespace\xf5: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.0: audio.novasr.model.Activation1d/dec.resblocks.0.activations.0.downsample: audio.novasr.resample.DownSample1d/dec.resblocks.0.activations.0.downsample.lowpass: audio.novasr.resample.LowPassFilter1d/conv1d_2: aten.conv1d.defaultJ?
+!pkg.onnxscript.rewriter.rule_nameRemoveOptionalBiasFromConvJ\x91
+pkg.torch.onnx.class_hierarchy\xee['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.DownSample1d', 'audio.novasr.resample.LowPassFilter1d', 'aten.conv1d.default']J\xac
+pkg.torch.onnx.fx_node\x91%conv1d_2 : [num_users=1] = call_function[target=torch.ops.aten.conv1d.default](args = (%add_82, %slice_7, None, [2], [5], [1], 32), kwargs = {})J\xca
+pkg.torch.onnx.name_scopes\xab['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.0', 'dec.resblocks.0.activations.0.downsample', 'dec.resblocks.0.activations.0.downsample.lowpass', 'conv1d_2']J\xf6
+pkg.torch.onnx.stack_trace\xd7  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 58, in forward
+    xt = a1(x)
+  File "/app/audio/novasr/model.py", line 29, in forward
+    x = self.downsample(x)
+  File "/app/audio/novasr/resample.py", line 79, in forward
+    return self.lowpass(x)
+  File "/app/audio/novasr/resample.py", line 72, in forward
+    return F.conv1d(x, self.f_opt[:C], stride=self.stride, padding=5, groups=C)
+
+\xe1
+
+conv1d_2
+dec.resblocks.0.convs1.0.weight
+dec.resblocks.0.convs1.0.biasconv1d_3node_conv1d_3"Conv*
+group\xa0*
+pads@@\xa0*
+auto_pad"NOTSET\xa0*
+strides@\xa0*
+	dilations@\xa0J\xd6
+	namespace\xc8: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.convs1.0: torch.nn.modules.conv.Conv1d/conv1d_3: aten.conv1d.defaultJ\xbf
+pkg.torch.onnx.class_hierarchy\x9c['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'torch.nn.modules.conv.Conv1d', 'aten.conv1d.default']J\xdb
+pkg.torch.onnx.fx_node\xc0%conv1d_3 : [num_users=1] = call_function[target=torch.ops.aten.conv1d.default](args = (%conv1d_2, %p_dec_resblocks_0_convs1_0_weight, %p_dec_resblocks_0_convs1_0_bias, [1], [5]), kwargs = {})Jd
+pkg.torch.onnx.name_scopesF['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.convs1.0', 'conv1d_3']J\xc0
+pkg.torch.onnx.stack_trace\xa1  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 59, in forward
+    xt = c1(xt)
+
+\xe1
+conv1d_3
+slice_4conv1d_4node_Conv_347"Conv*
+group \xa0*
+pads@@\xa0*
+auto_pad"NOTSET\xa0*
+strides@\xa0*
+	dilations@\xa0J\xa7
+	namespace\x99: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/conv1d_4: aten.conv1d.defaultJL
+!pkg.onnxscript.rewriter.rule_name'RemoveOptionalBiasFromConv, FuseConvPadJ\xe6
+pkg.torch.onnx.class_hierarchy\xc3['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten.conv1d.default']J\xac
+pkg.torch.onnx.fx_node\x91%conv1d_4 : [num_users=1] = call_function[target=torch.ops.aten.conv1d.default](args = (%pad_1, %slice_11, None, [1], [0], [1], 32), kwargs = {})J\x93
+pkg.torch.onnx.name_scopesu['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', 'conv1d_4']J\xb0
+pkg.torch.onnx.stack_trace\x91  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 24, in _polyphase_upsample_fused
+    out = F.conv1d(x, weight, groups=x.shape[1], stride=1)
+
+\x92
+val_118
+mul_184add_98node_add_98"AddJ\xa9
+	namespace\x9b: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/add_98: <built-in function add>J\xea
+pkg.torch.onnx.class_hierarchy\xc7['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', '<built-in function add>']Jz
+pkg.torch.onnx.fx_node`%add_98 : [num_users=2] = call_function[target=operator.add](args = (-2, %mul_184), kwargs = {})J\x91
+pkg.torch.onnx.name_scopess['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', 'add_98']J\xba
+pkg.torch.onnx.stack_trace\x9b  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xc3
+add_98
+val_21val_218node_Reshape_218"Reshape*
+	allowzero \xa0J\xa3
+	namespace\x95: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/view_6: aten.view.defaultJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten.view.default']J\x9c
+pkg.torch.onnx.fx_node\x81%view_6 : [num_users=1] = call_function[target=torch.ops.aten.view.default](args = (%conv1d_4, [1, 32, 2, %add_98]), kwargs = {})J\x91
+pkg.torch.onnx.name_scopess['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', 'view_6']J\xba
+pkg.torch.onnx.stack_trace\x9b  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xd0
+val_105
+val_106
+val_117
+val_218val_219node_Concat_219"Concat*
+axis \xa0J\xa3
+	namespace\x95: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/view_6: aten.view.defaultJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten.view.default']J\x9c
+pkg.torch.onnx.fx_node\x81%view_6 : [num_users=1] = call_function[target=torch.ops.aten.view.default](args = (%conv1d_4, [1, 32, 2, %add_98]), kwargs = {})J\x91
+pkg.torch.onnx.name_scopess['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', 'view_6']J\xba
+pkg.torch.onnx.stack_trace\x9b  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xc0
+conv1d_4
+val_219view_6node_view_6"Reshape*
+	allowzero\xa0J\xa3
+	namespace\x95: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/view_6: aten.view.defaultJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten.view.default']J\x9c
+pkg.torch.onnx.fx_node\x81%view_6 : [num_users=1] = call_function[target=torch.ops.aten.view.default](args = (%conv1d_4, [1, 32, 2, %add_98]), kwargs = {})J\x91
+pkg.torch.onnx.name_scopess['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', 'view_6']J\xba
+pkg.torch.onnx.stack_trace\x9b  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xc2
+view_6transpose_1node_transpose_1"	Transpose*
+perm@ @@@\xa0J\xa9
+	namespace\x9b: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/transpose_1: aten.transpose.intJ\xe5
+pkg.torch.onnx.class_hierarchy\xc2['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten.transpose.int']J\x90
+pkg.torch.onnx.fx_nodev%transpose_1 : [num_users=1] = call_function[target=torch.ops.aten.transpose.int](args = (%view_6, 2, 3), kwargs = {})J\x96
+pkg.torch.onnx.name_scopesx['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', 'transpose_1']J\xba
+pkg.torch.onnx.stack_trace\x9b  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\x93
+val_1
+add_98mul_117node_mul_117"MulJ\xaa
+	namespace\x9c: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/mul_117: <built-in function mul>J\xea
+pkg.torch.onnx.class_hierarchy\xc7['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', '<built-in function mul>']Jz
+pkg.torch.onnx.fx_node`%mul_117 : [num_users=1] = call_function[target=operator.mul](args = (32, %add_98), kwargs = {})J\x92
+pkg.torch.onnx.name_scopest['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', 'mul_117']J\xba
+pkg.torch.onnx.stack_trace\x9b  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\x95
+mul_117
+val_57mul_118node_mul_118"MulJ\xaa
+	namespace\x9c: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/mul_118: <built-in function mul>J\xea
+pkg.torch.onnx.class_hierarchy\xc7['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', '<built-in function mul>']Jz
+pkg.torch.onnx.fx_node`%mul_118 : [num_users=1] = call_function[target=operator.mul](args = (%mul_117, 2), kwargs = {})J\x92
+pkg.torch.onnx.name_scopest['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', 'mul_118']J\xba
+pkg.torch.onnx.stack_trace\x9b  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xb4
+mul_118
+val_1
+floordiv_1node_floordiv_1"DivJ\xb2
+	namespace\xa4: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/floordiv_1: <built-in function floordiv>J\xef
+pkg.torch.onnx.class_hierarchy\xcc['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', '<built-in function floordiv>']J\x83
+pkg.torch.onnx.fx_nodei%floordiv_1 : [num_users=1] = call_function[target=operator.floordiv](args = (%mul_118, 32), kwargs = {})J\x95
+pkg.torch.onnx.name_scopesw['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', 'floordiv_1']J\xba
+pkg.torch.onnx.stack_trace\x9b  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xf7
+
+floordiv_1
+val_21val_223node_Reshape_223"Reshape*
+	allowzero \xa0J\xb3
+	namespace\xa5: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/_unsafe_view_3: aten._unsafe_view.defaultJ\xec
+pkg.torch.onnx.class_hierarchy\xc9['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten._unsafe_view.default']J\xac
+pkg.torch.onnx.fx_node\x91%_unsafe_view_3 : [num_users=1] = call_function[target=torch.ops.aten._unsafe_view.default](args = (%clone_3, [1, 32, %floordiv_1]), kwargs = {})J\x99
+pkg.torch.onnx.name_scopes{['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', '_unsafe_view_3']J\xba
+pkg.torch.onnx.stack_trace\x9b  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xf7
+val_105
+val_106
+val_223val_224node_Concat_224"Concat*
+axis \xa0J\xb3
+	namespace\xa5: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/_unsafe_view_3: aten._unsafe_view.defaultJ\xec
+pkg.torch.onnx.class_hierarchy\xc9['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten._unsafe_view.default']J\xac
+pkg.torch.onnx.fx_node\x91%_unsafe_view_3 : [num_users=1] = call_function[target=torch.ops.aten._unsafe_view.default](args = (%clone_3, [1, 32, %floordiv_1]), kwargs = {})J\x99
+pkg.torch.onnx.name_scopes{['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', '_unsafe_view_3']J\xba
+pkg.torch.onnx.stack_trace\x9b  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\x83
+transpose_1
+val_224_unsafe_view_3node__unsafe_view_3"Reshape*
+	allowzero\xa0J\xb3
+	namespace\xa5: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/_unsafe_view_3: aten._unsafe_view.defaultJ\xec
+pkg.torch.onnx.class_hierarchy\xc9['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten._unsafe_view.default']J\xac
+pkg.torch.onnx.fx_node\x91%_unsafe_view_3 : [num_users=1] = call_function[target=torch.ops.aten._unsafe_view.default](args = (%clone_3, [1, 32, %floordiv_1]), kwargs = {})J\x99
+pkg.torch.onnx.name_scopes{['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', '_unsafe_view_3']J\xba
+pkg.torch.onnx.stack_trace\x9b  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 27, in _polyphase_upsample_fused
+    out = out.view(B, C, ratio, L).transpose(2, 3).reshape(B, C, -1)
+
+\xa6
+_unsafe_view_3
+val_117
+val_121
+val_117
+val_105slice_12node_slice_12"SliceJ\xa5
+	namespace\x97: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.upsample: audio.novasr.resample.UpSample1d/slice_12: aten.slice.TensorJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.UpSample1d', 'aten.slice.Tensor']J\x98
+pkg.torch.onnx.fx_node~%slice_12 : [num_users=2] = call_function[target=torch.ops.aten.slice.Tensor](args = (%_unsafe_view_3, 2, 2, -2), kwargs = {})J\x93
+pkg.torch.onnx.name_scopesu['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.upsample', 'slice_12']J\x8f
+pkg.torch.onnx.stack_trace\xf0  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 27, in forward
+    x = self.upsample(x)
+  File "/app/audio/novasr/resample.py", line 52, in forward
+    return _polyphase_upsample_fused(x, self.f_fast[:x.shape[1]*self.ratio], self.ratio)
+  File "/app/audio/novasr/resample.py", line 28, in _polyphase_upsample_fused
+    return out[..., 2:-2]
+
+\xe7
+mul_144
+slice_12mul_145node_mul_145"MulJ\x9f
+	namespace\x91: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.act: audio.novasr.activations.SnakeBeta/mul_145: aten.mul.TensorJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.activations.SnakeBeta', 'aten.mul.Tensor']J\x8f
+pkg.torch.onnx.fx_nodeu%mul_145 : [num_users=1] = call_function[target=torch.ops.aten.mul.Tensor](args = (%mul_144, %slice_12), kwargs = {})J\x8d
+pkg.torch.onnx.name_scopeso['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.act', 'mul_145']J\x8a
+pkg.torch.onnx.stack_trace\xeb  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 28, in forward
+    x = self.act(x)
+  File "/app/audio/novasr/activations.py", line 62, in forward
+    return snake_fast_inference(x, self.a_eff, self.inv_2b)
+  File "/app/audio/novasr/activations.py", line 6, in snake_fast_inference
+    return x + (1.0 - torch.cos(2.0 * a * x)) * inv_2b
+
+\xcc
+mul_145cos_1
+node_cos_1"CosJ\x9e
+	namespace\x90: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.act: audio.novasr.activations.SnakeBeta/cos_1: aten.cos.defaultJ\xe5
+pkg.torch.onnx.class_hierarchy\xc2['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.activations.SnakeBeta', 'aten.cos.default']J\x84
+pkg.torch.onnx.fx_nodej%cos_1 : [num_users=1] = call_function[target=torch.ops.aten.cos.default](args = (%mul_145,), kwargs = {})J\x8b
+pkg.torch.onnx.name_scopesm['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.act', 'cos_1']J\x8a
+pkg.torch.onnx.stack_trace\xeb  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 28, in forward
+    x = self.act(x)
+  File "/app/audio/novasr/activations.py", line 62, in forward
+    return snake_fast_inference(x, self.a_eff, self.inv_2b)
+  File "/app/audio/novasr/activations.py", line 6, in snake_fast_inference
+    return x + (1.0 - torch.cos(2.0 * a * x)) * inv_2b
+
+\xd6
+val_41
+cos_1sub_46node_sub_46"SubJ\x9e
+	namespace\x90: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.act: audio.novasr.activations.SnakeBeta/sub_46: aten.sub.TensorJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.activations.SnakeBeta', 'aten.sub.Tensor']J\x86
+pkg.torch.onnx.fx_nodel%sub_46 : [num_users=1] = call_function[target=torch.ops.aten.sub.Tensor](args = (1.0, %cos_1), kwargs = {})J\x8c
+pkg.torch.onnx.name_scopesn['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.act', 'sub_46']J\x8a
+pkg.torch.onnx.stack_trace\xeb  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 28, in forward
+    x = self.act(x)
+  File "/app/audio/novasr/activations.py", line 62, in forward
+    return snake_fast_inference(x, self.a_eff, self.inv_2b)
+  File "/app/audio/novasr/activations.py", line 6, in snake_fast_inference
+    return x + (1.0 - torch.cos(2.0 * a * x)) * inv_2b
+
+\xe3
+sub_46
+mul_143mul_155node_mul_155"MulJ\x9f
+	namespace\x91: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.act: audio.novasr.activations.SnakeBeta/mul_155: aten.mul.TensorJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.activations.SnakeBeta', 'aten.mul.Tensor']J\x8d
+pkg.torch.onnx.fx_nodes%mul_155 : [num_users=1] = call_function[target=torch.ops.aten.mul.Tensor](args = (%sub_46, %mul_143), kwargs = {})J\x8d
+pkg.torch.onnx.name_scopeso['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.act', 'mul_155']J\x8a
+pkg.torch.onnx.stack_trace\xeb  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 28, in forward
+    x = self.act(x)
+  File "/app/audio/novasr/activations.py", line 62, in forward
+    return snake_fast_inference(x, self.a_eff, self.inv_2b)
+  File "/app/audio/novasr/activations.py", line 6, in snake_fast_inference
+    return x + (1.0 - torch.cos(2.0 * a * x)) * inv_2b
+
+\xe7
+slice_12
+mul_155add_130node_add_130"AddJ\x9f
+	namespace\x91: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.act: audio.novasr.activations.SnakeBeta/add_130: aten.add.TensorJ\xe4
+pkg.torch.onnx.class_hierarchy\xc1['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.activations.SnakeBeta', 'aten.add.Tensor']J\x8f
+pkg.torch.onnx.fx_nodeu%add_130 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%slice_12, %mul_155), kwargs = {})J\x8d
+pkg.torch.onnx.name_scopeso['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.act', 'add_130']J\x8a
+pkg.torch.onnx.stack_trace\xeb  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 28, in forward
+    x = self.act(x)
+  File "/app/audio/novasr/activations.py", line 62, in forward
+    return snake_fast_inference(x, self.a_eff, self.inv_2b)
+  File "/app/audio/novasr/activations.py", line 6, in snake_fast_inference
+    return x + (1.0 - torch.cos(2.0 * a * x)) * inv_2b
+
+\xda
+add_130
+slice_7conv1d_5node_Conv_348"Conv*
+group \xa0*
+pads@@\xa0*
+auto_pad"NOTSET\xa0*
+strides@\xa0*
+	dilations@\xa0J\x83
+	namespace\xf5: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.activations.1: audio.novasr.model.Activation1d/dec.resblocks.0.activations.1.downsample: audio.novasr.resample.DownSample1d/dec.resblocks.0.activations.1.downsample.lowpass: audio.novasr.resample.LowPassFilter1d/conv1d_5: aten.conv1d.defaultJ?
+!pkg.onnxscript.rewriter.rule_nameRemoveOptionalBiasFromConvJ\x91
+pkg.torch.onnx.class_hierarchy\xee['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'audio.novasr.model.Activation1d', 'audio.novasr.resample.DownSample1d', 'audio.novasr.resample.LowPassFilter1d', 'aten.conv1d.default']J\xae
+pkg.torch.onnx.fx_node\x93%conv1d_5 : [num_users=1] = call_function[target=torch.ops.aten.conv1d.default](args = (%add_130, %slice_14, None, [2], [5], [1], 32), kwargs = {})J\xca
+pkg.torch.onnx.name_scopes\xab['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.activations.1', 'dec.resblocks.0.activations.1.downsample', 'dec.resblocks.0.activations.1.downsample.lowpass', 'conv1d_5']J\xf7
+pkg.torch.onnx.stack_trace\xd8  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 60, in forward
+    xt = a2(xt)
+  File "/app/audio/novasr/model.py", line 29, in forward
+    x = self.downsample(x)
+  File "/app/audio/novasr/resample.py", line 79, in forward
+    return self.lowpass(x)
+  File "/app/audio/novasr/resample.py", line 72, in forward
+    return F.conv1d(x, self.f_opt[:C], stride=self.stride, padding=5, groups=C)
+
+\xe1
+
+conv1d_5
+dec.resblocks.0.convs2.0.weight
+dec.resblocks.0.convs2.0.biasconv1d_6node_conv1d_6"Conv*
+group\xa0*
+pads@@\xa0*
+auto_pad"NOTSET\xa0*
+strides@\xa0*
+	dilations@\xa0J\xd6
+	namespace\xc8: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/dec.resblocks.0.convs2.0: torch.nn.modules.conv.Conv1d/conv1d_6: aten.conv1d.defaultJ\xbf
+pkg.torch.onnx.class_hierarchy\x9c['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'torch.nn.modules.conv.Conv1d', 'aten.conv1d.default']J\xdb
+pkg.torch.onnx.fx_node\xc0%conv1d_6 : [num_users=1] = call_function[target=torch.ops.aten.conv1d.default](args = (%conv1d_5, %p_dec_resblocks_0_convs2_0_weight, %p_dec_resblocks_0_convs2_0_bias, [1], [5]), kwargs = {})Jd
+pkg.torch.onnx.name_scopesF['', 'dec', 'dec.resblocks.0', 'dec.resblocks.0.convs2.0', 'conv1d_6']J\xc0
+pkg.torch.onnx.stack_trace\xa1  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 61, in forward
+    xt = c2(xt)
+
+\x95
+val_265
+mul_184add_140node_add_140"AddJ\xa2
+	namespace\x94: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/add_140: <built-in function add>J\xa3
+pkg.torch.onnx.class_hierarchy\x80['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', '<built-in function add>']J{
+pkg.torch.onnx.fx_nodea%add_140 : [num_users=1] = call_function[target=operator.add](args = (-4, %mul_184), kwargs = {})JG
+pkg.torch.onnx.name_scopes)['', 'dec', 'dec.resblocks.0', 'add_140']J\xd3
+pkg.torch.onnx.stack_trace\xb4  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 62, in forward
+    x = xt + x[:, :, :xt.shape[2]]
+
+\xbf
+add_140
+val_21val_271node_Reshape_271"Reshape*
+	allowzero \xa0J\x9d
+	namespace\x8f: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/slice_15: aten.slice.TensorJ\x9c
+pkg.torch.onnx.class_hierarchyz['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'aten.slice.Tensor']J\x96
+pkg.torch.onnx.fx_node|%slice_15 : [num_users=1] = call_function[target=torch.ops.aten.slice.Tensor](args = (%add_41, 2, 0, %add_140), kwargs = {})JH
+pkg.torch.onnx.name_scopes*['', 'dec', 'dec.resblocks.0', 'slice_15']J\xd3
+pkg.torch.onnx.stack_trace\xb4  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 62, in forward
+    x = xt + x[:, :, :xt.shape[2]]
+
+\xc4
+add_41
+val_268
+val_271
+val_117
+val_105slice_15node_slice_15"SliceJ\x9d
+	namespace\x8f: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/slice_15: aten.slice.TensorJ\x9c
+pkg.torch.onnx.class_hierarchyz['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'aten.slice.Tensor']J\x96
+pkg.torch.onnx.fx_node|%slice_15 : [num_users=1] = call_function[target=torch.ops.aten.slice.Tensor](args = (%add_41, 2, 0, %add_140), kwargs = {})JH
+pkg.torch.onnx.name_scopes*['', 'dec', 'dec.resblocks.0', 'slice_15']J\xd3
+pkg.torch.onnx.stack_trace\xb4  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 62, in forward
+    x = xt + x[:, :, :xt.shape[2]]
+
+\x9c
+conv1d_6
+slice_15add_144node_add_144"AddJ\x9a
+	namespace\x8c: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.resblocks.0: audio.novasr.model.AMPBlock0/add_144: aten.add.TensorJ\x9a
+pkg.torch.onnx.class_hierarchyx['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'audio.novasr.model.AMPBlock0', 'aten.add.Tensor']J\x90
+pkg.torch.onnx.fx_nodev%add_144 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%conv1d_6, %slice_15), kwargs = {})JG
+pkg.torch.onnx.name_scopes)['', 'dec', 'dec.resblocks.0', 'add_144']J\xd3
+pkg.torch.onnx.stack_trace\xb4  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 86, in forward
+    xs = self.resblocks[0](x)
+  File "/app/audio/novasr/model.py", line 62, in forward
+    x = xt + x[:, :, :xt.shape[2]]
+
+\x8b
+add_144
+dec.conv_post.weightconv1d_7node_Conv_349"Conv*
+group\xa0*
+pads@@\xa0*
+auto_pad"NOTSET\xa0*
+strides@\xa0*
+	dilations@\xa0J\x9d
+	namespace\x8f: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/dec.conv_post: torch.nn.modules.conv.Conv1d/conv1d_7: aten.conv1d.defaultJ?
+!pkg.onnxscript.rewriter.rule_nameRemoveOptionalBiasFromConvJ\x9e
+pkg.torch.onnx.class_hierarchy|['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'torch.nn.modules.conv.Conv1d', 'aten.conv1d.default']J\xb3
+pkg.torch.onnx.fx_node\x98%conv1d_7 : [num_users=1] = call_function[target=torch.ops.aten.conv1d.default](args = (%add_144, %p_dec_conv_post_weight, None, [1], [3]), kwargs = {})JF
+pkg.torch.onnx.name_scopes(['', 'dec', 'dec.conv_post', 'conv1d_7']J\xf4
+pkg.torch.onnx.stack_trace\xd5  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 87, in forward
+    x = self.conv_post(xs)
+
+\xba
+conv1d_7output	node_tanh"TanhJj
+	namespace]: audio.novasr.model.SynthesizerTrn/dec: audio.novasr.model.Generator/tanh: aten.tanh.defaultJ|
+pkg.torch.onnx.class_hierarchyZ['audio.novasr.model.SynthesizerTrn', 'audio.novasr.model.Generator', 'aten.tanh.default']J\x85
+pkg.torch.onnx.fx_nodek%tanh : [num_users=1] = call_function[target=torch.ops.aten.tanh.default](args = (%conv1d_7,), kwargs = {})J1
+pkg.torch.onnx.name_scopes['', 'dec', 'tanh']J\xef
+pkg.torch.onnx.stack_trace\xd0  File "/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/torch/_dynamo/functional_export.py", line 216, in forward
+    res = self._export_root(*args, **kwargs)
+  File "/app/audio/novasr/model.py", line 101, in forward
+    return self.dec(x)
+  File "/app/audio/novasr/model.py", line 88, in forward
+    x = torch.tanh(x)
+
+main_graph*Y Bdec.conv_pre.weightj
+locationnovasr.onnx.dataj
+offset0j
+length896p*\x9a Bdec.conv_pre.biasJ\x80 \xa06\xbe \xc0k> \x80q> \xa0\x88> \xc0\xe8\xbd @\x96\xbe \x80\xf6=  \x99\xbe  G\xbe `\xc6= \xa0\xe4=  \x92\xbe \x80,> @\xaf\xbc \x80I> \xe06\xbe  \x97\xbe  Ͻ `\x9c= \x80\x8c\xbe \xc0\xd3< `\xbe  \xbd  < `)=  y\xbe `\xe7= `\xfa\xbd @*> \x80\x92>  \xb4\xbc `'=*\xa6 Bdec.resblocks.0.convs1.0.biasJ\x80 \xa0\x88= \x80\xdd< \x80\x93\xbc \xa0\xc0< \xc04= \xe0V\xbc \xa09= \xa0V\xbc \xe0"< @=  \x81= @\xb4; ༼ \xe0\xf2;  "\xbc @"; \xa0ڼ  \xf4\xbc \xe0:\xbc  <= \xe0\x87\xbb `d\xbd  	\xbd @n= `9=  = \xc0]\xbc \xa0^= \xe0=  X=  J9 \x80\xbc*\xa6 Bdec.resblocks.0.convs2.0.biasJ\x80 @\xd5;  \x90\xbc  \xbb\xbd @\x87\xbd \xe0_< \xa0\xa3\xbb \xc0ɼ \x80\x8d\xbc  8= `A\xbd \x80 \xbd `\x91\xbb  W\xbd \x80\xe0< `B\xbc \xc0\x9e= \xc09= `= \x80ɼ \xa0\xcf= \xe0T<  \xed< \x80\xdd< \xe0= \xa00=  \xa7= \xe0\xe3\xbc  \xa5< \xa0s\xbd `\xb7\xbc \xc0\xaf\xbb  \xf1<*\ Bdec.conv_post.weightj
+locationnovasr.onnx.dataj
+offset896j
+length896p*j  Bdec.resblocks.0.convs1.0.weightj
+locationnovasr.onnx.dataj
+offset4864j
+length45056p*k  Bdec.resblocks.0.convs2.0.weightj
+locationnovasr.onnx.dataj
+offset49920j
+length45056p*Bval_16J        *Bval_18J       *Bval_20J    *Bval_41J  \x80?*Q@Bslice_4j
+locationnovasr.onnx.dataj
+offset1792j
+length1536p*Bval_117J       *Bval_121J\xfe\xff\xff\xff\xff\xff\xff\xff*\x93 Bmul_79J\x80\x82?\x8e\x9b?Y\x92?\x87=?\x9a\xf7>\x9cR\xfd>VO~?\xa7\xe0?rp?\xee?\x84?\xd2."?g\xe5?\xcb+?\xf2\x96?o\xfc?\xe6?\x87=\xf0>\xdd\xfc?Z:?\x8f\xc2?\xd5?\xdaA?qA?QE?̇?\xddn?\xdck\xc3>W\xa2=?\xa3EC?bW"?S?*\x93 Bmul_80J\x80\xec\x8d@\x83@n\xa3@\xe8@\xa7\xf7?\xf6\xc9\xfd?\x97\xea\x81@O\xf5$@\xe2@Ԅ@\x85\xec@\x97\x9a%@\x87\xb7@\\xa9@\x8d@&V@O\xe5@\xcd>\xef?)\xa6f@y@%\xfb@9\xa5@\xf8@O\x94"@\xe6\xe2@;@\xcbR@\xb2\xe8\xc0?129@l!\x8c@p\xb4 @\x86d@*Q Bslice_7j
+locationnovasr.onnx.dataj
+offset3328j
+length1536p*\x94 Bmul_143J\x805\xf0?\x89N7?\xb0"?\xa4\xb4\x96? \?\xe3\xf7\x80?\xed\xc5k?\xe3#E?\xef\x89?)\?I\x8e?\x8f\xfe4?a\xa7\x80?C_?"\xd5?\xb6\xcdD?\xe8\xc0J?Dr?Qh\xe0>K?\xb3I? \xb0?V\xf6\x83?;\x98?\x8e\xf5,?GW?\xc02k?<n?Zhd?1\xa7\xa6? \x9c?\x85\xe2?*\x94 Bmul_144J\x80dg\xfd?\xf9T@?\xa4\x91@\x921M@\xbc\xfd?Nш@3\xef7@н@0
+@\xd0`\xfb?\xd5\xe3@zxI@\xcb\xec8@Ԝ@oA@_z\xeb@\xccC@_[@Z\xae@ݺ@P"@\xe0\xa3@Y\xa6Q@<\xf4\x8c@\x96\x89,@\x94 @X	Q@G@\xf1\xe6J@\x9c\xe9h@\xdbd@\xe0y\xf8?*Bval_268J        *Bval_1J        *Bval_4J\xc0       *Bval_11J       *Bval_19J   ?*Bval_21J\xff\xff\xff\xff\xff\xff\xff\xff*Bval_57J       *Bval_105J       *Bval_106J        *Bval_118J\xfe\xff\xff\xff\xff\xff\xff\xff*Bval_265J\xfc\xff\xff\xff\xff\xff\xff\xffZ\xc7
+input
+
+
+
+length"=
+/pkg.torch.export.graph_signature.InputSpec.kind
+USER_INPUT"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"&
+!pkg.torch.onnx.original_node_namexb\x94
+output
+
+
+
+3*length - 4"?
+0pkg.torch.export.graph_signature.OutputSpec.kindUSER_OUTPUT")
+!pkg.torch.onnx.original_node_nametanhj\xe2
+dec.conv_pre.weight
+
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone":
+!pkg.torch.onnx.original_node_namep_dec_conv_pre_weightj\xd6
+dec.conv_pre.bias
+
+
+ "<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"8
+!pkg.torch.onnx.original_node_namep_dec_conv_pre_biasj\xee
+dec.resblocks.0.convs1.0.bias
+
+
+ "<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"D
+!pkg.torch.onnx.original_node_namep_dec_resblocks_0_convs1_0_biasj\xee
+dec.resblocks.0.convs2.0.bias
+
+
+ "<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"D
+!pkg.torch.onnx.original_node_namep_dec_resblocks_0_convs2_0_biasj\xe4
+dec.conv_post.weight
+
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone";
+!pkg.torch.onnx.original_node_namep_dec_conv_post_weightj\xfa
+dec.resblocks.0.convs1.0.weight
+
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"F
+!pkg.torch.onnx.original_node_name!p_dec_resblocks_0_convs1_0_weightj\xfa
+dec.resblocks.0.convs2.0.weight
+
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"F
+!pkg.torch.onnx.original_node_name!p_dec_resblocks_0_convs2_0_weightjD
+val_16
+ "2
+$pkg.onnxscript.optimizer.folded_from
+['val_15']jD
+val_18
+ "2
+$pkg.onnxscript.optimizer.folded_from
+['val_17']jD
+val_20
+ "2
+$pkg.onnxscript.optimizer.folded_from
+['val_15']jD
+val_41
+ "2
+$pkg.onnxscript.optimizer.folded_from
+['val_17']j\x82
+slice_4
+
+@
+
+"\xe2
+$pkg.onnxscript.optimizer.folded_from\xb9['_unsafe_view', 'clone', 'dec.resblocks.0.activations.0.upsample.filter', 'expand', 'mul_40', 'slice_1', 'slice_2', 'stack', 'unsqueeze', 'val_24', 'val_42', 'val_44', 'val_45', 'val_46', 'val_47', 'val_48', 'val_49', 'val_5', 'val_50', 'val_51', 'val_52', 'val_53', 'val_54', 'val_55', 'val_56', 'val_57', 'val_58', 'val_59', 'val_60', 'val_61', 'val_62', 'val_63', 'val_64', 'val_65', 'val_66', 'val_67', 'val_68', 'val_69', 'val_70', 'val_71', 'val_72', 'val_73', 'val_74', 'val_75', 'val_76', 'val_77', 'val_79', 'val_80', 'val_81', 'val_82', 'val_84', 'val_85', 'val_86', 'val_87', 'val_89', 'val_90', 'val_91', 'val_92', 'val_93', 'val_94', 'val_95', 'val_96', 'val_97', 'val_98', 'view_1']j_
+val_117
+
+
+"H
+$pkg.onnxscript.optimizer.folded_from ['val_115', 'val_116', 'val_57']j`
+val_121
+
+
+"I
+$pkg.onnxscript.optimizer.folded_from!['val_118', 'val_119', 'val_120']j\xf2
+mul_79
+
+
+
+"\xd3
+$pkg.onnxscript.optimizer.folded_from\xaa['add_69', 'dec.resblocks.0.activations.0.act.beta', 'exp_1', 'mul_78', 'reciprocal', 'val_132', 'val_133', 'val_134', 'val_135', 'val_136', 'val_17', 'val_42', 'view_4']j\xb9
+mul_80
+
+
+
+"\x9a
+$pkg.onnxscript.optimizer.folded_fromr['dec.resblocks.0.activations.0.act.alpha', 'exp', 'val_127', 'val_128', 'val_129', 'val_130', 'val_42', 'view_3']j\xbd
+slice_7
+
+
+
+"\x9d
+$pkg.onnxscript.optimizer.folded_from\xf4['dec.resblocks.0.activations.0.downsample.lowpass.filter', 'expand_1', 'val_1', 'val_138', 'val_139', 'val_140', 'val_141', 'val_142', 'val_143', 'val_144', 'val_145', 'val_146', 'val_147', 'val_148', 'val_149', 'val_150', 'val_151', 'val_46']j\xf7
+mul_143
+
+
+
+"\xd7
+$pkg.onnxscript.optimizer.folded_from\xae['add_117', 'dec.resblocks.0.activations.1.act.beta', 'exp_3', 'mul_142', 'reciprocal_1', 'val_136', 'val_17', 'val_241', 'val_242', 'val_243', 'val_244', 'val_42', 'view_8']j\xbc
+mul_144
+
+
+
+"\x9c
+$pkg.onnxscript.optimizer.folded_fromt['dec.resblocks.0.activations.1.act.alpha', 'exp_2', 'val_236', 'val_237', 'val_238', 'val_239', 'val_42', 'view_7']j_
+val_268
+
+
+"H
+$pkg.onnxscript.optimizer.folded_from ['val_266', 'val_267', 'val_46']j
+val_1
+ j
+val_4
+ j
+val_11
+ j
+val_19
+ j
+val_21
+
+
+j
+val_57
+ j
+val_105
+
+
+j
+val_106
+
+
+j
+val_118
+ j
+val_265
+ j
+val_0
+
+
+j
+sym_size_int_15
+ j
+mul_181
+ j
+mul_184
+ j"
+conv1d
+
+
+
+lengthj
+val_13
+ j
+val_14
+ j
+truediv
+ j
+arange
+
+
+3*lengthj
+_to_copy
+
+
+3*lengthj
+add_7
+
+
+3*lengthj
+mul_11
+
+
+3*lengthj
+sub_5
+
+
+3*lengthj
+clamp
+
+
+3*lengthj
+val_22
+
+
+j
+view
+
+
+3*lengthj
+
+_to_copy_1
+
+
+3*lengthj
+add_20
+
+
+3*lengthj
+sub_11
+ j
+clamp_1
+
+
+3*lengthj"
+val_25
+
+length
+
+ j
+val_30
+
+
+3*length
+j$
+val_32
+
+
+3*length
+
+ j+
+_unsafe_index
+
+
+
+
+3*lengthj
+val_37
+
+
+3*length
+j$
+val_39
+
+
+3*length
+
+ j-
+_unsafe_index_1
+
+
+
+
+3*lengthj2
+convert_element_type_default
+
+
+3*lengthj
+sub_15
+
+
+3*lengthj
+clamp_2
+
+
+3*lengthj$
+sub_18
+
+
+
+
+3*lengthj$
+mul_30
+
+
+
+
+3*lengthj$
+add_41
+
+
+
+
+3*lengthj&
+conv1d_1
+
+
+@
+
+3*lengthj
+val_109
+
+
+j(
+view_2
+
+
+
+
+
+3*lengthj+
+	transpose
+
+
+
+
+3*length
+j
+floordiv
+ j
+val_113
+
+
+j
+val_114
+
+
+j,
+_unsafe_view_1
+
+
+
+
+6*lengthj)
+slice_5
+
+
+
+6*length - 4j(
+mul_81
+
+
+
+6*length - 4j%
+cos
+
+
+
+6*length - 4j(
+sub_31
+
+
+
+6*length - 4j(
+mul_91
+
+
+
+6*length - 4j(
+add_82
+
+
+
+6*length - 4j*
+conv1d_2
+
+
+
+3*length - 2j*
+conv1d_3
+
+
+
+3*length - 2j*
+conv1d_4
+
+
+@
+3*length - 2j
+add_98
+ j
+val_218
+
+
+j
+val_219
+
+
+j,
+view_6"
+ 
+
+
+
+3*length - 2j1
+transpose_1"
+ 
+
+
+3*length - 2
+j
+mul_117
+ j
+mul_118
+ j
+
+floordiv_1
+ j
+val_223
+
+
+j
+val_224
+
+
+j0
+_unsafe_view_3
+
+
+
+6*length - 4j*
+slice_12
+
+
+
+6*length - 8j)
+mul_145
+
+
+
+6*length - 8j'
+cos_1
+
+
+
+6*length - 8j(
+sub_46
+
+
+
+6*length - 8j)
+mul_155
+
+
+
+6*length - 8j)
+add_130
+
+
+
+6*length - 8j*
+conv1d_5
+
+
+
+3*length - 4j*
+conv1d_6
+
+
+
+3*length - 4j
+add_140
+ j
+val_271
+
+
+j*
+slice_15
+
+
+
+3*length - 4j)
+add_144
+
+
+
+3*length - 4j*
+conv1d_7
+
+
+
+3*length - 4\x82\xa9
+0pkg.torch.export.ExportedProgram.graph_signature\xf4
+# inputs
+p_dec_conv_pre_weight: PARAMETER target='dec.conv_pre.weight'
+p_dec_conv_pre_bias: PARAMETER target='dec.conv_pre.bias'
+p_dec_resblocks_0_activations_0_act_alpha: PARAMETER target='dec.resblocks.0.activations.0.act.alpha'
+p_dec_resblocks_0_activations_0_act_beta: PARAMETER target='dec.resblocks.0.activations.0.act.beta'
+p_dec_resblocks_0_activations_1_act_alpha: PARAMETER target='dec.resblocks.0.activations.1.act.alpha'
+p_dec_resblocks_0_activations_1_act_beta: PARAMETER target='dec.resblocks.0.activations.1.act.beta'
+p_dec_resblocks_0_convs1_0_weight: PARAMETER target='dec.resblocks.0.convs1.0.weight'
+p_dec_resblocks_0_convs1_0_bias: PARAMETER target='dec.resblocks.0.convs1.0.bias'
+p_dec_resblocks_0_convs2_0_weight: PARAMETER target='dec.resblocks.0.convs2.0.weight'
+p_dec_resblocks_0_convs2_0_bias: PARAMETER target='dec.resblocks.0.convs2.0.bias'
+p_dec_conv_post_weight: PARAMETER target='dec.conv_post.weight'
+b_dec_resblocks_0_activations_0_act_a_eff: BUFFER target='dec.resblocks.0.activations.0.act.a_eff' persistent=False
+b_dec_resblocks_0_activations_0_act_inv_2b: BUFFER target='dec.resblocks.0.activations.0.act.inv_2b' persistent=False
+b_dec_resblocks_0_activations_0_upsample_filter: BUFFER target='dec.resblocks.0.activations.0.upsample.filter' persistent=True
+b_dec_resblocks_0_activations_0_upsample_f_fast: BUFFER target='dec.resblocks.0.activations.0.upsample.f_fast' persistent=False
+b_dec_resblocks_0_activations_0_downsample_lowpass_f_opt: BUFFER target='dec.resblocks.0.activations.0.downsample.lowpass.f_opt' persistent=False
+b_dec_resblocks_0_activations_0_downsample_lowpass_filter: BUFFER target='dec.resblocks.0.activations.0.downsample.lowpass.filter' persistent=True
+b_dec_resblocks_0_activations_1_act_a_eff: BUFFER target='dec.resblocks.0.activations.1.act.a_eff' persistent=False
+b_dec_resblocks_0_activations_1_act_inv_2b: BUFFER target='dec.resblocks.0.activations.1.act.inv_2b' persistent=False
+b_dec_resblocks_0_activations_1_upsample_filter: BUFFER target='dec.resblocks.0.activations.1.upsample.filter' persistent=True
+b_dec_resblocks_0_activations_1_upsample_f_fast: BUFFER target='dec.resblocks.0.activations.1.upsample.f_fast' persistent=False
+b_dec_resblocks_0_activations_1_downsample_lowpass_f_opt: BUFFER target='dec.resblocks.0.activations.1.downsample.lowpass.f_opt' persistent=False
+b_dec_resblocks_0_activations_1_downsample_lowpass_filter: BUFFER target='dec.resblocks.0.activations.1.downsample.lowpass.filter' persistent=True
+x: USER_INPUT
+
+# outputs
+view_3: BUFFER_MUTATION target='dec.resblocks.0.activations.0.act.a_eff'
+mul_79: BUFFER_MUTATION target='dec.resblocks.0.activations.0.act.inv_2b'
+_unsafe_view: BUFFER_MUTATION target='dec.resblocks.0.activations.0.upsample.f_fast'
+expand_1: BUFFER_MUTATION target='dec.resblocks.0.activations.0.downsample.lowpass.f_opt'
+view_7: BUFFER_MUTATION target='dec.resblocks.0.activations.1.act.a_eff'
+mul_143: BUFFER_MUTATION target='dec.resblocks.0.activations.1.act.inv_2b'
+_unsafe_view_2: BUFFER_MUTATION target='dec.resblocks.0.activations.1.upsample.f_fast'
+expand_3: BUFFER_MUTATION target='dec.resblocks.0.activations.1.downsample.lowpass.f_opt'
+tanh: USER_OUTPUT
+\x82N
+2pkg.torch.export.ExportedProgram.range_constraints{s37: VR[2, 2147483647]}B
+ 
