@@ -1,5 +1,5 @@
 import numpy as np
-import librosa
+import scipy.fft
 from typing import Dict, Any
 
 def analyze_chord_at(y: np.ndarray, sr: int, t: float, window_s: float = 0.5) -> Dict[str, Any]:
@@ -17,10 +17,25 @@ def analyze_chord_at(y: np.ndarray, sr: int, t: float, window_s: float = 0.5) ->
     if len(chunk) < 1024:
         return _default_chord()
 
-    # Compute chroma features
-    # Use CENS for better robustness to dynamics
-    chroma = librosa.feature.chroma_cens(y=chunk, sr=sr)
-    chroma_mean = np.mean(chroma, axis=1)
+    # Compute chroma features manually to avoid librosa/numba build issues
+    n_fft = 1 << (len(chunk) - 1).bit_length()
+    window = np.hanning(len(chunk))
+    spectrum = np.abs(scipy.fft.rfft(chunk * window, n=n_fft))
+    freqs = scipy.fft.rfftfreq(n_fft, 1.0 / sr)
+
+    chroma_mean = np.zeros(12)
+    # Only consider frequencies from 50Hz to 2000Hz for chord detection
+    mask = (freqs >= 50) & (freqs <= 2000)
+
+    for f, mag in zip(freqs[mask], spectrum[mask]):
+        if f <= 0: continue
+        # MIDI note: 69 + 12 * log2(f / 440)
+        midi = 69 + 12 * np.log2(f / 440.0)
+        note = int(round(midi)) % 12
+        chroma_mean[note] += mag
+
+    if np.sum(chroma_mean) > 0:
+        chroma_mean /= np.max(chroma_mean)
 
     roots = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
