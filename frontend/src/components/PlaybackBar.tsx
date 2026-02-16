@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../store/useStore';
-import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen, Save, Repeat, Repeat1 } from 'lucide-react';
+import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen, Save, Repeat, Repeat1, Filter } from 'lucide-react';
 
 export const PlaybackBar: React.FC = () => {
   const {
@@ -8,7 +8,8 @@ export const PlaybackBar: React.FC = () => {
     controlPlayback, currentTheme, themes,
     metronome_enabled, updateMetronome, fft_window, setFFTWindow,
     octave_shift, setOctaveShift, setShowSettings, browseFile,
-    saveProject, dirty, loop_mode, setLoopMode
+    saveProject, dirty, loop_mode, setLoopMode,
+    filter_enabled, updateFilter
   } = useStore();
 
   const theme = themes[currentTheme] || {};
@@ -94,6 +95,13 @@ export const PlaybackBar: React.FC = () => {
                 className={`p-2 rounded transition-colors ${metronome_enabled ? 'text-accent bg-accent/10' : 'opacity-40'}`}
                 title="Toggle Metronome">
             <Timer size={18} />
+        </button>
+
+        {/* Band Pass Filter */}
+        <button onClick={() => updateFilter({ enabled: !filter_enabled })}
+                className={`p-2 rounded transition-colors ${filter_enabled ? 'text-accent bg-accent/10' : 'opacity-40'}`}
+                title="Toggle Band-Pass Filter">
+            <Filter size={18} />
         </button>
 
         {/* FFT Window */}
