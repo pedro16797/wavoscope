@@ -60,6 +60,8 @@ class AudioBackend:
 
         # Band-pass filter state
         self._filter_enabled: bool = False
+        self._filter_low_enabled: bool = True
+        self._filter_high_enabled: bool = True
         self._filter_low_hz: float = 200.0
         self._filter_high_hz: float = 2000.0
         self._filter_sos: np.ndarray | None = None
@@ -128,10 +130,19 @@ class AudioBackend:
         self._loop_enabled = enabled
         self._active_loop_range = None
 
-    def set_filter(self, enabled: bool | None = None, low: float | None = None, high: float | None = None) -> None:
-        """Update band-pass filter settings."""
+    def set_filter(self,
+                   enabled: bool | None = None,
+                   low: float | None = None,
+                   high: float | None = None,
+                   low_enabled: bool | None = None,
+                   high_enabled: bool | None = None) -> None:
+        """Update filter settings."""
         if enabled is not None:
             self._filter_enabled = enabled
+        if low_enabled is not None:
+            self._filter_low_enabled = low_enabled
+        if high_enabled is not None:
+            self._filter_high_enabled = high_enabled
 
         # Enforce low < high with a small gap
         min_gap = 50.0
@@ -150,16 +161,27 @@ class AudioBackend:
             delattr(self, "_last_tick_time")
 
     def _update_filter_coeffs(self) -> None:
-        """(Re)calculate SOS for the band-pass filter."""
+        """(Re)calculate SOS for the filter."""
+        if not self._filter_low_enabled and not self._filter_high_enabled:
+            self._filter_sos = None
+            self._filter_zi = None
+            return
+
         nyquist = max(self._sr / 2, 100.0)
-        low = max(10.0, self._filter_low_hz) / nyquist
-        high = min(self._filter_high_hz, nyquist - 10.0) / nyquist
 
-        if low >= high:
-            low = high * 0.5
+        if self._filter_low_enabled and self._filter_high_enabled:
+            low = max(10.0, self._filter_low_hz) / nyquist
+            high = min(self._filter_high_hz, nyquist - 10.0) / nyquist
+            if low >= high:
+                low = high * 0.9
+            self._filter_sos = scipy.signal.butter(4, [low, high], btype='bandpass', output='sos')
+        elif self._filter_low_enabled:
+            low = max(10.0, self._filter_low_hz) / nyquist
+            self._filter_sos = scipy.signal.butter(4, low, btype='highpass', output='sos')
+        else:  # high enabled
+            high = min(self._filter_high_hz, nyquist - 10.0) / nyquist
+            self._filter_sos = scipy.signal.butter(4, high, btype='lowpass', output='sos')
 
-        # Design a 4th order Butterworth band-pass filter
-        self._filter_sos = scipy.signal.butter(4, [low, high], btype='bandpass', output='sos')
         self._filter_zi = scipy.signal.sosfilt_zi(self._filter_sos)
 
     # ---------- read-only properties ----------

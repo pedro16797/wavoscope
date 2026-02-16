@@ -78,6 +78,8 @@ class FilterControl(BaseModel):
     enabled: Optional[bool] = None
     low_hz: Optional[float] = None
     high_hz: Optional[float] = None
+    low_enabled: Optional[bool] = None
+    high_enabled: Optional[bool] = None
 
 @router.post("/loop")
 async def control_loop(control: LoopControl):
@@ -95,6 +97,8 @@ async def control_filter(control: FilterControl):
     state.project.backend.set_filter(
         enabled=control.enabled,
         low=control.low_hz,
-        high=control.high_hz
+        high=control.high_hz,
+        low_enabled=control.low_enabled,
+        high_enabled=control.high_enabled
     )
     return {"status": "ok"}

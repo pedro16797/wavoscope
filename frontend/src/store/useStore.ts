@@ -120,6 +120,8 @@ interface AppState {
   loop_mode: string;
   loop_range: [number, number];
   filter_enabled: boolean;
+  filter_low_enabled: boolean;
+  filter_high_enabled: boolean;
   filter_low_hz: number;
   filter_high_hz: number;
   themes: Record<string, Record<string, string>>;
@@ -147,7 +149,7 @@ interface AppState {
   moveFlag: (idx: number, t: number) => Promise<void>;
   removeFlag: (idx: number) => Promise<void>;
   setLoopMode: (mode: string) => Promise<void>;
-  updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number }) => Promise<void>;
+  updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
 
   addHarmonyFlag: (t: number, chord?: Chord) => Promise<HarmonyFlag | null>;
   moveHarmonyFlag: (idx: number, t: number) => Promise<void>;
@@ -180,6 +182,8 @@ export const useStore = create<AppState>((set, get) => ({
   loop_mode: 'none',
   loop_range: [0, 0],
   filter_enabled: false,
+  filter_low_enabled: true,
+  filter_high_enabled: true,
   filter_low_hz: 200,
   filter_high_hz: 2000,
   themes: {},
@@ -391,13 +395,17 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   updateFilter: async (filter) => {
+    // Optimistic update
+    const updates: Partial<AppState> = {};
+    if (filter.enabled !== undefined) updates.filter_enabled = filter.enabled;
+    if (filter.low_hz !== undefined) updates.filter_low_hz = filter.low_hz;
+    if (filter.high_hz !== undefined) updates.filter_high_hz = filter.high_hz;
+    if (filter.low_enabled !== undefined) updates.filter_low_enabled = filter.low_enabled;
+    if (filter.high_enabled !== undefined) updates.filter_high_enabled = filter.high_enabled;
+    set(updates);
+
     try {
         await axios.post(`${API_BASE}/playback/filter`, filter);
-        const updates: Partial<AppState> = {};
-        if (filter.enabled !== undefined) updates.filter_enabled = filter.enabled;
-        if (filter.low_hz !== undefined) updates.filter_low_hz = filter.low_hz;
-        if (filter.high_hz !== undefined) updates.filter_high_hz = filter.high_hz;
-        set(updates);
     } catch (e) {
         console.error(e);
     }
