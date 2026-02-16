@@ -40,8 +40,10 @@ class AudioBackend:
         self._stretcher.preset(1, float(self._sr))
         self._stretcher.setTimeFactor(self._speed)
 
-        self._tsm_buffer = RingBuffer(self._sr * 2)  # 2 s safety
+        # 5s safety to handle slow speeds (0.1x) with large chunks
+        self._tsm_buffer = RingBuffer(self._sr * 5)
         self._read_sample_idx: int = 0
+        self._last_tsm_overlap: np.ndarray | None = None
 
         self._novasr_enabled: bool = False
         self._novasr: Any = None
@@ -84,7 +86,8 @@ class AudioBackend:
             self._stretcher = ps.Stretch()
             self._stretcher.preset(1, float(self._sr))
             self._stretcher.setTimeFactor(self._speed)
-            self._tsm_buffer = RingBuffer(int(self._sr * 2))
+            self._tsm_buffer = RingBuffer(int(self._sr * 5))
+            self._last_tsm_overlap = None
 
             if self._novasr:
                 self._novasr.reset()
@@ -106,6 +109,7 @@ class AudioBackend:
             self._cursor = max(0.0, min(sec, self.duration))
             self._read_sample_idx = int(self._cursor * self._sr)
             self._tsm_buffer.clear()
+            self._last_tsm_overlap = None
             self._stretcher.reset()
             if self._novasr is not None:
                 self._novasr.reset()
@@ -118,10 +122,8 @@ class AudioBackend:
     def pause(self) -> None:
         with self._lock:
             self._playing = False
-            self._tsm_buffer.clear()
-            self._stretcher.reset()
-            if self._novasr is not None:
-                self._novasr.reset()
+            # We DON'T clear the buffer or reset the stretcher here,
+            # so we can resume seamlessly.
             self._read_sample_idx = int(self._cursor * self._sr)
             self.clear_tick_cache()
 
@@ -129,6 +131,9 @@ class AudioBackend:
         with self._lock:
             self._speed = max(0.1, min(speed, 4.0))
             self._stretcher.setTimeFactor(self._speed)
+            # Clear buffer so speed change is immediate
+            self._tsm_buffer.clear()
+            self._last_tsm_overlap = None
 
     def set_volume(self, vol: float) -> None:
         with self._lock:
@@ -234,7 +239,7 @@ class AudioBackend:
                     break
 
                 # Use a larger chunk size for TSM stability
-                chunk_size = 8192
+                chunk_size = 16384
                 end_idx = min(start_idx + chunk_size, len(self._data))
                 source_chunk = self._data[start_idx:end_idx]
                 if source_chunk.size == 0:
@@ -250,7 +255,36 @@ class AudioBackend:
                     stretched = self._novasr.enhance(stretched, self._sr)
 
                 if stretched.size > 0:
-                    self._tsm_buffer.write(stretched)
+                    overlap_size = 512
+                    if self._last_tsm_overlap is not None:
+                        # Cross-fade previous tail with current head
+                        actual_overlap = min(overlap_size, stretched.size)
+                        fade_out = np.linspace(1, 0, actual_overlap, dtype=np.float32)
+                        fade_in = np.linspace(0, 1, actual_overlap, dtype=np.float32)
+
+                        blended = (
+                            stretched[:actual_overlap] * fade_in +
+                            self._last_tsm_overlap[:actual_overlap] * fade_out
+                        )
+                        self._tsm_buffer.write(blended)
+
+                        # Write the rest of the current chunk, keeping a new tail
+                        if stretched.size > overlap_size:
+                            main_part = stretched[overlap_size:-overlap_size]
+                            if main_part.size > 0:
+                                self._tsm_buffer.write(main_part)
+                            self._last_tsm_overlap = stretched[-overlap_size:].copy()
+                        else:
+                            self._last_tsm_overlap = None # Current chunk was too small to have a new tail
+                    else:
+                        # No previous tail, write everything but the tail
+                        if stretched.size > overlap_size:
+                            self._tsm_buffer.write(stretched[:-overlap_size])
+                            self._last_tsm_overlap = stretched[-overlap_size:].copy()
+                        else:
+                            # Too small even for a tail, just write it and don't start a tail
+                            self._tsm_buffer.write(stretched)
+                            self._last_tsm_overlap = None
 
                 if end_idx == len(self._data):
                     break
@@ -269,14 +303,21 @@ class AudioBackend:
 
             # 5. Check for EOF
             if to_read < frames and self._read_sample_idx >= len(self._data):
-                self._playing = False
-                self._cursor = 0.0
-                self._read_sample_idx = 0
-                self._tsm_buffer.clear()
-                self._stretcher.reset()
-                if self._novasr is not None:
-                    self._novasr.reset()
-                self._emit("finished")
+                # Flush any remaining tail
+                if self._last_tsm_overlap is not None:
+                    self._tsm_buffer.write(self._last_tsm_overlap)
+                    self._last_tsm_overlap = None
+
+                # Check if we still have nothing to read after flush
+                if self._tsm_buffer.available_read() == 0:
+                    self._playing = False
+                    self._cursor = 0.0
+                    self._read_sample_idx = 0
+                    self._tsm_buffer.clear()
+                    self._stretcher.reset()
+                    if self._novasr is not None:
+                        self._novasr.reset()
+                    self._emit("finished")
 
         except Exception:
             traceback.print_exc()
