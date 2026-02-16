@@ -13,7 +13,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const [theme, setTheme] = useState(currentTheme);
   const [clickVol, setClickVol] = useState(click_gain * 100);
   const [keys, setKeys] = useState(spectrum_keys);
-  const [hq, setHq] = useState(high_quality_enhancement);
+  const [highQuality, setHighQuality] = useState(high_quality_enhancement);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleSave = () => {
@@ -21,7 +21,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
         theme,
         click_volume: clickVol / 100,
         spectrum_keys: keys,
-        high_quality_enhancement: hq
+        high_quality_enhancement: highQuality
     });
     onClose();
   };
@@ -89,10 +89,18 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text"
                                style={{ borderWidth: 'var(--ui-border)' }} />
                     </div>
-                    <div className="flex items-center justify-between p-2 bg-background/30 rounded border border-grid">
-                        <label className="text-[10px] uppercase font-bold opacity-50 cursor-pointer" onClick={() => setHq(!hq)}>High Quality Enhancement (NovaSR)</label>
-                        <input type="checkbox" checked={hq} onChange={(e) => setHq(e.target.checked)}
-                               className="w-4 h-4 accent-accent cursor-pointer" />
+                    <div className="pt-2">
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                            <div className="relative">
+                                <input type="checkbox" checked={highQuality} onChange={(e) => setHighQuality(e.target.checked)} className="sr-only peer" />
+                                <div className="w-10 h-5 bg-background border border-grid rounded-full peer peer-checked:bg-accent transition-colors"></div>
+                                <div className="absolute left-1 top-1 bg-text w-3 h-3 rounded-full transition-transform peer-checked:translate-x-5 peer-checked:bg-background"></div>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-xs font-bold">High Quality Enhancement (NovaSR)</span>
+                                <span className="text-[10px] opacity-50">Recover high-frequency clarity during slow playback</span>
+                            </div>
+                        </label>
                     </div>
                 </>
             ) : (

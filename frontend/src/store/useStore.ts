@@ -145,12 +145,7 @@ interface AppState {
   updatePosition: (pos: number) => void;
   setPlaying: (playing: boolean) => void;
   updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
-  updateConfig: (cfg: {
-    theme?: string,
-    click_volume?: number,
-    spectrum_keys?: number,
-    high_quality_enhancement?: boolean
-  }) => Promise<void>;
+  updateConfig: (cfg: { theme?: string, click_volume?: number, spectrum_keys?: number, high_quality_enhancement?: boolean }) => Promise<void>;
   addFlag: (t: number) => Promise<void>;
   moveFlag: (idx: number, t: number) => Promise<void>;
   removeFlag: (idx: number) => Promise<void>;
