@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useStore, type HarmonyFlag, type Chord, formatChord } from '../store/useStore';
 
 interface ChordDialogProps {
@@ -123,9 +123,11 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
             <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold opacity-50">Chord Notation</label>
                 <input type="text" value={chordText}
+                       autoFocus
+                       onFocus={e => e.target.select()}
                        onChange={(e) => handleTextChange(e.target.value)}
                        onBlur={handleBlur}
-                       onKeyDown={e => e.key === 'Enter' && handleBlur()}
+                       onKeyDown={e => e.key === 'Enter' && (handleBlur(), handleSave())}
                        className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-3 outline-none focus:border-accent text-xl font-bold text-accent text-center"
                        style={{ borderWidth: 'var(--ui-border)' }} />
             </div>

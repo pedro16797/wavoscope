@@ -148,11 +148,22 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
             const snappedT = Math.round(sec * 100) / 100;
             addHarmonyFlag(snappedT).then((newFlag) => {
                 if (newFlag) {
-                    const updatedFlags = useStore.getState().harmony_flags;
-                    const newIdx = updatedFlags.findIndex(f => Math.abs(f.t - newFlag.t) < 0.001);
-                    if (newIdx !== -1) {
-                        setEditingHarmonyFlagIdx(newIdx);
-                    }
+                    // Small delay to ensure store update has propagated to all components if needed
+                    setTimeout(() => {
+                        const updatedFlags = useStore.getState().harmony_flags;
+                        let bestIdx = -1;
+                        let minDiff = Infinity;
+                        updatedFlags.forEach((f, i) => {
+                            const diff = Math.abs(f.t - snappedT);
+                            if (diff < minDiff) {
+                                minDiff = diff;
+                                bestIdx = i;
+                            }
+                        });
+                        if (bestIdx !== -1) {
+                            setEditingHarmonyFlagIdx(bestIdx);
+                        }
+                    }, 100);
                 }
             });
         }

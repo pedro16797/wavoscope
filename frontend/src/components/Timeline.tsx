@@ -277,11 +277,23 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         const snappedT = Math.round(clickT * 100) / 100;
         addHarmonyFlag(snappedT).then((newFlag) => {
             if (newFlag) {
-                const updatedFlags = useStore.getState().harmony_flags;
-                const newIdx = updatedFlags.findIndex(f => Math.abs(f.t - newFlag.t) < 0.001);
-                if (newIdx !== -1) {
-                    setEditingHarmonyFlagIdx(newIdx);
-                }
+                // Wait a tiny bit for the store to settle if needed,
+                // though addHarmonyFlag awaits fetchStatus.
+                setTimeout(() => {
+                    const updatedFlags = useStore.getState().harmony_flags;
+                    let bestIdx = -1;
+                    let minDiff = Infinity;
+                    updatedFlags.forEach((f, i) => {
+                        const diff = Math.abs(f.t - snappedT);
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            bestIdx = i;
+                        }
+                    });
+                    if (bestIdx !== -1) {
+                        setEditingHarmonyFlagIdx(bestIdx);
+                    }
+                }, 100);
             }
         });
     }

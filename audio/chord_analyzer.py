@@ -28,7 +28,8 @@ def analyze_chord_at(y: np.ndarray, sr: int, t: float, window_s: float = 0.5) ->
     mask = (freqs >= 50) & (freqs <= 2000)
 
     for f, mag in zip(freqs[mask], spectrum[mask]):
-        if f <= 0: continue
+        if f <= 0:
+            continue
         # MIDI note: 69 + 12 * log2(f / 440)
         midi = 69 + 12 * np.log2(f / 440.0)
         note = int(round(midi)) % 12
