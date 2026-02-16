@@ -84,6 +84,43 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
             ctx.fillStyle = theme.text || '#fff';
             ctx.fillText(label, x - textWidth/2, 30);
         }
+
+        // Draw subdivisions
+        if (f.type === 'rhythm' && idx < flags.length - 1) {
+            const nxt = flags[idx + 1];
+            let subdiv = f.subdivision || 0;
+            if (subdiv === 0) {
+                for (let i = idx; i >= 0; i--) {
+                    if (flags[i].type === 'rhythm' && flags[i].subdivision !== 0) {
+                        subdiv = flags[i].subdivision;
+                        break;
+                    }
+                }
+                if (subdiv === 0) subdiv = 1;
+            }
+
+            if (subdiv > 1) {
+                const span = nxt.t - f.t;
+                const step = span / subdiv;
+                for (let k = 1; k < subdiv; k++) {
+                    const t = f.t + k * step;
+                    const sx = (t - offset) * zoom;
+                    if (sx >= 0 && sx <= canvas.width) {
+                        const baseColor = theme.flagRhythm || '#ff4757';
+                        let opacity = "44"; // dimmed
+                        if (f.shaded_subdivisions && k % 2 === 1) {
+                            opacity = "99"; // brighter
+                        }
+                        ctx.strokeStyle = baseColor + opacity;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(sx, canvas.height / 2);
+                        ctx.lineTo(sx, canvas.height);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
     });
   }, [offset, zoom, themes, currentTheme, duration, flags, dragIdx, size]);
 

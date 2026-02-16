@@ -25,16 +25,14 @@ export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) =>
 
   const handleSave = async () => {
     try {
-        await axios.post('/project/flags', {
+        await axios.patch(`/project/flags/${idx}`, {
             t,
             name,
             subdivision,
+            type: flag.type,
             is_section_start: sectionStart,
             shaded_subdivisions: shaded
         });
-        if (Math.abs(t - flag.t) > 0.001) {
-            await axios.delete(`/project/flags/${idx}`);
-        }
         fetchStatus();
         onClose();
     } catch (e) {
@@ -73,8 +71,10 @@ export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) =>
   const hasNext = idx < flags.length - 1;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-surface border border-grid rounded-lg shadow-xl w-full max-w-sm overflow-hidden text-text" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-surface border border-grid rounded-lg shadow-2xl w-full max-w-sm overflow-hidden text-text flex flex-col isolation-auto"
+           style={{ backgroundColor: 'var(--color-surface)' }}
+           onClick={e => e.stopPropagation()}>
         <div className="p-4 border-b border-grid font-bold text-sm uppercase tracking-widest opacity-80 flex justify-between items-center">
             <span>Edit Flag</span>
             <span className="font-mono text-[10px] opacity-40">#{idx}</span>
@@ -111,7 +111,7 @@ export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) =>
                 </button>
             )}
         </div>
-        <div className="p-4 bg-background/50 border-t border-grid flex items-center justify-between gap-2">
+        <div className="p-4 border-t border-grid flex items-center justify-between gap-2">
             <button onClick={handleDelete} className="px-4 py-2 rounded bg-red-600/20 hover:bg-red-600/40 text-red-500 text-xs font-bold transition-colors">Delete</button>
             <div className="flex items-center gap-2">
                 <button onClick={onClose} className="px-4 py-2 rounded hover:bg-white/5 text-xs transition-colors font-bold">Cancel</button>
