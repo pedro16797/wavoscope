@@ -7,8 +7,10 @@ import threading
 from pathlib import Path
 from typing import Callable, List, Tuple, Any, Dict
 import bisect
+import traceback
 
 import numpy as np
+import python_stretch.Signalsmith as ps
 import scipy.signal
 try:
     import sounddevice as sd
@@ -35,18 +37,42 @@ class AudioBackend:
         self._volume: float = 1.0
         self._playing: bool = False
 
-        self._output_buffer = RingBuffer(2 * self._sr)  # 2 s safety
+        self._stretcher = ps.Stretch()
+        self._stretcher.preset(1, float(self._sr))
+        self._stretcher.setTimeFactor(self._speed)
+
+        # 10s safety to handle slow speeds (0.1x) with large chunks
+        self._tsm_buffer = RingBuffer(self._sr * 10)
+        self._read_sample_idx: int = 0
+        self._last_tsm_overlap: np.ndarray | None = None
+
+        self._novasr_enabled: bool = False
+        self._novasr: Any = None
+
         self._synth = SimpleSynth(self._sr)
 
         self._stream: sd.OutputStream | None = None
         self._thread: threading.Thread | None = None
         self._stop_event = threading.Event()
+        self._lock = threading.RLock()
 
         # Metronome state
         self._click_gain: float = 0.3
         self._strong_freq: float = 1_200.0
         self._weak_freq: float = 800.0
         self._metronome_enabled: bool = True
+
+        # Filter state
+        self._filter_enabled: bool = False
+        self._filter_low: float = 20.0
+        self._filter_high: float = 20000.0
+        self._filter_sos: np.ndarray | None = None
+        self._filter_zi: np.ndarray | None = None
+
+        # Looping state
+        self._loop_enabled: bool = False
+        self._loop_provider: Callable[[float], Tuple[float, float]] | None = None
+        self._active_loop_range: Tuple[float, float] | None = None
 
         self._subdivision_ticks_between: Callable[[float, float], List[Tuple[float, bool]]] | None = None
         self._loop_provider: Callable[[float], Tuple[float, float]] | None = None
@@ -71,48 +97,93 @@ class AudioBackend:
     # ---------- file I/O ----------
     def open_file(self, path: Path) -> None:
         """Load audio file, reset playback state."""
-        data, sr = sf.read(str(path), always_2d=False, dtype="float32")
-        if data.ndim > 1:
-            data = data.mean(axis=1)
-        self._data = data.astype(np.float32)
-        self._sr = sr
-        self._update_filter_coeffs()
-        self._cursor = 0.0
-        self._playing = False
-        self._stop_event.clear()
-        self._start_stream()
+        with self._lock:
+            data, sr = sf.read(str(path), always_2d=False, dtype="float32")
+            if data.ndim > 1:
+                data = data.mean(axis=1)
+            self._data = data.astype(np.float32)
+            self._sr = sr
+            self._update_filter_coeffs()
+            self._cursor = 0.0
+            self._read_sample_idx = 0
+            self._playing = False
+            self._stop_event.clear()
+
+            # Update stretcher for new sample rate
+            self._stretcher = ps.Stretch()
+            self._stretcher.preset(1, float(self._sr))
+            self._stretcher.setTimeFactor(self._speed)
+            self._tsm_buffer = RingBuffer(int(self._sr * 10))
+            self._last_tsm_overlap = None
+
+            if self._novasr:
+                self._novasr.reset()
+
+            self._start_stream()
 
     def close(self) -> None:
         """Stop stream and release resources."""
-        self._stop_event.set()
-        if self._stream is not None:
-            self._stream.stop()
-            self._stream.close()
-            self._stream = None
+        with self._lock:
+            self._stop_event.set()
+            if self._stream is not None:
+                self._stream.stop()
+                self._stream.close()
+                self._stream = None
 
     # ---------- playback control ----------
     def seek(self, sec: float) -> None:
-        self._cursor = max(0.0, min(sec, self.duration))
-        self._active_loop_range = None
-        self.clear_tick_cache()
-        if self._filter_sos is not None:
-            self._filter_zi = scipy.signal.sosfilt_zi(self._filter_sos)
+        with self._lock:
+            self._cursor = max(0.0, min(sec, self.duration))
+            self._active_loop_range = None
+            if self._filter_sos is not None:
+                self._filter_zi = scipy.signal.sosfilt_zi(self._filter_sos)
+
+            self._read_sample_idx = int(self._cursor * self._sr)
+            self._tsm_buffer.clear()
+            self._last_tsm_overlap = None
+            self._stretcher.reset()
+            if self._novasr is not None:
+                self._novasr.reset()
+            self.clear_tick_cache()
 
     def play(self) -> None:
-        self._playing = True
+        with self._lock:
+            self._playing = True
 
     def pause(self) -> None:
-        self._playing = False
-        self.clear_tick_cache()
+        with self._lock:
+            self._playing = False
+            # We DON'T clear the buffer or reset the stretcher here,
+            # so we can resume seamlessly.
+            self.clear_tick_cache()
 
     def set_speed(self, speed: float) -> None:
-        self._speed = max(0.1, min(speed, 4.0))
+        with self._lock:
+            self._speed = max(0.1, min(speed, 4.0))
+            self._stretcher.setTimeFactor(self._speed)
+            # Clear buffer so speed change is immediate
+            self._tsm_buffer.clear()
+            self._last_tsm_overlap = None
+            # Re-sync read index to current cursor to prevent jumps when switching modes
+            self._read_sample_idx = int(self._cursor * self._sr)
 
     def set_volume(self, vol: float) -> None:
-        self._volume = max(0.0, min(vol, 1.0))
+        with self._lock:
+            self._volume = max(0.0, min(vol, 1.0))
 
     def set_metronome_enabled(self, enabled: bool) -> None:
         self._metronome_enabled = enabled
+
+    def set_novasr_enabled(self, enabled: bool) -> None:
+        with self._lock:
+            self._novasr_enabled = enabled
+            if enabled and self._novasr is None:
+                try:
+                    from audio.novasr import NovaSR
+                    self._novasr = NovaSR()
+                except Exception:
+                    traceback.print_exc()
+                    self._novasr_enabled = False
 
     def set_click_gain(self, gain: float) -> None:
         self._click_gain = max(0.0, min(gain, 1.0))
@@ -234,69 +305,151 @@ class AudioBackend:
         status: Any,
     ) -> None:
         """PortAudio callback executed on high-priority thread."""
-        if status:
-            print(f"[AudioBackend] {status}")
-
-        # Always start with silence
-        outdata[:] = 0.0
-
-        if not self._playing or self._data is None:
+        if not self._lock.acquire(blocking=False):
+            # If we can't get the lock immediately, play silence to avoid glitching
+            outdata[:] = 0.0
             return
 
-        # Handle Looping
-        if self._loop_enabled and self._loop_provider:
-            if self._active_loop_range is None:
-                self._active_loop_range = self._loop_provider(self._cursor)
+        try:
+            if status:
+                print(f"[AudioBackend] {status}")
 
-            lstart, lend = self._active_loop_range
-            if self._cursor >= lend - 0.001:
-                self._cursor = lstart
-                self.clear_tick_cache()
+            outdata[:] = 0.0
 
-        # Compute how many source samples we need
-        needed = int(frames * self._speed)
-        start_idx = int(self._cursor * self._sr)
-        end_idx = int((self._cursor + frames / self._speed) * self._sr)
+            if not self._playing or self._data is None:
+                return
 
-        # Clamp to file boundaries
-        end_idx = min(end_idx, len(self._data))
-        start_idx = min(start_idx, end_idx)
-        chunk = self._data[start_idx:end_idx]
+            # Handle Looping
+            if self._loop_enabled and self._loop_provider:
+                if self._active_loop_range is None:
+                    self._active_loop_range = self._loop_provider(self._cursor)
 
-        # End-of-file handling
-        if chunk.size < needed:
-            padding = needed - chunk.size
-            pad = np.zeros(padding, dtype=np.float32)
-            chunk = np.concatenate([chunk, pad])
-            self._cursor = 0.0
-            self._playing = False
-            self._emit("finished")
-        elif chunk.size > needed:
-            chunk = chunk[:needed]
-            padding = frames - needed
-            if padding > 0:
-                tail   = chunk[-min(len(chunk), padding):]
-                mirror = tail[::-1]
-                pattern = np.concatenate([mirror, tail])
-                repeated = np.resize(pattern, padding)
-                pad = repeated
-                chunk  = np.concatenate([chunk, pad])
+                lstart, lend = self._active_loop_range
+                if self._cursor >= lend - 0.001:
+                    self._cursor = lstart
+                    self._read_sample_idx = int(self._cursor * self._sr)
+                    self._tsm_buffer.clear()
+                    self._last_tsm_overlap = None
+                    self.clear_tick_cache()
 
-        # Ensure exact length
-        chunk = chunk[:frames] if chunk.size > frames else np.pad(chunk, (0, frames - chunk.size))
+            to_read = 0
+            if self._speed == 1.0:
+                # 1. Bypass Mode: read directly from source for zero-latency, zero-artifact playback
+                start_idx = self._read_sample_idx
+                end_idx = min(start_idx + frames, len(self._data))
+                to_read = end_idx - start_idx
+                if to_read > 0:
+                    chunk = self._data[start_idx:end_idx]
 
-        # Band-pass filter
-        if self._filter_enabled and self._filter_sos is not None:
-            chunk, self._filter_zi = scipy.signal.sosfilt(self._filter_sos, chunk, zi=self._filter_zi)
+                    # Band-pass filter
+                    if self._filter_enabled and self._filter_sos is not None:
+                        chunk, self._filter_zi = scipy.signal.sosfilt(self._filter_sos, chunk, zi=self._filter_zi)
 
-        # Apply volume
-        outdata[:, 0] = chunk * self._volume
+                    outdata[:to_read, 0] = chunk * self._volume
+                    self._read_sample_idx = end_idx
+            else:
+                # 2. TSM / Enhancement Mode
+                # Fill TSM buffer
+                loops = 0
+                while self._tsm_buffer.available_read() < frames:
+                    loops += 1
+                    if loops > 100: # Safety
+                        break
 
-        # Metronome overlay
-        if self._metronome_enabled and self._subdivision_ticks_between:
-            self._add_metronome_clicks(outdata, frames)
+                    start_idx = self._read_sample_idx
+                    if start_idx >= len(self._data):
+                        break
 
-        self._cursor += frames / self._sr * self._speed
+                    # Use a larger chunk size for TSM stability
+                    chunk_size = 16384
+                    end_idx = min(start_idx + chunk_size, len(self._data))
+                    source_chunk = self._data[start_idx:end_idx]
+                    if source_chunk.size == 0:
+                        break
+
+                    self._read_sample_idx = end_idx
+
+                    # Stretch
+                    stretched = self._stretcher.process(source_chunk.reshape(1, -1)).flatten()
+
+                    # NovaSR enhancement
+                    if self._novasr_enabled and self._novasr is not None:
+                        stretched = self._novasr.enhance(stretched, self._sr)
+
+                    if stretched.size > 0:
+                        overlap_size = 512
+                        if self._last_tsm_overlap is not None:
+                            # Cross-fade previous tail with current head
+                            actual_overlap = min(overlap_size, stretched.size)
+                            fade_out = np.linspace(1, 0, actual_overlap, dtype=np.float32)
+                            fade_in = np.linspace(0, 1, actual_overlap, dtype=np.float32)
+
+                            blended = (
+                                stretched[:actual_overlap] * fade_in +
+                                self._last_tsm_overlap[:actual_overlap] * fade_out
+                            )
+                            self._tsm_buffer.write(blended)
+
+                            # Write the rest of the current chunk, keeping a new tail
+                            if stretched.size > overlap_size:
+                                main_part = stretched[overlap_size:-overlap_size]
+                                if main_part.size > 0:
+                                    self._tsm_buffer.write(main_part)
+                                self._last_tsm_overlap = stretched[-overlap_size:].copy()
+                            else:
+                                self._last_tsm_overlap = None # Current chunk was too small to have a new tail
+                        else:
+                            # No previous tail, write everything but the tail
+                            if stretched.size > overlap_size:
+                                self._tsm_buffer.write(stretched[:-overlap_size])
+                                self._last_tsm_overlap = stretched[-overlap_size:].copy()
+                            else:
+                                # Too small even for a tail, just write it and don't start a tail
+                                self._tsm_buffer.write(stretched)
+                                self._last_tsm_overlap = None
+
+                    if end_idx == len(self._data):
+                        break
+
+                # Read from TSM buffer
+                samples, to_read = self._tsm_buffer.read(frames)
+
+                # Band-pass filter
+                if self._filter_enabled and self._filter_sos is not None:
+                    samples, self._filter_zi = scipy.signal.sosfilt(self._filter_sos, samples, zi=self._filter_zi)
+
+                outdata[:, 0] = samples * self._volume
+
+            # 3. Metronome overlay
+            if self._metronome_enabled and self._subdivision_ticks_between:
+                self._add_metronome_clicks(outdata, frames)
+
+            # 4. Update playback cursor based on actual samples read
+            if to_read > 0:
+                self._cursor += (to_read / self._sr) * self._speed
+
+            # 5. Check for EOF
+            if to_read < frames and self._read_sample_idx >= len(self._data):
+                # Flush any remaining tail
+                if self._last_tsm_overlap is not None:
+                    self._tsm_buffer.write(self._last_tsm_overlap)
+                    self._last_tsm_overlap = None
+
+                # Check if we still have nothing to read after flush
+                if self._tsm_buffer.available_read() == 0:
+                    self._playing = False
+                    self._cursor = 0.0
+                    self._read_sample_idx = 0
+                    self._tsm_buffer.clear()
+                    self._stretcher.reset()
+                    if self._novasr is not None:
+                        self._novasr.reset()
+                    self._emit("finished")
+
+        except Exception:
+            traceback.print_exc()
+        finally:
+            self._lock.release()
 
     # ---------- metronome ----------
     def _precalculate_clicks(self) -> None:
@@ -361,3 +514,32 @@ class AudioBackend:
             click_dur = min(len(click_src), frames - offset)
             if click_dur > 0:
                 outdata[offset : offset + click_dur, 0] += click_src[:click_dur] * volume
+
+    # ---------- loop & filter setters ----------
+    def set_loop_enabled(self, enabled: bool) -> None:
+        self._loop_enabled = enabled
+        if not enabled:
+            self._active_loop_range = None
+
+    def set_loop_provider(self, fn: Callable[[float], Tuple[float, float]]) -> None:
+        self._loop_provider = fn
+
+    def set_filter_params(self, enabled: bool, low: float, high: float) -> None:
+        with self._lock:
+            self._filter_enabled = enabled
+            self._filter_low = low
+            self._filter_high = high
+            self._update_filter_coeffs()
+
+    def _update_filter_coeffs(self) -> None:
+        if not self._filter_enabled:
+            self._filter_sos = None
+            self._filter_zi = None
+            return
+
+        # Bandpass filter
+        nyq = 0.5 * self._sr
+        low = max(0.001, self._filter_low / nyq)
+        high = min(0.999, self._filter_high / nyq)
+        self._filter_sos = scipy.signal.butter(4, [low, high], btype='band', output='sos')
+        self._filter_zi = scipy.signal.sosfilt_zi(self._filter_sos)

@@ -44,6 +44,7 @@ python3 -m nuitka --standalone \
     --noinclude-data-files="**/venv/**" \
     --noinclude-data-files="**/__pycache__/**" \
     --windows-icon-from-ico=resources/icons/app-icon.png \
+    --nofollow-import-to=torch \
     --output-dir=dist \
     --assume-yes-for-downloads \
     main.py

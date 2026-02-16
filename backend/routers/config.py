@@ -36,4 +36,6 @@ async def update_config(new_cfg: AppConfig):
         cfg.set("ui.spectrum_keys", new_cfg.spectrum_keys)
     if new_cfg.high_quality_enhancement is not None:
         cfg.set("ui.high_quality_enhancement", new_cfg.high_quality_enhancement)
+        if state.project:
+            state.project.backend.set_novasr_enabled(new_cfg.high_quality_enhancement)
     return {"status": "ok"}
