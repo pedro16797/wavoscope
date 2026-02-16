@@ -24,6 +24,7 @@ This document outlines the directory structure and the purpose of each component
     -   `src/store/`: Frontend state management (Zustand).
     -   `dist/`: Built production assets.
 -   **`resources/`**: Static assets like icons (SVG), themes (JSON), and application resources.
+-   **`scripts/`**: Automation and utility scripts (e.g., screenshot generation).
 -   **`session/`**: Handles project persistence and high-level state.
     -   `project.py`: The `Project` class which ties audio, metadata (flags), and caching together.
 -   **`utils/`**: General helper functions and shared utilities.

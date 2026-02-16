@@ -47,14 +47,17 @@ async def add_flag(flag: FlagData):
     except Exception as e:
         print(f"[Backend] Error in add_flag: {e}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to add flag: {str(e)}")
 
 @router.delete("/flags/{idx}")
 async def remove_flag(idx: int):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    state.project.remove_flag(idx)
-    return {"status": "ok", "flags": state.project.flags}
+    try:
+        state.project.remove_flag(idx)
+        return {"status": "ok", "flags": state.project.flags}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to remove flag: {str(e)}")
 
 class FlagMove(BaseModel):
     idx: int
@@ -64,8 +67,11 @@ class FlagMove(BaseModel):
 async def move_flag(move: FlagMove):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    state.project.move_flag(move.idx, move.t)
-    return {"status": "ok", "flags": state.project.flags}
+    try:
+        state.project.move_flag(move.idx, move.t)
+        return {"status": "ok", "flags": state.project.flags}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to move flag: {str(e)}")
 
 @router.patch("/flags/{idx}")
 async def update_flag(idx: int, flag: FlagData):
@@ -85,7 +91,7 @@ async def update_flag(idx: int, flag: FlagData):
     except Exception as e:
         print(f"[Backend] Error in update_flag: {e}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to update flag: {str(e)}")
 
 class FlagInsertN(BaseModel):
     left_idx: int
@@ -101,7 +107,7 @@ async def insert_n_flags(data: FlagInsertN):
     except Exception as e:
         print(f"[Backend] Error in insert_n_flags: {e}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to insert flags: {str(e)}")
 
 @router.post("/harmony_flags")
 async def add_harmony_flag(flag: HarmonyFlagData):
@@ -113,14 +119,17 @@ async def add_harmony_flag(flag: HarmonyFlagData):
     except Exception as e:
         print(f"[Backend] Error in add_harmony_flag: {e}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to add harmony flag: {str(e)}")
 
 @router.delete("/harmony_flags/{idx}")
 async def remove_harmony_flag(idx: int):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    state.project.remove_harmony_flag(idx)
-    return {"status": "ok", "harmony_flags": state.project.harmony_flags}
+    try:
+        state.project.remove_harmony_flag(idx)
+        return {"status": "ok", "harmony_flags": state.project.harmony_flags}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to remove harmony flag: {str(e)}")
 
 class HarmonyFlagMove(BaseModel):
     idx: int
@@ -130,8 +139,11 @@ class HarmonyFlagMove(BaseModel):
 async def move_harmony_flag(move: HarmonyFlagMove):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    state.project.move_harmony_flag(move.idx, move.t)
-    return {"status": "ok", "harmony_flags": state.project.harmony_flags}
+    try:
+        state.project.move_harmony_flag(move.idx, move.t)
+        return {"status": "ok", "harmony_flags": state.project.harmony_flags}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to move harmony flag: {str(e)}")
 
 @router.patch("/harmony_flags/{idx}")
 async def update_harmony_flag(idx: int, flag: HarmonyFlagData):
@@ -143,7 +155,7 @@ async def update_harmony_flag(idx: int, flag: HarmonyFlagData):
     except Exception as e:
         print(f"[Backend] Error in update_harmony_flag: {e}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to update harmony flag: {str(e)}")
 
 @router.get("/analyze_chord")
 async def analyze_chord(t: float):
@@ -178,23 +190,17 @@ async def analyze_chord(t: float):
     except Exception as e:
         print(f"[Backend] Error in analyze_chord: {e}")
         traceback.print_exc()
-        return {
-            "root": "C",
-            "accidental": "",
-            "quality": "M",
-            "extension": "",
-            "alterations": [],
-            "additions": [],
-            "bass": "",
-            "bass_accidental": "",
-        }
+        raise HTTPException(status_code=500, detail=f"Chord analysis failed: {str(e)}")
 
 @router.post("/save")
 async def save_project():
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    state.project.save()
-    return {"status": "ok"}
+    try:
+        state.project.save()
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save project: {str(e)}")
 
 class OpenProject(BaseModel):
     path: str
@@ -217,6 +223,5 @@ async def open_project(data: OpenProject):
         return {"status": "ok", "filename": path.name}
     except Exception as e:
         print(f"[Backend] Exception during open_project: {e}")
-        import traceback
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to open project: {str(e)}")

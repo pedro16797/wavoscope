@@ -31,7 +31,7 @@ async def update_config(new_cfg: AppConfig):
     if new_cfg.click_volume is not None:
         cfg.set("ui.click_volume", new_cfg.click_volume)
         if state.project:
-            state.project.backend.set_click_gain(new_cfg.click_volume)
+            state.project.backend.set_click_volume(new_cfg.click_volume)
     if new_cfg.spectrum_keys is not None:
         cfg.set("ui.spectrum_keys", new_cfg.spectrum_keys)
     if new_cfg.high_quality_enhancement is not None:

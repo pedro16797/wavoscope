@@ -7,11 +7,11 @@ interface SettingsDialogProps {
 }
 
 export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
-  const { themes, currentTheme, click_gain, spectrum_keys, high_quality_enhancement, updateConfig } = useStore();
+  const { themes, currentTheme, click_volume, spectrum_keys, high_quality_enhancement, updateConfig } = useStore();
   const [activeTab, setActiveTab] = useState<'global' | 'keybinds'>('global');
 
   const [theme, setTheme] = useState(currentTheme);
-  const [clickVol, setClickVol] = useState(click_gain * 100);
+  const [clickVol, setClickVol] = useState(click_volume * 100);
   const [keys, setKeys] = useState(spectrum_keys);
   const [highQuality, setHighQuality] = useState(high_quality_enhancement);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

@@ -40,7 +40,7 @@ class Project:
         # Apply global config to backend
         from utils.config import Config
         cfg = Config()
-        self.backend.set_click_gain(cfg.get("ui.click_volume", 0.3))
+        self.backend.set_click_volume(cfg.get("ui.click_volume", 0.3))
         self.backend.set_novasr_enabled(cfg.get("ui.high_quality_enhancement", False))
 
         self.backend.set_loop_provider(self.get_loop_range)
@@ -59,7 +59,6 @@ class Project:
             # Stop ongoing playback
             if self.backend._playing:
                 self.backend.pause()
-            self.backend.close()
 
             # Load new audio
             try:
