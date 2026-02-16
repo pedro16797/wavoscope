@@ -62,14 +62,18 @@ build.bat
 ### 4. Working with Flags
 Flags are the core of transcribing in Wavoscope. They appear on the **Timeline** above the waveform.
 
-#### **Rhythm Flags (Red)**
+#### **Common Interactions**
+- **Move Flags:** **Left-click and drag** any flag on the timeline to reposition it.
+- **Overlapping Flags:** If a rhythm and harmony flag share the same timestamp, they split the timeline height: **Harmony on top, Rhythm on bottom**. Click the top or bottom half to interact with the specific flag.
+
+#### **Rhythm Flags**
 - **Place:** **Left-click** on the timeline to add a rhythm flag.
 - **Edit:** **Right-click** an existing flag to open the edit dialog.
 - **Subdivisions:** Set the number of beats between flags. These are visually rendered on the timeline.
 - **Section Start:** Mark a flag as a section start to define boundaries for **Section Looping**.
 - **Insert N:** Automatically place a specific number of evenly-spaced flags between two points.
 
-#### **Harmony Flags (Blue)**
+#### **Harmony Flags**
 - **Place:** **Right-click** on an empty area of the timeline or waveform.
 - **Automatic Analysis:** When you place a harmony flag, Wavoscope automatically analyzes the audio at that position to suggest a chord!
 - **Edit:** **Right-click** a harmony flag to open the **Chord Dialog**. You can type notation (e.g., `Am7`, `D7b9`, `C/E`) or use the selectors.
