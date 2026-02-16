@@ -9,11 +9,13 @@ import { WaveformView } from './components/WaveformView';
 import { Spectrum } from './components/Spectrum';
 import { SettingsDialog } from './components/SettingsDialog';
 import { FlagDialog } from './components/FlagDialog';
+import { ChordDialog } from './components/ChordDialog';
 
 const App: React.FC = () => {
   const {
     showSettings, setShowSettings,
-    editingFlagIdx, setEditingFlagIdx, flags
+    editingFlagIdx, setEditingFlagIdx, flags,
+    editingHarmonyFlagIdx, setEditingHarmonyFlagIdx, harmony_flags
   } = useStore();
 
   useKeyboardShortcuts();
@@ -55,6 +57,13 @@ const App: React.FC = () => {
           idx={editingFlagIdx}
           flag={flags[editingFlagIdx]}
           onClose={() => setEditingFlagIdx(null)}
+        />
+      )}
+      {editingHarmonyFlagIdx !== null && (
+        <ChordDialog
+          idx={editingHarmonyFlagIdx}
+          flag={harmony_flags[editingHarmonyFlagIdx]}
+          onClose={() => setEditingHarmonyFlagIdx(null)}
         />
       )}
     </div>

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useStore } from '../store/useStore';
+import { useStore, formatChord } from '../store/useStore';
 
 interface TimelineProps {
   offset: number;
@@ -9,8 +9,13 @@ interface TimelineProps {
 export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { loaded, duration, currentTheme, themes, flags, addFlag, moveFlag, setEditingFlagIdx } = useStore();
+  const {
+    loaded, duration, currentTheme, themes, flags, harmony_flags,
+    addFlag, moveFlag, setEditingFlagIdx,
+    addHarmonyFlag, moveHarmonyFlag, setEditingHarmonyFlagIdx
+  } = useStore();
   const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [dragHarmonyIdx, setDragHarmonyIdx] = useState<number | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -70,6 +75,28 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         }
     }
 
+    // Draw Harmony Flags
+    harmony_flags.forEach((f, idx) => {
+        const x = (f.t - offset) * zoom;
+        if (x >= 0 && x <= size.width) {
+            ctx.strokeStyle = theme.flagHarmony || '#00aaff';
+            ctx.lineWidth = dragHarmonyIdx === idx ? 4 : 2;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, size.height);
+            ctx.stroke();
+
+            ctx.fillStyle = theme.surface || '#252525';
+            const label = formatChord(f.chord);
+
+            const textWidth = ctx.measureText(label).width;
+            ctx.fillRect(x - textWidth/2 - 2, 5, textWidth + 4, 12);
+            ctx.fillStyle = theme.text || '#fff';
+            ctx.fillText(label, x - textWidth/2, 15);
+        }
+    });
+
+    // Draw Rhythm Flags
     flags.forEach((f, idx) => {
         const x = (f.t - offset) * zoom;
         if (x >= 0 && x <= size.width) {
@@ -125,7 +152,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
             }
         }
     });
-  }, [offset, zoom, themes, currentTheme, duration, flags, dragIdx, size]);
+  }, [offset, zoom, themes, currentTheme, duration, flags, harmony_flags, dragIdx, dragHarmonyIdx, size]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!loaded) return;
@@ -142,8 +169,30 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         }
     });
 
+    let foundHarmonyIdx = -1;
+    harmony_flags.forEach((f, idx) => {
+        if (Math.abs(f.t - clickT) < threshold) {
+            foundHarmonyIdx = idx;
+        }
+    });
+
     if (e.button === 0) {
-        if (foundIdx !== -1) {
+        if (foundHarmonyIdx !== -1) {
+            setDragHarmonyIdx(foundHarmonyIdx);
+            const onMouseMove = (moveEvent: MouseEvent) => {
+                const newX = moveEvent.clientX - rect.left;
+                const newT = Math.max(0, Math.min(duration, offset + newX / zoom));
+                const snappedT = Math.round(newT * 100) / 100;
+                moveHarmonyFlag(foundHarmonyIdx, snappedT);
+            };
+            const onMouseUp = () => {
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup', onMouseUp);
+                setDragHarmonyIdx(null);
+            };
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+        } else if (foundIdx !== -1) {
             setDragIdx(foundIdx);
             const onMouseMove = (moveEvent: MouseEvent) => {
                 const newX = moveEvent.clientX - rect.left;
@@ -180,8 +229,28 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         }
     });
 
-    if (foundIdx !== -1) {
+    let foundHarmonyIdx = -1;
+    harmony_flags.forEach((f, idx) => {
+        if (Math.abs(f.t - clickT) < threshold) {
+            foundHarmonyIdx = idx;
+        }
+    });
+
+    if (foundHarmonyIdx !== -1) {
+        setEditingHarmonyFlagIdx(foundHarmonyIdx);
+    } else if (foundIdx !== -1) {
         setEditingFlagIdx(foundIdx);
+    } else {
+        const snappedT = Math.round(clickT * 100) / 100;
+        addHarmonyFlag(snappedT).then((newFlag) => {
+            if (newFlag) {
+                const updatedFlags = useStore.getState().harmony_flags;
+                const newIdx = updatedFlags.findIndex(f => Math.abs(f.t - newFlag.t) < 0.001);
+                if (newIdx !== -1) {
+                    setEditingHarmonyFlagIdx(newIdx);
+                }
+            }
+        });
     }
   };
 

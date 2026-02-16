@@ -81,9 +81,15 @@ class Project:
     # ---------- flag API ----------
     @property
     def flags(self) -> List[Dict[str, Any]]:
-        """Live, sorted list of flags (returns a copy for thread safety)."""
+        """Live, sorted list of rhythm flags (returns a copy for thread safety)."""
         with self._lock:
             return list(self.session_data.setdefault("flags", []))
+
+    @property
+    def harmony_flags(self) -> List[Dict[str, Any]]:
+        """Live, sorted list of harmony flags (returns a copy for thread safety)."""
+        with self._lock:
+            return list(self.session_data.setdefault("harmony_flags", []))
 
     def add_flag(
         self,
@@ -125,7 +131,57 @@ class Project:
                 self._recompute_auto_names()
                 self._clear_backend_cache()
                 self.mark_dirty()
+
+    def add_harmony_flag(self, time: float, chord: Dict[str, Any] | None = None) -> None:
+        """Insert a new harmony flag."""
+        with self._lock:
+            flags = self.session_data.setdefault("harmony_flags", [])
+            if any(abs(f["t"] - time) < 0.001 for f in flags):
+                return
+
+            if chord is None:
+                chord = {
+                    "root": "C",
+                    "accidental": "",
+                    "quality": "M",
+                    "extension": "",
+                    "alterations": [],
+                    "additions": [],
+                    "bass": "",
+                    "bass_accidental": "",
+                }
+
+            flags.append({"t": time, "chord": chord})
+            flags.sort(key=lambda f: f["t"])
+            self.mark_dirty()
+            self._emit("flag_added", time)
+
+    def remove_harmony_flag(self, idx: int) -> None:
+        """Delete harmony flag by index."""
+        with self._lock:
+            flags = self.session_data.setdefault("harmony_flags", [])
+            if 0 <= idx < len(flags):
+                flags.pop(idx)
+                self.mark_dirty()
                 self._emit("flag_removed", idx)
+
+    def move_harmony_flag(self, idx: int, new_time: float) -> None:
+        """Change harmony flag time while enforcing ordering."""
+        with self._lock:
+            flags = self.session_data.setdefault("harmony_flags", [])
+            if 0 <= idx < len(flags):
+                flags[idx]["t"] = new_time
+                flags.sort(key=lambda f: f["t"])
+                self.mark_dirty()
+
+    def update_harmony_flag(self, idx: int, time: float, chord: Dict[str, Any]) -> None:
+        """Update harmony flag at index."""
+        with self._lock:
+            flags = self.session_data.setdefault("harmony_flags", [])
+            if 0 <= idx < len(flags):
+                flags[idx] = {"t": time, "chord": chord}
+                flags.sort(key=lambda f: f["t"])
+                self.mark_dirty()
 
     def move_flag(self, idx: int, new_time: float) -> None:
         """Change flag time while enforcing ordering."""
@@ -233,10 +289,18 @@ class Project:
     def _load_or_create_sidecar(self) -> dict[str, Any]:
         if self.sidecar_path.exists():
             try:
-                return json.loads(self.sidecar_path.read_text())
+                data = json.loads(self.sidecar_path.read_text())
+                data.setdefault("harmony_flags", [])
+                return data
             except Exception as e:
                 print(f"[Project] Error loading sidecar {self.sidecar_path}: {e}")
-        return {"labels": [], "loopPoints": [], "lastView": {}, "flags": []}
+        return {
+            "labels": [],
+            "loopPoints": [],
+            "lastView": {},
+            "flags": [],
+            "harmony_flags": [],
+        }
 
     def mark_dirty(self) -> None:
         self._dirty = True

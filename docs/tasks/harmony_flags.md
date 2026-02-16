@@ -35,12 +35,12 @@ Upon creating a Harmony Flag, a specialized menu/dialog should appear to describ
 
 ## Sub-Tasks
 
--   [ ] **Backend State**: Update `Project` class and `Flag` model to support a new `type` or separate collection for Harmony Flags.
--   [ ] **API Endpoints**: Create endpoints for creating, updating, and deleting Harmony Flags.
--   [ ] **Frontend Implementation**:
-    -   [ ] Handle right-click event on `Timeline` and `Waveform` components.
-    -   [ ] Implement the Harmony Flag visual component.
-    -   [ ] Create the `ChordDialog` component with all required selectors.
--   [ ] **Chord Logic**:
-    -   [ ] Implement the bidirectional parsing logic for chord notation.
-    -   [ ] Integrate the spectral analysis logic to provide chord suggestions.
+-   [x] **Backend State**: Update `Project` class and `Flag` model to support a new `type` or separate collection for Harmony Flags.
+-   [x] **API Endpoints**: Create endpoints for creating, updating, and deleting Harmony Flags.
+-   [x] **Frontend Implementation**:
+    -   [x] Handle right-click event on `Timeline` and `Waveform` components.
+    -   [x] Implement the Harmony Flag visual component.
+    -   [x] Create the `ChordDialog` component with all required selectors.
+-   [x] **Chord Logic**:
+    -   [x] Implement the bidirectional parsing logic for chord notation.
+    -   [x] Integrate the spectral analysis logic to provide chord suggestions.

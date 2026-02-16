@@ -32,6 +32,36 @@ def test_insert_n_flags():
     # Cleanup
     state.project = None
 
+def test_harmony_flags():
+    # Mock project
+    mock_project = MagicMock()
+    mock_project.harmony_flags = [{"t": 0.5, "chord": {"root": "C", "quality": "M"}}]
+    state.project = mock_project
+
+    # Test add
+    response = client.post("/project/harmony_flags", json={"t": 1.5, "chord": {"root": "G", "quality": "M"}})
+    assert response.status_code == 200
+    mock_project.add_harmony_flag.assert_called_once()
+
+    # Test move
+    response = client.post("/project/harmony_flags/move", json={"idx": 0, "t": 0.6})
+    assert response.status_code == 200
+    mock_project.move_harmony_flag.assert_called_once_with(0, 0.6)
+
+    # Test delete
+    response = client.delete("/project/harmony_flags/0")
+    assert response.status_code == 200
+    mock_project.remove_harmony_flag.assert_called_once_with(0)
+
+    # Test analyze
+    mock_project.backend._data = None # Trigger default in mock
+    response = client.get("/project/analyze_chord?t=1.0")
+    assert response.status_code == 200
+    assert "root" in response.json()
+
+    # Cleanup
+    state.project = None
+
 def test_open_project(tmp_path):
     # Create a dummy audio file
     audio_file = tmp_path / "test.wav"
