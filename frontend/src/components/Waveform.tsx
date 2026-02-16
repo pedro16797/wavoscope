@@ -14,8 +14,8 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
   const { loaded, position, duration, currentTheme, themes, controlPlayback } = useStore();
   const [bars, setBars] = React.useState<number[][]>([]);
   const [size, setSize] = React.useState({ width: 0, height: 0 });
-  const reqIdRef = useRef(0);
-  const doneIdRef = useRef(0);
+  const inFlightRef = useRef(false);
+  const pendingRef = useRef<{ offset: number, zoom: number, width: number } | null>(null);
 
   const updateSize = React.useCallback(() => {
     if (containerRef.current && canvasRef.current) {
@@ -37,37 +37,37 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
 
   useEffect(() => {
     if (!loaded) return;
-    const myId = ++reqIdRef.current;
-    const controller = new AbortController();
 
-    const fetchBars = async () => {
-        // Skip if we are lagging behind by more than 2 steps,
-        // but always allow the latest request to proceed.
-        const lag = myId - doneIdRef.current;
-        if (lag > 2 && myId < reqIdRef.current) return;
+    const fetchBars = async (currentOffset: number, currentZoom: number, currentWidth: number) => {
+        if (inFlightRef.current) {
+            pendingRef.current = { offset: currentOffset, zoom: currentZoom, width: currentWidth };
+            return;
+        }
 
+        inFlightRef.current = true;
         try {
-            const width = size.width || 1000;
-            const span = width / zoom;
+            const span = currentWidth / currentZoom;
             const res = await axios.get(`${API_BASE}/audio/waveform`, {
                 params: {
-                    start: offset,
-                    end: offset + span,
-                    n_bars: Math.min(width, 2000)
-                },
-                signal: controller.signal
+                    start: currentOffset,
+                    end: currentOffset + span,
+                    n_bars: Math.min(currentWidth, 2000)
+                }
             });
             setBars(res.data.bars);
         } catch (e) {
-            if (!axios.isCancel(e)) {
-                console.error(e);
-            }
+            console.error(e);
         } finally {
-            doneIdRef.current = Math.max(doneIdRef.current, myId);
+            inFlightRef.current = false;
+            if (pendingRef.current) {
+                const next = pendingRef.current;
+                pendingRef.current = null;
+                fetchBars(next.offset, next.zoom, next.width);
+            }
         }
     };
-    fetchBars();
-    return () => controller.abort();
+
+    fetchBars(offset, zoom, size.width || 1000);
   }, [loaded, offset, zoom, duration, size.width]);
 
   useEffect(() => {

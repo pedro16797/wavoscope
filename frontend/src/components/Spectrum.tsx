@@ -14,8 +14,8 @@ export const Spectrum: React.FC = () => {
   const { loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys } = useStore();
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
   const [size, setSize] = useState({ width: 0, height: 0 });
-  const reqIdRef = useRef(0);
-  const doneIdRef = useRef(0);
+  const inFlightRef = useRef(false);
+  const pendingRef = useRef<{ position: number, window: number, low: number, high: number, width: number } | null>(null);
 
   const baseMidi = 48 + octave_shift * 12;
   const range = {
@@ -43,36 +43,38 @@ export const Spectrum: React.FC = () => {
 
   useEffect(() => {
     if (!loaded) return;
-    const myId = ++reqIdRef.current;
-    const controller = new AbortController();
 
-    const fetchSpectrum = async () => {
-        const lag = myId - doneIdRef.current;
-        if (lag > 2 && myId < reqIdRef.current) return;
+    const fetchSpectrum = async (p: number, w: number, low: number, high: number, width: number) => {
+        if (inFlightRef.current) {
+            pendingRef.current = { position: p, window: w, low, high, width };
+            return;
+        }
 
+        inFlightRef.current = true;
         try {
-            const width = size.width || 1000;
             const res = await axios.get(`${API_BASE}/audio/spectrum`, {
                 params: {
-                    position,
-                    window: fft_window,
-                    low_hz: range.low,
-                    high_hz: range.high,
+                    position: p,
+                    window: w,
+                    low_hz: low,
+                    high_hz: high,
                     width: width
-                },
-                signal: controller.signal
+                }
             });
             setData(res.data);
         } catch (e) {
-            if (!axios.isCancel(e)) {
-                console.error(e);
-            }
+            console.error(e);
         } finally {
-            doneIdRef.current = Math.max(doneIdRef.current, myId);
+            inFlightRef.current = false;
+            if (pendingRef.current) {
+                const next = pendingRef.current;
+                pendingRef.current = null;
+                fetchSpectrum(next.position, next.window, next.low, next.high, next.width);
+            }
         }
     };
-    fetchSpectrum();
-    return () => controller.abort();
+
+    fetchSpectrum(position, fft_window, range.low, range.high, size.width || 1000);
   }, [loaded, position, range.low, range.high, fft_window, size.width]);
 
   useEffect(() => {
