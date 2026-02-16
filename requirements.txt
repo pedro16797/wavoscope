@@ -11,3 +11,6 @@ pywebview
 nuitka
 imageio
 requests
+python-stretch
+onnxruntime
+soxr

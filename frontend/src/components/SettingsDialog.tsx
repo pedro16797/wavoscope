@@ -7,19 +7,21 @@ interface SettingsDialogProps {
 }
 
 export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
-  const { themes, currentTheme, click_gain, spectrum_keys, updateConfig } = useStore();
+  const { themes, currentTheme, click_gain, spectrum_keys, high_quality_enhancement, updateConfig } = useStore();
   const [activeTab, setActiveTab] = useState<'global' | 'keybinds'>('global');
 
   const [theme, setTheme] = useState(currentTheme);
   const [clickVol, setClickVol] = useState(click_gain * 100);
   const [keys, setKeys] = useState(spectrum_keys);
+  const [hq, setHq] = useState(high_quality_enhancement);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleSave = () => {
     updateConfig({
         theme,
         click_volume: clickVol / 100,
-        spectrum_keys: keys
+        spectrum_keys: keys,
+        high_quality_enhancement: hq
     });
     onClose();
   };
@@ -86,6 +88,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <input type="number" min="12" max="120" value={keys} onChange={(e) => setKeys(parseInt(e.target.value))}
                                className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text"
                                style={{ borderWidth: 'var(--ui-border)' }} />
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-background/30 rounded border border-grid">
+                        <label className="text-[10px] uppercase font-bold opacity-50 cursor-pointer" onClick={() => setHq(!hq)}>High Quality Enhancement (NovaSR)</label>
+                        <input type="checkbox" checked={hq} onChange={(e) => setHq(e.target.checked)}
+                               className="w-4 h-4 accent-accent cursor-pointer" />
                     </div>
                 </>
             ) : (
