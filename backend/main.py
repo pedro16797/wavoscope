@@ -44,6 +44,7 @@ async def get_status():
         "volume": state.project.backend._volume,
         "filename": state.project.audio_path.name,
         "flags": state.project.flags,
+        "harmony_flags": state.project.harmony_flags,
         "dirty": state.project._dirty,
         "metronome_enabled": state.project.backend._metronome_enabled,
         "click_gain": state.project.backend._click_gain

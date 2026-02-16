@@ -11,7 +11,7 @@ interface WaveformProps {
 export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChange }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { loaded, position, duration, currentTheme, themes, controlPlayback } = useStore();
+  const { loaded, position, duration, currentTheme, themes, controlPlayback, addHarmonyFlag, setEditingHarmonyFlagIdx } = useStore();
   const [bars, setBars] = React.useState<number[][]>([]);
   const [size, setSize] = React.useState({ width: 0, height: 0 });
   const inFlightRef = useRef(false);
@@ -139,7 +139,36 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return;
+    if (e.button !== 0) {
+        if (e.button === 2 && canvasRef.current) {
+            e.preventDefault();
+            const rect = canvasRef.current.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const sec = offset + x / zoom;
+            const snappedT = Math.round(sec * 100) / 100;
+            addHarmonyFlag(snappedT).then((newFlag) => {
+                if (newFlag) {
+                    // Small delay to ensure store update has propagated to all components if needed
+                    setTimeout(() => {
+                        const updatedFlags = useStore.getState().harmony_flags;
+                        let bestIdx = -1;
+                        let minDiff = Infinity;
+                        updatedFlags.forEach((f, i) => {
+                            const diff = Math.abs(f.t - snappedT);
+                            if (diff < minDiff) {
+                                minDiff = diff;
+                                bestIdx = i;
+                            }
+                        });
+                        if (bestIdx !== -1) {
+                            setEditingHarmonyFlagIdx(bestIdx);
+                        }
+                    }, 100);
+                }
+            });
+        }
+        return;
+    }
     const startX = e.clientX;
     const startOffset = offset;
     let dragged = false;

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useStore } from '../store/useStore';
+import { useStore, formatChord, getChordMidiNotes, midiToFreq, API_BASE } from '../store/useStore';
+import axios from 'axios';
 
 interface TimelineProps {
   offset: number;
@@ -9,8 +10,13 @@ interface TimelineProps {
 export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { loaded, duration, currentTheme, themes, flags, addFlag, moveFlag, setEditingFlagIdx } = useStore();
+  const {
+    loaded, duration, currentTheme, themes, flags, harmony_flags,
+    addFlag, moveFlag, setEditingFlagIdx,
+    addHarmonyFlag, moveHarmonyFlag, setEditingHarmonyFlagIdx
+  } = useStore();
   const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [dragHarmonyIdx, setDragHarmonyIdx] = useState<number | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -70,14 +76,46 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         }
     }
 
+    const overlapThreshold = 0.01; // 10ms
+
+    // Draw Harmony Flags
+    harmony_flags.forEach((f, idx) => {
+        const x = (f.t - offset) * zoom;
+        if (x >= 0 && x <= size.width) {
+            const hasOverlap = flags.some(rf => Math.abs(rf.t - f.t) < overlapThreshold);
+            const yStart = 0;
+            const yEnd = hasOverlap ? size.height / 2 : size.height;
+
+            ctx.strokeStyle = theme.flagHarmony || '#00aaff';
+            ctx.lineWidth = dragHarmonyIdx === idx ? 4 : 2;
+            ctx.beginPath();
+            ctx.moveTo(x, yStart);
+            ctx.lineTo(x, yEnd);
+            ctx.stroke();
+
+            ctx.fillStyle = theme.surface || '#252525';
+            const label = formatChord(f.chord);
+
+            const textWidth = ctx.measureText(label).width;
+            ctx.fillRect(x - textWidth/2 - 2, 5, textWidth + 4, 12);
+            ctx.fillStyle = theme.text || '#fff';
+            ctx.fillText(label, x - textWidth/2, 15);
+        }
+    });
+
+    // Draw Rhythm Flags
     flags.forEach((f, idx) => {
         const x = (f.t - offset) * zoom;
         if (x >= 0 && x <= size.width) {
+            const hasOverlap = harmony_flags.some(hf => Math.abs(hf.t - f.t) < overlapThreshold);
+            const yStart = hasOverlap ? size.height / 2 : 0;
+            const yEnd = size.height;
+
             ctx.strokeStyle = theme.flagRhythm || '#ff4757';
             ctx.lineWidth = dragIdx === idx ? 4 : 2;
             ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, size.height);
+            ctx.moveTo(x, yStart);
+            ctx.lineTo(x, yEnd);
             ctx.stroke();
 
             ctx.fillStyle = theme.surface || '#252525';
@@ -125,13 +163,14 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
             }
         }
     });
-  }, [offset, zoom, themes, currentTheme, duration, flags, dragIdx, size]);
+  }, [offset, zoom, themes, currentTheme, duration, flags, harmony_flags, dragIdx, dragHarmonyIdx, size]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!loaded) return;
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
     const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     const clickT = offset + x / zoom;
 
     const threshold = 10 / zoom;
@@ -142,8 +181,44 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         }
     });
 
+    let foundHarmonyIdx = -1;
+    harmony_flags.forEach((f, idx) => {
+        if (Math.abs(f.t - clickT) < threshold) {
+            foundHarmonyIdx = idx;
+        }
+    });
+
+    // Handle Overlap Interaction
+    if (foundIdx !== -1 && foundHarmonyIdx !== -1) {
+        if (y < rect.height / 2) foundIdx = -1;
+        else foundHarmonyIdx = -1;
+    }
+
     if (e.button === 0) {
-        if (foundIdx !== -1) {
+        if (foundHarmonyIdx !== -1) {
+            // Play Chord on Hold
+            const chord = harmony_flags[foundHarmonyIdx].chord;
+            const midis = getChordMidiNotes(chord);
+            midis.forEach(m => {
+                axios.post(`${API_BASE}/playback/tone`, { freq: midiToFreq(m), action: 'start' });
+            });
+
+            setDragHarmonyIdx(foundHarmonyIdx);
+            const onMouseMove = (moveEvent: MouseEvent) => {
+                const newX = moveEvent.clientX - rect.left;
+                const newT = Math.max(0, Math.min(duration, offset + newX / zoom));
+                const snappedT = Math.round(newT * 100) / 100;
+                moveHarmonyFlag(foundHarmonyIdx, snappedT);
+            };
+            const onMouseUp = () => {
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup', onMouseUp);
+                setDragHarmonyIdx(null);
+                axios.post(`${API_BASE}/playback/tone`, { freq: 0, action: 'stop' });
+            };
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+        } else if (foundIdx !== -1) {
             setDragIdx(foundIdx);
             const onMouseMove = (moveEvent: MouseEvent) => {
                 const newX = moveEvent.clientX - rect.left;
@@ -170,6 +245,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
     const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     const clickT = offset + x / zoom;
 
     const threshold = 10 / zoom;
@@ -180,8 +256,46 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         }
     });
 
-    if (foundIdx !== -1) {
+    let foundHarmonyIdx = -1;
+    harmony_flags.forEach((f, idx) => {
+        if (Math.abs(f.t - clickT) < threshold) {
+            foundHarmonyIdx = idx;
+        }
+    });
+
+    // Handle Overlap Interaction
+    if (foundIdx !== -1 && foundHarmonyIdx !== -1) {
+        if (y < rect.height / 2) foundIdx = -1;
+        else foundHarmonyIdx = -1;
+    }
+
+    if (foundHarmonyIdx !== -1) {
+        setEditingHarmonyFlagIdx(foundHarmonyIdx);
+    } else if (foundIdx !== -1) {
         setEditingFlagIdx(foundIdx);
+    } else {
+        const snappedT = Math.round(clickT * 100) / 100;
+        addHarmonyFlag(snappedT).then((newFlag) => {
+            if (newFlag) {
+                // Wait a tiny bit for the store to settle if needed,
+                // though addHarmonyFlag awaits fetchStatus.
+                setTimeout(() => {
+                    const updatedFlags = useStore.getState().harmony_flags;
+                    let bestIdx = -1;
+                    let minDiff = Infinity;
+                    updatedFlags.forEach((f, i) => {
+                        const diff = Math.abs(f.t - snappedT);
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            bestIdx = i;
+                        }
+                    });
+                    if (bestIdx !== -1) {
+                        setEditingHarmonyFlagIdx(bestIdx);
+                    }
+                }, 100);
+            }
+        });
     }
   };
 

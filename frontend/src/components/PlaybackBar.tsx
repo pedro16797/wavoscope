@@ -28,9 +28,9 @@ export const PlaybackBar: React.FC = () => {
             <FolderOpen size={20} />
         </button>
         <button onClick={saveProject} disabled={!loaded}
-                className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : (dirty ? 'text-accent' : 'opacity-60')}`}
+                className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : 'opacity-90'}`}
                 title={dirty ? "Save Project (Unsaved changes)" : "Save Project"}>
-            <Save size={20} />
+            <Save size={20} className={dirty ? 'text-accent' : 'text-text'} />
         </button>
         {loaded && (
             <>
