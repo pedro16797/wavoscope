@@ -43,7 +43,7 @@ The current playback engine uses a crude mirroring/padding technique to handle s
 ### 2. MVP: NovaSR Enhancement
 -   [ ] Integrate the NovaSR model and its required dependencies (`torch`, `safetensors`).
 -   [ ] Implement the super-resolution stage in the audio pipeline: `Source -> TSM -> NovaSR -> Output`.
--   [ ] Add a "High Quality Enhancement" toggle in the frontend Settings or Playback panel.
+-   [ ] Add a "High Quality Enhancement" toggle in the frontend Settings.
 
 ### 3. Performance & Quality Validation
 -   [ ] Test the integrated pipeline on real-world music transcription scenarios.
