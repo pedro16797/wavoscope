@@ -10,16 +10,18 @@ MusicXML is the industry standard for exchanging sheet music data. By exporting 
 
 ### 1. Data Sources
 The export should synthesize information from:
--   **Rhythm Flags**: To determine measure boundaries and rhythm subdivisions.
+-   **Rhythm Flags**: To determine measure boundaries, rhythm subdivisions, and dynamic tempo changes.
 -   **Section Markers**: To create section headings or rehearsal marks in the score.
 -   **Harmony Flags**: To include chord symbols above the staff.
--   **Project Metadata**: For tempo and time signature (compass).
+-   **Project Metadata**: For default time signature and other score-level information.
 
 ### 2. Export Content
 The generated MusicXML should include:
 -   **Sections**: Proper rehearsal marks or text annotations for sections.
--   **Compass (Time Signature)**: Support for various time signatures (e.g., 4/4, 7/8, 3/4).
--   **Tempo**: Inclusion of the project's BPM.
+-   **Time Signature**: Support for various time signatures (e.g., 4/4, 7/8, 3/4).
+-   **Dynamic Tempo**:
+    -   Calculate tempo (BPM) dynamically based on the time interval between rhythm flags.
+    -   A tempo change should be recorded in the MusicXML file only when the calculated BPM differs by more than **5 BPM** from the last recorded tempo marker.
 -   **Chords**: Accurate MusicXML `<harmony>` tags based on the Harmony Flags.
 -   **Rhythm**: Basic measure structure based on the rhythm flags.
 
@@ -28,9 +30,10 @@ The generated MusicXML should include:
 
 ## Sub-Tasks
 
--   [ ] **Schema Update**: Ensure `Project` data captures global tempo and time signature information if not already present.
+-   [ ] **Schema Update**: Ensure `Project` data captures default time signature information if not already present.
 -   [ ] **MusicXML Generation Logic**:
     -   [ ] Implement a generator that iterates through project flags and builds the MusicXML tree.
+    -   [ ] Implement dynamic tempo calculation logic with the 5 BPM threshold.
     -   [ ] Map internal chord representations (from Harmony Flags) to MusicXML chord structures.
 -   [ ] **API & UI**:
     -   [ ] Create a backend endpoint to generate and serve the `.xml` / `.musicxml` file.
