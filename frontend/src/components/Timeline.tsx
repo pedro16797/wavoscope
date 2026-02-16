@@ -16,10 +16,11 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current && canvasRef.current) {
+        const dpr = window.devicePixelRatio || 1;
         const w = containerRef.current.clientWidth;
         const h = containerRef.current.clientHeight;
-        canvasRef.current.width = w;
-        canvasRef.current.height = h;
+        canvasRef.current.width = w * dpr;
+        canvasRef.current.height = h * dpr;
         setSize({ width: w, height: h });
       }
     };
@@ -32,13 +33,15 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const theme = themes[currentTheme];
-    if (!canvas || !theme) return;
+    if (!canvas || !theme || size.width === 0) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const dpr = window.devicePixelRatio || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, size.width, size.height);
 
-    const span = canvas.width / zoom;
+    const span = size.width / zoom;
     const end = offset + span;
 
     ctx.strokeStyle = theme.grid || '#404040';
@@ -54,7 +57,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
 
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
+        ctx.lineTo(x, size.height);
         ctx.stroke();
 
         const m = Math.floor(t / 60);
@@ -69,12 +72,12 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
 
     flags.forEach((f, idx) => {
         const x = (f.t - offset) * zoom;
-        if (x >= 0 && x <= canvas.width) {
+        if (x >= 0 && x <= size.width) {
             ctx.strokeStyle = theme.flagRhythm || '#ff4757';
             ctx.lineWidth = dragIdx === idx ? 4 : 2;
             ctx.beginPath();
             ctx.moveTo(x, 0);
-            ctx.lineTo(x, canvas.height);
+            ctx.lineTo(x, size.height);
             ctx.stroke();
 
             ctx.fillStyle = theme.surface || '#252525';
