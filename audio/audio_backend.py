@@ -51,6 +51,7 @@ class AudioBackend:
         self._stream: sd.OutputStream | None = None
         self._thread: threading.Thread | None = None
         self._stop_event = threading.Event()
+        self._lock = threading.RLock()
 
         # Metronome state
         self._click_gain: float = 0.3
@@ -68,73 +69,84 @@ class AudioBackend:
     # ---------- file I/O ----------
     def open_file(self, path: Path) -> None:
         """Load audio file, reset playback state."""
-        data, sr = sf.read(str(path), always_2d=False, dtype="float32")
-        if data.ndim > 1:
-            data = data.mean(axis=1)
-        self._data = data.astype(np.float32)
-        self._sr = sr
-        self._cursor = 0.0
-        self._read_sample_idx = 0
-        self._playing = False
-        self._stop_event.clear()
+        with self._lock:
+            data, sr = sf.read(str(path), always_2d=False, dtype="float32")
+            if data.ndim > 1:
+                data = data.mean(axis=1)
+            self._data = data.astype(np.float32)
+            self._sr = sr
+            self._cursor = 0.0
+            self._read_sample_idx = 0
+            self._playing = False
+            self._stop_event.clear()
 
-        # Update stretcher for new sample rate
-        self._stretcher = ps.Stretch()
-        self._stretcher.preset(1, float(self._sr))
-        self._stretcher.setTimeFactor(self._speed)
-        self._tsm_buffer = RingBuffer(int(self._sr * 2))
+            # Update stretcher for new sample rate
+            self._stretcher = ps.Stretch()
+            self._stretcher.preset(1, float(self._sr))
+            self._stretcher.setTimeFactor(self._speed)
+            self._tsm_buffer = RingBuffer(int(self._sr * 2))
 
-        self._start_stream()
+            if self._novasr:
+                self._novasr.reset()
+
+            self._start_stream()
 
     def close(self) -> None:
         """Stop stream and release resources."""
-        self._stop_event.set()
-        if self._stream is not None:
-            self._stream.stop()
-            self._stream.close()
-            self._stream = None
+        with self._lock:
+            self._stop_event.set()
+            if self._stream is not None:
+                self._stream.stop()
+                self._stream.close()
+                self._stream = None
 
     # ---------- playback control ----------
     def seek(self, sec: float) -> None:
-        self._cursor = max(0.0, min(sec, self.duration))
-        self._read_sample_idx = int(self._cursor * self._sr)
-        self._tsm_buffer.clear()
-        self._stretcher.reset()
-        if self._novasr is not None:
-            self._novasr.reset()
-        self.clear_tick_cache()
+        with self._lock:
+            self._cursor = max(0.0, min(sec, self.duration))
+            self._read_sample_idx = int(self._cursor * self._sr)
+            self._tsm_buffer.clear()
+            self._stretcher.reset()
+            if self._novasr is not None:
+                self._novasr.reset()
+            self.clear_tick_cache()
 
     def play(self) -> None:
-        self._playing = True
+        with self._lock:
+            self._playing = True
 
     def pause(self) -> None:
-        self._playing = False
-        self._tsm_buffer.clear()
-        self._stretcher.reset()
-        if self._novasr is not None:
-            self._novasr.reset()
-        self._read_sample_idx = int(self._cursor * self._sr)
-        self.clear_tick_cache()
+        with self._lock:
+            self._playing = False
+            self._tsm_buffer.clear()
+            self._stretcher.reset()
+            if self._novasr is not None:
+                self._novasr.reset()
+            self._read_sample_idx = int(self._cursor * self._sr)
+            self.clear_tick_cache()
 
     def set_speed(self, speed: float) -> None:
-        self._speed = max(0.1, min(speed, 4.0))
-        self._stretcher.setTimeFactor(self._speed)
+        with self._lock:
+            self._speed = max(0.1, min(speed, 4.0))
+            self._stretcher.setTimeFactor(self._speed)
 
     def set_volume(self, vol: float) -> None:
-        self._volume = max(0.0, min(vol, 1.0))
+        with self._lock:
+            self._volume = max(0.0, min(vol, 1.0))
 
     def set_metronome_enabled(self, enabled: bool) -> None:
         self._metronome_enabled = enabled
 
     def set_novasr_enabled(self, enabled: bool) -> None:
-        self._novasr_enabled = enabled
-        if enabled and self._novasr is None:
-            try:
-                from audio.novasr import NovaSR
-                self._novasr = NovaSR()
-            except Exception:
-                traceback.print_exc()
-                self._novasr_enabled = False
+        with self._lock:
+            self._novasr_enabled = enabled
+            if enabled and self._novasr is None:
+                try:
+                    from audio.novasr import NovaSR
+                    self._novasr = NovaSR()
+                except Exception:
+                    traceback.print_exc()
+                    self._novasr_enabled = False
 
     def set_click_gain(self, gain: float) -> None:
         self._click_gain = max(0.0, min(gain, 1.0))
@@ -196,6 +208,11 @@ class AudioBackend:
         status: Any,
     ) -> None:
         """PortAudio callback executed on high-priority thread."""
+        if not self._lock.acquire(blocking=False):
+            # If we can't get the lock immediately, play silence to avoid glitching
+            outdata[:] = 0.0
+            return
+
         try:
             if status:
                 print(f"[AudioBackend] {status}")
@@ -207,13 +224,17 @@ class AudioBackend:
 
             # 1. Fill TSM buffer
             loops = 0
-            while self._tsm_buffer.available_read() < frames and loops < 20:
+            while self._tsm_buffer.available_read() < frames:
                 loops += 1
+                if loops > 100: # Safety
+                    break
+
                 start_idx = self._read_sample_idx
                 if start_idx >= len(self._data):
                     break
 
-                chunk_size = 2048
+                # Use a larger chunk size for TSM stability
+                chunk_size = 8192
                 end_idx = min(start_idx + chunk_size, len(self._data))
                 source_chunk = self._data[start_idx:end_idx]
                 if source_chunk.size == 0:
@@ -228,30 +249,26 @@ class AudioBackend:
                 if self._novasr_enabled and self._novasr is not None:
                     stretched = self._novasr.enhance(stretched, self._sr)
 
-                self._tsm_buffer.write(stretched)
+                if stretched.size > 0:
+                    self._tsm_buffer.write(stretched)
 
                 if end_idx == len(self._data):
                     break
 
             # 2. Read and Play
-            avail = self._tsm_buffer.available_read()
-            if avail > 0:
-                to_read = min(frames, avail)
-                samples = self._tsm_buffer.read(to_read)
-                outdata[:to_read, 0] = samples * self._volume
-            else:
-                to_read = 0
+            samples, to_read = self._tsm_buffer.read(frames)
+            outdata[:, 0] = samples * self._volume
 
             # 3. Metronome overlay
             if self._metronome_enabled and self._subdivision_ticks_between:
                 self._add_metronome_clicks(outdata, frames)
 
-            # 4. Update playback cursor
+            # 4. Update playback cursor based on actual samples read
             if to_read > 0:
                 self._cursor += (to_read / self._sr) * self._speed
 
             # 5. Check for EOF
-            if avail < frames and self._read_sample_idx >= len(self._data):
+            if to_read < frames and self._read_sample_idx >= len(self._data):
                 self._playing = False
                 self._cursor = 0.0
                 self._read_sample_idx = 0
@@ -263,6 +280,8 @@ class AudioBackend:
 
         except Exception:
             traceback.print_exc()
+        finally:
+            self._lock.release()
 
     # ---------- metronome ----------
     def _precalculate_clicks(self) -> None:

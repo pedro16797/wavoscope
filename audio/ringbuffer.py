@@ -5,7 +5,7 @@ Uses an explicit count to resolve empty/full ambiguity.
 from __future__ import annotations
 
 import threading
-from typing import Final
+from typing import Final, Tuple
 
 import numpy as np
 
@@ -65,18 +65,27 @@ class RingBuffer:
             self._count = 0
             self._buf.fill(0)
 
-    def read(self, frames: int) -> np.ndarray:
-        """Return exactly `frames` samples (silence if not enough available)."""
+    def read(self, frames: int) -> Tuple[np.ndarray, int]:
+        """
+        Return exactly `frames` samples.
+        If not enough available, return what we have and pad with silence.
+        Returns (samples, actual_count).
+        """
         with self._lock:
-            if self._count < frames:
-                return np.zeros(frames, dtype=np.float32)
+            to_read = min(frames, self._count)
+            if to_read == 0:
+                return np.zeros(frames, dtype=np.float32), 0
 
-            end = self._read_idx + frames
+            end = self._read_idx + to_read
             if end <= self._size:
                 out = self._buf[self._read_idx : end].copy()
             else:
                 out = np.concatenate((self._buf[self._read_idx :], self._buf[: end - self._size]))
 
-            self._read_idx = (self._read_idx + frames) % self._size
-            self._count -= frames
-            return out
+            self._read_idx = (self._read_idx + to_read) % self._size
+            self._count -= to_read
+
+            if to_read < frames:
+                out = np.pad(out, (0, frames - to_read))
+
+            return out, to_read
