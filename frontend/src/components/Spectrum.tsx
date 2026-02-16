@@ -14,6 +14,8 @@ export const Spectrum: React.FC = () => {
   const { loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys } = useStore();
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
   const [size, setSize] = useState({ width: 0, height: 0 });
+  const reqIdRef = useRef(0);
+  const doneIdRef = useRef(0);
 
   const baseMidi = 48 + octave_shift * 12;
   const range = {
@@ -41,7 +43,13 @@ export const Spectrum: React.FC = () => {
 
   useEffect(() => {
     if (!loaded) return;
+    const myId = ++reqIdRef.current;
+    const controller = new AbortController();
+
     const fetchSpectrum = async () => {
+        const lag = myId - doneIdRef.current;
+        if (lag > 2 && myId < reqIdRef.current) return;
+
         try {
             const width = size.width || 1000;
             const res = await axios.get(`${API_BASE}/audio/spectrum`, {
@@ -51,14 +59,20 @@ export const Spectrum: React.FC = () => {
                     low_hz: range.low,
                     high_hz: range.high,
                     width: width
-                }
+                },
+                signal: controller.signal
             });
             setData(res.data);
         } catch (e) {
-            console.error(e);
+            if (!axios.isCancel(e)) {
+                console.error(e);
+            }
+        } finally {
+            doneIdRef.current = Math.max(doneIdRef.current, myId);
         }
     };
     fetchSpectrum();
+    return () => controller.abort();
   }, [loaded, position, range.low, range.high, fft_window, size.width]);
 
   useEffect(() => {

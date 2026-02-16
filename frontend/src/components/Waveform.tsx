@@ -14,6 +14,8 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
   const { loaded, position, duration, currentTheme, themes, controlPlayback } = useStore();
   const [bars, setBars] = React.useState<number[][]>([]);
   const [size, setSize] = React.useState({ width: 0, height: 0 });
+  const reqIdRef = useRef(0);
+  const doneIdRef = useRef(0);
 
   const updateSize = React.useCallback(() => {
     if (containerRef.current && canvasRef.current) {
@@ -35,7 +37,15 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
 
   useEffect(() => {
     if (!loaded) return;
+    const myId = ++reqIdRef.current;
+    const controller = new AbortController();
+
     const fetchBars = async () => {
+        // Skip if we are lagging behind by more than 2 steps,
+        // but always allow the latest request to proceed.
+        const lag = myId - doneIdRef.current;
+        if (lag > 2 && myId < reqIdRef.current) return;
+
         try {
             const width = size.width || 1000;
             const span = width / zoom;
@@ -44,14 +54,20 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
                     start: offset,
                     end: offset + span,
                     n_bars: Math.min(width, 2000)
-                }
+                },
+                signal: controller.signal
             });
             setBars(res.data.bars);
         } catch (e) {
-            console.error(e);
+            if (!axios.isCancel(e)) {
+                console.error(e);
+            }
+        } finally {
+            doneIdRef.current = Math.max(doneIdRef.current, myId);
         }
     };
     fetchBars();
+    return () => controller.abort();
   }, [loaded, offset, zoom, duration, size.width]);
 
   useEffect(() => {
