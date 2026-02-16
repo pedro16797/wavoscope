@@ -14,11 +14,11 @@ We are currently focusing on the following initiatives:
     -   Detailed Task: [ComfyUI-NovaSR Integration](docs/tasks/nova_sr_integration.md)
 3.  **Harmony Flags & Chord Notation:** Implementing specialized flags for transcribing chord progressions with bidirectional text parsing and spectral analysis.
     -   Detailed Task: [Harmony Flags](docs/tasks/harmony_flags.md)
-4.  **AI Stem Separation:** Integrating models like Demucs to allow users to isolate Vocals, Drums, Bass, and Other instruments.
-    -   Detailed Task: [Stem Separation](docs/tasks/stem_separation.md)
-5.  **MIDI Capture & Export:** Enabling users to draw notes on the spectrum and export them as MIDI files.
-    -   Detailed Task: [MIDI Export](docs/tasks/midi_export.md)
-6.  **Advanced Loop Management:** Adding support for saving, naming, and navigating multiple loop regions.
+4.  **Spectral Band Pass Filter:** Integrating a real-time filter into the spectrum view to allow isolating specific frequencies.
+    -   Detailed Task: [Band Pass Filter](docs/tasks/band_pass_filter.md)
+5.  **MusicXML Export:** Enabling users to export their transcription (rhythm, sections, and chords) as a structured MusicXML file.
+    -   Detailed Task: [MusicXML Export](docs/tasks/musicxml_export.md)
+6.  **Marker-Based Loop Management:** Implementing intelligent looping based on current bars and sections defined by flags.
     -   Detailed Task: [Loop Management](docs/tasks/loop_management.md)
 
 ## Working Guidelines
