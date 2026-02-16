@@ -134,6 +134,8 @@ class AudioBackend:
             # Clear buffer so speed change is immediate
             self._tsm_buffer.clear()
             self._last_tsm_overlap = None
+            # Re-sync read index to current cursor to prevent jumps when switching modes
+            self._read_sample_idx = int(self._cursor * self._sr)
 
     def set_volume(self, vol: float) -> None:
         with self._lock:
@@ -227,71 +229,82 @@ class AudioBackend:
             if not self._playing or self._data is None:
                 return
 
-            # 1. Fill TSM buffer
-            loops = 0
-            while self._tsm_buffer.available_read() < frames:
-                loops += 1
-                if loops > 100: # Safety
-                    break
-
+            to_read = 0
+            if self._speed == 1.0:
+                # 1. Bypass Mode: read directly from source for zero-latency, zero-artifact playback
                 start_idx = self._read_sample_idx
-                if start_idx >= len(self._data):
-                    break
+                end_idx = min(start_idx + frames, len(self._data))
+                to_read = end_idx - start_idx
+                if to_read > 0:
+                    outdata[:to_read, 0] = self._data[start_idx:end_idx] * self._volume
+                    self._read_sample_idx = end_idx
+            else:
+                # 2. TSM / Enhancement Mode
+                # Fill TSM buffer
+                loops = 0
+                while self._tsm_buffer.available_read() < frames:
+                    loops += 1
+                    if loops > 100: # Safety
+                        break
 
-                # Use a larger chunk size for TSM stability
-                chunk_size = 16384
-                end_idx = min(start_idx + chunk_size, len(self._data))
-                source_chunk = self._data[start_idx:end_idx]
-                if source_chunk.size == 0:
-                    break
+                    start_idx = self._read_sample_idx
+                    if start_idx >= len(self._data):
+                        break
 
-                self._read_sample_idx = end_idx
+                    # Use a larger chunk size for TSM stability
+                    chunk_size = 16384
+                    end_idx = min(start_idx + chunk_size, len(self._data))
+                    source_chunk = self._data[start_idx:end_idx]
+                    if source_chunk.size == 0:
+                        break
 
-                # Stretch
-                stretched = self._stretcher.process(source_chunk.reshape(1, -1)).flatten()
+                    self._read_sample_idx = end_idx
 
-                # NovaSR enhancement
-                if self._novasr_enabled and self._novasr is not None:
-                    stretched = self._novasr.enhance(stretched, self._sr)
+                    # Stretch
+                    stretched = self._stretcher.process(source_chunk.reshape(1, -1)).flatten()
 
-                if stretched.size > 0:
-                    overlap_size = 512
-                    if self._last_tsm_overlap is not None:
-                        # Cross-fade previous tail with current head
-                        actual_overlap = min(overlap_size, stretched.size)
-                        fade_out = np.linspace(1, 0, actual_overlap, dtype=np.float32)
-                        fade_in = np.linspace(0, 1, actual_overlap, dtype=np.float32)
+                    # NovaSR enhancement
+                    if self._novasr_enabled and self._novasr is not None:
+                        stretched = self._novasr.enhance(stretched, self._sr)
 
-                        blended = (
-                            stretched[:actual_overlap] * fade_in +
-                            self._last_tsm_overlap[:actual_overlap] * fade_out
-                        )
-                        self._tsm_buffer.write(blended)
+                    if stretched.size > 0:
+                        overlap_size = 512
+                        if self._last_tsm_overlap is not None:
+                            # Cross-fade previous tail with current head
+                            actual_overlap = min(overlap_size, stretched.size)
+                            fade_out = np.linspace(1, 0, actual_overlap, dtype=np.float32)
+                            fade_in = np.linspace(0, 1, actual_overlap, dtype=np.float32)
 
-                        # Write the rest of the current chunk, keeping a new tail
-                        if stretched.size > overlap_size:
-                            main_part = stretched[overlap_size:-overlap_size]
-                            if main_part.size > 0:
-                                self._tsm_buffer.write(main_part)
-                            self._last_tsm_overlap = stretched[-overlap_size:].copy()
+                            blended = (
+                                stretched[:actual_overlap] * fade_in +
+                                self._last_tsm_overlap[:actual_overlap] * fade_out
+                            )
+                            self._tsm_buffer.write(blended)
+
+                            # Write the rest of the current chunk, keeping a new tail
+                            if stretched.size > overlap_size:
+                                main_part = stretched[overlap_size:-overlap_size]
+                                if main_part.size > 0:
+                                    self._tsm_buffer.write(main_part)
+                                self._last_tsm_overlap = stretched[-overlap_size:].copy()
+                            else:
+                                self._last_tsm_overlap = None # Current chunk was too small to have a new tail
                         else:
-                            self._last_tsm_overlap = None # Current chunk was too small to have a new tail
-                    else:
-                        # No previous tail, write everything but the tail
-                        if stretched.size > overlap_size:
-                            self._tsm_buffer.write(stretched[:-overlap_size])
-                            self._last_tsm_overlap = stretched[-overlap_size:].copy()
-                        else:
-                            # Too small even for a tail, just write it and don't start a tail
-                            self._tsm_buffer.write(stretched)
-                            self._last_tsm_overlap = None
+                            # No previous tail, write everything but the tail
+                            if stretched.size > overlap_size:
+                                self._tsm_buffer.write(stretched[:-overlap_size])
+                                self._last_tsm_overlap = stretched[-overlap_size:].copy()
+                            else:
+                                # Too small even for a tail, just write it and don't start a tail
+                                self._tsm_buffer.write(stretched)
+                                self._last_tsm_overlap = None
 
-                if end_idx == len(self._data):
-                    break
+                    if end_idx == len(self._data):
+                        break
 
-            # 2. Read and Play
-            samples, to_read = self._tsm_buffer.read(frames)
-            outdata[:, 0] = samples * self._volume
+                # Read from TSM buffer
+                samples, to_read = self._tsm_buffer.read(frames)
+                outdata[:, 0] = samples * self._volume
 
             # 3. Metronome overlay
             if self._metronome_enabled and self._subdivision_ticks_between:
