@@ -37,7 +37,7 @@ def test_status_loop_info():
     mock_project.harmony_flags = []
     mock_project._dirty = False
     mock_project.backend._metronome_enabled = True
-    mock_project.backend._click_gain = 0.3
+    mock_project.backend._click_volume = 0.3
     mock_project.loop_mode = "section"
     mock_project.get_loop_range.return_value = (10.0, 20.0)
 

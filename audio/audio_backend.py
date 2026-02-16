@@ -177,9 +177,9 @@ class AudioBackend:
                     traceback.print_exc()
                     self._novasr_enabled = False
 
-    def set_click_gain(self, gain: float) -> None:
-        # Keep this method name for compatibility with Project, but update internal field
-        self._click_volume = max(0.0, min(gain, 1.0))
+    def set_click_volume(self, volume: float) -> None:
+        """Set metronome click volume."""
+        self._click_volume = max(0.0, min(volume, 1.0))
         self._precalculate_clicks()
 
     def set_tick_provider(self, fn: Callable[[float, float], list[tuple[float, bool]]]) -> None:

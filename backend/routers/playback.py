@@ -79,7 +79,7 @@ async def control_metronome(control: MetronomeControl):
         if control.enabled is not None:
             state.project.backend.set_metronome_enabled(control.enabled)
         if control.volume is not None:
-            state.project.backend.set_click_gain(control.volume)
+            state.project.backend.set_click_volume(control.volume)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Metronome control error: {str(e)}")
 
