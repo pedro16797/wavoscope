@@ -395,8 +395,27 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   updateFilter: async (filter) => {
+    const state = get();
     // Optimistic update
     const updates: Partial<AppState> = {};
+
+    if (filter.enabled === true && !state.filter_enabled) {
+      // Filter is being enabled. Check bounds.
+      const baseMidi = 48 + state.octave_shift * 12;
+      const lowBound = midiToFreq(baseMidi);
+      const highBound = midiToFreq(baseMidi + state.spectrum_keys);
+
+      // If current values are outside, reset them to be visible
+      if (state.filter_low_hz < lowBound || state.filter_low_hz > highBound ||
+          state.filter_high_hz < lowBound || state.filter_high_hz > highBound) {
+        updates.filter_low_hz = midiToFreq(baseMidi + state.spectrum_keys * 0.3);
+        updates.filter_high_hz = midiToFreq(baseMidi + state.spectrum_keys * 0.7);
+        // Also update the filter object for the API call
+        filter.low_hz = updates.filter_low_hz;
+        filter.high_hz = updates.filter_high_hz;
+      }
+    }
+
     if (filter.enabled !== undefined) updates.filter_enabled = filter.enabled;
     if (filter.low_hz !== undefined) updates.filter_low_hz = filter.low_hz;
     if (filter.high_hz !== undefined) updates.filter_high_hz = filter.high_hz;

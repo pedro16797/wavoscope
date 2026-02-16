@@ -146,10 +146,12 @@ class AudioBackend:
 
         # Enforce low < high with a small gap
         min_gap = 50.0
-        if low is not None:
-            self._filter_low_hz = max(20.0, min(low, self._filter_high_hz - min_gap))
-        if high is not None:
-            self._filter_high_hz = max(self._filter_low_hz + min_gap, min(high, self._sr / 2 - 20))
+        new_low = low if low is not None else self._filter_low_hz
+        new_high = high if high is not None else self._filter_high_hz
+
+        # Apply constraints together
+        self._filter_low_hz = max(20.0, min(new_low, new_high - min_gap))
+        self._filter_high_hz = max(self._filter_low_hz + min_gap, min(new_high, self._sr / 2 - 20))
 
         self._update_filter_coeffs()
 
