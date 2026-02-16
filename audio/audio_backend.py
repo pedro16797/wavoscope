@@ -40,8 +40,8 @@ class AudioBackend:
         self._stretcher.preset(1, float(self._sr))
         self._stretcher.setTimeFactor(self._speed)
 
-        # 5s safety to handle slow speeds (0.1x) with large chunks
-        self._tsm_buffer = RingBuffer(self._sr * 5)
+        # 10s safety to handle slow speeds (0.1x) with large chunks
+        self._tsm_buffer = RingBuffer(self._sr * 10)
         self._read_sample_idx: int = 0
         self._last_tsm_overlap: np.ndarray | None = None
 
@@ -86,7 +86,7 @@ class AudioBackend:
             self._stretcher = ps.Stretch()
             self._stretcher.preset(1, float(self._sr))
             self._stretcher.setTimeFactor(self._speed)
-            self._tsm_buffer = RingBuffer(int(self._sr * 5))
+            self._tsm_buffer = RingBuffer(int(self._sr * 10))
             self._last_tsm_overlap = None
 
             if self._novasr:
@@ -124,7 +124,6 @@ class AudioBackend:
             self._playing = False
             # We DON'T clear the buffer or reset the stretcher here,
             # so we can resume seamlessly.
-            self._read_sample_idx = int(self._cursor * self._sr)
             self.clear_tick_cache()
 
     def set_speed(self, speed: float) -> None:

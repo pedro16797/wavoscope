@@ -6,12 +6,10 @@ Welcome, Agent. This document serves as the primary entry point for understandin
 Wavoscope is a musician-oriented audio transcription workbench. It is a desktop application built with a React frontend and a FastAPI backend.
 
 ## Main Objectives
-We are currently focusing on two major initiatives:
+We are currently focusing on:
 
 1.  **Quality & Performance Audit:** A comprehensive review of the project to identify bugs, optimize performance, and ensure code quality.
     -   Detailed Task: [Bugs and Performance improvements](docs/tasks/bugs_and_performance.md)
-2.  **Audio Quality Enhancement (NovaSR):** Studying and integrating the ComfyUI-NovaSR model for audio super-resolution to improve the quality of slowed-down playback.
-    -   Detailed Task: [ComfyUI-NovaSR Integration](docs/tasks/nova_sr_integration.md)
 
 ## Working Guidelines
 -   Always verify your changes by running existing tests (if any) or adding new ones.
