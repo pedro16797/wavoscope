@@ -35,28 +35,17 @@ The current playback engine uses a crude mirroring/padding technique to handle s
 
 ## Sub-Tasks
 
-### 1. Core TSM Integration
--   [ ] Research Python bindings for Signalsmith Stretch (e.g., `python-stretch`).
--   [ ] Replace the crude mirroring logic in `AudioBackend._audio_callback` with a streaming TSM implementation.
--   [ ] Ensure seamless speed transitions during real-time playback.
+### 1. MVP: High-Quality TSM
+-   [ ] Integrate `python-stretch` (Signalsmith Stretch) into the `AudioBackend`.
+-   [ ] Replace the crude mirroring/padding in `_audio_callback` with the TSM engine.
+-   [ ] Implement smooth speed transitions and verify stability across the 0.1x - 4.0x range.
 
-### 2. NovaSR Research & Evaluation
--   [ ] Study the [NovaSR model](https://huggingface.co/drbaph/NovaSR).
--   [ ] Test NovaSR on various music transcription samples (instruments, complex mixes) at 0.25x - 1.0x speeds.
--   [ ] Evaluate the perceptual quality improvement when combined with TSM.
+### 2. MVP: NovaSR Enhancement
+-   [ ] Integrate the NovaSR model and its required dependencies (`torch`, `safetensors`).
+-   [ ] Implement the super-resolution stage in the audio pipeline: `Source -> TSM -> NovaSR -> Output`.
+-   [ ] Add a "High Quality Enhancement" toggle in the frontend Settings or Playback panel.
 
-### 3. Performance Benchmarking
--   [ ] Benchmark NovaSR inference time on CPU (as A100 benchmarks are not representative for desktop users).
--   [ ] Analyze RAM/VRAM requirements during active playback.
-
-### 4. Integration Strategy
--   [ ] Design a pipeline: `Audio Source -> TSM -> NovaSR (Optional) -> Output`.
--   [ ] Implement a toggle in the UI to enable/disable NovaSR enhancement.
--   [ ] Consider dependency management for `torch` (required for NovaSR).
-
-### 5. Proof-of-Concept Implementation
--   [ ] Create a prototype script applying both TSM and NovaSR.
--   [ ] Integrate into an experimental branch of `AudioBackend`.
-
-### 6. Feasibility Report
--   [ ] Document final findings and recommendations.
+### 3. Performance & Quality Validation
+-   [ ] Test the integrated pipeline on real-world music transcription scenarios.
+-   [ ] Verify that CPU/RAM usage remains acceptable for real-time desktop use.
+-   [ ] Document any remaining limitations or future optimization paths.
