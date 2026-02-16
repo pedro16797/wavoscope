@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useStore, formatChord } from '../store/useStore';
+import { useStore, formatChord, getChordMidiNotes, midiToFreq, API_BASE } from '../store/useStore';
+import axios from 'axios';
 
 interface TimelineProps {
   offset: number;
@@ -75,15 +76,21 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         }
     }
 
+    const overlapThreshold = 0.01; // 10ms
+
     // Draw Harmony Flags
     harmony_flags.forEach((f, idx) => {
         const x = (f.t - offset) * zoom;
         if (x >= 0 && x <= size.width) {
+            const hasOverlap = flags.some(rf => Math.abs(rf.t - f.t) < overlapThreshold);
+            const yStart = 0;
+            const yEnd = hasOverlap ? size.height / 2 : size.height;
+
             ctx.strokeStyle = theme.flagHarmony || '#00aaff';
             ctx.lineWidth = dragHarmonyIdx === idx ? 4 : 2;
             ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, size.height);
+            ctx.moveTo(x, yStart);
+            ctx.lineTo(x, yEnd);
             ctx.stroke();
 
             ctx.fillStyle = theme.surface || '#252525';
@@ -100,11 +107,15 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     flags.forEach((f, idx) => {
         const x = (f.t - offset) * zoom;
         if (x >= 0 && x <= size.width) {
+            const hasOverlap = harmony_flags.some(hf => Math.abs(hf.t - f.t) < overlapThreshold);
+            const yStart = hasOverlap ? size.height / 2 : 0;
+            const yEnd = size.height;
+
             ctx.strokeStyle = theme.flagRhythm || '#ff4757';
             ctx.lineWidth = dragIdx === idx ? 4 : 2;
             ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, size.height);
+            ctx.moveTo(x, yStart);
+            ctx.lineTo(x, yEnd);
             ctx.stroke();
 
             ctx.fillStyle = theme.surface || '#252525';
@@ -159,6 +170,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
     const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     const clickT = offset + x / zoom;
 
     const threshold = 10 / zoom;
@@ -176,8 +188,21 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         }
     });
 
+    // Handle Overlap Interaction
+    if (foundIdx !== -1 && foundHarmonyIdx !== -1) {
+        if (y < rect.height / 2) foundIdx = -1;
+        else foundHarmonyIdx = -1;
+    }
+
     if (e.button === 0) {
         if (foundHarmonyIdx !== -1) {
+            // Play Chord on Hold
+            const chord = harmony_flags[foundHarmonyIdx].chord;
+            const midis = getChordMidiNotes(chord);
+            midis.forEach(m => {
+                axios.post(`${API_BASE}/playback/tone`, { freq: midiToFreq(m), action: 'start' });
+            });
+
             setDragHarmonyIdx(foundHarmonyIdx);
             const onMouseMove = (moveEvent: MouseEvent) => {
                 const newX = moveEvent.clientX - rect.left;
@@ -189,6 +214,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
                 window.removeEventListener('mousemove', onMouseMove);
                 window.removeEventListener('mouseup', onMouseUp);
                 setDragHarmonyIdx(null);
+                axios.post(`${API_BASE}/playback/tone`, { freq: 0, action: 'stop' });
             };
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mouseup', onMouseUp);
@@ -219,6 +245,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
     const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     const clickT = offset + x / zoom;
 
     const threshold = 10 / zoom;
@@ -235,6 +262,12 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
             foundHarmonyIdx = idx;
         }
     });
+
+    // Handle Overlap Interaction
+    if (foundIdx !== -1 && foundHarmonyIdx !== -1) {
+        if (y < rect.height / 2) foundIdx = -1;
+        else foundHarmonyIdx = -1;
+    }
 
     if (foundHarmonyIdx !== -1) {
         setEditingHarmonyFlagIdx(foundHarmonyIdx);

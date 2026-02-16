@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { useStore, API_BASE } from '../store/useStore';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { useStore, API_BASE, getChordMidiNotes } from '../store/useStore';
 import axios from 'axios';
 
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -77,6 +77,17 @@ export const Spectrum: React.FC = () => {
     fetchSpectrum(position, fft_window, range.low, range.high, size.width || 1000);
   }, [loaded, position, range.low, range.high, fft_window, size.width]);
 
+  const activeChordNotes = useMemo(() => {
+    const { harmony_flags } = useStore.getState();
+    // Find the last flag before or at the current position
+    let activeFlag = null;
+    for (const f of harmony_flags) {
+        if (f.t <= position) activeFlag = f;
+        else break;
+    }
+    return activeFlag ? getChordMidiNotes(activeFlag.chord) : [];
+  }, [position, useStore.getState().harmony_flags]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const theme = themes[currentTheme];
@@ -98,13 +109,21 @@ export const Spectrum: React.FC = () => {
         const x = Math.log2(hz / range.low) * xScale;
         if (x < 0 || x > w) continue;
 
+        const isActive = activeChordNotes.some(n => n % 12 === midi % 12);
+
         ctx.strokeStyle = WHITE_KEYS.has(midi % 12) ? (theme.keyWhite || '#fff') : (theme.keyBlack || '#333');
-        ctx.globalAlpha = 0.5;
-        ctx.lineWidth = 2;
+        ctx.globalAlpha = isActive ? 0.9 : 0.4;
+        ctx.lineWidth = isActive ? 4 : 2;
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, h);
         ctx.stroke();
+
+        if (isActive) {
+            ctx.fillStyle = theme.accent;
+            ctx.globalAlpha = 0.2;
+            ctx.fillRect(x - 2, 0, 4, h);
+        }
 
         ctx.globalAlpha = 0.8;
         ctx.fillStyle = theme.text;
@@ -131,7 +150,7 @@ export const Spectrum: React.FC = () => {
         });
         ctx.stroke();
     }
-  }, [data, range.low, range.high, themes, currentTheme, spectrum_keys, size]);
+  }, [data, range.low, range.high, themes, currentTheme, spectrum_keys, size, activeChordNotes]);
 
   const lastToneRef = useRef<number>(0);
   const currentHzRef = useRef<number>(0);

@@ -31,7 +31,7 @@ class Project:
             "flag_removed": [],
         }
         self.audio_path: Path = audio_path
-        self.sidecar_path: Path = audio_path.with_suffix(audio_path.suffix + "oscope")
+        self.sidecar_path: Path = audio_path.with_suffix(audio_path.suffix + ".oscope")
 
         self.backend: AudioBackend = AudioBackend()
         self.backend.set_tick_provider(self.subdivision_ticks_between)
