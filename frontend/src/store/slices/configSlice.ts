@@ -20,7 +20,7 @@ export interface ConfigSlice {
   setShowSettings: (show: boolean) => void;
 }
 
-export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (set, get) => ({
+export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (set) => ({
   themes: {},
   currentTheme: 'dark',
   metronome_enabled: true,

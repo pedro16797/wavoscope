@@ -149,6 +149,30 @@ class AudioBackend:
         return self._playback._speed
 
     @property
+    def _volume(self) -> float:
+        return self._playback._volume
+
+    @property
+    def _metronome_enabled(self) -> bool:
+        return self._metronome._metronome_enabled
+
+    @property
+    def _click_volume(self) -> float:
+        return self._metronome._click_volume
+
+    @property
+    def _filter_enabled(self) -> bool:
+        return self._filters._enabled
+
+    @property
+    def _filter_low_enabled(self) -> bool:
+        return self._filters._low_enabled
+
+    @property
+    def _filter_high_enabled(self) -> bool:
+        return self._filters._high_enabled
+
+    @property
     def _filter_low_hz(self) -> float:
         return self._filters._low_hz
 
