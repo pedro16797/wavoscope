@@ -7,19 +7,21 @@ interface SettingsDialogProps {
 }
 
 export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
-  const { themes, currentTheme, click_gain, spectrum_keys, updateConfig } = useStore();
+  const { themes, currentTheme, click_gain, spectrum_keys, high_quality_enhancement, updateConfig } = useStore();
   const [activeTab, setActiveTab] = useState<'global' | 'keybinds'>('global');
 
   const [theme, setTheme] = useState(currentTheme);
   const [clickVol, setClickVol] = useState(click_gain * 100);
   const [keys, setKeys] = useState(spectrum_keys);
+  const [highQuality, setHighQuality] = useState(high_quality_enhancement);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleSave = () => {
     updateConfig({
         theme,
         click_volume: clickVol / 100,
-        spectrum_keys: keys
+        spectrum_keys: keys,
+        high_quality_enhancement: highQuality
     });
     onClose();
   };
@@ -86,6 +88,19 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <input type="number" min="12" max="120" value={keys} onChange={(e) => setKeys(parseInt(e.target.value))}
                                className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text"
                                style={{ borderWidth: 'var(--ui-border)' }} />
+                    </div>
+                    <div className="pt-2">
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                            <div className="relative">
+                                <input type="checkbox" checked={highQuality} onChange={(e) => setHighQuality(e.target.checked)} className="sr-only peer" />
+                                <div className="w-10 h-5 bg-background border border-grid rounded-full peer peer-checked:bg-accent transition-colors"></div>
+                                <div className="absolute left-1 top-1 bg-text w-3 h-3 rounded-full transition-transform peer-checked:translate-x-5 peer-checked:bg-background"></div>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-xs font-bold">High Quality Enhancement (NovaSR)</span>
+                                <span className="text-[10px] opacity-50">Recover high-frequency clarity during slow playback</span>
+                            </div>
+                        </label>
                     </div>
                 </>
             ) : (

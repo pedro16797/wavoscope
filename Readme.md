@@ -1,107 +1,103 @@
-# Wavoscope – musician-oriented audio transcription workbench
+# OSCOPE - Audio Analysis & Transcription Tool
 
-Wavoscope is a tool designed to assist musicians in transcribing audio by providing high-quality playback, waveform visualization, and precise flagging/labeling of musical events.
+OSCOPE is a powerful, real-time audio visualization and transcription aid designed for musicians, transcribers, and audio engineers. It provides high-fidelity waveforms, spectral analysis, and a robust marker system to help you deconstruct complex audio.
 
-> **Note to Contributors & Agents:** Please refer to [AGENTS.md](AGENTS.md) for current project goals and development guidance.
+![Main Interface](docs/images/main_view.png)
 
 ---
 
 ## 🚀 Getting Started
 
-### Run the app
-The easiest way to run Wavoscope is using the provided scripts, which handle virtual environment setup and dependencies automatically:
-
-**Windows:**
-```batch
-run.bat
-```
-
-**Linux/macOS:**
-```bash
-./run.sh
-```
-
-### Build
-To create a standalone executable:
-
-**Windows:**
-```batch
-build.bat
-```
-
-**Linux/macOS:**
-```bash
-./build.sh
-```
+### Project Management
+OSCOPE uses a "sidecar" file system. When you open an audio file, OSCOPE creates or loads a `.oscope` file in the same directory to store your markers, loops, and settings.
+- **Open:** Click the folder icon in the playback bar to load any common audio format (MP3, WAV, FLAC, etc.).
+- **Save:** Click the floppy disk icon. The icon will glow with your theme's accent color when there are unsaved changes.
 
 ---
 
-## 📖 Tutorial & Features
+## 🎵 Navigation & Playback
 
-### 1. Project Management
-- **Open Audio:** Click the **Folder Icon** in the playback bar (or press `Ctrl+O`) to load a WAV, MP3, FLAC, or OGG file.
-- **Saving:** Click the **Save Icon** (or `Ctrl+S`). Wavoscope saves your flags and settings into a `.oscope` sidecar file next to your audio file. The Save icon turns **accent color** when you have unsaved changes.
+- **Zooming:** Use your **Mouse Wheel** over the waveform or spectrum to zoom in/out.
+- **Panning:** **Click and Drag** the waveform or spectrum to move through the timeline.
+- **Playback Cursor:** **Left Click** anywhere on the timeline to move the playhead.
+- **Speed Control:** Use the slider in the bottom bar to adjust speed from 0.1x to 2.0x. OSCOPE uses high-quality time-stretching that preserves pitch.
 
-### 2. Navigation & Viewports
-- **Zoom:** Use the **Mouse Wheel** over the waveform or spectrum to zoom in/out. Zooming is centered at your mouse cursor.
-- **Panning:** **Left-click and drag** on the waveform to scroll through the audio.
-- **Seeking:** **Left-click** (without dragging) on the waveform to move the playback cursor.
-
-### 3. Playback Controls
-- **Spacebar:** Play or Pause.
-- **Arrow Keys:**
-  - `Left` / `Right`: Seek backward/forward (100ms).
-  - `Up` / `Down`: Increase/Decrease playback speed.
-- **Speed Slider:** Adjust playback from **0.1x to 4.0x**.
-- **Looping:** Click the **Repeat icon** to cycle through loop modes:
-  - `None`: Regular playback.
-  - `Whole`: Loop the entire file.
-  - `Section`: Loop the current section (defined by flags marked as "Section Start").
-  - `Bar`: Loop the current "bar" (defined by rhythm flags).
-
-### 4. Working with Flags
-Flags are the core of transcribing in Wavoscope. They appear on the **Timeline** above the waveform.
-
-#### **Common Interactions**
-- **Move Flags:** **Left-click and drag** any flag on the timeline to reposition it.
-- **Overlapping Flags:** If a rhythm and harmony flag share the same timestamp, they split the timeline height: **Harmony on top, Rhythm on bottom**. Click the top or bottom half to interact with the specific flag.
-
-#### **Rhythm Flags**
-- **Place:** **Left-click** on the timeline to add a rhythm flag.
-- **Edit:** **Right-click** an existing flag to open the edit dialog.
-- **Subdivisions:** Set the number of beats between flags. These are visually rendered on the timeline.
-- **Section Start:** Mark a flag as a section start to define boundaries for **Section Looping**.
-- **Insert N:** Automatically place a specific number of evenly-spaced flags between two points.
-
-#### **Harmony Flags**
-- **Place:** **Right-click** on an empty area of the timeline or waveform.
-- **Automatic Analysis:** When you place a harmony flag, Wavoscope automatically analyzes the audio at that position to suggest a chord!
-- **Edit:** **Right-click** a harmony flag to open the **Chord Dialog**. You can type notation (e.g., `Am7`, `D7b9`, `C/E`) or use the selectors.
-- **Audition:** **Left-click and hold** a harmony flag on the timeline to hear the chord played by a built-in synthesizer.
-
-### 5. Spectrum Analyzer & Filtering
-The spectrum analyzer shows the frequency content at the current playback position.
-
-- **Piano Roll:** A piano keyboard overlay helps you identify notes. Notes belonging to the active harmony flag are highlighted on the roll.
-- **Tone Audition:** **Left-click and drag** across the spectrum to play a synthesizer tone at that frequency (snapped to the nearest MIDI note).
-- **Audio Isolation (The Filter):**
-  - **Toggle Filter:** Click the **Filter icon** in the playback bar.
-  - **Place Cutoffs:** **Right-click** anywhere on the spectrum to move the nearest filter handle (Low-cut or High-cut) to that frequency.
-  - **Toggle Handles:** **Right-click** directly on a filter handle to enable or disable that specific cutoff.
-  - **Adjust:** **Left-click and drag** handles to fine-tune the frequency range.
+### High-Quality Enhancement (NovaSR)
+When slowing down audio significantly, high-frequency detail is often lost. Enable **High Quality Enhancement** in the settings to use the integrated **NovaSR** neural network, which recovers clarity and "air" in real-time during slow playback.
 
 ---
 
-## 🛠 Manual Development Setup
-1. **Frontend:**
-   ```bash
-   cd frontend
-   npm install
-   npm run build  # Generate production assets in dist/
-   npm run dev    # For live development
-   ```
-2. **Backend:**
-   ```bash
-   pip install -r requirements.txt
-   python main.py
-   ```
+## 🔍 Spectral Analysis & Filtering
+
+The bottom half of the screen displays a constant-Q transform (CQT) spectrogram, mapped to a piano roll.
+
+![Spectral Filtering](docs/images/spectrum_filter.png)
+
+### Advanced Filtering
+You can isolate specific instruments or notes using the real-time band-pass filter:
+- **Toggle Filter:** **Right Click** on a filter handle (the vertical lines on the spectrum) to enable or disable that boundary.
+- **Quick Placement:** **Right Click** anywhere on the spectrogram to move the nearest filter handle to that frequency.
+- **Visual Feedback:** The area outside the filter range is dimmed, helping you focus on the isolated frequencies.
+
+---
+
+## 🚩 Markers & Transcription
+
+OSCOPE uses a dual-flag system to help you map out the structure and harmony of a track.
+
+### Rhythm Flags (Rhythm/Bar Markers)
+- **Placement:** Press `B` (default) to drop a rhythm flag at the cursor.
+- **Subdivisions:** Open the flag dialog (**Left Click** the flag icon) to set subdivisions (e.g., 4 for quarter notes). These appear as faint vertical lines on the timeline.
+- **Metronome:** Rhythm flags automatically trigger a metronome click during playback if subdivision clicks are enabled.
+- **Sections:** Mark a flag as a "Section Start" to give it a label (like "Verse" or "Chorus").
+
+### Harmony Flags (Chord Markers)
+- **Placement:** Press `H` (default) to drop a harmony flag.
+- **Chord Editor:** Click the flag to open the Chord Dialog. You can type chord names (e.g., "Am7", "C/G") or use the selectors.
+- **Automatic Analysis:** Use the **Suggest** button to let OSCOPE analyze the audio at that position and recommend the most likely chord.
+- **Auditioning:** Click the "Play" button in the dialog to hear the chord played via the internal synthesizer.
+
+![Flag Editing](docs/images/flag_dialog.png)
+
+### Managing Flags
+- **Dragging:** You can **Click and Drag** any flag handle on the timeline to fine-tune its position.
+- **Overlaps:** When a Rhythm and Harmony flag occupy the same space, they are displayed at half-height (Harmony on top, Rhythm on bottom) so you can still interact with both.
+- **Looping:** Use the Loop button in the playback bar to cycle between markers or the entire track.
+
+---
+
+## ⚙️ Settings & Customization
+
+![Settings Dialog](docs/images/settings_dialog.png)
+
+Access the settings via the gear icon in the playback bar:
+- **Visible Piano Keys:** Adjust how many keys are shown in the spectrum's piano roll.
+- **Click Volume:** Control the loudness of the metronome subdivisions.
+- **High Quality Enhancement:** Toggle the NovaSR super-resolution engine.
+
+### Themes
+OSCOPE is fully themeable. Choose a look that suits your environment:
+- **Cosmic:** Deep purples and nebular accents.
+- **Dark:** Classic, easy-on-the-eyes dark mode.
+- **Doll:** High-energy pinks and playful tones.
+- **Hacker:** Retro terminal green on black.
+- **Light:** Clean, high-brightness professional look.
+- **Neon:** Electric blues and high-contrast vibrance.
+- **OLED:** Pure black background for maximum contrast.
+- **Retrowave:** 80s synthwave aesthetic.
+- **Toy:** Bold primary colors.
+- **Warm:** Earthy, comfortable tones for long sessions.
+
+---
+
+## ⌨️ Default Keybinds
+
+| Action | Key |
+| :--- | :--- |
+| Play / Pause | `Space` |
+| Add Rhythm Flag | `B` |
+| Add Harmony Flag | `H` |
+| Delete Selected Flag | `Delete` / `Backsapce` |
+| Seek Forward/Back | `Left` / `Right` |
+| Zoom In/Out | `+` / `-` |
+| Toggle Loop | `L` |

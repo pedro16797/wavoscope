@@ -127,6 +127,7 @@ interface AppState {
   themes: Record<string, Record<string, string>>;
   currentTheme: string;
   spectrum_keys: number;
+  high_quality_enhancement: boolean;
   fft_window: number;
   octave_shift: number;
 
@@ -144,7 +145,7 @@ interface AppState {
   updatePosition: (pos: number) => void;
   setPlaying: (playing: boolean) => void;
   updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
-  updateConfig: (cfg: { theme?: string, click_volume?: number, spectrum_keys?: number }) => Promise<void>;
+  updateConfig: (cfg: { theme?: string, click_volume?: number, spectrum_keys?: number, high_quality_enhancement?: boolean }) => Promise<void>;
   addFlag: (t: number) => Promise<void>;
   moveFlag: (idx: number, t: number) => Promise<void>;
   removeFlag: (idx: number) => Promise<void>;
@@ -189,6 +190,7 @@ export const useStore = create<AppState>((set, get) => ({
   themes: {},
   currentTheme: 'dark',
   spectrum_keys: 37,
+  high_quality_enhancement: false,
   fft_window: 0.3,
   octave_shift: 0,
 
@@ -220,7 +222,8 @@ export const useStore = create<AppState>((set, get) => ({
       set({
         currentTheme: res.data.theme,
         click_gain: res.data.click_volume,
-        spectrum_keys: res.data.spectrum_keys
+        spectrum_keys: res.data.spectrum_keys,
+        high_quality_enhancement: res.data.high_quality_enhancement
       });
     } catch (e) {
       console.error(e);
@@ -352,6 +355,7 @@ export const useStore = create<AppState>((set, get) => ({
         if (cfg.theme) set({ currentTheme: cfg.theme });
         if (cfg.click_volume !== undefined) set({ click_gain: cfg.click_volume });
         if (cfg.spectrum_keys !== undefined) set({ spectrum_keys: cfg.spectrum_keys });
+        if (cfg.high_quality_enhancement !== undefined) set({ high_quality_enhancement: cfg.high_quality_enhancement });
     } catch (e) {
         console.error(e);
     }

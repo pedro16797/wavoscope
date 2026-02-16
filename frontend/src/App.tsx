@@ -25,6 +25,7 @@ const App: React.FC = () => {
   useEffect(() => {
     // Expose setShowSettings to native menu
     (window as Window & { setShowSettings?: (show: boolean) => void }).setShowSettings = setShowSettings;
+    (window as any).useStore = useStore;
   }, [setShowSettings]);
 
   return (
