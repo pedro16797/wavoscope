@@ -75,11 +75,24 @@ class AudioBackend:
         self._active_loop_range: Tuple[float, float] | None = None
 
         self._subdivision_ticks_between: Callable[[float, float], List[Tuple[float, bool]]] | None = None
+        self._loop_provider: Callable[[float], Tuple[float, float]] | None = None
+        self._loop_enabled: bool = False
+        self._active_loop_range: Tuple[float, float] | None = None
 
         # Pre-calculated click waveforms
         self._strong_click: np.ndarray = np.zeros(0, dtype=np.float32)
         self._weak_click: np.ndarray = np.zeros(0, dtype=np.float32)
         self._precalculate_clicks()
+
+        # Band-pass filter state
+        self._filter_enabled: bool = False
+        self._filter_low_enabled: bool = True
+        self._filter_high_enabled: bool = True
+        self._filter_low_hz: float = 200.0
+        self._filter_high_hz: float = 2000.0
+        self._filter_sos: np.ndarray | None = None
+        self._filter_zi: np.ndarray | None = None
+        self._update_filter_coeffs()
 
     # ---------- file I/O ----------
     def open_file(self, path: Path) -> None:
@@ -180,9 +193,69 @@ class AudioBackend:
         """Inject Project.subdivision_ticks_between for metronome clicks."""
         self._subdivision_ticks_between = fn
 
+    def set_loop_provider(self, fn: Callable[[float], Tuple[float, float]]) -> None:
+        """Inject Project.get_loop_range."""
+        self._loop_provider = fn
+
+    def set_loop_enabled(self, enabled: bool) -> None:
+        self._loop_enabled = enabled
+        self._active_loop_range = None
+
+    def set_filter(self,
+                   enabled: bool | None = None,
+                   low: float | None = None,
+                   high: float | None = None,
+                   low_enabled: bool | None = None,
+                   high_enabled: bool | None = None) -> None:
+        """Update filter settings."""
+        if enabled is not None:
+            self._filter_enabled = enabled
+        if low_enabled is not None:
+            self._filter_low_enabled = low_enabled
+        if high_enabled is not None:
+            self._filter_high_enabled = high_enabled
+
+        # Enforce low < high with a small gap
+        min_gap = 50.0
+        new_low = low if low is not None else self._filter_low_hz
+        new_high = high if high is not None else self._filter_high_hz
+
+        # Apply constraints together
+        self._filter_low_hz = max(20.0, min(new_low, new_high - min_gap))
+        self._filter_high_hz = max(self._filter_low_hz + min_gap, min(new_high, self._sr / 2 - 20))
+
+        self._update_filter_coeffs()
+
+    def reset_loop_range(self) -> None:
+        self._active_loop_range = None
+
     def clear_tick_cache(self) -> None:
         if hasattr(self, "_last_tick_time"):
             delattr(self, "_last_tick_time")
+
+    def _update_filter_coeffs(self) -> None:
+        """(Re)calculate SOS for the filter."""
+        if not self._filter_low_enabled and not self._filter_high_enabled:
+            self._filter_sos = None
+            self._filter_zi = None
+            return
+
+        nyquist = max(self._sr / 2, 100.0)
+
+        if self._filter_low_enabled and self._filter_high_enabled:
+            low = max(10.0, self._filter_low_hz) / nyquist
+            high = min(self._filter_high_hz, nyquist - 10.0) / nyquist
+            if low >= high:
+                low = high * 0.9
+            self._filter_sos = scipy.signal.butter(4, [low, high], btype='bandpass', output='sos')
+        elif self._filter_low_enabled:
+            low = max(10.0, self._filter_low_hz) / nyquist
+            self._filter_sos = scipy.signal.butter(4, low, btype='highpass', output='sos')
+        else:  # high enabled
+            high = min(self._filter_high_hz, nyquist - 10.0) / nyquist
+            self._filter_sos = scipy.signal.butter(4, high, btype='lowpass', output='sos')
+
+        self._filter_zi = scipy.signal.sosfilt_zi(self._filter_sos)
 
     # ---------- read-only properties ----------
     @property

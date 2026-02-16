@@ -11,8 +11,8 @@ export const WaveformView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full w-full min-h-0">
-      <div className="h-6 border-b flex items-center px-4 font-bold text-[10px] opacity-50 uppercase tracking-widest shrink-0"
-           style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}>
+      <div className="h-6 border-b-[width:var(--ui-border)] flex items-center px-4 font-bold text-[10px] opacity-50 uppercase tracking-widest shrink-0 bg-surface"
+           style={{ borderBottomColor: 'var(--color-grid)' }}>
         Timeline & Waveform
       </div>
       <Timeline offset={viewport.offset} zoom={viewport.zoom} />

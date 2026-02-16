@@ -1,4 +1,4 @@
-from playwright.sync_api import Page, expect, sync_playwright
+from playwright.sync_api import expect, sync_playwright
 import time
 import subprocess
 import os

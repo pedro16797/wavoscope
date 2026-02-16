@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
+import { ChevronDown } from 'lucide-react';
 
 interface SettingsDialogProps {
   onClose: () => void;
@@ -13,6 +14,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const [clickVol, setClickVol] = useState(click_gain * 100);
   const [keys, setKeys] = useState(spectrum_keys);
   const [hq, setHq] = useState(high_quality_enhancement);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleSave = () => {
     updateConfig({
@@ -26,12 +28,14 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-surface border border-grid rounded-lg shadow-2xl w-full max-w-md overflow-hidden text-text flex flex-col max-h-[80vh] isolation-auto"
-           style={{ backgroundColor: 'var(--color-surface)' }}
+      <div className="bg-surface border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] shadow-2xl w-full max-w-md overflow-hidden text-text flex flex-col max-h-[80vh] isolation-auto"
+           style={{ backgroundColor: 'var(--color-surface)', borderWidth: 'var(--ui-border)' }}
            onClick={e => e.stopPropagation()}>
-        <div className="p-4 border-b border-grid font-bold text-sm uppercase tracking-widest opacity-80" style={{ backgroundColor: 'var(--color-surface)' }}>Settings</div>
+        <div className="p-4 border-b-[var(--ui-border)] border-grid font-bold text-sm uppercase tracking-widest opacity-80 bg-surface"
+             style={{ backgroundColor: 'var(--color-surface)', borderBottomWidth: 'var(--ui-border)' }}>Settings</div>
 
-        <div className="flex border-b border-grid" style={{ backgroundColor: 'var(--color-surface)' }}>
+        <div className="flex border-b-[var(--ui-border)] border-grid bg-surface"
+             style={{ backgroundColor: 'var(--color-surface)', borderBottomWidth: 'var(--ui-border)' }}>
             <button onClick={() => setActiveTab('global')}
                     className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'global' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
                 Global
@@ -42,15 +46,34 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
             </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6" style={{ backgroundColor: 'var(--color-surface)' }}>
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-surface"
+             style={{ backgroundColor: 'var(--color-surface)' }}>
             {activeTab === 'global' ? (
                 <>
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-bold opacity-50">UI Theme</label>
-                        <select value={theme} onChange={(e) => setTheme(e.target.value)}
-                                className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm">
-                            {Object.keys(themes).map(t => <option key={t} value={t} className="bg-neutral-800">{t}</option>)}
-                        </select>
+                        <div className="relative">
+                            <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 flex justify-between items-center text-sm text-text outline-none focus:border-accent transition-colors"
+                                    style={{ borderWidth: 'var(--ui-border)' }}>
+                                <span>{theme}</span>
+                                <ChevronDown size={14} className={`transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            {isDropdownOpen && (
+                                <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-grid rounded-[var(--ui-radius)] shadow-2xl z-50 overflow-hidden"
+                                     style={{ backgroundColor: 'var(--color-surface)', borderWidth: 'var(--ui-border)' }}>
+                                    <div className="max-h-48 overflow-y-auto">
+                                        {Object.keys(themes).map(t => (
+                                            <button key={t}
+                                                    onClick={() => { setTheme(t); setIsDropdownOpen(false); }}
+                                                    className={`w-full text-left px-3 py-2 text-sm transition-colors ${theme === t ? 'bg-accent text-background font-bold' : 'hover:bg-accent/20 text-text'}`}>
+                                                {t}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-bold opacity-50 flex justify-between">
@@ -63,7 +86,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-bold opacity-50">Visible Piano Keys</label>
                         <input type="number" min="12" max="120" value={keys} onChange={(e) => setKeys(parseInt(e.target.value))}
-                               className="w-full bg-background border border-grid rounded p-2 outline-none focus:border-accent text-sm font-mono" />
+                               className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text"
+                               style={{ borderWidth: 'var(--ui-border)' }} />
                     </div>
                     <div className="flex items-center justify-between p-2 bg-background/30 rounded border border-grid">
                         <label className="text-[10px] uppercase font-bold opacity-50 cursor-pointer" onClick={() => setHq(!hq)}>High Quality Enhancement (NovaSR)</label>
@@ -95,9 +119,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
             )}
         </div>
 
-        <div className="p-4 border-t border-grid flex items-center justify-end gap-2" style={{ backgroundColor: 'var(--color-surface)' }}>
-            <button onClick={onClose} className="px-4 py-2 rounded hover:bg-white/10 text-xs transition-colors font-bold">Cancel</button>
-            <button onClick={handleSave} className="px-4 py-2 rounded bg-accent text-background text-xs font-bold transition-colors shadow-lg active:scale-95">Apply Settings</button>
+        <div className="p-4 border-t-[var(--ui-border)] border-grid flex items-center justify-end gap-2 bg-surface"
+             style={{ backgroundColor: 'var(--color-surface)', borderTopWidth: 'var(--ui-border)' }}>
+            <button onClick={onClose} className="px-4 py-2 rounded-[var(--ui-radius)] hover:bg-white/10 text-xs transition-colors font-bold">Cancel</button>
+            <button onClick={handleSave} className="px-4 py-2 rounded-[var(--ui-radius)] bg-accent text-background text-xs font-bold transition-colors shadow-lg active:scale-95">Apply Settings</button>
         </div>
       </div>
     </div>

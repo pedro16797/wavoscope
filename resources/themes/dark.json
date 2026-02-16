@@ -10,5 +10,8 @@
     "waveform": "#00ff88",
     "spectrum": "#ff6b6b",
     "flagRhythm": "#ff4757",
-    "flagHarmony": "#5f27cd"
+    "flagHarmony": "#5f27cd",
+    "radius": "4px",
+    "font": "system-ui, sans-serif",
+    "borderWidth": "1px"
 }

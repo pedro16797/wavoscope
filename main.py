@@ -50,7 +50,6 @@ def main():
         time.sleep(1)
 
     # Native Menu and API Setup
-    from webview.menu import Menu, MenuAction, MenuSeparator
 
     class Api:
         def browse(self):
@@ -88,34 +87,9 @@ def main():
         js_api=api
     )
 
-    def open_file():
-        api.browse()
-
-    def save_file():
-        requests.post('http://127.0.0.1:8000/project/save')
-
-    def open_settings():
-        # We can't easily open a React modal from here without JS injection
-        # But we can call a function in the window
-        window.evaluate_js("window.setShowSettings(true)")
-
-    menu_items = [
-        Menu(
-            'File',
-            [
-                MenuAction('Open...', open_file),
-                MenuAction('Save', save_file),
-                MenuSeparator(),
-                MenuAction('Settings...', open_settings),
-                MenuSeparator(),
-                MenuAction('Exit', window.destroy),
-            ],
-        )
-    ]
-
     window.events.closing += on_closing
 
-    webview.start(debug=cli_args.debug, menu=menu_items)
+    webview.start(debug=cli_args.debug)
 
 if __name__ == "__main__":
     main()

@@ -6,6 +6,7 @@ This document outlines the directory structure and the purpose of each component
 
 -   **`audio/`**: Contains the core audio engine.
     -   `audio_backend.py`: The main audio playback engine, handling file I/O, speed control, and real-time streams.
+    -   `chord_analyzer.py`: Chroma-based chord detection for harmony flags.
     -   `ringbuffer.py`: Implementation of a lock-free ring buffer for audio data.
     -   `spectrum_analyzer.py`: Logic for computing FFTs and spectral data.
     -   `synth.py`: Simple synthesis for metronome clicks.

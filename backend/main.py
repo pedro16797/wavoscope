@@ -44,9 +44,17 @@ async def get_status():
         "volume": state.project.backend._volume,
         "filename": state.project.audio_path.name,
         "flags": state.project.flags,
+        "harmony_flags": state.project.harmony_flags,
         "dirty": state.project._dirty,
         "metronome_enabled": state.project.backend._metronome_enabled,
-        "click_gain": state.project.backend._click_gain
+        "click_gain": state.project.backend._click_gain,
+        "loop_mode": state.project.loop_mode,
+        "loop_range": state.project.get_loop_range(),
+        "filter_enabled": state.project.backend._filter_enabled,
+        "filter_low_enabled": state.project.backend._filter_low_enabled,
+        "filter_high_enabled": state.project.backend._filter_high_enabled,
+        "filter_low_hz": state.project.backend._filter_low_hz,
+        "filter_high_hz": state.project.backend._filter_high_hz,
     }
 
 # Serve frontend if it exists

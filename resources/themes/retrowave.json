@@ -1,0 +1,17 @@
+{
+    "accent": "#ff00ff",
+    "background": "#120458",
+    "surface": "#1b0970",
+    "grid": "#2d0a91",
+    "text": "#00ffff",
+    "textSecondary": "#ff00ff",
+    "keyWhite": "#ff71ce",
+    "keyBlack": "#01cdfe",
+    "waveform": "#b967ff",
+    "spectrum": "#05ffa1",
+    "flagRhythm": "#fffb96",
+    "flagHarmony": "#01cdfe",
+    "radius": "20px",
+    "font": "system-ui, sans-serif",
+    "borderWidth": "2px"
+}

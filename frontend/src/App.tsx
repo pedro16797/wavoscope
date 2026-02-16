@@ -9,11 +9,13 @@ import { WaveformView } from './components/WaveformView';
 import { Spectrum } from './components/Spectrum';
 import { SettingsDialog } from './components/SettingsDialog';
 import { FlagDialog } from './components/FlagDialog';
+import { ChordDialog } from './components/ChordDialog';
 
 const App: React.FC = () => {
   const {
     showSettings, setShowSettings,
-    editingFlagIdx, setEditingFlagIdx, flags
+    editingFlagIdx, setEditingFlagIdx, flags,
+    editingHarmonyFlagIdx, setEditingHarmonyFlagIdx, harmony_flags
   } = useStore();
 
   useKeyboardShortcuts();
@@ -37,8 +39,8 @@ const App: React.FC = () => {
             <PanelResizeHandle className="h-1 bg-black/40 hover:bg-accent/50 transition-colors cursor-row-resize" />
             <Panel defaultSize={50} minSize={20}>
                 <div className="flex flex-col h-full min-h-0">
-                    <div className="h-6 border-b flex items-center px-4 font-bold text-[10px] opacity-50 uppercase tracking-widest shrink-0"
-                         style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}>
+                    <div className="h-6 border-b-[width:var(--ui-border)] flex items-center px-4 font-bold text-[10px] opacity-50 uppercase tracking-widest shrink-0 bg-surface"
+                         style={{ borderBottomColor: 'var(--color-grid)' }}>
                       Spectrum Analyzer
                     </div>
                     <div className="flex-1 min-h-0">
@@ -55,6 +57,13 @@ const App: React.FC = () => {
           idx={editingFlagIdx}
           flag={flags[editingFlagIdx]}
           onClose={() => setEditingFlagIdx(null)}
+        />
+      )}
+      {editingHarmonyFlagIdx !== null && (
+        <ChordDialog
+          idx={editingHarmonyFlagIdx}
+          flag={harmony_flags[editingHarmonyFlagIdx]}
+          onClose={() => setEditingHarmonyFlagIdx(null)}
         />
       )}
     </div>

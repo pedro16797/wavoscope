@@ -1,13 +1,15 @@
 import React from 'react';
 import { useStore } from '../store/useStore';
-import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen } from 'lucide-react';
+import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen, Save, Repeat, Repeat1, Filter } from 'lucide-react';
 
 export const PlaybackBar: React.FC = () => {
   const {
     loaded, position, duration, playing, speed, volume, filename,
     controlPlayback, currentTheme, themes,
     metronome_enabled, updateMetronome, fft_window, setFFTWindow,
-    octave_shift, setOctaveShift, setShowSettings, browseFile
+    octave_shift, setOctaveShift, setShowSettings, browseFile,
+    saveProject, dirty, loop_mode, setLoopMode,
+    filter_enabled, updateFilter
   } = useStore();
 
   const theme = themes[currentTheme] || {};
@@ -20,19 +22,50 @@ export const PlaybackBar: React.FC = () => {
 
   const progressPercent = duration > 0 ? (position / duration) * 100 : 0;
 
+  const cycleLoopMode = () => {
+    const modes = ['none', 'whole', 'section', 'bar'];
+    const nextIdx = (modes.indexOf(loop_mode) + 1) % modes.length;
+    setLoopMode(modes[nextIdx]);
+  };
+
+  const getLoopIcon = () => {
+    if (loop_mode === 'bar') return <Repeat1 size={20} />;
+    return <Repeat size={20} />;
+  };
+
+  const getLoopTitle = () => {
+    switch (loop_mode) {
+        case 'whole': return 'Loop: Whole Song';
+        case 'section': return 'Loop: Current Section';
+        case 'bar': return 'Loop: Current Bar';
+        default: return 'Loop: Off';
+    }
+  };
+
   return (
-    <div className="p-2 flex items-center gap-4 border-b select-none h-16 shrink-0" style={{ backgroundColor: theme.surface, color: theme.text }}>
-      <div className="flex items-center gap-2">
-        <button onClick={browseFile} className="p-2 hover:bg-white/10 rounded transition-colors mr-2" title="Open Audio File">
+    <div className="p-2 flex items-center gap-4 border-b-[width:var(--ui-border)] select-none h-16 shrink-0 bg-surface" style={{ color: theme.text }}>
+      <div className="flex items-center gap-1">
+        <button onClick={browseFile} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors" title="Open Audio File">
             <FolderOpen size={20} />
+        </button>
+        <button onClick={saveProject} disabled={!loaded}
+                className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : 'opacity-90'}`}
+                title={dirty ? "Save Project (Unsaved changes)" : "Save Project"}>
+            <Save size={20} className={dirty ? 'text-accent' : 'text-text'} />
         </button>
         {loaded && (
             <>
-                <button onClick={() => controlPlayback(playing ? 'pause' : 'play')} className="p-2 hover:bg-white/10 rounded transition-colors">
+                <button onClick={() => controlPlayback(playing ? 'pause' : 'play')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
                 {playing ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
                 </button>
-                <button onClick={() => controlPlayback('stop')} className="p-2 hover:bg-white/10 rounded transition-colors">
+                <button onClick={() => controlPlayback('stop')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-1">
                 <Square size={20} fill="currentColor" />
+                </button>
+                <button onClick={cycleLoopMode}
+                        className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors relative ${loop_mode !== 'none' ? 'text-accent' : 'opacity-40'}`}
+                        title={getLoopTitle()}>
+                    {getLoopIcon()}
+                    {loop_mode === 'section' && <span className="absolute top-1 right-1 text-[8px] font-bold bg-accent text-surface rounded-full w-3 h-3 flex items-center justify-center border border-surface shadow-sm">S</span>}
                 </button>
             </>
         )}
@@ -64,6 +97,13 @@ export const PlaybackBar: React.FC = () => {
             <Timer size={18} />
         </button>
 
+        {/* Band Pass Filter */}
+        <button onClick={() => updateFilter({ enabled: !filter_enabled })}
+                className={`p-2 rounded transition-colors ${filter_enabled ? 'text-accent bg-accent/10' : 'opacity-40'}`}
+                title="Toggle Band-Pass Filter">
+            <Filter size={18} />
+        </button>
+
         {/* FFT Window */}
         <div className="flex items-center gap-2 border-l border-white/10 pl-4">
             <span className="text-[9px] opacity-60 font-bold">FFT</span>
@@ -74,15 +114,15 @@ export const PlaybackBar: React.FC = () => {
         </div>
 
         {/* Octave Shift */}
-        <div className="flex items-center gap-1 border-l border-white/10 pl-4 mr-2">
+        <div className="flex items-center gap-1 border-l-[width:var(--ui-border)] border-white/10 pl-4 mr-2">
             <span className="text-[9px] opacity-60 font-bold mr-1">OCT</span>
-            <button onClick={() => setOctaveShift(octave_shift - 1)} className="p-1 hover:bg-white/10 rounded"><ChevronDown size={14}/></button>
+            <button onClick={() => setOctaveShift(octave_shift - 1)} className="p-1 hover:bg-white/10 rounded-[var(--ui-radius)]"><ChevronDown size={14}/></button>
             <span className="text-[10px] font-mono w-4 text-center">{octave_shift > 0 ? `+${octave_shift}` : octave_shift}</span>
-            <button onClick={() => setOctaveShift(octave_shift + 1)} className="p-1 hover:bg-white/10 rounded"><ChevronUp size={14}/></button>
+            <button onClick={() => setOctaveShift(octave_shift + 1)} className="p-1 hover:bg-white/10 rounded-[var(--ui-radius)]"><ChevronUp size={14}/></button>
         </div>
 
         {/* Speed & Volume */}
-        <div className="flex items-center gap-2 border-l border-white/10 pl-4">
+        <div className="flex items-center gap-2 border-l-[width:var(--ui-border)] border-white/10 pl-4">
             <span className="text-[9px] opacity-60 font-bold">SPEED</span>
             <input type="range" min="0.1" max="2" step="0.1" value={speed}
                    onChange={(e) => controlPlayback('set_speed', parseFloat(e.target.value))}
@@ -96,7 +136,7 @@ export const PlaybackBar: React.FC = () => {
                    className="w-16 accent-current" />
         </div>
 
-        <button onClick={() => setShowSettings(true)} className="p-2 hover:bg-white/10 rounded transition-colors" title="Settings">
+        <button onClick={() => setShowSettings(true)} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors" title="Settings">
             <Settings size={18} />
         </button>
       </div>

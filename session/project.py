@@ -16,8 +16,9 @@ from __future__ import annotations
 
 import json
 import threading
+import bisect
 from pathlib import Path
-from typing import List, Dict, Any, Callable
+from typing import List, Dict, Any, Callable, Tuple
 
 from audio.audio_backend import AudioBackend
 from audio.waveform_cache import WaveformCache
@@ -31,7 +32,7 @@ class Project:
             "flag_removed": [],
         }
         self.audio_path: Path = audio_path
-        self.sidecar_path: Path = audio_path.with_suffix(audio_path.suffix + "oscope")
+        self.sidecar_path: Path = audio_path.with_suffix(audio_path.suffix + ".oscope")
 
         self.backend: AudioBackend = AudioBackend()
         self.backend.set_tick_provider(self.subdivision_ticks_between)
@@ -42,6 +43,8 @@ class Project:
         self.backend.set_click_gain(cfg.get("ui.click_volume", 0.3))
         self.backend.set_novasr_enabled(cfg.get("ui.high_quality_enhancement", False))
 
+        self.backend.set_loop_provider(self.get_loop_range)
+        self.loop_mode: str = "none"
         self.session_data: Dict[str, Any] = self._load_or_create_sidecar()
 
         self.wave_cache: WaveformCache | None = None
@@ -88,9 +91,15 @@ class Project:
     # ---------- flag API ----------
     @property
     def flags(self) -> List[Dict[str, Any]]:
-        """Live, sorted list of flags (returns a copy for thread safety)."""
+        """Live, sorted list of rhythm flags (returns a copy for thread safety)."""
         with self._lock:
             return list(self.session_data.setdefault("flags", []))
+
+    @property
+    def harmony_flags(self) -> List[Dict[str, Any]]:
+        """Live, sorted list of harmony flags (returns a copy for thread safety)."""
+        with self._lock:
+            return list(self.session_data.setdefault("harmony_flags", []))
 
     def add_flag(
         self,
@@ -132,7 +141,57 @@ class Project:
                 self._recompute_auto_names()
                 self._clear_backend_cache()
                 self.mark_dirty()
+
+    def add_harmony_flag(self, time: float, chord: Dict[str, Any] | None = None) -> None:
+        """Insert a new harmony flag."""
+        with self._lock:
+            flags = self.session_data.setdefault("harmony_flags", [])
+            if any(abs(f["t"] - time) < 0.001 for f in flags):
+                return
+
+            if chord is None:
+                chord = {
+                    "root": "C",
+                    "accidental": "",
+                    "quality": "M",
+                    "extension": "",
+                    "alterations": [],
+                    "additions": [],
+                    "bass": "",
+                    "bass_accidental": "",
+                }
+
+            flags.append({"t": time, "chord": chord})
+            flags.sort(key=lambda f: f["t"])
+            self.mark_dirty()
+            self._emit("flag_added", time)
+
+    def remove_harmony_flag(self, idx: int) -> None:
+        """Delete harmony flag by index."""
+        with self._lock:
+            flags = self.session_data.setdefault("harmony_flags", [])
+            if 0 <= idx < len(flags):
+                flags.pop(idx)
+                self.mark_dirty()
                 self._emit("flag_removed", idx)
+
+    def move_harmony_flag(self, idx: int, new_time: float) -> None:
+        """Change harmony flag time while enforcing ordering."""
+        with self._lock:
+            flags = self.session_data.setdefault("harmony_flags", [])
+            if 0 <= idx < len(flags):
+                flags[idx]["t"] = new_time
+                flags.sort(key=lambda f: f["t"])
+                self.mark_dirty()
+
+    def update_harmony_flag(self, idx: int, time: float, chord: Dict[str, Any]) -> None:
+        """Update harmony flag at index."""
+        with self._lock:
+            flags = self.session_data.setdefault("harmony_flags", [])
+            if 0 <= idx < len(flags):
+                flags[idx] = {"t": time, "chord": chord}
+                flags.sort(key=lambda f: f["t"])
+                self.mark_dirty()
 
     def move_flag(self, idx: int, new_time: float) -> None:
         """Change flag time while enforcing ordering."""
@@ -183,11 +242,54 @@ class Project:
     def set_speed(self, speed: float) -> None: self.backend.set_speed(speed)
     def set_volume(self, volume: float) -> None: self.backend.set_volume(volume)
 
+    def set_loop_mode(self, mode: str) -> None:
+        """Change looping mode and update backend."""
+        with self._lock:
+            self.loop_mode = mode
+            self.backend.set_loop_enabled(mode != "none")
+
     # ---------- derived read-only properties ----------
     @property
     def position(self) -> float: return self.backend.position
     @property
     def duration(self) -> float: return self.backend.duration
+
+    def get_loop_range(self, pos: float | None = None) -> Tuple[float, float]:
+        """Return (start, end) times for the current loop mode and position."""
+        with self._lock:
+            if pos is None:
+                pos = self.backend.position
+
+            duration = self.duration
+            if self.loop_mode == "none":
+                return (0.0, duration)
+
+            if self.loop_mode == "whole":
+                return (0.0, duration)
+
+            flags = self.flags
+            if self.loop_mode == "section":
+                section_starts = [f["t"] for f in flags if f.get("is_section_start")]
+                if not section_starts:
+                    return (0.0, duration)
+
+                idx = bisect.bisect_right(section_starts, pos) - 1
+                start = section_starts[idx] if idx >= 0 else 0.0
+                end = section_starts[idx + 1] if idx + 1 < len(section_starts) else duration
+                return (start, end)
+
+            if self.loop_mode == "bar":
+                times = [f["t"] for f in flags if f.get("type") == "rhythm"]
+                if not times:
+                    return (0.0, duration)
+
+                idx = bisect.bisect_right(times, pos) - 1
+                start = times[idx] if idx >= 0 else 0.0
+                end = times[idx + 1] if idx + 1 < len(times) else duration
+                return (start, end)
+
+            return (0.0, duration)
+
     @property
     def _data(self) -> Any: return self.backend._data
     @property
@@ -240,16 +342,25 @@ class Project:
     def _load_or_create_sidecar(self) -> dict[str, Any]:
         if self.sidecar_path.exists():
             try:
-                return json.loads(self.sidecar_path.read_text())
+                data = json.loads(self.sidecar_path.read_text())
+                data.setdefault("harmony_flags", [])
+                return data
             except Exception as e:
                 print(f"[Project] Error loading sidecar {self.sidecar_path}: {e}")
-        return {"labels": [], "loopPoints": [], "lastView": {}, "flags": []}
+        return {
+            "labels": [],
+            "loopPoints": [],
+            "lastView": {},
+            "flags": [],
+            "harmony_flags": [],
+        }
 
     def mark_dirty(self) -> None:
         self._dirty = True
 
     def _clear_backend_cache(self) -> None:
         self.backend.clear_tick_cache()
+        self.backend.reset_loop_range()
 
     def _recompute_auto_names(self) -> None:
         """Auto-generate A, A-01, A-02… names for rhythm flags."""
