@@ -24,9 +24,9 @@ Implement a toggle that cycles through three looping modes:
 
 ## Sub-Tasks
 
--   [ ] **Backend Logic**:
-    -   [ ] Update `Project.py` to provide helper methods for finding section and bar boundaries relative to the current position.
--   [ ] **Frontend Implementation**:
-    -   [ ] Add a "Loop Mode" selector to the `PlaybackBar`.
-    -   [ ] Update the `Timeline` to highlight the dynamic loop range.
-    -   [ ] Update the loop toggle logic in the store to respect the chosen mode.
+-   [x] **Backend Logic**:
+    -   [x] Update `Project.py` to provide helper methods for finding section and bar boundaries relative to the current position.
+-   [x] **Frontend Implementation**:
+    -   [x] Add a "Loop Mode" selector to the `PlaybackBar`.
+    -   [x] Update the `Timeline` to highlight the dynamic loop range.
+    -   [x] Update the loop toggle logic in the store to respect the chosen mode.

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../store/useStore';
-import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen, Save } from 'lucide-react';
+import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen, Save, Repeat, Repeat1 } from 'lucide-react';
 
 export const PlaybackBar: React.FC = () => {
   const {
@@ -8,7 +8,7 @@ export const PlaybackBar: React.FC = () => {
     controlPlayback, currentTheme, themes,
     metronome_enabled, updateMetronome, fft_window, setFFTWindow,
     octave_shift, setOctaveShift, setShowSettings, browseFile,
-    saveProject, dirty
+    saveProject, dirty, loop_mode, setLoopMode
   } = useStore();
 
   const theme = themes[currentTheme] || {};
@@ -20,6 +20,26 @@ export const PlaybackBar: React.FC = () => {
   };
 
   const progressPercent = duration > 0 ? (position / duration) * 100 : 0;
+
+  const cycleLoopMode = () => {
+    const modes = ['none', 'whole', 'section', 'bar'];
+    const nextIdx = (modes.indexOf(loop_mode) + 1) % modes.length;
+    setLoopMode(modes[nextIdx]);
+  };
+
+  const getLoopIcon = () => {
+    if (loop_mode === 'bar') return <Repeat1 size={20} />;
+    return <Repeat size={20} />;
+  };
+
+  const getLoopTitle = () => {
+    switch (loop_mode) {
+        case 'whole': return 'Loop: Whole Song';
+        case 'section': return 'Loop: Current Section';
+        case 'bar': return 'Loop: Current Bar';
+        default: return 'Loop: Off';
+    }
+  };
 
   return (
     <div className="p-2 flex items-center gap-4 border-b-[width:var(--ui-border)] select-none h-16 shrink-0 bg-surface" style={{ color: theme.text }}>
@@ -37,8 +57,14 @@ export const PlaybackBar: React.FC = () => {
                 <button onClick={() => controlPlayback(playing ? 'pause' : 'play')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
                 {playing ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
                 </button>
-                <button onClick={() => controlPlayback('stop')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
+                <button onClick={() => controlPlayback('stop')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-1">
                 <Square size={20} fill="currentColor" />
+                </button>
+                <button onClick={cycleLoopMode}
+                        className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors relative ${loop_mode !== 'none' ? 'text-accent' : 'opacity-40'}`}
+                        title={getLoopTitle()}>
+                    {getLoopIcon()}
+                    {loop_mode === 'section' && <span className="absolute top-1 right-1 text-[8px] font-bold bg-accent text-surface rounded-full w-3 h-3 flex items-center justify-center border border-surface shadow-sm">S</span>}
                 </button>
             </>
         )}
