@@ -53,7 +53,7 @@ The current playback engine uses a crude mirroring/padding technique to handle s
 
 ## Implementation Notes
 - **TSM**: Uses `Signalsmith Stretch` via `python-stretch`. Implemented with a `RingBuffer` to handle variable output length.
-- **NovaSR**: Implemented using `onnxruntime` with a bundled ONNX model (`resources/models/novasr.onnx`). Uses `soxr.ResampleStream` for stateful resampling between original SR, 16kHz (model input), and 48kHz (model output). This approach avoids heavy PyTorch dependencies and ensures compatibility with standalone builds.
+- **NovaSR**: Implemented using `onnxruntime` with a bundled ONNX model (`resources/models/novasr.onnx`). The model is stored as a single embedded ONNX file (all weights included) to ensure robust loading across different environments. Uses `soxr.ResampleStream` for stateful resampling between original SR, 16kHz (model input), and 48kHz (model output). This approach avoids heavy PyTorch dependencies and ensures compatibility with standalone builds.
 - **1.0x Bypass**: To ensure zero-latency and bit-perfect playback at normal speed, the `_audio_callback` implements a direct-read bypass when `speed == 1.0`.
 - **Artifact Resolution**: To eliminate "pulsating clicks" at chunk boundaries, the backend uses a 512-sample overlap-add/cross-fade mechanism between processed audio blocks.
 - **Configuration Propagation**: Managed via `high_quality_enhancement` setting. A bug in the FastAPI routers was identified where the setting was not being correctly passed to the `AudioBackend`; this was resolved by updating the `AppConfig` model and `update_config` router.
