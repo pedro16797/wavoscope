@@ -119,8 +119,6 @@ class AudioBackend:
                 self._stream.stop()
                 self._stream.close()
                 self._stream = None
-            if self._synth is not None:
-                self._synth.close()
 
     # ---------- playback control ----------
     def seek(self, sec: float) -> None:

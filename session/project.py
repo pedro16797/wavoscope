@@ -59,7 +59,6 @@ class Project:
             # Stop ongoing playback
             if self.backend._playing:
                 self.backend.pause()
-            self.backend.close()
 
             # Load new audio
             try:

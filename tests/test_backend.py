@@ -32,6 +32,31 @@ def test_insert_n_flags():
     # Cleanup
     state.project = None
 
+def test_tone_playback():
+    # Mock project and synth
+    mock_project = MagicMock()
+    mock_synth = MagicMock()
+    mock_project.backend._synth = mock_synth
+    state.project = mock_project
+
+    # Test start tone
+    response = client.post("/playback/tone", json={"freq": 440.0, "action": "start"})
+    assert response.status_code == 200
+    mock_synth.start_tone.assert_called_once_with(440.0)
+
+    # Test stop tone
+    response = client.post("/playback/tone", json={"freq": 440.0, "action": "stop"})
+    assert response.status_code == 200
+    mock_synth.stop_tone.assert_called_once_with(440.0)
+
+    # Test stop all
+    response = client.post("/playback/tone", json={"freq": 0, "action": "stop"})
+    assert response.status_code == 200
+    mock_synth.stop_all.assert_called_once()
+
+    # Cleanup
+    state.project = None
+
 def test_harmony_flags():
     # Mock project
     mock_project = MagicMock()
