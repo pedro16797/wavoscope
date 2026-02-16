@@ -41,7 +41,7 @@ class AudioBackend:
         self._stretcher.setTimeFactor(self._speed)
 
         self._tsm_buffer = RingBuffer(self._sr * 2)  # 2 s safety
-        self._read_cursor: float = 0.0
+        self._read_sample_idx: int = 0
 
         self._novasr_enabled: bool = False
         self._novasr: Any = None
@@ -74,7 +74,7 @@ class AudioBackend:
         self._data = data.astype(np.float32)
         self._sr = sr
         self._cursor = 0.0
-        self._read_cursor = 0.0
+        self._read_sample_idx = 0
         self._playing = False
         self._stop_event.clear()
 
@@ -97,7 +97,7 @@ class AudioBackend:
     # ---------- playback control ----------
     def seek(self, sec: float) -> None:
         self._cursor = max(0.0, min(sec, self.duration))
-        self._read_cursor = self._cursor
+        self._read_sample_idx = int(self._cursor * self._sr)
         self._tsm_buffer.clear()
         self._stretcher.reset()
         if self._novasr is not None:
@@ -113,7 +113,7 @@ class AudioBackend:
         self._stretcher.reset()
         if self._novasr is not None:
             self._novasr.reset()
-        self._read_cursor = self._cursor
+        self._read_sample_idx = int(self._cursor * self._sr)
         self.clear_tick_cache()
 
     def set_speed(self, speed: float) -> None:
@@ -206,16 +206,20 @@ class AudioBackend:
                 return
 
             # 1. Fill TSM buffer
-            while self._tsm_buffer.available_read() < frames:
-                start_idx = int(self._read_cursor * self._sr)
+            loops = 0
+            while self._tsm_buffer.available_read() < frames and loops < 20:
+                loops += 1
+                start_idx = self._read_sample_idx
                 if start_idx >= len(self._data):
                     break
 
-                chunk_size = 1024
+                chunk_size = 2048
                 end_idx = min(start_idx + chunk_size, len(self._data))
                 source_chunk = self._data[start_idx:end_idx]
+                if source_chunk.size == 0:
+                    break
 
-                self._read_cursor += source_chunk.size / self._sr
+                self._read_sample_idx = end_idx
 
                 # Stretch
                 stretched = self._stretcher.process(source_chunk.reshape(1, -1)).flatten()
@@ -247,10 +251,10 @@ class AudioBackend:
                 self._cursor += (to_read / self._sr) * self._speed
 
             # 5. Check for EOF
-            if avail < frames and self._read_cursor >= (len(self._data) / self._sr):
+            if avail < frames and self._read_sample_idx >= len(self._data):
                 self._playing = False
                 self._cursor = 0.0
-                self._read_cursor = 0.0
+                self._read_sample_idx = 0
                 self._tsm_buffer.clear()
                 self._stretcher.reset()
                 if self._novasr is not None:
