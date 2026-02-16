@@ -7,8 +7,10 @@ import threading
 from pathlib import Path
 from typing import Callable, List, Tuple, Any, Dict
 import bisect
+import traceback
 
 import numpy as np
+import python_stretch.Signalsmith as ps
 try:
     import sounddevice as sd
 except OSError:
@@ -34,7 +36,16 @@ class AudioBackend:
         self._volume: float = 1.0
         self._playing: bool = False
 
-        self._output_buffer = RingBuffer(2 * self._sr)  # 2 s safety
+        self._stretcher = ps.Stretch()
+        self._stretcher.preset(1, float(self._sr))
+        self._stretcher.setTimeFactor(self._speed)
+
+        self._tsm_buffer = RingBuffer(self._sr * 2)  # 2 s safety
+        self._read_cursor: float = 0.0
+
+        self._novasr_enabled: bool = False
+        self._novasr: Any = None
+
         self._synth = SimpleSynth(self._sr)
 
         self._stream: sd.OutputStream | None = None
@@ -63,8 +74,16 @@ class AudioBackend:
         self._data = data.astype(np.float32)
         self._sr = sr
         self._cursor = 0.0
+        self._read_cursor = 0.0
         self._playing = False
         self._stop_event.clear()
+
+        # Update stretcher for new sample rate
+        self._stretcher = ps.Stretch()
+        self._stretcher.preset(1, float(self._sr))
+        self._stretcher.setTimeFactor(self._speed)
+        self._tsm_buffer = RingBuffer(int(self._sr * 2))
+
         self._start_stream()
 
     def close(self) -> None:
@@ -78,6 +97,11 @@ class AudioBackend:
     # ---------- playback control ----------
     def seek(self, sec: float) -> None:
         self._cursor = max(0.0, min(sec, self.duration))
+        self._read_cursor = self._cursor
+        self._tsm_buffer.clear()
+        self._stretcher.reset()
+        if self._novasr is not None:
+            self._novasr.reset()
         self.clear_tick_cache()
 
     def play(self) -> None:
@@ -85,16 +109,32 @@ class AudioBackend:
 
     def pause(self) -> None:
         self._playing = False
+        self._tsm_buffer.clear()
+        self._stretcher.reset()
+        if self._novasr is not None:
+            self._novasr.reset()
+        self._read_cursor = self._cursor
         self.clear_tick_cache()
 
     def set_speed(self, speed: float) -> None:
         self._speed = max(0.1, min(speed, 4.0))
+        self._stretcher.setTimeFactor(self._speed)
 
     def set_volume(self, vol: float) -> None:
         self._volume = max(0.0, min(vol, 1.0))
 
     def set_metronome_enabled(self, enabled: bool) -> None:
         self._metronome_enabled = enabled
+
+    def set_novasr_enabled(self, enabled: bool) -> None:
+        self._novasr_enabled = enabled
+        if enabled and self._novasr is None:
+            try:
+                from audio.novasr import NovaSR
+                self._novasr = NovaSR()
+            except Exception:
+                traceback.print_exc()
+                self._novasr_enabled = False
 
     def set_click_gain(self, gain: float) -> None:
         self._click_gain = max(0.0, min(gain, 1.0))
@@ -156,55 +196,69 @@ class AudioBackend:
         status: Any,
     ) -> None:
         """PortAudio callback executed on high-priority thread."""
-        if status:
-            print(f"[AudioBackend] {status}")
+        try:
+            if status:
+                print(f"[AudioBackend] {status}")
 
-        # Always start with silence
-        outdata[:] = 0.0
+            outdata[:] = 0.0
 
-        if not self._playing or self._data is None:
-            return
+            if not self._playing or self._data is None:
+                return
 
-        # Compute how many source samples we need
-        needed = int(frames * self._speed)
-        start_idx = int(self._cursor * self._sr)
-        end_idx = int((self._cursor + frames / self._speed) * self._sr)
+            # 1. Fill TSM buffer
+            while self._tsm_buffer.available_read() < frames:
+                start_idx = int(self._read_cursor * self._sr)
+                if start_idx >= len(self._data):
+                    break
 
-        # Clamp to file boundaries
-        end_idx = min(end_idx, len(self._data))
-        start_idx = min(start_idx, end_idx)
-        chunk = self._data[start_idx:end_idx]
+                chunk_size = 1024
+                end_idx = min(start_idx + chunk_size, len(self._data))
+                source_chunk = self._data[start_idx:end_idx]
 
-        # End-of-file handling
-        if chunk.size < needed:
-            padding = needed - chunk.size
-            pad = np.zeros(padding, dtype=np.float32)
-            chunk = np.concatenate([chunk, pad])
-            self._cursor = 0.0
-            self._playing = False
-            self._emit("finished")
-        elif chunk.size > needed:
-            chunk = chunk[:needed]
-            padding = frames - needed
-            if padding > 0:
-                tail   = chunk[-min(len(chunk), padding):]
-                mirror = tail[::-1]
-                pattern = np.concatenate([mirror, tail])
-                repeated = np.resize(pattern, padding)
-                pad = repeated
-                chunk  = np.concatenate([chunk, pad])
+                self._read_cursor += source_chunk.size / self._sr
 
-        # Ensure exact length
-        chunk = chunk[:frames] if chunk.size > frames else np.pad(chunk, (0, frames - chunk.size))
+                # Stretch
+                stretched = self._stretcher.process(source_chunk.reshape(1, -1)).flatten()
 
-        # Apply volume
-        outdata[:, 0] = chunk * self._volume
+                # NovaSR enhancement
+                if self._novasr_enabled and self._novasr is not None:
+                    stretched = self._novasr.enhance(stretched, self._sr)
 
-        # Metronome overlay
-        if self._metronome_enabled and self._subdivision_ticks_between:
-            self._add_metronome_clicks(outdata, frames)
+                self._tsm_buffer.write(stretched)
 
-        self._cursor += frames / self._sr * self._speed
+                if end_idx == len(self._data):
+                    break
+
+            # 2. Read and Play
+            avail = self._tsm_buffer.available_read()
+            if avail > 0:
+                to_read = min(frames, avail)
+                samples = self._tsm_buffer.read(to_read)
+                outdata[:to_read, 0] = samples * self._volume
+            else:
+                to_read = 0
+
+            # 3. Metronome overlay
+            if self._metronome_enabled and self._subdivision_ticks_between:
+                self._add_metronome_clicks(outdata, frames)
+
+            # 4. Update playback cursor
+            if to_read > 0:
+                self._cursor += (to_read / self._sr) * self._speed
+
+            # 5. Check for EOF
+            if avail < frames and self._read_cursor >= (len(self._data) / self._sr):
+                self._playing = False
+                self._cursor = 0.0
+                self._read_cursor = 0.0
+                self._tsm_buffer.clear()
+                self._stretcher.reset()
+                if self._novasr is not None:
+                    self._novasr.reset()
+                self._emit("finished")
+
+        except Exception:
+            traceback.print_exc()
 
     # ---------- metronome ----------
     def _precalculate_clicks(self) -> None:

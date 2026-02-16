@@ -36,16 +36,21 @@ The current playback engine uses a crude mirroring/padding technique to handle s
 ## Sub-Tasks
 
 ### 1. MVP: High-Quality TSM
--   [ ] Integrate `python-stretch` (Signalsmith Stretch) into the `AudioBackend`.
--   [ ] Replace the crude mirroring/padding in `_audio_callback` with the TSM engine.
--   [ ] Implement smooth speed transitions and verify stability across the 0.1x - 4.0x range.
+-   [x] Integrate `python-stretch` (Signalsmith Stretch) into the `AudioBackend`.
+-   [x] Replace the crude mirroring/padding in `_audio_callback` with the TSM engine.
+-   [x] Implement smooth speed transitions and verify stability across the 0.1x - 4.0x range.
 
 ### 2. MVP: NovaSR Enhancement
--   [ ] Integrate the NovaSR model and its required dependencies (`torch`, `safetensors`).
--   [ ] Implement the super-resolution stage in the audio pipeline: `Source -> TSM -> NovaSR -> Output`.
--   [ ] Add a "High Quality Enhancement" toggle in the frontend Settings.
+-   [x] Integrate the NovaSR model and its required dependencies (`torch`, `safetensors`).
+-   [x] Implement the super-resolution stage in the audio pipeline: `Source -> TSM -> NovaSR -> Output`.
+-   [x] Add a "High Quality Enhancement" toggle in the frontend Settings.
 
 ### 3. Performance & Quality Validation
--   [ ] Test the integrated pipeline on real-world music transcription scenarios.
--   [ ] Verify that CPU/RAM usage remains acceptable for real-time desktop use.
--   [ ] Document any remaining limitations or future optimization paths.
+-   [x] Test the integrated pipeline on real-world music transcription scenarios.
+-   [x] Verify that CPU/RAM usage remains acceptable for real-time desktop use.
+-   [x] Document any remaining limitations or future optimization paths.
+
+## Implementation Notes
+- **TSM**: Uses `Signalsmith Stretch` via `python-stretch`. Implemented with a `RingBuffer` to handle variable output length.
+- **NovaSR**: Model architecture vended into `audio/novasr/`. Uses `soxr.ResampleStream` for stateful resampling between original SR, 16kHz (model input), and 48kHz (model output).
+- **Configuration**: Managed via `high_quality_enhancement` setting in `utils/config.py` and exposed in the React frontend.
