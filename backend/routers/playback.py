@@ -74,6 +74,13 @@ async def control_metronome(control: MetronomeControl):
 class LoopControl(BaseModel):
     mode: str
 
+class FilterControl(BaseModel):
+    enabled: Optional[bool] = None
+    low_hz: Optional[float] = None
+    high_hz: Optional[float] = None
+    low_enabled: Optional[bool] = None
+    high_enabled: Optional[bool] = None
+
 @router.post("/loop")
 async def control_loop(control: LoopControl):
     if not state.project:
@@ -81,3 +88,17 @@ async def control_loop(control: LoopControl):
 
     state.project.set_loop_mode(control.mode)
     return {"status": "ok", "loop_mode": state.project.loop_mode}
+
+@router.post("/filter")
+async def control_filter(control: FilterControl):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+
+    state.project.backend.set_filter(
+        enabled=control.enabled,
+        low=control.low_hz,
+        high=control.high_hz,
+        low_enabled=control.low_enabled,
+        high_enabled=control.high_enabled
+    )
+    return {"status": "ok"}

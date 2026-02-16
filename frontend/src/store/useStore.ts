@@ -119,6 +119,11 @@ interface AppState {
   click_gain: number;
   loop_mode: string;
   loop_range: [number, number];
+  filter_enabled: boolean;
+  filter_low_enabled: boolean;
+  filter_high_enabled: boolean;
+  filter_low_hz: number;
+  filter_high_hz: number;
   themes: Record<string, Record<string, string>>;
   currentTheme: string;
   spectrum_keys: number;
@@ -144,6 +149,7 @@ interface AppState {
   moveFlag: (idx: number, t: number) => Promise<void>;
   removeFlag: (idx: number) => Promise<void>;
   setLoopMode: (mode: string) => Promise<void>;
+  updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
 
   addHarmonyFlag: (t: number, chord?: Chord) => Promise<HarmonyFlag | null>;
   moveHarmonyFlag: (idx: number, t: number) => Promise<void>;
@@ -175,6 +181,11 @@ export const useStore = create<AppState>((set, get) => ({
   click_gain: 0.3,
   loop_mode: 'none',
   loop_range: [0, 0],
+  filter_enabled: false,
+  filter_low_enabled: true,
+  filter_high_enabled: true,
+  filter_low_hz: 200,
+  filter_high_hz: 2000,
   themes: {},
   currentTheme: 'dark',
   spectrum_keys: 37,
@@ -378,6 +389,42 @@ export const useStore = create<AppState>((set, get) => ({
         await axios.post(`${API_BASE}/playback/loop`, { mode });
         set({ loop_mode: mode });
         get().fetchStatus();
+    } catch (e) {
+        console.error(e);
+    }
+  },
+
+  updateFilter: async (filter) => {
+    const state = get();
+    // Optimistic update
+    const updates: Partial<AppState> = {};
+
+    if (filter.enabled === true && !state.filter_enabled) {
+      // Filter is being enabled. Check bounds.
+      const baseMidi = 48 + state.octave_shift * 12;
+      const lowBound = midiToFreq(baseMidi);
+      const highBound = midiToFreq(baseMidi + state.spectrum_keys);
+
+      // If current values are outside, reset them to be visible
+      if (state.filter_low_hz < lowBound || state.filter_low_hz > highBound ||
+          state.filter_high_hz < lowBound || state.filter_high_hz > highBound) {
+        updates.filter_low_hz = midiToFreq(baseMidi + state.spectrum_keys * 0.3);
+        updates.filter_high_hz = midiToFreq(baseMidi + state.spectrum_keys * 0.7);
+        // Also update the filter object for the API call
+        filter.low_hz = updates.filter_low_hz;
+        filter.high_hz = updates.filter_high_hz;
+      }
+    }
+
+    if (filter.enabled !== undefined) updates.filter_enabled = filter.enabled;
+    if (filter.low_hz !== undefined) updates.filter_low_hz = filter.low_hz;
+    if (filter.high_hz !== undefined) updates.filter_high_hz = filter.high_hz;
+    if (filter.low_enabled !== undefined) updates.filter_low_enabled = filter.low_enabled;
+    if (filter.high_enabled !== undefined) updates.filter_high_enabled = filter.high_enabled;
+    set(updates);
+
+    try {
+        await axios.post(`${API_BASE}/playback/filter`, filter);
     } catch (e) {
         console.error(e);
     }

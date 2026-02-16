@@ -9,6 +9,7 @@ from typing import Callable, List, Tuple, Any, Dict
 import bisect
 
 import numpy as np
+import scipy.signal
 try:
     import sounddevice as sd
 except OSError:
@@ -57,6 +58,16 @@ class AudioBackend:
         self._weak_click: np.ndarray = np.zeros(0, dtype=np.float32)
         self._precalculate_clicks()
 
+        # Band-pass filter state
+        self._filter_enabled: bool = False
+        self._filter_low_enabled: bool = True
+        self._filter_high_enabled: bool = True
+        self._filter_low_hz: float = 200.0
+        self._filter_high_hz: float = 2000.0
+        self._filter_sos: np.ndarray | None = None
+        self._filter_zi: np.ndarray | None = None
+        self._update_filter_coeffs()
+
     # ---------- file I/O ----------
     def open_file(self, path: Path) -> None:
         """Load audio file, reset playback state."""
@@ -65,6 +76,7 @@ class AudioBackend:
             data = data.mean(axis=1)
         self._data = data.astype(np.float32)
         self._sr = sr
+        self._update_filter_coeffs()
         self._cursor = 0.0
         self._playing = False
         self._stop_event.clear()
@@ -83,6 +95,8 @@ class AudioBackend:
         self._cursor = max(0.0, min(sec, self.duration))
         self._active_loop_range = None
         self.clear_tick_cache()
+        if self._filter_sos is not None:
+            self._filter_zi = scipy.signal.sosfilt_zi(self._filter_sos)
 
     def play(self) -> None:
         self._playing = True
@@ -116,12 +130,61 @@ class AudioBackend:
         self._loop_enabled = enabled
         self._active_loop_range = None
 
+    def set_filter(self,
+                   enabled: bool | None = None,
+                   low: float | None = None,
+                   high: float | None = None,
+                   low_enabled: bool | None = None,
+                   high_enabled: bool | None = None) -> None:
+        """Update filter settings."""
+        if enabled is not None:
+            self._filter_enabled = enabled
+        if low_enabled is not None:
+            self._filter_low_enabled = low_enabled
+        if high_enabled is not None:
+            self._filter_high_enabled = high_enabled
+
+        # Enforce low < high with a small gap
+        min_gap = 50.0
+        new_low = low if low is not None else self._filter_low_hz
+        new_high = high if high is not None else self._filter_high_hz
+
+        # Apply constraints together
+        self._filter_low_hz = max(20.0, min(new_low, new_high - min_gap))
+        self._filter_high_hz = max(self._filter_low_hz + min_gap, min(new_high, self._sr / 2 - 20))
+
+        self._update_filter_coeffs()
+
     def reset_loop_range(self) -> None:
         self._active_loop_range = None
 
     def clear_tick_cache(self) -> None:
         if hasattr(self, "_last_tick_time"):
             delattr(self, "_last_tick_time")
+
+    def _update_filter_coeffs(self) -> None:
+        """(Re)calculate SOS for the filter."""
+        if not self._filter_low_enabled and not self._filter_high_enabled:
+            self._filter_sos = None
+            self._filter_zi = None
+            return
+
+        nyquist = max(self._sr / 2, 100.0)
+
+        if self._filter_low_enabled and self._filter_high_enabled:
+            low = max(10.0, self._filter_low_hz) / nyquist
+            high = min(self._filter_high_hz, nyquist - 10.0) / nyquist
+            if low >= high:
+                low = high * 0.9
+            self._filter_sos = scipy.signal.butter(4, [low, high], btype='bandpass', output='sos')
+        elif self._filter_low_enabled:
+            low = max(10.0, self._filter_low_hz) / nyquist
+            self._filter_sos = scipy.signal.butter(4, low, btype='highpass', output='sos')
+        else:  # high enabled
+            high = min(self._filter_high_hz, nyquist - 10.0) / nyquist
+            self._filter_sos = scipy.signal.butter(4, high, btype='lowpass', output='sos')
+
+        self._filter_zi = scipy.signal.sosfilt_zi(self._filter_sos)
 
     # ---------- read-only properties ----------
     @property
@@ -221,6 +284,10 @@ class AudioBackend:
 
         # Ensure exact length
         chunk = chunk[:frames] if chunk.size > frames else np.pad(chunk, (0, frames - chunk.size))
+
+        # Band-pass filter
+        if self._filter_enabled and self._filter_sos is not None:
+            chunk, self._filter_zi = scipy.signal.sosfilt(self._filter_sos, chunk, zi=self._filter_zi)
 
         # Apply volume
         outdata[:, 0] = chunk * self._volume

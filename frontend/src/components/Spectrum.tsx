@@ -1,17 +1,19 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { useStore, API_BASE, getChordMidiNotes } from '../store/useStore';
+import { useStore, API_BASE, getChordMidiNotes, midiToFreq } from '../store/useStore';
 import axios from 'axios';
 
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const WHITE_KEYS = new Set([0, 2, 4, 5, 7, 9, 11]);
 
-const midiToFreq = (midi: number) => 440.0 * Math.pow(2, (midi - 69) / 12);
 const freqToMidi = (freq: number) => 12 * Math.log2(freq / 440) + 69;
 
 export const Spectrum: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys } = useStore();
+  const {
+    loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys,
+    filter_enabled, filter_low_enabled, filter_high_enabled, filter_low_hz, filter_high_hz, updateFilter
+  } = useStore();
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
   const [size, setSize] = useState({ width: 0, height: 0 });
   const inFlightRef = useRef(false);
@@ -131,6 +133,53 @@ export const Spectrum: React.FC = () => {
         ctx.fillText(`${NOTE_NAMES[midi % 12]}${Math.floor(midi / 12) - 1}`, x + 4, 12);
     }
 
+    if (filter_enabled) {
+        const xLow = Math.log2(filter_low_hz / range.low) * xScale;
+        const xHigh = Math.log2(filter_high_hz / range.low) * xScale;
+
+        // Shaded areas
+        ctx.fillStyle = '#000';
+        ctx.globalAlpha = 0.5;
+        if (filter_low_enabled && xLow > 0) ctx.fillRect(0, 0, xLow, h);
+        if (filter_high_enabled && xHigh < w) ctx.fillRect(xHigh, 0, w - xHigh, h);
+
+        // Low Cutoff Handle
+        if (xLow >= 0 && xLow <= w) {
+            ctx.strokeStyle = theme.accent;
+            ctx.setLineDash(filter_low_enabled ? [] : [5, 5]);
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = filter_low_enabled ? 0.8 : 0.3;
+            ctx.beginPath(); ctx.moveTo(xLow, 0); ctx.lineTo(xLow, h); ctx.stroke();
+
+            ctx.fillStyle = theme.accent;
+            ctx.globalAlpha = filter_low_enabled ? 1.0 : 0.4;
+            ctx.fillRect(xLow - 6, h - 30, 12, 30);
+            ctx.fillStyle = theme.text;
+            ctx.globalAlpha = filter_low_enabled ? 1.0 : 0.6;
+            ctx.font = 'bold 10px sans-serif';
+            ctx.fillText('LOW', xLow + 8, h - 10);
+        }
+
+        // High Cutoff Handle
+        if (xHigh >= 0 && xHigh <= w) {
+            ctx.strokeStyle = theme.accent;
+            ctx.setLineDash(filter_high_enabled ? [] : [5, 5]);
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = filter_high_enabled ? 0.8 : 0.3;
+            ctx.beginPath(); ctx.moveTo(xHigh, 0); ctx.lineTo(xHigh, h); ctx.stroke();
+
+            ctx.fillStyle = theme.accent;
+            ctx.globalAlpha = filter_high_enabled ? 1.0 : 0.4;
+            ctx.fillRect(xHigh - 6, h - 30, 12, 30);
+            ctx.fillStyle = theme.text;
+            ctx.globalAlpha = filter_high_enabled ? 1.0 : 0.6;
+            ctx.font = 'bold 10px sans-serif';
+            ctx.fillText('HIGH', xHigh - 35, h - 10);
+        }
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1.0;
+    }
+
     if (data.freqs.length > 0) {
         ctx.globalAlpha = 1;
         ctx.strokeStyle = theme.spectrum;
@@ -150,14 +199,42 @@ export const Spectrum: React.FC = () => {
         });
         ctx.stroke();
     }
-  }, [data, range.low, range.high, themes, currentTheme, spectrum_keys, size, activeChordNotes]);
+  }, [data, range.low, range.high, themes, currentTheme, spectrum_keys, size, activeChordNotes, filter_enabled, filter_low_enabled, filter_high_enabled, filter_low_hz, filter_high_hz]);
 
   const lastToneRef = useRef<number>(0);
   const currentHzRef = useRef<number>(0);
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return; // Only handle left-click
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
+
+    const x = e.clientX - rect.left;
+    const spanLog = Math.log2(range.high / range.low);
+    const xScale = rect.width / spanLog;
+
+    let dragging: 'low' | 'high' | 'tone' = 'tone';
+
+    if (filter_enabled) {
+        const xLow = Math.log2(filter_low_hz / range.low) * xScale;
+        const xHigh = Math.log2(filter_high_hz / range.low) * xScale;
+
+        if (Math.abs(x - xLow) < 15) dragging = 'low';
+        else if (Math.abs(x - xHigh) < 15) dragging = 'high';
+    }
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+        const mx = moveEvent.clientX - rect.left;
+        const hz = range.low * Math.pow(2, (mx * spanLog / rect.width));
+
+        if (dragging === 'low') {
+            updateFilter({ low_hz: hz });
+        } else if (dragging === 'high') {
+            updateFilter({ high_hz: hz });
+        } else {
+            playTone(moveEvent.clientX);
+        }
+    };
 
     const playTone = (clientX: number) => {
         const x = clientX - rect.left;
@@ -181,26 +258,58 @@ export const Spectrum: React.FC = () => {
         }
     };
 
-    playTone(e.clientX);
-
-    const onMouseMove = (moveEvent: MouseEvent) => {
-        playTone(moveEvent.clientX);
-    };
+    if (dragging === 'tone') {
+        playTone(e.clientX);
+    }
 
     const onMouseUp = () => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
-        axios.post(`${API_BASE}/playback/tone`, { action: 'stop' });
-        currentHzRef.current = 0;
+        if (dragging === 'tone') {
+            axios.post(`${API_BASE}/playback/tone`, { action: 'stop' });
+            currentHzRef.current = 0;
+        }
     };
 
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
   };
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const x = e.clientX - rect.left;
+    const spanLog = Math.log2(range.high / range.low);
+    const xScale = rect.width / spanLog;
+    const hz = range.low * Math.pow(2, (x * spanLog / rect.width));
+
+    const xLow = Math.log2(filter_low_hz / range.low) * xScale;
+    const xHigh = Math.log2(filter_high_hz / range.low) * xScale;
+
+    // Check if clicking on a handle area
+    if (Math.abs(x - xLow) < 20) {
+        updateFilter({ low_enabled: !filter_low_enabled, enabled: true });
+        return;
+    }
+    if (Math.abs(x - xHigh) < 20) {
+        updateFilter({ high_enabled: !filter_high_enabled, enabled: true });
+        return;
+    }
+
+    // Otherwise, place nearest handle here and enable it
+    if (Math.abs(x - xLow) < Math.abs(x - xHigh)) {
+        updateFilter({ low_hz: hz, low_enabled: true, enabled: true });
+    } else {
+        updateFilter({ high_hz: hz, high_enabled: true, enabled: true });
+    }
+  };
+
   return (
     <div ref={containerRef} className="w-full h-full relative overflow-hidden select-none"
-         onMouseDown={handleMouseDown}>
+         onMouseDown={handleMouseDown}
+         onContextMenu={handleContextMenu}>
         <canvas ref={canvasRef} className="w-full h-full block" />
     </div>
   );
