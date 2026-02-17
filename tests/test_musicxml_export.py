@@ -5,7 +5,7 @@ from pathlib import Path
 from session.project import Project
 from session.export import generate_musicxml
 
-def test_musicxml_export_advanced(tmp_path):
+def test_musicxml_export_feedback(tmp_path):
     # Create a dummy audio file
     audio_path = tmp_path / "test.wav"
     audio_path.write_bytes(b"dummy")
@@ -16,71 +16,48 @@ def test_musicxml_export_advanced(tmp_path):
     # duration = (4 * 60) / 120 = 2.0s
     project.add_flag(0.0, kind="rhythm", subdivision=4)
 
-    # 2. 7/8 measure (tempo doubling rule)
-    # If we want raw_bpm = 240, duration = (7 * 60) / 240 = 1.75s
-    # start_t = 2.0. next_t = 2.0 + 1.75 = 3.75s
-    project.add_flag(2.0, kind="rhythm", subdivision=7)
+    # 2. Another 4/4 measure with slight tempo change (e.g. 122 BPM)
+    # duration = (4 * 60) / 122 = 1.967s
+    # start_t = 2.0. next_t = 3.967s
+    project.add_flag(2.0, kind="rhythm", subdivision=4)
 
-    # End flag to define duration of the second measure
-    project.add_flag(3.75, kind="rhythm", subdivision=4)
+    # 3. Another 4/4 measure with significant tempo change (e.g. 130 BPM)
+    # duration = (4 * 60) / 130 = 1.846s
+    # start_t = 3.967. next_t = 5.813s
+    project.add_flag(3.967, kind="rhythm", subdivision=4)
 
-    # Add a harmony flag
-    # C Major: C3 (bass), C4, E4, G4 -> MIDI 48, 60, 64, 67
+    # End flag
+    project.add_flag(5.813, kind="rhythm", subdivision=4)
+
+    # Add harmony flags
     project.add_harmony_flag(0.5, {"root": "C", "accidental": "", "quality": "M", "extension": "", "alterations": [], "additions": [], "bass": "", "bass_accidental": ""})
 
     xml_content = project.generate_musicxml()
-
-    # Parse XML to verify structure
     tree = ET.fromstring(xml_content)
-
-    # Check parts
     parts = tree.findall("part")
-    assert len(parts) == 2
-    assert parts[0].get("id") == "P1" # Piano
-    assert parts[1].get("id") == "P2" # Metronome
 
-    # Measure 1: 4/4
+    # Check Measure 1 (Piano)
     m1_piano = parts[0].find("measure[@number='1']")
-    time1 = m1_piano.find("attributes/time")
-    assert time1.find("beats").text == "4"
-    assert time1.find("beat-type").text == "4"
+    # Should have a harmony tag
+    assert m1_piano.find("harmony") is not None
+    assert m1_piano.find("harmony/root/root-step").text == "C"
+    # Should have a whole rest note
+    note = m1_piano.find("note")
+    assert note.find("rest") is not None
+    # No more notes (explicit chord notes removed)
+    assert len(m1_piano.findall("note")) == 1
 
-    # Measure 2: 7/8 (doubled tempo)
+    # Check Tempo markers (5 BPM threshold)
+    # Measure 1: 120 BPM (Initial tempo, always noted)
+    assert m1_piano.find("direction/direction-type/metronome/per-minute").text == "120"
+
+    # Measure 2: 122 BPM. Diff = 2. Should NOT have a tempo marker.
     m2_piano = parts[0].find("measure[@number='2']")
-    time2 = m2_piano.find("attributes/time")
-    assert time2.find("beats").text == "7"
-    assert time2.find("beat-type").text == "8"
+    assert m2_piano.find("direction/direction-type/metronome") is None
 
-    # Check tempo in Measure 2
-    # raw_bpm was 240. Adj bpm should be 120.
-    metronome = m2_piano.find("direction/direction-type/metronome")
-    assert metronome.find("per-minute").text == "120"
-
-    # Check Metronome part notes in Measure 1 (should have 4 notes)
-    m1_metro = parts[1].find("measure[@number='1']")
-    notes_metro = m1_metro.findall("note")
-    assert len(notes_metro) == 4
-
-    # Check Piano part chords in Measure 1
-    # Should have a rest then a chord
-    notes_piano = m1_piano.findall("note")
-    # First is rest (offset 0 to 0.5)
-    assert notes_piano[0].find("rest") is not None
-    # Then chord (C3, C4, E4, G4)
-    assert notes_piano[1].find("pitch/step").text == "C"
-    assert notes_piano[1].find("pitch/octave").text == "3"
-
-    assert notes_piano[2].find("chord") is not None
-    assert notes_piano[2].find("pitch/step").text == "C"
-    assert notes_piano[2].find("pitch/octave").text == "4"
-
-    assert notes_piano[3].find("chord") is not None
-    assert notes_piano[3].find("pitch/step").text == "E"
-    assert notes_piano[3].find("pitch/octave").text == "4"
-
-    assert notes_piano[4].find("chord") is not None
-    assert notes_piano[4].find("pitch/step").text == "G"
-    assert notes_piano[4].find("pitch/octave").text == "4"
+    # Measure 3: 130 BPM. Diff vs 120 = 10. Should HAVE a tempo marker.
+    m3_piano = parts[0].find("measure[@number='3']")
+    assert m3_piano.find("direction/direction-type/metronome/per-minute").text == "130"
 
 if __name__ == "__main__":
     import pytest

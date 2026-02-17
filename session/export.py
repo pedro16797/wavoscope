@@ -42,6 +42,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
     else:
         divisions = 480
         last_bpm = -1.0
+        last_noted_bpm = -1.0
         last_num = -1
         last_den = -1
 
@@ -86,6 +87,11 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
 
             last_bpm = bpm
 
+            tempo_to_note = None
+            if abs(bpm - last_noted_bpm) > 5:
+                tempo_to_note = bpm
+                last_noted_bpm = bpm
+
             # Rehearsal mark
             rehearsal = None
             if rhythm_flags[i].get("is_section_start"):
@@ -98,7 +104,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
             is_first = (i == 0)
             attr_change = is_first or (num != last_num) or (den != last_den)
 
-            _add_measure_piano(part_piano, i+1, num, den, bpm, attr_change, measure_harmonies, divisions, start_t, end_t, rehearsal)
+            _add_measure_piano(part_piano, i+1, num, den, tempo_to_note, attr_change, measure_harmonies, divisions, start_t, end_t, rehearsal)
             _add_measure_metro(part_metro, i+1, num, den, attr_change, divisions)
 
             last_num = num
@@ -115,7 +121,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
            '<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">\n' + \
            xml_str
 
-def _add_measure_piano(part, number, num, den, bpm, attr_change, harmonies, divisions, start_t=0, end_t=0, rehearsal=None):
+def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, divisions, start_t=0, end_t=0, rehearsal=None):
     measure = ET.SubElement(part, "measure", number=str(number))
 
     if attr_change:
@@ -136,54 +142,38 @@ def _add_measure_piano(part, number, num, den, bpm, attr_change, harmonies, divi
         ET.SubElement(dir_type, "rehearsal").text = rehearsal
 
     # Tempo
-    direction = ET.SubElement(measure, "direction", placement="above")
-    dir_type = ET.SubElement(direction, "direction-type")
-    metronome = ET.SubElement(dir_type, "metronome")
-    ET.SubElement(metronome, "beat-unit").text = "quarter"
-    ET.SubElement(metronome, "per-minute").text = str(round(bpm))
+    if tempo is not None:
+        direction = ET.SubElement(measure, "direction", placement="above")
+        dir_type = ET.SubElement(direction, "direction-type")
+        metronome = ET.SubElement(dir_type, "metronome")
+        ET.SubElement(metronome, "beat-unit").text = "quarter"
+        ET.SubElement(metronome, "per-minute").text = str(round(tempo))
 
     total_dur_div = int(num * divisions * (4 / den))
 
+    # Place all harmony tags at the beginning of measure (or with offset)
+    # Reverting to simpler harmony-over-rests approach
     if not harmonies:
         note = ET.SubElement(measure, "note")
         ET.SubElement(note, "rest", measure="yes")
         ET.SubElement(note, "duration").text = str(total_dur_div)
         ET.SubElement(note, "voice").text = "1"
     else:
-        current_t = start_t
+        current_offset_div = 0
         for idx, h in enumerate(harmonies):
-            # Fill gap with rest if any
-            if h["t"] > current_t + 0.001:
-                gap_ratio = (h["t"] - current_t) / (end_t - start_t)
-                gap_div = int(gap_ratio * total_dur_div)
-                if gap_div > 0:
-                    note = ET.SubElement(measure, "note")
-                    ET.SubElement(note, "rest")
-                    ET.SubElement(note, "duration").text = str(gap_div)
-                    ET.SubElement(note, "voice").text = "1"
+            h_t = h["t"]
+            h_offset_ratio = (h_t - start_t) / (end_t - start_t)
+            h_offset_div = int(h_offset_ratio * total_dur_div)
 
-            # Add harmony tag
-            _add_harmony_tag(measure, h["chord"])
+            # Add harmony tag with offset if needed
+            _add_harmony_tag(measure, h["chord"], h_offset_div - current_offset_div)
+            # MusicXML <harmony> can have an <offset>
 
-            # Chord duration
-            next_t = harmonies[idx+1]["t"] if idx + 1 < len(harmonies) else end_t
-            chord_ratio = (next_t - h["t"]) / (end_t - start_t)
-            chord_div = int(chord_ratio * total_dur_div)
-
-            if chord_div > 0:
-                midi_notes = get_chord_midi_notes(h["chord"])
-                for j, midi in enumerate(midi_notes):
-                    note = ET.SubElement(measure, "note")
-                    if j > 0: ET.SubElement(note, "chord")
-                    pitch = ET.SubElement(note, "pitch")
-                    step, alter, octave = _midi_to_pitch(midi)
-                    ET.SubElement(pitch, "step").text = step
-                    if alter != 0: ET.SubElement(pitch, "alter").text = str(alter)
-                    ET.SubElement(pitch, "octave").text = str(octave)
-                    ET.SubElement(note, "duration").text = str(chord_div)
-                    ET.SubElement(note, "voice").text = "1"
-
-            current_t = next_t
+        # Add a whole rest for the measure
+        note = ET.SubElement(measure, "note")
+        ET.SubElement(note, "rest", measure="yes")
+        ET.SubElement(note, "duration").text = str(total_dur_div)
+        ET.SubElement(note, "voice").text = "1"
 
 def _add_measure_metro(part, number, num, den, attr_change, divisions):
     measure = ET.SubElement(part, "measure", number=str(number))
@@ -219,8 +209,10 @@ def _midi_to_pitch(midi: int) -> Tuple[str, int, int]:
     octave = (midi // 12) - 1
     return step, alter, octave
 
-def _add_harmony_tag(measure, chord_data):
+def _add_harmony_tag(measure, chord_data, offset_div=0):
     harmony = ET.SubElement(measure, "harmony")
+    if offset_div != 0:
+        ET.SubElement(harmony, "offset").text = str(offset_div)
     root = ET.SubElement(harmony, "root")
     ET.SubElement(root, "root-step").text = chord_data["root"]
     alter = 0
