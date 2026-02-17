@@ -42,34 +42,32 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-REM Build frontend if missing or outdated
-if not exist "frontend\dist" (
-    echo Frontend build missing. Building now...
+REM Build frontend
+echo Building frontend...
 
-    where npm >nul 2>nul
-    if !errorlevel! neq 0 (
-        echo [ERROR] npm not found. Please install Node.js to build the frontend.
-        pause
-        exit /b 1
-    )
-
-    cd frontend
-    call npm install --no-fund --no-audit
-    if !errorlevel! neq 0 (
-        echo [ERROR] npm install failed.
-        cd ..
-        pause
-        exit /b 1
-    )
-    call npm run build
-    if !errorlevel! neq 0 (
-        echo [ERROR] npm build failed.
-        cd ..
-        pause
-        exit /b 1
-    )
-    cd ..
+where npm >nul 2>nul
+if !errorlevel! neq 0 (
+    echo [ERROR] npm not found. Please install Node.js to build the frontend.
+    pause
+    exit /b 1
 )
+
+cd frontend
+call npm install --no-fund --no-audit
+if !errorlevel! neq 0 (
+    echo [ERROR] npm install failed.
+    cd ..
+    pause
+    exit /b 1
+)
+call npm run build
+if !errorlevel! neq 0 (
+    echo [ERROR] npm build failed.
+    cd ..
+    pause
+    exit /b 1
+)
+cd ..
 
 REM Run the application
 echo Launching Wavoscope...

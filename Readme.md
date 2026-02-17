@@ -34,10 +34,10 @@ The bottom half of the screen displays a constant-Q transform (CQT) spectrogram,
 ![Spectral Filtering](docs/images/spectrum_filter.png)
 
 ### Advanced Filtering
-You can isolate specific instruments or notes using the real-time band-pass filter:
-- **Toggle Filter:** **Right Click** on a filter handle (the vertical lines on the spectrum) to enable or disable that boundary.
-- **Quick Placement:** **Right Click** anywhere on the spectrogram to move the nearest filter handle to that frequency.
-- **Visual Feedback:** The area outside the filter range is dimmed, helping you focus on the isolated frequencies.
+You can isolate specific instruments or notes using the real-time band-pass filter. The filter handles (vertical lines on the spectrum) are always available:
+- **Toggle Cutoff:** **Right Click** on a filter handle to enable or disable that boundary.
+- **Quick Placement:** **Right Click** anywhere on the spectrogram to move the nearest filter handle and enable it.
+- **Visual Feedback:** When a cutoff is enabled, the area outside its range is dimmed to help you focus. If both are disabled, the filter is bypassed.
 
 ---
 
@@ -118,6 +118,6 @@ OSCOPE is fully themeable. Choose a look that suits your environment:
 | **Waveform** | Pan View | `Left Drag` |
 | **Waveform** | Zoom In/Out | `Mouse Wheel` |
 | **Spectrum** | Play Sine Tone | `Left Click / Drag` |
-| **Spectrum** | Toggle Filter | `Right Click` handle |
-| **Spectrum** | Quick Filter Place| `Right Click` anywhere |
-| **Spectrum** | Adjust Filter | `Left Drag` handle |
+| **Spectrum** | Toggle Cutoff | `Right Click` handle |
+| **Spectrum** | Place Cutoff | `Right Click` anywhere |
+| **Spectrum** | Adjust Cutoff | `Left Drag` handle |

@@ -102,13 +102,6 @@ export const PlaybackBar: React.FC = () => {
             <Timer size={18} />
         </button>
 
-        {/* Band Pass Filter */}
-        <button onClick={() => updateFilter({ enabled: !filter_enabled })}
-                className={`p-2 rounded transition-colors ${filter_enabled ? 'text-accent bg-accent/10' : 'opacity-40'}`}
-                title="Toggle Band-Pass Filter">
-            <Filter size={18} />
-        </button>
-
         {/* FFT Window */}
         <div className="flex items-center gap-2 border-l border-white/10 pl-4">
             <span className="text-[9px] opacity-60 font-bold">FFT</span>

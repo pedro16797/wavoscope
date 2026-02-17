@@ -27,8 +27,8 @@ def generate():
         page.screenshot(path="docs/images/main_view.png")
 
         # 4. Screenshot: Spectrum with Filter
-        # Enable filter
-        page.evaluate("window.useStore.getState().updateFilter({enabled: true, low_hz: 300, high_hz: 3000})")
+        # Enable filter handles
+        page.evaluate("window.useStore.getState().updateFilter({low_enabled: true, high_enabled: true, low_hz: 300, high_hz: 3000})")
         time.sleep(1)
 
         # Focus on spectrum

@@ -193,8 +193,9 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <span className="opacity-60">Pan View</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Waveform Drag</span>
                         <span className="opacity-60">Zoom View</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Mouse Wheel</span>
                         <span className="opacity-60">Play Note</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Spectrum Click</span>
-                        <span className="opacity-60">Place Filter</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Right Click</span>
-                        <span className="opacity-60">Adjust Filter</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Handle Drag</span>
+                        <span className="opacity-60">Toggle Cutoff</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Right Click handle</span>
+                        <span className="opacity-60">Place Cutoff</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Right Click</span>
+                        <span className="opacity-60">Adjust Cutoff</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Handle Drag</span>
                     </div>
                 </div>
             )}

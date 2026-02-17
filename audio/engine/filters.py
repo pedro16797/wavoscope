@@ -99,9 +99,9 @@ def sosfilt(sos: np.ndarray, x: np.ndarray, zi: np.ndarray) -> tuple[np.ndarray,
 class FilterEngine:
     def __init__(self, sr: int):
         self._sr = sr
-        self._enabled: bool = False
-        self._low_enabled: bool = True
-        self._high_enabled: bool = True
+        self._enabled: bool = True
+        self._low_enabled: bool = False
+        self._high_enabled: bool = False
         self._low_hz: float = 200.0
         self._high_hz: float = 2000.0
         self._sos: np.ndarray | None = None

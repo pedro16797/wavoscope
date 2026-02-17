@@ -134,52 +134,50 @@ export const Spectrum: React.FC = () => {
         ctx.fillText(`${NOTE_NAMES[midi % 12]}${Math.floor(midi / 12) - 1}`, x + 4, 12);
     }
 
-    if (filter_enabled) {
-        const xLow = Math.log2(filter_low_hz / range.low) * xScale;
-        const xHigh = Math.log2(filter_high_hz / range.low) * xScale;
+    const xLow = Math.log2(filter_low_hz / range.low) * xScale;
+    const xHigh = Math.log2(filter_high_hz / range.low) * xScale;
 
-        // Shaded areas
-        ctx.fillStyle = '#000';
-        ctx.globalAlpha = 0.5;
-        if (filter_low_enabled && xLow > 0) ctx.fillRect(0, 0, xLow, h);
-        if (filter_high_enabled && xHigh < w) ctx.fillRect(xHigh, 0, w - xHigh, h);
+    // Shaded areas
+    ctx.fillStyle = '#000';
+    ctx.globalAlpha = 0.5;
+    if (filter_low_enabled && xLow > 0) ctx.fillRect(0, 0, xLow, h);
+    if (filter_high_enabled && xHigh < w) ctx.fillRect(xHigh, 0, w - xHigh, h);
 
-        // Low Cutoff Handle
-        if (xLow >= 0 && xLow <= w) {
-            ctx.strokeStyle = theme.accent;
-            ctx.setLineDash(filter_low_enabled ? [] : [5, 5]);
-            ctx.lineWidth = 2;
-            ctx.globalAlpha = filter_low_enabled ? 0.8 : 0.3;
-            ctx.beginPath(); ctx.moveTo(xLow, 0); ctx.lineTo(xLow, h); ctx.stroke();
+    // Low Cutoff Handle
+    if (xLow >= 0 && xLow <= w) {
+        ctx.strokeStyle = theme.accent;
+        ctx.setLineDash(filter_low_enabled ? [] : [5, 5]);
+        ctx.lineWidth = 2;
+        ctx.globalAlpha = filter_low_enabled ? 0.8 : 0.3;
+        ctx.beginPath(); ctx.moveTo(xLow, 0); ctx.lineTo(xLow, h); ctx.stroke();
 
-            ctx.fillStyle = theme.accent;
-            ctx.globalAlpha = filter_low_enabled ? 1.0 : 0.4;
-            ctx.fillRect(xLow - 6, h - 30, 12, 30);
-            ctx.fillStyle = theme.text;
-            ctx.globalAlpha = filter_low_enabled ? 1.0 : 0.6;
-            ctx.font = 'bold 10px sans-serif';
-            ctx.fillText('LOW', xLow + 8, h - 10);
-        }
-
-        // High Cutoff Handle
-        if (xHigh >= 0 && xHigh <= w) {
-            ctx.strokeStyle = theme.accent;
-            ctx.setLineDash(filter_high_enabled ? [] : [5, 5]);
-            ctx.lineWidth = 2;
-            ctx.globalAlpha = filter_high_enabled ? 0.8 : 0.3;
-            ctx.beginPath(); ctx.moveTo(xHigh, 0); ctx.lineTo(xHigh, h); ctx.stroke();
-
-            ctx.fillStyle = theme.accent;
-            ctx.globalAlpha = filter_high_enabled ? 1.0 : 0.4;
-            ctx.fillRect(xHigh - 6, h - 30, 12, 30);
-            ctx.fillStyle = theme.text;
-            ctx.globalAlpha = filter_high_enabled ? 1.0 : 0.6;
-            ctx.font = 'bold 10px sans-serif';
-            ctx.fillText('HIGH', xHigh - 35, h - 10);
-        }
-        ctx.setLineDash([]);
-        ctx.globalAlpha = 1.0;
+        ctx.fillStyle = theme.accent;
+        ctx.globalAlpha = filter_low_enabled ? 1.0 : 0.4;
+        ctx.fillRect(xLow - 6, h - 30, 12, 30);
+        ctx.fillStyle = theme.text;
+        ctx.globalAlpha = filter_low_enabled ? 1.0 : 0.6;
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('LOW', xLow + 8, h - 10);
     }
+
+    // High Cutoff Handle
+    if (xHigh >= 0 && xHigh <= w) {
+        ctx.strokeStyle = theme.accent;
+        ctx.setLineDash(filter_high_enabled ? [] : [5, 5]);
+        ctx.lineWidth = 2;
+        ctx.globalAlpha = filter_high_enabled ? 0.8 : 0.3;
+        ctx.beginPath(); ctx.moveTo(xHigh, 0); ctx.lineTo(xHigh, h); ctx.stroke();
+
+        ctx.fillStyle = theme.accent;
+        ctx.globalAlpha = filter_high_enabled ? 1.0 : 0.4;
+        ctx.fillRect(xHigh - 6, h - 30, 12, 30);
+        ctx.fillStyle = theme.text;
+        ctx.globalAlpha = filter_high_enabled ? 1.0 : 0.6;
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('HIGH', xHigh - 35, h - 10);
+    }
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1.0;
 
     if (data.freqs.length > 0) {
         ctx.globalAlpha = 1;
@@ -214,14 +212,15 @@ export const Spectrum: React.FC = () => {
     const spanLog = Math.log2(range.high / range.low);
     const xScale = rect.width / spanLog;
 
+    const xLow = Math.log2(filter_low_hz / range.low) * xScale;
+    const xHigh = Math.log2(filter_high_hz / range.low) * xScale;
+
     let dragging: 'low' | 'high' | 'tone' = 'tone';
 
-    if (filter_enabled) {
-        const xLow = Math.log2(filter_low_hz / range.low) * xScale;
-        const xHigh = Math.log2(filter_high_hz / range.low) * xScale;
-
-        if (Math.abs(x - xLow) < 15) dragging = 'low';
-        else if (Math.abs(x - xHigh) < 15) dragging = 'high';
+    if (Math.abs(x - xLow) < 15) {
+        if (filter_low_enabled || !filter_high_enabled) dragging = 'low';
+    } else if (Math.abs(x - xHigh) < 15) {
+        if (filter_high_enabled || !filter_low_enabled) dragging = 'high';
     }
 
     const onMouseMove = (moveEvent: MouseEvent) => {
