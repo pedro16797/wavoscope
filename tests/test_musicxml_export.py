@@ -106,7 +106,7 @@ def test_musicxml_export_annotations(tmp_path):
 def test_musicxml_export_metadata(tmp_path):
     from utils.config import Config
     cfg = Config()
-    cfg.set("ui.musicxml_author", "Jules Verne")
+    cfg.set("ui.musicxml_author", "Test Author")
 
     audio_path = tmp_path / "test_metadata.wav"
     audio_path.write_bytes(b"dummy")
@@ -118,11 +118,11 @@ def test_musicxml_export_metadata(tmp_path):
     tree = ET.fromstring(xml_content)
     creator = tree.find("identification/creator")
     assert creator is not None
-    assert creator.text == "Jules Verne"
+    assert creator.text == "Test Author"
     assert creator.attrib["type"] == "composer"
 
     software = tree.find("identification/encoding/software")
-    assert software.text == "OSCOPE"
+    assert software.text == "Wavoscope by Lendas do Alén"
 
 def test_musicxml_export_inheritance_and_gap(tmp_path):
     audio_path = tmp_path / "test_inheritance.wav"

@@ -21,7 +21,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
         creator.text = author
 
     encoding = ET.SubElement(identification, "encoding")
-    ET.SubElement(encoding, "software").text = "OSCOPE"
+    ET.SubElement(encoding, "software").text = "Wavoscope by Lendas do Alén"
     ET.SubElement(encoding, "encoding-date").text = datetime.date.today().isoformat()
 
     # Part list
