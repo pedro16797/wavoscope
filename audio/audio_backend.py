@@ -210,9 +210,6 @@ class AudioBackend:
             return
 
         try:
-            if status:
-                print(f"[AudioBackend] {status}")
-
             outdata[:] = 0.0
 
             if not self._playback._playing or self._playback._data is None:

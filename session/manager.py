@@ -15,6 +15,7 @@ class ProjectManager:
             try:
                 data = json.loads(self.sidecar_path.read_text())
                 data.setdefault("harmony_flags", [])
+                data.setdefault("time_signature", {"numerator": 4, "denominator": 4})
                 return data
             except Exception as e:
                 print(f"[ProjectManager] Error loading sidecar {self.sidecar_path}: {e}")
@@ -24,6 +25,7 @@ class ProjectManager:
             "lastView": {},
             "flags": [],
             "harmony_flags": [],
+            "time_signature": {"numerator": 4, "denominator": 4}
         }
 
     def save(self):

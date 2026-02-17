@@ -24,6 +24,17 @@ export interface HarmonyFlag {
   chord: Chord;
 }
 
+export interface TimeSignature {
+  numerator: number;
+  denominator: number;
+}
+
+export interface ExportStatus {
+  active: boolean;
+  progress: number;
+  message: string;
+}
+
 export interface AppState {
   loaded: boolean;
   position: number;
@@ -34,6 +45,7 @@ export interface AppState {
   filename: string;
   flags: Flag[];
   harmony_flags: HarmonyFlag[];
+  time_signature: TimeSignature;
   dirty: boolean;
   metronome_enabled: boolean;
   click_volume: number;
@@ -55,6 +67,7 @@ export interface AppState {
   showSettings: boolean;
   editingFlagIdx: number | null;
   editingHarmonyFlagIdx: number | null;
+  export_status: ExportStatus;
 
   fetchStatus: () => Promise<void>;
   fetchThemes: () => Promise<void>;
@@ -78,7 +91,9 @@ export interface AppState {
   updateHarmonyFlag: (idx: number, t: number, chord: Chord) => Promise<void>;
   analyzeChord: (t: number) => Promise<Chord>;
 
+  updateTimeSignature: (numerator: number, denominator: number) => Promise<void>;
   saveProject: () => Promise<void>;
+  exportMusicXML: () => Promise<void>;
   setFFTWindow: (sec: number) => void;
   setOctaveShift: (shift: number) => void;
 

@@ -10,6 +10,7 @@ import { Spectrum } from './components/Spectrum';
 import { SettingsDialog } from './components/SettingsDialog';
 import { FlagDialog } from './components/FlagDialog';
 import { ChordDialog } from './components/ChordDialog';
+import { ProgressDialog } from './components/ProgressDialog';
 
 const App: React.FC = () => {
   const {
@@ -67,6 +68,7 @@ const App: React.FC = () => {
           onClose={() => setEditingHarmonyFlagIdx(null)}
         />
       )}
+      <ProgressDialog />
     </div>
   );
 };
