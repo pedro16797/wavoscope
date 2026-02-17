@@ -103,6 +103,60 @@ def test_musicxml_export_annotations(tmp_path):
     assert "Drum Fill" not in words3
     assert "" not in words3 or len(words3) == 1
 
+def test_musicxml_export_inheritance_and_gap(tmp_path):
+    audio_path = tmp_path / "test_inheritance.wav"
+    audio_path.write_bytes(b"dummy")
+    project = Project(audio_path)
+
+    # 7 second gap, then four 7/8 measures (2s each)
+    # F1 (start M2) at 7.0s, subdiv=7
+    project.add_flag(7.0, kind="rhythm", subdivision=7)
+    # F2 (start M3) at 9.0s, subdiv=0 (should inherit 7)
+    project.add_flag(9.0, kind="rhythm", subdivision=0)
+    # F3 (start M4) at 11.0s, subdiv=0 (should inherit 7)
+    project.add_flag(11.0, kind="rhythm", subdivision=0)
+    # F4 (start M5) at 13.0s, subdiv=0 (should inherit 7)
+    project.add_flag(13.0, kind="rhythm", subdivision=0)
+    # F5 (start M6) at 15.0s, subdiv=4 (shift back to 4/4)
+    project.add_flag(15.0, kind="rhythm", subdivision=4)
+    # End flag
+    project.add_flag(17.0, kind="rhythm")
+
+    xml_content = project.generate_musicxml()
+    tree = ET.fromstring(xml_content)
+    piano_part = tree.find("part[@id='P1']")
+    measures = piano_part.findall("measure")
+
+    # M1: Gap (0-7s). Should have subdiv=7 (inherited from first real flag)
+    # num=7, den=4 (initial measures use den=4). BPM = 7*60/7 = 60.
+    m1 = measures[0]
+    assert m1.find("attributes/time/beats").text == "7"
+    assert m1.find("attributes/time/beat-type").text == "4"
+
+    # M2: (7-9s). subdiv=7. raw_bpm = 7*60/2 = 210.
+    # 210 > 1.7 * 60. So den=8, bpm=105.
+    m2 = measures[1]
+    assert m2.find("attributes/time/beats").text == "7"
+    assert m2.find("attributes/time/beat-type").text == "8"
+    assert m2.find("direction/direction-type/metronome/per-minute").text == "105"
+
+    # M3: (9-11s). subdiv=0 -> inherits 7. raw_bpm = 210.
+    # 210 > 1.7 * 105. So den=8, bpm=105.
+    m3 = measures[2]
+    # In MusicXML, attributes are only present when they change.
+    # M3 should not have attributes if it's the same as M2.
+    assert m3.find("attributes") is None
+
+    # M4, M5 should also NOT have attributes (they stay 7/8)
+    assert measures[3].find("attributes") is None
+    assert measures[4].find("attributes") is None
+
+    # M6: (15-17s). subdiv=4. raw_bpm = 4*60/2 = 120.
+    # 120 < 1.7 * 105 (178.5). So den=4, bpm=120.
+    m6 = measures[5]
+    assert m6.find("attributes/time/beats").text == "4"
+    assert m6.find("attributes/time/beat-type").text == "4"
+
 if __name__ == "__main__":
     import pytest
     pytest.main([__file__])

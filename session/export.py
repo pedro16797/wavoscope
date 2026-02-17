@@ -36,12 +36,17 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
     rhythm_flags = [f.copy() for f in flags if f.get("type") == "rhythm"]
 
     if rhythm_flags:
+        # Get the subdivision of the first real flag to use as default for the gap
+        first_real_subdiv = rhythm_flags[0].get("subdivision", project_time_sig["numerator"])
+        if first_real_subdiv == 0:
+            first_real_subdiv = project_time_sig["numerator"]
+
         # Ensure we start at 0
         if rhythm_flags[0]["t"] > 0.05:
             virtual_start = {
                 "t": 0.0,
                 "type": "rhythm",
-                "subdivision": project_time_sig["numerator"],
+                "subdivision": first_real_subdiv,
                 "is_section_start": False,
                 "name": "",
                 "auto_name": "0"
@@ -80,6 +85,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
         last_noted_bpm = -1.0
         last_num = -1
         last_den = -1
+        current_subdiv = project_time_sig["numerator"]
 
         loop_len = len(rhythm_flags) - 1 if len(rhythm_flags) > 1 else 1
         for i in range(loop_len):
@@ -94,12 +100,12 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
 
             duration = max(0.1, end_t - start_t)
 
-            # Determine Time Signature Numerator from subdivision
+            # Determine Time Signature Numerator from subdivision (with inheritance)
             subdiv = rhythm_flags[i].get("subdivision", 0)
-            if subdiv == 0:
-                subdiv = project_time_sig["numerator"]
+            if subdiv != 0:
+                current_subdiv = subdiv
 
-            num = subdiv
+            num = current_subdiv
             den = 4
 
             # Calculate raw BPM assuming denominator 4
