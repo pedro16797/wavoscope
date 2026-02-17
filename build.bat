@@ -57,8 +57,7 @@ python -m nuitka --onefile ^
     --noinclude-data-files="**/__pycache__/**" ^
     --windows-icon-from-ico=resources/icons/app-icon.png ^
     --nofollow-import-to=torch ^
-    --nofollow-import-to=sympy ^
-    --windows-console-mode=disable ^
+    --windows-console-mode=force ^
     --product-name="Wavoscope" ^
     --company-name="Lendas do Alén" ^
     --file-version="1.0.0" ^
