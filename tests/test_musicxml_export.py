@@ -59,6 +59,50 @@ def test_musicxml_export_feedback(tmp_path):
     m3_piano = parts[0].find("measure[@number='3']")
     assert m3_piano.find("direction/direction-type/metronome/per-minute").text == "130"
 
+def test_musicxml_export_annotations(tmp_path):
+    # Create a dummy audio file
+    audio_path = tmp_path / "test2.wav"
+    audio_path.write_bytes(b"dummy")
+    project = Project(audio_path)
+
+    # 1. Section start with name
+    # auto_name will be "A"
+    project.add_flag(0.0, kind="rhythm", name="Verse", section_start=True)
+
+    # 2. Non-section flag with name
+    project.add_flag(2.0, kind="rhythm", name="Drum Fill", section_start=False)
+
+    # 3. Section start without name
+    # auto_name will be "B"
+    project.add_flag(4.0, kind="rhythm", name="", section_start=True)
+
+    # End flag
+    project.add_flag(6.0, kind="rhythm")
+
+    xml_content = project.generate_musicxml()
+    tree = ET.fromstring(xml_content)
+    piano_part = tree.find("part[@id='P1']")
+
+    # Measure 1: should have <rehearsal>A</rehearsal> and <words>Verse</words>
+    m1 = piano_part.find("measure[@number='1']")
+    assert m1.find("direction/direction-type/rehearsal").text == "A"
+    words1 = [w.text for w in m1.findall("direction/direction-type/words")]
+    assert "Verse" in words1
+
+    # Measure 2: should have <words>Drum Fill</words> but NO <rehearsal>
+    m2 = piano_part.find("measure[@number='2']")
+    assert m2.find("direction/direction-type/rehearsal") is None
+    words2 = [w.text for w in m2.findall("direction/direction-type/words")]
+    assert "Drum Fill" in words2
+
+    # Measure 3: should have <rehearsal>B</rehearsal> but NO <words>
+    m3 = piano_part.find("measure[@number='3']")
+    assert m3.find("direction/direction-type/rehearsal").text == "B"
+    words3 = [w.text for w in m3.findall("direction/direction-type/words")]
+    # Empty string or non-existent is fine.
+    assert "Drum Fill" not in words3
+    assert "" not in words3 or len(words3) == 1
+
 if __name__ == "__main__":
     import pytest
     pytest.main([__file__])

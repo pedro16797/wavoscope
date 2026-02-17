@@ -92,10 +92,13 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
                 tempo_to_note = bpm
                 last_noted_bpm = bpm
 
-            # Rehearsal mark
+            # Section start (Rehearsal mark)
             rehearsal = None
             if rhythm_flags[i].get("is_section_start"):
-                rehearsal = rhythm_flags[i].get("name") or rhythm_flags[i].get("auto_name")
+                rehearsal = rhythm_flags[i].get("auto_name")
+
+            # Custom name (Text note)
+            annotation = rhythm_flags[i].get("name")
 
             # Harmony flags in this measure
             measure_harmonies = [h for h in harmony_flags if start_t <= h["t"] < end_t]
@@ -104,7 +107,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
             is_first = (i == 0)
             attr_change = is_first or (num != last_num) or (den != last_den)
 
-            _add_measure_piano(part_piano, i+1, num, den, tempo_to_note, attr_change, measure_harmonies, divisions, start_t, end_t, rehearsal)
+            _add_measure_piano(part_piano, i+1, num, den, tempo_to_note, attr_change, measure_harmonies, divisions, start_t, end_t, rehearsal, annotation)
             _add_measure_metro(part_metro, i+1, num, den, attr_change, divisions)
 
             last_num = num
@@ -121,7 +124,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
            '<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">\n' + \
            xml_str
 
-def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, divisions, start_t=0, end_t=0, rehearsal=None):
+def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, divisions, start_t=0, end_t=0, rehearsal=None, annotation=None):
     measure = ET.SubElement(part, "measure", number=str(number))
 
     if attr_change:
@@ -140,6 +143,11 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
         direction = ET.SubElement(measure, "direction", placement="above")
         dir_type = ET.SubElement(direction, "direction-type")
         ET.SubElement(dir_type, "rehearsal").text = rehearsal
+
+    if annotation:
+        direction = ET.SubElement(measure, "direction", placement="above")
+        dir_type = ET.SubElement(direction, "direction-type")
+        ET.SubElement(dir_type, "words").text = annotation
 
     # Tempo
     if tempo is not None:
