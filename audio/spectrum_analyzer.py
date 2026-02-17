@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Any, Tuple
 
 import numpy as np
-import scipy.fft
+import numpy.fft
 
 # FFT plan cache: n_fft → function
 _PLANS: dict[int, Any] = {}
@@ -45,11 +45,11 @@ def analyze(
 
     # Cached plan
     if n_fft not in _PLANS:
-        _PLANS[n_fft] = scipy.fft.rfft
+        _PLANS[n_fft] = numpy.fft.rfft
 
     chunk = y[start:end] * np.hanning(n_samples)
     fft = np.abs(_PLANS[n_fft](chunk, n=n_fft))
-    freqs = scipy.fft.rfftfreq(n_fft, 1.0 / sr)
+    freqs = numpy.fft.rfftfreq(n_fft, 1.0 / sr)
 
     mask = (freqs >= low_hz) & (freqs <= high_hz)
     if not np.any(mask):

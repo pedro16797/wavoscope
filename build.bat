@@ -57,12 +57,31 @@ python -m nuitka --standalone ^
     --noinclude-data-files="**/__pycache__/**" ^
     --windows-icon-from-ico=resources/icons/app-icon.png ^
     --nofollow-import-to=torch ^
+    --windows-console-mode=disable ^
+    --product-name="Wavoscope" ^
+    --company-name="Lendas do Alén" ^
+    --file-version="1.0.0" ^
+    --output-filename=Wavoscope ^
+    --enable-plugin=upx ^
+    --upx-binary=upx.exe ^
     --output-dir=dist ^
     --assume-yes-for-downloads ^
     main.py
 
 if %errorlevel% equ 0 (
-    echo Build complete. Check the 'dist' directory.
+    echo Packaging into Wavoscope.zip...
+    if exist "dist\Wavoscope.dist" (
+        if exist "dist\Wavoscope" rd /s /q "dist\Wavoscope"
+        xcopy /E /I /Y "dist\Wavoscope.dist" "dist\Wavoscope" >nul
+        python -c "import shutil; shutil.make_archive('Wavoscope', 'zip', root_dir='dist', base_dir='Wavoscope')"
+        rd /s /q "dist\Wavoscope"
+        echo Wavoscope.zip created.
+    ) else (
+        echo [ERROR] Nuitka output directory not found.
+        pause
+        exit /b 1
+    )
+    echo Build complete. Check Wavoscope.zip and the 'dist' directory.
 ) else (
     echo [ERROR] Build failed.
 )

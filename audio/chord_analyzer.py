@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.fft
+import numpy.fft
 from typing import Dict, Any
 
 def analyze_chord_at(y: np.ndarray, sr: int, t: float, window_s: float = 0.5) -> Dict[str, Any]:
@@ -20,8 +20,8 @@ def analyze_chord_at(y: np.ndarray, sr: int, t: float, window_s: float = 0.5) ->
     # Compute chroma features manually to avoid librosa/numba build issues
     n_fft = 1 << (len(chunk) - 1).bit_length()
     window = np.hanning(len(chunk))
-    spectrum = np.abs(scipy.fft.rfft(chunk * window, n=n_fft))
-    freqs = scipy.fft.rfftfreq(n_fft, 1.0 / sr)
+    spectrum = np.abs(numpy.fft.rfft(chunk * window, n=n_fft))
+    freqs = numpy.fft.rfftfreq(n_fft, 1.0 / sr)
 
     chroma_mean = np.zeros(12)
     # Only consider frequencies from 50Hz to 2000Hz for chord detection
