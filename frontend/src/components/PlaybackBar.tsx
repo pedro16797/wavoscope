@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../store/useStore';
-import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen, Save, Repeat, Repeat1, Filter, FileDown } from 'lucide-react';
+import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen, Save, Repeat, Repeat1, FileDown } from 'lucide-react';
 
 export const PlaybackBar: React.FC = () => {
   const {
@@ -8,8 +8,7 @@ export const PlaybackBar: React.FC = () => {
     controlPlayback, currentTheme, themes,
     metronome_enabled, updateMetronome, fft_window, setFFTWindow,
     octave_shift, setOctaveShift, setShowSettings, browseFile,
-    saveProject, exportMusicXML, dirty, loop_mode, setLoopMode,
-    filter_enabled, updateFilter
+    saveProject, exportMusicXML, dirty, loop_mode, setLoopMode
   } = useStore();
 
   const theme = themes[currentTheme] || {};

@@ -217,11 +217,8 @@ export const Spectrum: React.FC = () => {
 
     let dragging: 'low' | 'high' | 'tone' = 'tone';
 
-    if (Math.abs(x - xLow) < 15) {
-        if (filter_low_enabled || !filter_high_enabled) dragging = 'low';
-    } else if (Math.abs(x - xHigh) < 15) {
-        if (filter_high_enabled || !filter_low_enabled) dragging = 'high';
-    }
+    if (Math.abs(x - xLow) < 20) dragging = 'low';
+    else if (Math.abs(x - xHigh) < 20) dragging = 'high';
 
     const onMouseMove = (moveEvent: MouseEvent) => {
         const mx = moveEvent.clientX - rect.left;

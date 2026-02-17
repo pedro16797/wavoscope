@@ -2,7 +2,6 @@ import type { StateCreator } from 'zustand';
 import axios from 'axios';
 import type { AppState } from '../types';
 import { API_BASE } from '../useStore';
-import { midiToFreq } from '../utils';
 
 export interface PlaybackSlice {
   position: number;
@@ -74,22 +73,8 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
   },
 
   updateFilter: async (filter) => {
-    const state = get();
+    const oldState = get();
     const updates: any = {};
-
-    if (filter.enabled === true && !state.filter_enabled) {
-      const baseMidi = 48 + state.octave_shift * 12;
-      const lowBound = midiToFreq(baseMidi);
-      const highBound = midiToFreq(baseMidi + state.spectrum_keys);
-
-      if (state.filter_low_hz < lowBound || state.filter_low_hz > highBound ||
-          state.filter_high_hz < lowBound || state.filter_high_hz > highBound) {
-        updates.filter_low_hz = midiToFreq(baseMidi + state.spectrum_keys * 0.3);
-        updates.filter_high_hz = midiToFreq(baseMidi + state.spectrum_keys * 0.7);
-        filter.low_hz = updates.filter_low_hz;
-        filter.high_hz = updates.filter_high_hz;
-      }
-    }
 
     if (filter.enabled !== undefined) updates.filter_enabled = filter.enabled;
     if (filter.low_hz !== undefined) updates.filter_low_hz = filter.low_hz;
@@ -98,10 +83,28 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     if (filter.high_enabled !== undefined) updates.filter_high_enabled = filter.high_enabled;
     set(updates);
 
-    try {
-        await axios.post(`${API_BASE}/playback/filter`, filter);
-    } catch (e) {
-        console.error("[Store] Failed to update filter:", e);
+    // Only update backend if we are toggling something, or moving an ENABLED handle
+    const shouldUpdateBackend =
+        filter.low_enabled !== undefined ||
+        filter.high_enabled !== undefined ||
+        filter.enabled !== undefined ||
+        (filter.low_hz !== undefined && oldState.filter_low_enabled) ||
+        (filter.high_hz !== undefined && oldState.filter_high_enabled);
+
+    if (shouldUpdateBackend) {
+        const newState = get();
+        const payload = {
+            enabled: newState.filter_enabled,
+            low_hz: newState.filter_low_hz,
+            high_hz: newState.filter_high_hz,
+            low_enabled: newState.filter_low_enabled,
+            high_enabled: newState.filter_high_enabled
+        };
+        try {
+            await axios.post(`${API_BASE}/playback/filter`, payload);
+        } catch (e) {
+            console.error("[Store] Failed to update filter:", e);
+        }
     }
   },
 
