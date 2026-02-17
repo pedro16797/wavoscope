@@ -58,10 +58,11 @@ python -m nuitka --onefile ^
     --windows-icon-from-ico=resources/icons/app-icon.png ^
     --nofollow-import-to=torch ^
     --nofollow-import-to=sympy ^
-    --windows-disable-console ^
-    --windows-product-name="Wavoscope" ^
-    --windows-company-name="Lendas do Alén" ^
-    --windows-file-version="1.0.0" ^
+    --windows-console-mode=disable ^
+    --product-name="Wavoscope" ^
+    --company-name="Lendas do Alén" ^
+    --file-version="1.0.0" ^
+    --enable-plugin=upx ^
     --upx-binary=upx.exe ^
     --output-dir=dist ^
     --assume-yes-for-downloads ^
