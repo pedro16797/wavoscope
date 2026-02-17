@@ -25,6 +25,7 @@ export interface PlaybackSlice {
   setPlaying: (playing: boolean) => void;
   setLoopMode: (mode: string) => Promise<void>;
   updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
+  ensureFiltersVisible: () => void;
   setFFTWindow: (sec: number) => void;
   setOctaveShift: (shift: number) => void;
 }
@@ -128,5 +129,27 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
   },
 
   setFFTWindow: (sec) => set({ fft_window: sec } as any),
-  setOctaveShift: (shift) => set({ octave_shift: shift } as any),
+  setOctaveShift: (shift) => {
+    set({ octave_shift: shift } as any);
+    get().ensureFiltersVisible();
+  },
+
+  ensureFiltersVisible: () => {
+    const state = get();
+    const baseMidi = 48 + state.octave_shift * 12;
+    const lowBound = midiToFreq(baseMidi);
+    const highBound = midiToFreq(baseMidi + state.spectrum_keys);
+
+    const updates: any = {};
+    if (state.filter_low_hz < lowBound || state.filter_low_hz > highBound) {
+        updates.filter_low_hz = midiToFreq(baseMidi + state.spectrum_keys * 0.3);
+    }
+    if (state.filter_high_hz < lowBound || state.filter_high_hz > highBound) {
+        updates.filter_high_hz = midiToFreq(baseMidi + state.spectrum_keys * 0.7);
+    }
+
+    if (Object.keys(updates).length > 0) {
+        set(updates);
+    }
+  },
 });

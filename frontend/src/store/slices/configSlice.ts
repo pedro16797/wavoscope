@@ -29,7 +29,7 @@ export interface ConfigSlice {
   setShowSettings: (show: boolean) => void;
 }
 
-export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (set) => ({
+export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (set, get) => ({
   themes: {},
   currentTheme: 'dark',
   metronome_enabled: true,
@@ -93,6 +93,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         if (cfg.high_quality_enhancement !== undefined) set({ high_quality_enhancement: cfg.high_quality_enhancement } as any);
         if (cfg.default_output_folder !== undefined) set({ default_output_folder: cfg.default_output_folder } as any);
         if (cfg.musicxml_author !== undefined) set({ musicxml_author: cfg.musicxml_author } as any);
+        if (cfg.spectrum_keys !== undefined) get().ensureFiltersVisible();
     } catch (e) {
         console.error("[Store] Failed to update config:", e);
     }
