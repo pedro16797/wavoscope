@@ -188,7 +188,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
         // 2. Prompt for save location
         const pywindow = window as any;
         if (pywindow.pywebview?.api?.save_dialog) {
-            const res = await pywindow.pywebview.api.save_dialog(defaultFilename);
+            const defaultDir = get().default_output_folder || null;
+            const res = await pywindow.pywebview.api.save_dialog(defaultFilename, defaultDir);
             if (res) {
                 savePath = Array.isArray(res) ? res[0] : res;
             }

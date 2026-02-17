@@ -43,11 +43,18 @@ def generate():
         time.sleep(1)
         page.locator(".fixed.inset-0").screenshot(path="docs/images/settings_dialog.png")
 
-        # 6. Screenshot: Flag Dialog
+        # 6. Screenshot: Rhythm Flag Dialog
         page.evaluate("window.useStore.getState().setShowSettings(false)")
         page.evaluate("window.useStore.getState().setEditingFlagIdx(0)")
         time.sleep(1)
-        page.locator(".fixed.inset-0").screenshot(path="docs/images/flag_dialog.png")
+        # Use a more specific locator if possible, but .fixed.inset-0 is the dialog backdrop
+        page.locator(".fixed.inset-0 > div").screenshot(path="docs/images/rhythm_dialog.png")
+
+        # 7. Screenshot: Harmony Flag Dialog
+        page.evaluate("window.useStore.getState().setEditingFlagIdx(null)")
+        page.evaluate("window.useStore.getState().setEditingHarmonyFlagIdx(0)")
+        time.sleep(1)
+        page.locator(".fixed.inset-0 > div").screenshot(path="docs/images/harmony_dialog.png")
 
         browser.close()
 

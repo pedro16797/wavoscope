@@ -19,7 +19,7 @@ OSCOPE uses a "sidecar" file system. When you open an audio file, OSCOPE creates
 
 - **Zooming:** Use your **Mouse Wheel** over the waveform or spectrum to zoom in/out.
 - **Panning:** **Click and Drag** the waveform or spectrum to move through the timeline.
-- **Playback Cursor:** **Left Click** anywhere on the timeline to move the playhead.
+- **Playback Cursor:** **Left Click** on the waveform to move the playhead.
 - **Speed Control:** Use the slider in the bottom bar to adjust speed from 0.1x to 2.0x. OSCOPE uses high-quality time-stretching that preserves pitch.
 
 ### High-Quality Enhancement (NovaSR)
@@ -46,18 +46,20 @@ You can isolate specific instruments or notes using the real-time band-pass filt
 OSCOPE uses a dual-flag system to help you map out the structure and harmony of a track.
 
 ### Rhythm Flags (Rhythm/Bar Markers)
-- **Placement:** Press `B` (default) to drop a rhythm flag at the cursor.
-- **Subdivisions:** Open the flag dialog (**Left Click** the flag icon) to set subdivisions (e.g., 4 for quarter notes). These appear as faint vertical lines on the timeline.
+- **Placement:** Press `B` (default) or **Left Click** on the timeline to drop a rhythm flag.
+- **Subdivisions:** Open the flag dialog (**Right Click** the flag handle) to set subdivisions (e.g., 4 for quarter notes). These appear as faint vertical lines on the timeline.
 - **Metronome:** Rhythm flags automatically trigger a metronome click during playback if subdivision clicks are enabled.
 - **Sections:** Mark a flag as a "Section Start" to give it a label (like "Verse" or "Chorus").
 
-### Harmony Flags (Chord Markers)
-- **Placement:** Press `H` (default) to drop a harmony flag.
-- **Chord Editor:** Click the flag to open the Chord Dialog. You can type chord names (e.g., "Am7", "C/G") or use the selectors.
-- **Automatic Analysis:** Use the **Suggest** button to let OSCOPE analyze the audio at that position and recommend the most likely chord.
-- **Auditioning:** Click the "Play" button in the dialog to hear the chord played via the internal synthesizer.
+![Rhythm Flag Dialog](docs/images/rhythm_dialog.png)
 
-![Flag Editing](docs/images/flag_dialog.png)
+### Harmony Flags (Chord Markers)
+- **Placement:** Press `H` (default) or **Right Click** on the timeline to drop a harmony flag.
+- **Chord Editor:** **Right Click** an existing flag to open the Chord Dialog. You can type chord names (e.g., "Am7", "C/G") or use the selectors.
+- **Automatic Analysis:** Use the **Suggest** button to let OSCOPE analyze the audio at that position and recommend the most likely chord.
+- **Auditioning:** **Hold Left Click** on a harmony flag handle or click the "Play" button in the dialog to hear the chord played via the internal synthesizer.
+
+![Harmony Flag Dialog](docs/images/harmony_dialog.png)
 
 ### Managing Flags
 - **Dragging:** You can **Click and Drag** any flag handle on the timeline to fine-tune its position.
@@ -90,14 +92,32 @@ OSCOPE is fully themeable. Choose a look that suits your environment:
 
 ---
 
-## ⌨️ Default Keybinds
+## ⌨️ Comprehensive Controls
 
+### Keyboard Bindings
 | Action | Key |
 | :--- | :--- |
-| Play / Pause | `Space` |
-| Add Rhythm Flag | `B` |
-| Add Harmony Flag | `H` |
-| Delete Selected Flag | `Delete` / `Backsapce` |
-| Seek Forward/Back | `Left` / `Right` |
-| Zoom In/Out | `+` / `-` |
-| Toggle Loop | `L` |
+| **Play / Pause** | `Space` |
+| **Seek Forward/Back** | `Left` / `Right` |
+| **Increase/Decrease Speed** | `Up` / `Down` |
+| **Add Rhythm Flag** | `B` |
+| **Add Harmony Flag** | `H` |
+| **Delete Selected Flag** | `Delete` / `Backspace` |
+| **Open File** | `Ctrl + O` |
+| **Save Project** | `Ctrl + S` |
+| **Toggle Looping** | `L` |
+
+### Mouse Interactions
+| Area | Action | Interaction |
+| :--- | :--- | :--- |
+| **Timeline** | Add Rhythm Flag | `Left Click` |
+| **Timeline** | Add Harmony Flag | `Right Click` |
+| **Timeline** | Move Flag | `Left Drag` |
+| **Timeline** | Audition Chord | `Hold Left Click` on Harmony Flag |
+| **Waveform** | Move Playhead | `Left Click` |
+| **Waveform** | Pan View | `Left Drag` |
+| **Waveform** | Zoom In/Out | `Mouse Wheel` |
+| **Spectrum** | Play Sine Tone | `Left Click / Drag` |
+| **Spectrum** | Toggle Filter | `Right Click` handle |
+| **Spectrum** | Quick Filter Place| `Right Click` anywhere |
+| **Spectrum** | Adjust Filter | `Left Drag` handle |

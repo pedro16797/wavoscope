@@ -28,13 +28,13 @@ class Api:
                 if hasattr(e, 'response') and e.response is not None:
                     print(f"[Api] Backend Error Detail: {e.response.text}")
 
-    def save_dialog(self, default_filename):
+    def save_dialog(self, default_filename, directory=None):
         if not webview.windows:
             print("[Api] Error: No windows found")
             return None
         window = webview.windows[0]
         file_types = ('MusicXML Files (*.musicxml)', 'All files (*.*)')
-        res = window.create_file_dialog(webview.SAVE_DIALOG, save_filename=default_filename, file_types=file_types)
+        res = window.create_file_dialog(webview.SAVE_DIALOG, save_filename=default_filename, file_types=file_types, directory=directory)
         return res
 
 def run_gui(url, debug=False):

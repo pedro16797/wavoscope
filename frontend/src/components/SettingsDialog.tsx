@@ -7,13 +7,15 @@ interface SettingsDialogProps {
 }
 
 export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
-  const { themes, currentTheme, click_volume, spectrum_keys, high_quality_enhancement, updateConfig, time_signature, updateTimeSignature } = useStore();
+  const { themes, currentTheme, click_volume, spectrum_keys, high_quality_enhancement, default_output_folder, musicxml_author, updateConfig, time_signature, updateTimeSignature } = useStore();
   const [activeTab, setActiveTab] = useState<'global' | 'project' | 'keybinds'>('global');
 
   const [theme, setTheme] = useState(currentTheme);
   const [clickVol, setClickVol] = useState(click_volume * 100);
   const [keys, setKeys] = useState(spectrum_keys);
   const [highQuality, setHighQuality] = useState(high_quality_enhancement);
+  const [outputFolder, setOutputFolder] = useState(default_output_folder);
+  const [author, setAuthor] = useState(musicxml_author);
   const [timeSig, setTimeSig] = useState(time_signature);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -22,7 +24,9 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
         theme,
         click_volume: clickVol / 100,
         spectrum_keys: keys,
-        high_quality_enhancement: highQuality
+        high_quality_enhancement: highQuality,
+        default_output_folder: outputFolder,
+        musicxml_author: author
     });
     await updateTimeSignature(timeSig.numerator, timeSig.denominator);
     onClose();
@@ -111,9 +115,31 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                 </>
             ) : activeTab === 'project' ? (
                 <>
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-bold opacity-50">Default Time Signature</label>
+                            <label className="text-[10px] uppercase font-bold opacity-50">Export Defaults</label>
+                            <div className="space-y-4 bg-black/20 p-4 rounded-[var(--ui-radius)] border border-grid">
+                                <div className="space-y-1">
+                                    <label htmlFor="output-folder" className="text-[9px] opacity-40 uppercase font-bold">Default Output Directory</label>
+                                    <input id="output-folder" type="text" value={outputFolder}
+                                           onChange={(e) => setOutputFolder(e.target.value)}
+                                           placeholder="e.g. /Users/Name/Documents"
+                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                           style={{ borderWidth: 'var(--ui-border)' }} />
+                                </div>
+                                <div className="space-y-1">
+                                    <label htmlFor="musicxml-author" className="text-[9px] opacity-40 uppercase font-bold">MusicXML Author (Composer)</label>
+                                    <input id="musicxml-author" type="text" value={author}
+                                           onChange={(e) => setAuthor(e.target.value)}
+                                           placeholder="Your Name"
+                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                           style={{ borderWidth: 'var(--ui-border)' }} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold opacity-50">Measure Calculation</label>
                             <div className="flex items-center gap-4">
                                 <div className="flex-1 space-y-1">
                                     <label htmlFor="time-sig-num" className="text-[9px] opacity-40 uppercase">Numerator</label>
@@ -141,23 +167,34 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                 </>
             ) : (
                 <div className="space-y-4 text-xs">
-                    <div className="font-bold border-b border-grid pb-1 mb-2 opacity-50 uppercase tracking-tighter">Playback & Navigation</div>
+                    <div className="font-bold border-b border-grid pb-1 mb-2 opacity-50 uppercase tracking-tighter">Keyboard Bindings</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                         <span className="opacity-60">Play / Pause</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Space</span>
-                        <span className="opacity-60">Seek Forward</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">→</span>
-                        <span className="opacity-60">Seek Backward</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">←</span>
-                        <span className="opacity-60">Increase Speed</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">↑</span>
-                        <span className="opacity-60">Decrease Speed</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">↓</span>
+                        <span className="opacity-60">Seek Forward/Back</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">← / →</span>
+                        <span className="opacity-60">Adjust Speed</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">↑ / ↓</span>
+                        <span className="opacity-60">Add Rhythm Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">B</span>
+                        <span className="opacity-60">Add Harmony Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">H</span>
+                        <span className="opacity-60">Delete Selected</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Del / Bksp</span>
                         <span className="opacity-60">Open File</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Ctrl+O</span>
                         <span className="opacity-60">Save Project</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Ctrl+S</span>
                     </div>
 
-                    <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">Mouse Interactions</div>
+                    <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">Timeline Interactions</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        <span className="opacity-60">Zoom (Waveform)</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Wheel</span>
-                        <span className="opacity-60">Scroll (Waveform)</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Left Drag</span>
-                        <span className="opacity-60">Add Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Timeline Click</span>
-                        <span className="opacity-60">Edit Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Right Click</span>
+                        <span className="opacity-60">Add Rhythm Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Left Click</span>
+                        <span className="opacity-60">Add Harmony Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Right Click</span>
+                        <span className="opacity-60">Move Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Left Drag</span>
+                        <span className="opacity-60">Audition Harmony</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Hold Click</span>
+                    </div>
+
+                    <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">Waveform & Spectrum</div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                        <span className="opacity-60">Seek Playhead</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Waveform Click</span>
+                        <span className="opacity-60">Pan View</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Waveform Drag</span>
+                        <span className="opacity-60">Zoom View</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Mouse Wheel</span>
+                        <span className="opacity-60">Play Note</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Spectrum Click</span>
+                        <span className="opacity-60">Place Filter</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Right Click</span>
+                        <span className="opacity-60">Adjust Filter</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Handle Drag</span>
                     </div>
                 </div>
             )}

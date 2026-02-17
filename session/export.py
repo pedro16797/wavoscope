@@ -12,8 +12,16 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
 
     # Identification
     identification = ET.SubElement(root, "identification")
+
+    from utils.config import Config
+    cfg = Config()
+    author = cfg.get("ui.musicxml_author", "")
+    if author:
+        creator = ET.SubElement(identification, "creator", type="composer")
+        creator.text = author
+
     encoding = ET.SubElement(identification, "encoding")
-    ET.SubElement(encoding, "software").text = "Wavoscope"
+    ET.SubElement(encoding, "software").text = "OSCOPE"
     ET.SubElement(encoding, "encoding-date").text = datetime.date.today().isoformat()
 
     # Part list
