@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Tuple
 import datetime
 from .chord_utils import get_chord_midi_notes
 
-def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progress_callback=None) -> str:
+def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progress_callback=None, audio_duration=0.0) -> str:
     root = ET.Element("score-partwise", version="4.0")
 
     # Work info
@@ -33,7 +33,42 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
     harmony_flags = session_data.get("harmony_flags", [])
     project_time_sig = session_data.get("time_signature", {"numerator": 4, "denominator": 4})
 
-    rhythm_flags = [f for f in flags if f.get("type") == "rhythm"]
+    rhythm_flags = [f.copy() for f in flags if f.get("type") == "rhythm"]
+
+    if rhythm_flags:
+        # Ensure we start at 0
+        if rhythm_flags[0]["t"] > 0.05:
+            virtual_start = {
+                "t": 0.0,
+                "type": "rhythm",
+                "subdivision": project_time_sig["numerator"],
+                "is_section_start": False,
+                "name": "",
+                "auto_name": "0"
+            }
+            rhythm_flags.insert(0, virtual_start)
+
+        # Ensure we cover until the end
+        if audio_duration > rhythm_flags[-1]["t"] + 0.1:
+            # Determine interval from last measure
+            if len(rhythm_flags) >= 2:
+                interval = rhythm_flags[-1]["t"] - rhythm_flags[-2]["t"]
+            else:
+                interval = 2.0 # Default
+
+            if interval <= 0.1: interval = 2.0
+
+            curr_t = rhythm_flags[-1]["t"] + interval
+            while curr_t < audio_duration + (interval * 0.5):
+                rhythm_flags.append({
+                    "t": curr_t,
+                    "type": "rhythm",
+                    "subdivision": rhythm_flags[-1]["subdivision"],
+                    "is_section_start": False,
+                    "name": "",
+                    "auto_name": ""
+                })
+                curr_t += interval
 
     if not rhythm_flags:
         # Minimal empty score
@@ -46,18 +81,16 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
         last_num = -1
         last_den = -1
 
-        for i in range(len(rhythm_flags)):
+        loop_len = len(rhythm_flags) - 1 if len(rhythm_flags) > 1 else 1
+        for i in range(loop_len):
             if progress_callback:
-                progress_callback(i / len(rhythm_flags), f"Exporting measure {i+1} of {len(rhythm_flags)}...")
+                progress_callback(i / loop_len, f"Exporting measure {i+1} of {loop_len}...")
 
             start_t = rhythm_flags[i]["t"]
             if i + 1 < len(rhythm_flags):
                 end_t = rhythm_flags[i+1]["t"]
             else:
-                if i > 0:
-                    end_t = start_t + (start_t - rhythm_flags[i-1]["t"])
-                else:
-                    end_t = start_t + 2.0
+                end_t = start_t + 2.0
 
             duration = max(0.1, end_t - start_t)
 
@@ -167,15 +200,15 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
         ET.SubElement(note, "duration").text = str(total_dur_div)
         ET.SubElement(note, "voice").text = "1"
     else:
-        current_offset_div = 0
         for idx, h in enumerate(harmonies):
             h_t = h["t"]
             h_offset_ratio = (h_t - start_t) / (end_t - start_t)
             h_offset_div = int(h_offset_ratio * total_dur_div)
 
-            # Add harmony tag with offset if needed
-            _add_harmony_tag(measure, h["chord"], h_offset_div - current_offset_div)
-            # MusicXML <harmony> can have an <offset>
+            # Snap offset to divisions to avoid 3356/3360 issues
+            safe_offset = min(h_offset_div, total_dur_div - 1)
+
+            _add_harmony_tag(measure, h["chord"], safe_offset)
 
         # Add a whole rest for the measure
         note = ET.SubElement(measure, "note")

@@ -79,7 +79,7 @@ class Project:
 
     def generate_musicxml(self) -> str:
         from session.export import generate_musicxml
-        return generate_musicxml(self.session_data, self.audio_path.name)
+        return generate_musicxml(self.session_data, self.audio_path.name, audio_duration=self.duration)
 
     @property
     def _dirty(self): return self._manager._dirty

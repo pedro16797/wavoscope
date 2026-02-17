@@ -227,7 +227,7 @@ async def check_export():
 class ExportStartData(BaseModel):
     path: str
 
-def bg_export(path: str, session_data: dict, audio_name: str):
+def bg_export(path: str, session_data: dict, audio_name: str, audio_duration: float):
     state.export_active = True
     state.export_progress = 0.0
     state.export_message = "Starting export..."
@@ -237,7 +237,7 @@ def bg_export(path: str, session_data: dict, audio_name: str):
             state.export_progress = ratio
             state.export_message = msg
 
-        xml_content = generate_musicxml(session_data, audio_name, progress_callback=progress_cb)
+        xml_content = generate_musicxml(session_data, audio_name, progress_callback=progress_cb, audio_duration=audio_duration)
 
         state.export_message = "Saving file..."
         Path(path).write_text(xml_content, encoding="utf-8")
@@ -261,8 +261,9 @@ async def start_export(data: ExportStartData, background_tasks: BackgroundTasks)
     # We copy the data to avoid thread issues if project changes
     session_data = state.project.session_data.copy()
     audio_name = state.project.audio_path.name
+    audio_duration = state.project.duration
 
-    background_tasks.add_task(bg_export, data.path, session_data, audio_name)
+    background_tasks.add_task(bg_export, data.path, session_data, audio_name, audio_duration)
     return {"status": "started"}
 
 @router.get("/export/musicxml/progress")
