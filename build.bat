@@ -64,6 +64,7 @@ python -m nuitka --onefile ^
     --file-version="1.0.0" ^
     --enable-plugin=upx ^
     --upx-binary=upx.exe ^
+    --onefile-no-compression ^
     --output-dir=dist ^
     --assume-yes-for-downloads ^
     main.py

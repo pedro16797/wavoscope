@@ -51,6 +51,7 @@ python3 -m nuitka --onefile \
     --company-name="Lendas do Alén" \
     --file-version="1.0.0" \
     --enable-plugin=upx \
+    --onefile-no-compression \
     --output-dir=dist \
     --assume-yes-for-downloads \
     main.py
