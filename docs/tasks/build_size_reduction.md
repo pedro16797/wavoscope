@@ -45,6 +45,6 @@ The current build includes large dependencies like Scipy (>140MB) and Sympy (>70
 - [x] **Replace Scipy FFT usage**: Switch to `numpy.fft` in all relevant files.
 - [x] **Implement custom Butterworth filter**: Replace `scipy.signal.butter` and `sosfilt` with a lightweight implementation.
 - [x] **Clean up dependencies**: Update `requirements.txt`, remove `imageio`, and create `requirements-dev.txt`.
-- [x] **Configure Nuitka with UPX and --onefile**: Update build scripts to use optimization flags.
+- [x] **Configure Nuitka with UPX and --standalone**: Update build scripts to use optimization flags. Note: `--onefile` was attempted but reverted due to Antivirus (Windows Defender) false positives.
 - [x] **Streamline build usage**: Add `--windows-console-mode=disable` and application metadata to build scripts.
 - [x] **Verify build size reduction and streamlining**: Compare the new distribution size and launch behavior with the baseline.

@@ -37,7 +37,7 @@ cd ..
 
 # Build Executable with Nuitka
 echo "Building standalone executable..."
-python3 -m nuitka --onefile \
+python3 -m nuitka --standalone \
     --include-data-dir=frontend/dist=frontend/dist \
     --include-data-dir=resources=resources \
     --noinclude-data-files="**/.git/**" \
@@ -50,7 +50,6 @@ python3 -m nuitka --onefile \
     --company-name="Lendas do Alén" \
     --file-version="1.0.0" \
     --enable-plugin=upx \
-    --onefile-no-compression \
     --output-dir=dist \
     --assume-yes-for-downloads \
     main.py

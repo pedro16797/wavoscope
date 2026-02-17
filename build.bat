@@ -49,7 +49,7 @@ cd ..
 
 REM Build Executable with Nuitka
 echo Building standalone executable...
-python -m nuitka --onefile ^
+python -m nuitka --standalone ^
     --include-data-dir=frontend/dist=frontend/dist ^
     --include-data-dir=resources=resources ^
     --noinclude-data-files="**/.git/**" ^
@@ -63,7 +63,6 @@ python -m nuitka --onefile ^
     --file-version="1.0.0" ^
     --enable-plugin=upx ^
     --upx-binary=upx.exe ^
-    --onefile-no-compression ^
     --output-dir=dist ^
     --assume-yes-for-downloads ^
     main.py
