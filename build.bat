@@ -49,7 +49,7 @@ cd ..
 
 REM Build Executable with Nuitka
 echo Building standalone executable...
-python -m nuitka --standalone ^
+python -m nuitka --onefile ^
     --include-data-dir=frontend/dist=frontend/dist ^
     --include-data-dir=resources=resources ^
     --noinclude-data-files="**/.git/**" ^
@@ -57,6 +57,12 @@ python -m nuitka --standalone ^
     --noinclude-data-files="**/__pycache__/**" ^
     --windows-icon-from-ico=resources/icons/app-icon.png ^
     --nofollow-import-to=torch ^
+    --nofollow-import-to=sympy ^
+    --windows-disable-console ^
+    --windows-product-name="Wavoscope" ^
+    --windows-company-name="Lendas do Alén" ^
+    --windows-file-version="1.0.0" ^
+    --upx-binary=upx.exe ^
     --output-dir=dist ^
     --assume-yes-for-downloads ^
     main.py
