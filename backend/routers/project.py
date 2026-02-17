@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel
 from pathlib import Path
 import traceback
@@ -29,6 +29,10 @@ class ChordData(BaseModel):
 class HarmonyFlagData(BaseModel):
     t: float
     chord: ChordData
+
+class TimeSignatureData(BaseModel):
+    numerator: int
+    denominator: int
 
 @router.post("/flags")
 async def add_flag(flag: FlagData):
@@ -108,6 +112,16 @@ async def insert_n_flags(data: FlagInsertN):
         print(f"[Backend] Error in insert_n_flags: {e}")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Failed to insert flags: {str(e)}")
+
+@router.post("/time_signature")
+async def update_time_signature(data: TimeSignatureData):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    try:
+        state.project.update_time_signature(data.numerator, data.denominator)
+        return {"status": "ok", "time_signature": state.project.time_signature}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update time signature: {str(e)}")
 
 @router.post("/harmony_flags")
 async def add_harmony_flag(flag: HarmonyFlagData):
@@ -201,6 +215,25 @@ async def save_project():
         return {"status": "ok"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save project: {str(e)}")
+
+@router.get("/export/musicxml")
+async def export_musicxml():
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    try:
+        xml_content = state.project.generate_musicxml()
+        filename = state.project.audio_path.stem + ".musicxml"
+        return Response(
+            content=xml_content,
+            media_type="application/vnd.recordare.musicxml+xml",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}"
+            }
+        )
+    except Exception as e:
+        print(f"[Backend] Error in export_musicxml: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to export MusicXML: {str(e)}")
 
 class OpenProject(BaseModel):
     path: str

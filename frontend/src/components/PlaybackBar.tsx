@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../store/useStore';
-import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen, Save, Repeat, Repeat1, Filter } from 'lucide-react';
+import { Play, Pause, Square, Volume2, Settings, Timer, ChevronUp, ChevronDown, FolderOpen, Save, Repeat, Repeat1, Filter, FileDown } from 'lucide-react';
 
 export const PlaybackBar: React.FC = () => {
   const {
@@ -8,7 +8,7 @@ export const PlaybackBar: React.FC = () => {
     controlPlayback, currentTheme, themes,
     metronome_enabled, updateMetronome, fft_window, setFFTWindow,
     octave_shift, setOctaveShift, setShowSettings, browseFile,
-    saveProject, dirty, loop_mode, setLoopMode,
+    saveProject, exportMusicXML, dirty, loop_mode, setLoopMode,
     filter_enabled, updateFilter
   } = useStore();
 
@@ -49,9 +49,14 @@ export const PlaybackBar: React.FC = () => {
             <FolderOpen size={20} />
         </button>
         <button onClick={saveProject} disabled={!loaded}
-                className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : 'opacity-90'}`}
+                className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${!loaded ? 'opacity-20' : 'opacity-90'}`}
                 title={dirty ? "Save Project (Unsaved changes)" : "Save Project"}>
             <Save size={20} className={dirty ? 'text-accent' : 'text-text'} />
+        </button>
+        <button onClick={exportMusicXML} disabled={!loaded}
+                className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : 'opacity-90'}`}
+                title="Export as MusicXML">
+            <FileDown size={20} />
         </button>
         {loaded && (
             <>

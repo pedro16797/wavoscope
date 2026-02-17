@@ -45,6 +45,7 @@ async def get_status():
         "filename": state.project.audio_path.name,
         "flags": state.project.flags,
         "harmony_flags": state.project.harmony_flags,
+        "time_signature": state.project.time_signature,
         "dirty": state.project._dirty,
         "metronome_enabled": state.project.backend._metronome_enabled,
         "click_volume": state.project.backend._click_volume,

@@ -62,6 +62,20 @@ class Project:
     def sidecar_path(self): return self._manager.sidecar_path
     @property
     def session_data(self): return self._manager.session_data
+
+    @property
+    def time_signature(self) -> Dict[str, int]:
+        return self.session_data.get("time_signature", {"numerator": 4, "denominator": 4})
+
+    def update_time_signature(self, numerator: int, denominator: int) -> None:
+        with self._lock:
+            self.session_data["time_signature"] = {"numerator": numerator, "denominator": denominator}
+            self.mark_dirty()
+
+    def generate_musicxml(self) -> str:
+        from session.export import generate_musicxml
+        return generate_musicxml(self.session_data, self.audio_path.name)
+
     @property
     def _dirty(self): return self._manager._dirty
     @_dirty.setter

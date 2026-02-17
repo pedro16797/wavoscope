@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand';
 import axios from 'axios';
-import type { AppState, Flag, HarmonyFlag, Chord } from '../types';
+import type { AppState, Flag, HarmonyFlag, Chord, TimeSignature } from '../types';
 import { API_BASE } from '../useStore';
 
 export interface ProjectSlice {
@@ -8,6 +8,7 @@ export interface ProjectSlice {
   filename: string;
   flags: Flag[];
   harmony_flags: HarmonyFlag[];
+  time_signature: TimeSignature;
   dirty: boolean;
   editingFlagIdx: number | null;
   editingHarmonyFlagIdx: number | null;
@@ -22,7 +23,9 @@ export interface ProjectSlice {
   removeHarmonyFlag: (idx: number) => Promise<void>;
   updateHarmonyFlag: (idx: number, t: number, chord: Chord) => Promise<void>;
   analyzeChord: (t: number) => Promise<Chord>;
+  updateTimeSignature: (numerator: number, denominator: number) => Promise<void>;
   saveProject: () => Promise<void>;
+  exportMusicXML: () => Promise<void>;
   setEditingFlagIdx: (idx: number | null) => void;
   setEditingHarmonyFlagIdx: (idx: number | null) => void;
 }
@@ -32,6 +35,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   filename: '',
   flags: [],
   harmony_flags: [],
+  time_signature: { numerator: 4, denominator: 4 },
   dirty: false,
   editingFlagIdx: null,
   editingHarmonyFlagIdx: null,
@@ -149,12 +153,37 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
+  updateTimeSignature: async (numerator, denominator) => {
+    try {
+        await axios.post(`${API_BASE}/project/time_signature`, { numerator, denominator });
+        get().fetchStatus();
+    } catch (e) {
+        console.error("[Store] Failed to update time signature:", e);
+    }
+  },
+
   saveProject: async () => {
     try {
         await axios.post(`${API_BASE}/project/save`);
         set({ dirty: false } as any);
     } catch (e) {
         console.error("[Store] Failed to save project:", e);
+    }
+  },
+
+  exportMusicXML: async () => {
+    try {
+        const res = await axios.get(`${API_BASE}/project/export/musicxml`, { responseType: 'blob' });
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        const filename = get().filename.replace(/\.[^/.]+$/, "") + ".musicxml";
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    } catch (e) {
+        console.error("[Store] Failed to export MusicXML:", e);
     }
   },
 

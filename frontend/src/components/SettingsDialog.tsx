@@ -7,22 +7,24 @@ interface SettingsDialogProps {
 }
 
 export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
-  const { themes, currentTheme, click_volume, spectrum_keys, high_quality_enhancement, updateConfig } = useStore();
-  const [activeTab, setActiveTab] = useState<'global' | 'keybinds'>('global');
+  const { themes, currentTheme, click_volume, spectrum_keys, high_quality_enhancement, updateConfig, time_signature, updateTimeSignature } = useStore();
+  const [activeTab, setActiveTab] = useState<'global' | 'project' | 'keybinds'>('global');
 
   const [theme, setTheme] = useState(currentTheme);
   const [clickVol, setClickVol] = useState(click_volume * 100);
   const [keys, setKeys] = useState(spectrum_keys);
   const [highQuality, setHighQuality] = useState(high_quality_enhancement);
+  const [timeSig, setTimeSig] = useState(time_signature);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     updateConfig({
         theme,
         click_volume: clickVol / 100,
         spectrum_keys: keys,
         high_quality_enhancement: highQuality
     });
+    await updateTimeSignature(timeSig.numerator, timeSig.denominator);
     onClose();
   };
 
@@ -39,6 +41,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
             <button onClick={() => setActiveTab('global')}
                     className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'global' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
                 Global
+            </button>
+            <button onClick={() => setActiveTab('project')}
+                    className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'project' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
+                Project
             </button>
             <button onClick={() => setActiveTab('keybinds')}
                     className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'keybinds' ? 'bg-white/5 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
@@ -101,6 +107,36 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                 <span className="text-[10px] opacity-50">Recover high-frequency clarity during slow playback</span>
                             </div>
                         </label>
+                    </div>
+                </>
+            ) : activeTab === 'project' ? (
+                <>
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold opacity-50">Default Time Signature</label>
+                            <div className="flex items-center gap-4">
+                                <div className="flex-1 space-y-1">
+                                    <label htmlFor="time-sig-num" className="text-[9px] opacity-40 uppercase">Numerator</label>
+                                    <input id="time-sig-num" type="number" min="1" max="32" value={timeSig.numerator}
+                                           onChange={(e) => setTimeSig({...timeSig, numerator: parseInt(e.target.value)})}
+                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                           style={{ borderWidth: 'var(--ui-border)' }} />
+                                </div>
+                                <div className="text-xl opacity-20 mt-4">/</div>
+                                <div className="flex-1 space-y-1">
+                                    <label htmlFor="time-sig-den" className="text-[9px] opacity-40 uppercase">Denominator</label>
+                                    <select id="time-sig-den" value={timeSig.denominator}
+                                            onChange={(e) => setTimeSig({...timeSig, denominator: parseInt(e.target.value)})}
+                                            className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                            style={{ borderWidth: 'var(--ui-border)' }}>
+                                        {[2, 4, 8, 16].map(d => <option key={d} value={d}>{d}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                            <p className="text-[10px] opacity-40 mt-2">
+                                Used for MusicXML export to determine measure structure and tempo calculation.
+                            </p>
+                        </div>
                     </div>
                 </>
             ) : (
