@@ -130,6 +130,7 @@ class AudioBackend:
     def clear_tick_cache(self) -> None:
         if hasattr(self, "_last_tick_time"):
             delattr(self, "_last_tick_time")
+        self._metronome.reset()
 
     # ---------- read-only properties ----------
     @property
@@ -268,7 +269,7 @@ class AudioBackend:
                 outdata[:, 0] = samples * self._playback._volume
 
             # Metronome
-            self._metronome.add_clicks(outdata, frames, self._playback._cursor, self._subdivision_ticks_between)
+            self._metronome.add_clicks(outdata, to_read, self._playback._cursor, self._subdivision_ticks_between, self._playback._speed)
 
             # Update cursor
             if to_read > 0:
