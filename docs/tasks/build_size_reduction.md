@@ -25,6 +25,8 @@ The current build includes large dependencies like Scipy (>140MB) and Sympy (>70
   - Switch Nuitka to `--onefile` mode for a cleaner single-executable delivery.
 - **Aggressive Exclusion**:
   - Use `--nofollow-import-to` for any other large libraries that are not strictly required at runtime (e.g., `PIL` if only used for build-time icon conversion).
+- **Requests Replacement**:
+  - Consider replacing `requests` with the built-in `http.client` or `urllib.request` for simple backend communication to further prune dependencies.
 
 ### 3. Frontend Optimization
 - **Asset Review**:
