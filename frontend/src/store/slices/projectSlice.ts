@@ -174,16 +174,22 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   exportMusicXML: async () => {
     try {
         const res = await axios.get(`${API_BASE}/project/export/musicxml`, { responseType: 'blob' });
-        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const url = window.URL.createObjectURL(res.data);
         const link = document.createElement('a');
+        link.style.display = 'none';
         link.href = url;
-        const filename = get().filename.replace(/\.[^/.]+$/, "") + ".musicxml";
+        const filename = (get().filename || 'transcription').replace(/\.[^/.]+$/, "") + ".musicxml";
         link.setAttribute('download', filename);
         document.body.appendChild(link);
         link.click();
-        link.remove();
+
+        setTimeout(() => {
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }, 100);
     } catch (e) {
         console.error("[Store] Failed to export MusicXML:", e);
+        alert("Failed to export MusicXML. Please check the backend console.");
     }
   },
 

@@ -5,7 +5,7 @@ import threading
 
 def run_server():
     from backend.main import app
-    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="error")
+    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")
 
 def start_backend_thread():
     print("[Launcher] Starting backend server thread...")
