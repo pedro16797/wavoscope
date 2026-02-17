@@ -156,6 +156,7 @@ class Project:
         with self._lock:
             self._looping.set_loop_mode(mode)
             self.backend.set_loop_enabled(mode != "none")
+            self.backend.reset_loop_range()
 
     @property
     def loop_mode(self): return self._looping.loop_mode
@@ -172,7 +173,11 @@ class Project:
 
     def get_loop_range(self, pos: float | None = None) -> Tuple[float, float]:
         with self._lock:
-            if pos is None: pos = self.backend.position
+            if pos is None:
+                # Prioritize active loop from backend if it exists
+                if self.backend.active_loop_range:
+                    return self.backend.active_loop_range
+                pos = self.backend.position
             return self._looping.get_loop_range(pos, self.duration, self._flags.flags)
 
     # ---------- metronome helpers ----------

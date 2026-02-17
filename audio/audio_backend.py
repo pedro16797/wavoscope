@@ -69,7 +69,13 @@ class AudioBackend:
     def seek(self, sec: float) -> None:
         with self._playback._lock:
             self._playback.seek(sec)
-            self._active_loop_range = None
+
+            # Only reset loop range if we seek past the current loop
+            if self._active_loop_range:
+                _, lend = self._active_loop_range
+                if sec >= lend:
+                    self._active_loop_range = None
+
             self._filters.reset_zi()
 
             self._read_sample_idx = int(self._playback.position * self._playback._sr)
@@ -108,16 +114,18 @@ class AudioBackend:
         self._loop_provider = fn
 
     def set_loop_enabled(self, enabled: bool) -> None:
-        self._loop_enabled = enabled
-        if not enabled:
-            self._active_loop_range = None
+        with self._playback._lock:
+            self._loop_enabled = enabled
+            if not enabled:
+                self._active_loop_range = None
 
     def set_filter(self, **kwargs) -> None:
         with self._playback._lock:
             self._filters.set_filter(**kwargs)
 
     def reset_loop_range(self) -> None:
-        self._active_loop_range = None
+        with self._playback._lock:
+            self._active_loop_range = None
 
     def clear_tick_cache(self) -> None:
         if hasattr(self, "_last_tick_time"):
@@ -179,6 +187,11 @@ class AudioBackend:
     @property
     def _filter_high_hz(self) -> float:
         return self._filters._high_hz
+
+    @property
+    def active_loop_range(self) -> Tuple[float, float] | None:
+        with self._playback._lock:
+            return self._active_loop_range
 
     def register_callback(self, event: str, callback: Callable) -> None:
         self._playback.register_callback(event, callback)
