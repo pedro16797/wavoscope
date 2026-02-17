@@ -144,7 +144,11 @@ class Project:
     # ---------- playback passthrough ----------
     def seek(self, time: float) -> None: self.backend.seek(time)
     def pause(self) -> None: self.backend.pause()
-    def play(self) -> None: self.backend.play()
+    def play(self) -> None:
+        if not self.backend._playing:
+            self._last_play_start = self.backend.position
+        self.backend.play()
+
     def set_speed(self, speed: float) -> None: self.backend.set_speed(speed)
     def set_volume(self, volume: float) -> None: self.backend.set_volume(volume)
 
@@ -161,6 +165,10 @@ class Project:
     def position(self) -> float: return self.backend.position
     @property
     def duration(self) -> float: return self.backend.duration
+    @property
+    def _data(self) -> Any: return self.backend._data
+    @property
+    def _sr(self) -> int: return self.backend._sr
 
     def get_loop_range(self, pos: float | None = None) -> Tuple[float, float]:
         with self._lock:

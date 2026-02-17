@@ -15,11 +15,12 @@ class AudioProcessor:
         self._novasr_enabled: bool = False
         self._novasr: Any = None
 
-    def reset(self, sr: int | None = None):
+    def reset(self, sr: int | None = None, speed: float = 1.0):
         if sr is not None:
             self._sr = sr
             self._stretcher = ps.Stretch()
             self._stretcher.preset(1, float(self._sr))
+            self._stretcher.setTimeFactor(speed)
             self._tsm_buffer = RingBuffer(int(self._sr * 10))
         else:
             self._stretcher.reset()

@@ -51,7 +51,7 @@ class AudioBackend:
             data = data.astype(np.float32)
 
             self._playback.set_data(data, sr)
-            self._processor.reset(sr)
+            self._processor.reset(sr, speed=self._playback._speed)
             self._metronome.set_sr(sr)
             self._filters.set_sr(sr)
 
