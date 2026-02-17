@@ -57,7 +57,7 @@ python -m nuitka --standalone ^
     --noinclude-data-files="**/__pycache__/**" ^
     --windows-icon-from-ico=resources/icons/app-icon.png ^
     --nofollow-import-to=torch ^
-    --windows-console-mode=force ^
+    --windows-console-mode=disable ^
     --product-name="Wavoscope" ^
     --company-name="Lendas do Alén" ^
     --file-version="1.0.0" ^
@@ -72,9 +72,8 @@ if %errorlevel% equ 0 (
     if exist "dist\main.dist" (
         if exist "dist\Wavoscope" rd /s /q "dist\Wavoscope"
         xcopy /E /I /Y "dist\main.dist" "dist\Wavoscope" >nul
-        cd dist
-        tar -a -c -f ..\Wavoscope.zip Wavoscope
-        cd ..
+        python -c "import shutil; shutil.make_archive('Wavoscope', 'zip', root_dir='dist', base_dir='Wavoscope')"
+        rd /s /q "dist\Wavoscope"
         echo Wavoscope.zip created.
     ) else (
         echo [ERROR] Nuitka output directory not found.

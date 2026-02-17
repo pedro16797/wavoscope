@@ -8,16 +8,16 @@ Wavoscope is a musician-oriented audio transcription workbench. It is a desktop 
 ## Main Objectives
 We are currently focusing on:
 
-1.  **Quality & Performance Audit:** A comprehensive review of the project to identify bugs, optimize performance, and ensure code quality.
-    -   Detailed Task: [Bugs and Performance improvements](docs/tasks/bugs_and_performance.md)
-2.  **MusicXML Export:** Enabling users to export their transcription (rhythm, sections, and chords) as a structured MusicXML file.
-    -   Detailed Task: [MusicXML Export](docs/tasks/musicxml_export.md)
-3.  **Build Optimization:** Optimizing the standalone executable size by pruning dependencies and improving professional quality (e.g., hiding console, metadata).
-    -   Detailed Task: [Build Optimization and Size Reduction](docs/tasks/build_size_reduction.md)
+1.  **Lyrics Support:** Implement a system to display and edit lyrics alongside the audio.
+    -   Support for importing lyrics from text files.
+    -   Visual representation of lyrics on the timeline.
+2.  **AI Transcription & Alignment:** Leverage AI models to automate the transcription process.
+    -   Investigate AI models (e.g., Whisper) for initial song transcription.
+    -   Implement an alignment feature where users provide lyrics and the model automatically assigns timestamps to words or lines.
 
 ## Working Guidelines
 -   Always verify your changes by running existing tests (if any) or adding new ones.
--   Follow the technical details outlined in the specific task documents.
+-   Follow the technical details outlined in specific task documents in `docs/tasks/`.
 -   Maintain clear documentation of your progress.
 
 ## Documentation Maintenance
@@ -27,7 +27,7 @@ As an agent, you are responsible for keeping the project documentation accurate 
 -   **`Readme.md`**: Update with high-level project status and setup instructions.
 -   **`AGENTS.md`**: (This file) Update with major goals and guidelines.
 -   **`docs/project_structure.md`**: Update whenever directories or major files are added, moved, or removed.
--   **`docs/tasks/`**: Update the status of sub-tasks (check/uncheck boxes) and add new tasks as the project evolves.
+-   **`docs/tasks/`**: Create and update task documents as the project evolves.
 
 ### Formatting & Style:
 -   Use clear, concise Markdown.
