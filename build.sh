@@ -49,15 +49,16 @@ python3 -m nuitka --standalone \
     --product-name="Wavoscope" \
     --company-name="Lendas do Alén" \
     --file-version="1.0.0" \
+    --output-filename=Wavoscope \
     --enable-plugin=upx \
     --output-dir=dist \
     --assume-yes-for-downloads \
     main.py
 
 echo "Packaging into Wavoscope.zip..."
-if [ -d "dist/main.dist" ]; then
+if [ -d "dist/Wavoscope.dist" ]; then
     rm -rf dist/Wavoscope
-    cp -r dist/main.dist dist/Wavoscope
+    cp -r dist/Wavoscope.dist dist/Wavoscope
     python3 -c "import shutil; shutil.make_archive('Wavoscope', 'zip', root_dir='dist', base_dir='Wavoscope')"
     rm -rf dist/Wavoscope
     echo "Wavoscope.zip created."
