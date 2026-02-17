@@ -1,6 +1,6 @@
 from __future__ import annotations
 import bisect
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Dict, Any
 import numpy as np
 
 class MetronomeEngine:
@@ -12,7 +12,11 @@ class MetronomeEngine:
         self._metronome_enabled: bool = True
         self._strong_click = np.zeros(0, dtype=np.float32)
         self._weak_click = np.zeros(0, dtype=np.float32)
+        self._active_clicks: List[Dict[str, Any]] = []
         self.precalculate_clicks()
+
+    def reset(self):
+        self._active_clicks.clear()
 
     def set_sr(self, sr: int):
         self._sr = sr
@@ -29,25 +33,53 @@ class MetronomeEngine:
         dur_s = 0.1
         click_dur = int(dur_s * self._sr)
         t = np.arange(click_dur) / self._sr
-        envelope = np.exp(-t * 20)
+
+        # 1ms attack, k=100 decay (~10ms time constant)
+        attack_s = 0.001
+        attack_len = int(attack_s * self._sr)
+        envelope = np.ones(click_dur, dtype=np.float32)
+        if attack_len > 0:
+            envelope[:attack_len] = np.linspace(0, 1, attack_len)
+
+        decay_k = 100
+        envelope[attack_len:] = np.exp(-(t[attack_len:] - attack_s) * decay_k)
 
         def gen_click(freq: float) -> np.ndarray:
-            fundamental = np.sin(2 * np.pi * freq * t)
-            harmonic = 0.3 * np.sin(2 * np.pi * freq * 2 * t)
-            return ((fundamental + harmonic) * envelope).astype(np.float32)
+            # Multi-harmonic timbre for a more percussive "woodblock" feel
+            wave = (
+                1.0 * np.sin(2 * np.pi * freq * t) +
+                0.5 * np.sin(2 * np.pi * freq * 2 * t) +
+                0.3 * np.sin(2 * np.pi * freq * 3 * t) +
+                0.1 * np.sin(2 * np.pi * freq * 4 * t)
+            ).astype(np.float32)
+
+            # Ultra-short noise burst for the initial impact
+            rng = np.random.default_rng(int(freq))
+            noise = (rng.random(click_dur).astype(np.float32) * 2 - 1) * 0.2
+            noise *= np.exp(-t * 1000)
+
+            click = (wave + noise) * envelope
+
+            # Normalize to 1.0 peak
+            peak = np.max(np.abs(click))
+            if peak > 0:
+                click /= peak
+
+            return click.astype(np.float32)
 
         self._strong_click = gen_click(self._strong_freq)
         self._weak_click = gen_click(self._weak_freq)
 
     def add_clicks(self, outdata: np.ndarray, frames: int, cursor: float, provider: Callable):
         if not self._metronome_enabled or provider is None:
+            self.reset()
             return
 
         callback_start = cursor
         callback_end = cursor + frames / self._sr
 
+        # 1. Detect new ticks in this callback window
         ticks = provider(callback_start, callback_end)
-
         for tick_time, is_strong in ticks:
             if tick_time < callback_start or tick_time >= callback_end:
                 continue
@@ -77,7 +109,29 @@ class MetronomeEngine:
 
             volume = self._click_volume * (0.5 if shaded else 1.0)
             click_src = self._strong_click if is_strong else self._weak_click
+            self._active_clicks.append({
+                "data": click_src * volume,
+                "pos": 0,
+                "offset": offset
+            })
 
-            click_dur = min(len(click_src), frames - offset)
-            if click_dur > 0:
-                outdata[offset : offset + click_dur, 0] += click_src[:click_dur] * volume
+        # 2. Mix all active clicks into the output buffer
+        still_active = []
+        for click in self._active_clicks:
+            data = click["data"]
+            pos = click["pos"]
+            offset = click["offset"]
+
+            remaining_in_out = frames - offset
+            remaining_in_click = len(data) - pos
+            chunk_len = min(remaining_in_out, remaining_in_click)
+
+            if chunk_len > 0:
+                outdata[offset : offset + chunk_len, 0] += data[pos : pos + chunk_len]
+                click["pos"] += chunk_len
+                click["offset"] = 0  # Subsequent callbacks start from the beginning of the buffer
+
+            if click["pos"] < len(data):
+                still_active.append(click)
+
+        self._active_clicks = still_active

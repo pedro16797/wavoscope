@@ -130,6 +130,7 @@ class AudioBackend:
     def clear_tick_cache(self) -> None:
         if hasattr(self, "_last_tick_time"):
             delattr(self, "_last_tick_time")
+        self._metronome.reset()
 
     # ---------- read-only properties ----------
     @property
