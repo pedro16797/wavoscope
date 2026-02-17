@@ -12,6 +12,8 @@ We are currently focusing on:
     -   Detailed Task: [Bugs and Performance improvements](docs/tasks/bugs_and_performance.md)
 2.  **MusicXML Export:** Enabling users to export their transcription (rhythm, sections, and chords) as a structured MusicXML file.
     -   Detailed Task: [MusicXML Export](docs/tasks/musicxml_export.md)
+3.  **Build Optimization:** Optimizing the standalone executable size by pruning dependencies and improving professional quality (e.g., hiding console, metadata).
+    -   Detailed Task: [Build Optimization and Size Reduction](docs/tasks/build_size_reduction.md)
 
 ## Working Guidelines
 -   Always verify your changes by running existing tests (if any) or adding new ones.
