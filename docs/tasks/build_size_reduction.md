@@ -37,7 +37,7 @@ The current build includes large dependencies like Scipy (>140MB) and Sympy (>70
 - **Console Hiding**:
   - Use `--windows-disable-console` (on Windows) and `--macos-disable-console` (on macOS) flags in Nuitka to prevent the terminal from appearing when launching the GUI.
 - **Metadata and Versioning**:
-  - Include metadata flags like `--windows-product-name="Wavoscope"`, `--windows-company-name="Wavoscope"`, and `--windows-file-version` to provide a professional feel.
+  - Include metadata flags like `--windows-product-name="Wavoscope"`, `--windows-company-name="Lendas do Alén"`, and `--windows-file-version` to provide a professional feel.
 - **Startup Experience**:
   - Investigate Nuitka's splash screen plugin or implement a minimal loading indicator in the main thread to bridge the gap while the FastAPI backend and browser engine initialize.
 
