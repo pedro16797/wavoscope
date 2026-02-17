@@ -1,7 +1,7 @@
-# Task: Build Size Reduction
+# Task: Build Optimization and Size Reduction
 
 ## Objective
-Reduce the final distribution size of the Wavoscope standalone executable.
+Reduce the final distribution size and improve the professional quality of the Wavoscope standalone executable.
 
 ## Rationale
 The current build includes large dependencies like Scipy (>140MB) and Sympy (>70MB) which are only minimally used. Reducing the build size improves download speed and user experience.
@@ -33,9 +33,18 @@ The current build includes large dependencies like Scipy (>140MB) and Sympy (>70
   - Audit the `frontend/dist` directory to ensure no unnecessary large assets (uncompressed images, source maps) are included in the Nuitka data bundle.
   - Verify that Vite's production build is fully minified.
 
+### 4. Build Streamlining
+- **Console Hiding**:
+  - Use `--windows-disable-console` (on Windows) and `--macos-disable-console` (on macOS) flags in Nuitka to prevent the terminal from appearing when launching the GUI.
+- **Metadata and Versioning**:
+  - Include metadata flags like `--windows-product-name="Wavoscope"`, `--windows-company-name="Wavoscope"`, and `--windows-file-version` to provide a professional feel.
+- **Startup Experience**:
+  - Investigate Nuitka's splash screen plugin or implement a minimal loading indicator in the main thread to bridge the gap while the FastAPI backend and browser engine initialize.
+
 ## Sub-Tasks
 - [ ] **Replace Scipy FFT usage**: Switch to `numpy.fft` in all relevant files.
 - [ ] **Implement custom Butterworth filter**: Replace `scipy.signal.butter` and `sosfilt` with a lightweight implementation.
 - [ ] **Clean up dependencies**: Update `requirements.txt`, remove `imageio`, and create `requirements-dev.txt`.
 - [ ] **Configure Nuitka with UPX and --onefile**: Update build scripts to use optimization flags.
-- [ ] **Verify build size reduction**: Compare the new distribution size with the baseline and ensure all features still work.
+- [ ] **Streamline build usage**: Add `--windows-disable-console` and application metadata to build scripts.
+- [ ] **Verify build size reduction and streamlining**: Compare the new distribution size and launch behavior with the baseline.
