@@ -10,9 +10,9 @@ export const SpectrumView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full w-full min-h-0">
-      <div className="h-6 border-b-[width:var(--ui-border)] flex items-center px-4 font-bold text-[10px] opacity-50 uppercase tracking-widest shrink-0 bg-surface justify-between"
+      <div className="h-6 border-b-[width:var(--ui-border)] flex items-center px-4 font-bold text-[10px] uppercase tracking-widest shrink-0 bg-surface justify-between"
            style={{ borderBottomColor: 'var(--color-grid)' }}>
-        <span>Spectrum Analyzer</span>
+        <span className="opacity-50">Spectrum Analyzer</span>
 
         <div className="flex items-center gap-4 h-full">
             {/* FFT Window */}
@@ -20,7 +20,7 @@ export const SpectrumView: React.FC = () => {
                 <span className="text-[9px] opacity-60 font-bold">FFT</span>
                 <input type="range" min="0.05" max="1.0" step="0.05" value={fft_window}
                     onChange={(e) => setFFTWindow(parseFloat(e.target.value))}
-                    className="w-16 accent-current" title={`FFT Window: ${fft_window}s`} />
+                    className="w-32 accent-current" title={`FFT Window: ${fft_window}s`} />
                 <span className="text-[10px] font-mono w-8">{fft_window.toFixed(2)}s</span>
             </div>
 

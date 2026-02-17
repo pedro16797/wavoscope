@@ -41,7 +41,7 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
   filter_low_enabled: false,
   filter_high_enabled: false,
   filter_low_hz: 200,
-  filter_high_hz: 2000,
+  filter_high_hz: 800,
   fft_window: 0.3,
   octave_shift: 0,
 
@@ -77,22 +77,20 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     const oldState = get();
     const updates: any = {};
 
-    // Recover auto-positioning logic when enabling handles for the first time or if they are out of bounds
-    if ((filter.low_enabled === true && !oldState.filter_low_enabled) ||
-        (filter.high_enabled === true && !oldState.filter_high_enabled)) {
+    const baseMidi = 48 + oldState.octave_shift * 12;
+    const lowBound = midiToFreq(baseMidi);
+    const highBound = midiToFreq(baseMidi + oldState.spectrum_keys);
 
-        const baseMidi = 48 + oldState.octave_shift * 12;
-        const lowBound = midiToFreq(baseMidi);
-        const highBound = midiToFreq(baseMidi + oldState.spectrum_keys);
-
-        if (oldState.filter_low_hz < lowBound || oldState.filter_low_hz > highBound ||
-            oldState.filter_high_hz < lowBound || oldState.filter_high_hz > highBound) {
-
+    // Auto-positioning logic when enabling handles if they are out of bounds
+    if (filter.low_enabled === true && !oldState.filter_low_enabled) {
+        if (oldState.filter_low_hz < lowBound || oldState.filter_low_hz > highBound) {
             updates.filter_low_hz = midiToFreq(baseMidi + oldState.spectrum_keys * 0.3);
-            updates.filter_high_hz = midiToFreq(baseMidi + oldState.spectrum_keys * 0.7);
-
-            // If they aren't provided in the call, use these calculated ones
             if (filter.low_hz === undefined) filter.low_hz = updates.filter_low_hz;
+        }
+    }
+    if (filter.high_enabled === true && !oldState.filter_high_enabled) {
+        if (oldState.filter_high_hz < lowBound || oldState.filter_high_hz > highBound) {
+            updates.filter_high_hz = midiToFreq(baseMidi + oldState.spectrum_keys * 0.7);
             if (filter.high_hz === undefined) filter.high_hz = updates.filter_high_hz;
         }
     }
