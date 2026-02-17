@@ -43,6 +43,11 @@ export interface AppState {
   speed: number;
   volume: number;
   filename: string;
+  metadata: {
+    title: string;
+    artist: string;
+    album: string;
+  };
   flags: Flag[];
   harmony_flags: HarmonyFlag[];
   time_signature: TimeSignature;

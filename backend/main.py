@@ -43,6 +43,7 @@ async def get_status():
         "speed": state.project.backend._speed,
         "volume": state.project.backend._volume,
         "filename": state.project.audio_path.name,
+        "metadata": state.project.metadata,
         "flags": state.project.flags,
         "harmony_flags": state.project.harmony_flags,
         "time_signature": state.project.time_signature,

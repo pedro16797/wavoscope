@@ -29,7 +29,7 @@ When slowing down audio significantly, high-frequency detail is often lost. Enab
 
 ## 🔍 Spectral Analysis & Filtering
 
-The bottom half of the screen displays a constant-Q transform (CQT) spectrogram, mapped to a piano roll.
+The bottom half of the screen displays a constant-Q transform (CQT) spectrogram, mapped to a piano roll. You can adjust the **FFT Window** and **Octave Shift** using the controls in the spectrum analyzer header.
 
 ![Spectral Filtering](docs/images/spectrum_filter.png)
 

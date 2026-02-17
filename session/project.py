@@ -31,6 +31,8 @@ class Project:
         self.backend = AudioBackend()
         self.backend.set_tick_provider(self.subdivision_ticks_between)
 
+        self.metadata: Dict[str, str] = {"title": "", "artist": "", "album": ""}
+
         from utils.config import Config
         cfg = Config()
         self.backend.set_click_volume(cfg.get("ui.click_volume", 0.3))
@@ -48,11 +50,25 @@ class Project:
             try:
                 self.backend.open_file(path)
                 self.wave_cache = WaveformCache(self.backend._data, self.backend._sr)
+                self._extract_metadata(path)
             except Exception as e:
                 import traceback
                 traceback.print_exc()
                 raise
             self._spectrum_cache: Dict[str, Any] = {}
+
+    def _extract_metadata(self, path: Path) -> None:
+        try:
+            from tinytag import TinyTag
+            tag = TinyTag.get(str(path))
+            self.metadata = {
+                "title": tag.title or "",
+                "artist": tag.artist or "",
+                "album": tag.album or ""
+            }
+        except Exception as e:
+            print(f"[Project] Metadata extraction failed: {e}")
+            self.metadata = {"title": "", "artist": "", "album": ""}
 
     def save(self) -> None:
         with self._lock:

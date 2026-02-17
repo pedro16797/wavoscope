@@ -6,6 +6,11 @@ import { API_BASE } from '../useStore';
 export interface ProjectSlice {
   loaded: boolean;
   filename: string;
+  metadata: {
+    title: string;
+    artist: string;
+    album: string;
+  };
   flags: Flag[];
   harmony_flags: HarmonyFlag[];
   time_signature: TimeSignature;
@@ -34,6 +39,7 @@ export interface ProjectSlice {
 export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = (set, get) => ({
   loaded: false,
   filename: '',
+  metadata: { title: '', artist: '', album: '' },
   flags: [],
   harmony_flags: [],
   time_signature: { numerator: 4, denominator: 4 },

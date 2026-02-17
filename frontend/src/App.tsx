@@ -6,7 +6,7 @@ import { useAudioWebSocket } from './hooks/useAudioWebSocket';
 import { useTheme } from './hooks/useTheme';
 import { PlaybackBar } from './components/PlaybackBar';
 import { WaveformView } from './components/WaveformView';
-import { Spectrum } from './components/Spectrum';
+import { SpectrumView } from './components/SpectrumView';
 import { SettingsDialog } from './components/SettingsDialog';
 import { FlagDialog } from './components/FlagDialog';
 import { ChordDialog } from './components/ChordDialog';
@@ -40,15 +40,7 @@ const App: React.FC = () => {
             </Panel>
             <PanelResizeHandle className="h-1 bg-black/40 hover:bg-accent/50 transition-colors cursor-row-resize" />
             <Panel defaultSize={50} minSize={20}>
-                <div className="flex flex-col h-full min-h-0">
-                    <div className="h-6 border-b-[width:var(--ui-border)] flex items-center px-4 font-bold text-[10px] opacity-50 uppercase tracking-widest shrink-0 bg-surface"
-                         style={{ borderBottomColor: 'var(--color-grid)' }}>
-                      Spectrum Analyzer
-                    </div>
-                    <div className="flex-1 min-h-0">
-                      <Spectrum />
-                    </div>
-                </div>
+                <SpectrumView />
             </Panel>
           </PanelGroup>
       </div>
