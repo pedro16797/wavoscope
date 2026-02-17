@@ -42,9 +42,9 @@ The current build includes large dependencies like Scipy (>140MB) and Sympy (>70
   - Investigate Nuitka's splash screen plugin or implement a minimal loading indicator in the main thread to bridge the gap while the FastAPI backend and browser engine initialize.
 
 ## Sub-Tasks
-- [ ] **Replace Scipy FFT usage**: Switch to `numpy.fft` in all relevant files.
-- [ ] **Implement custom Butterworth filter**: Replace `scipy.signal.butter` and `sosfilt` with a lightweight implementation.
-- [ ] **Clean up dependencies**: Update `requirements.txt`, remove `imageio`, and create `requirements-dev.txt`.
-- [ ] **Configure Nuitka with UPX and --onefile**: Update build scripts to use optimization flags.
-- [ ] **Streamline build usage**: Add `--windows-disable-console` and application metadata to build scripts.
-- [ ] **Verify build size reduction and streamlining**: Compare the new distribution size and launch behavior with the baseline.
+- [x] **Replace Scipy FFT usage**: Switch to `numpy.fft` in all relevant files.
+- [x] **Implement custom Butterworth filter**: Replace `scipy.signal.butter` and `sosfilt` with a lightweight implementation.
+- [x] **Clean up dependencies**: Update `requirements.txt`, remove `imageio`, and create `requirements-dev.txt`.
+- [x] **Configure Nuitka with UPX and --onefile**: Update build scripts to use optimization flags.
+- [x] **Streamline build usage**: Add `--windows-console-mode=disable` and application metadata to build scripts.
+- [x] **Verify build size reduction and streamlining**: Compare the new distribution size and launch behavior with the baseline.
