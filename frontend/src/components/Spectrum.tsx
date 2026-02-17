@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { useStore, API_BASE, getChordMidiNotes, midiToFreq } from '../store/useStore';
+import { useStore, API_BASE } from '../store/useStore';
+import { getChordMidiNotes, midiToFreq } from '../store/utils';
 import axios from 'axios';
 
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];

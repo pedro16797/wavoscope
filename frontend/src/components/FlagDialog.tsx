@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useStore, type Flag } from '../store/useStore';
+import { useStore } from '../store/useStore';
+import type { Flag } from '../store/types';
 import axios from 'axios';
 
 interface FlagDialogProps {

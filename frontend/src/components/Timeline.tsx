@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useStore, formatChord, getChordMidiNotes, midiToFreq, API_BASE } from '../store/useStore';
+import { useStore, API_BASE } from '../store/useStore';
+import { formatChord, getChordMidiNotes, midiToFreq } from '../store/utils';
 import axios from 'axios';
 
 interface TimelineProps {

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { formatChord, getChordMidiNotes, midiToFreq, type Chord } from './useStore';
+import { formatChord, getChordMidiNotes, midiToFreq } from './utils';
+import type { Chord } from './types';
 
 describe('Store Utilities', () => {
   it('formats chords correctly', () => {
