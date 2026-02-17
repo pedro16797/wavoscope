@@ -13,10 +13,12 @@ class MetronomeEngine:
         self._strong_click = np.zeros(0, dtype=np.float32)
         self._weak_click = np.zeros(0, dtype=np.float32)
         self._active_clicks: List[Dict[str, Any]] = []
+        self._last_t: float = -1.0
         self.precalculate_clicks()
 
     def reset(self):
         self._active_clicks.clear()
+        self._last_t = -1.0
 
     def set_sr(self, sr: int):
         self._sr = sr
@@ -70,21 +72,30 @@ class MetronomeEngine:
         self._strong_click = gen_click(self._strong_freq)
         self._weak_click = gen_click(self._weak_freq)
 
-    def add_clicks(self, outdata: np.ndarray, frames: int, cursor: float, provider: Callable):
+    def add_clicks(self, outdata: np.ndarray, frames: int, cursor: float, provider: Callable, speed: float = 1.0):
         if not self._metronome_enabled or provider is None:
             self.reset()
             return
 
-        callback_start = cursor
-        callback_end = cursor + frames / self._sr
+        if self._last_t < 0:
+            self._last_t = cursor
 
-        # 1. Detect new ticks in this callback window
-        ticks = provider(callback_start, callback_end)
+        callback_start = cursor
+        # The timeline covered by 'frames' output samples is (frames / sr) * speed
+        callback_end = cursor + (frames / self._sr) * speed
+
+        # 1. Detect new ticks in this callback window.
+        # We start searching from the end of the previous callback to prevent double-triggering
+        # even if the audio cursor hasn't advanced perfectly due to stalls.
+        search_start = self._last_t
+        ticks = provider(search_start, callback_end)
+
         for tick_time, is_strong in ticks:
-            if tick_time < callback_start or tick_time >= callback_end:
+            if tick_time < search_start or tick_time >= callback_end:
                 continue
 
-            offset = int((tick_time - callback_start) * self._sr)
+            # Offset in output samples = (time_until_tick / speed) * sr
+            offset = int(((tick_time - callback_start) / speed) * self._sr)
             if offset < 0 or offset >= frames:
                 continue
 
@@ -135,3 +146,4 @@ class MetronomeEngine:
                 still_active.append(click)
 
         self._active_clicks = still_active
+        self._last_t = callback_end
