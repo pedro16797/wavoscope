@@ -299,19 +299,15 @@ class OpenProject(BaseModel):
 
 @router.post("/open")
 async def open_project(data: OpenProject):
-    print(f"[Backend] open_project called for: {data.path}")
     path = Path(data.path)
     if not path.exists():
         print(f"[Backend] Error: File not found at {data.path}")
         raise HTTPException(status_code=404, detail=f"File not found: {data.path}")
 
     try:
-        print("[Backend] Initializing new Project object...")
         new_project = Project(path)
-        print("[Backend] Calling open_file on project...")
         new_project.open_file(path)
         state.project = new_project
-        print("[Backend] Project loaded successfully")
         return {"status": "ok", "filename": path.name}
     except Exception as e:
         print(f"[Backend] Exception during open_project: {e}")
