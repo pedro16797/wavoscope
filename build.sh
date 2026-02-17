@@ -54,4 +54,17 @@ python3 -m nuitka --standalone \
     --assume-yes-for-downloads \
     main.py
 
-echo "Build complete. Check the 'dist' directory."
+echo "Packaging into Wavoscope.zip..."
+if [ -d "dist/main.dist" ]; then
+    rm -rf dist/Wavoscope
+    cp -r dist/main.dist dist/Wavoscope
+    cd dist
+    zip -q -r ../Wavoscope.zip Wavoscope/
+    cd ..
+    echo "Wavoscope.zip created."
+else
+    echo "[ERROR] Nuitka output directory not found."
+    exit 1
+fi
+
+echo "Build complete. Check Wavoscope.zip and the 'dist' directory."

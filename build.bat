@@ -68,7 +68,20 @@ python -m nuitka --standalone ^
     main.py
 
 if %errorlevel% equ 0 (
-    echo Build complete. Check the 'dist' directory.
+    echo Packaging into Wavoscope.zip...
+    if exist "dist\main.dist" (
+        if exist "dist\Wavoscope" rd /s /q "dist\Wavoscope"
+        xcopy /E /I /Y "dist\main.dist" "dist\Wavoscope" >nul
+        cd dist
+        tar -a -c -f ..\Wavoscope.zip Wavoscope
+        cd ..
+        echo Wavoscope.zip created.
+    ) else (
+        echo [ERROR] Nuitka output directory not found.
+        pause
+        exit /b 1
+    )
+    echo Build complete. Check Wavoscope.zip and the 'dist' directory.
 ) else (
     echo [ERROR] Build failed.
 )
