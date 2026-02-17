@@ -67,6 +67,11 @@ class Project:
     def time_signature(self) -> Dict[str, int]:
         return self.session_data.get("time_signature", {"numerator": 4, "denominator": 4})
 
+    @property
+    def can_export(self) -> bool:
+        with self._lock:
+            return any(f.get("type") == "rhythm" for f in self._flags.flags)
+
     def update_time_signature(self, numerator: int, denominator: int) -> None:
         with self._lock:
             self.session_data["time_signature"] = {"numerator": numerator, "denominator": denominator}

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response, BackgroundTasks
 from pydantic import BaseModel
 from pathlib import Path
 import traceback
@@ -216,8 +216,66 @@ async def save_project():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save project: {str(e)}")
 
+@router.get("/export/musicxml/check")
+async def check_export():
+    if not state.project:
+        return {"can_export": False, "reason": "No project loaded"}
+    if not state.project.can_export:
+        return {"can_export": False, "reason": "No rhythm flags found. At least one rhythm flag is required to define measures."}
+    return {"can_export": True}
+
+class ExportStartData(BaseModel):
+    path: str
+
+def bg_export(path: str, session_data: dict, audio_name: str):
+    state.export_active = True
+    state.export_progress = 0.0
+    state.export_message = "Starting export..."
+    try:
+        from session.export import generate_musicxml
+        def progress_cb(ratio, msg):
+            state.export_progress = ratio
+            state.export_message = msg
+
+        xml_content = generate_musicxml(session_data, audio_name, progress_callback=progress_cb)
+
+        state.export_message = "Saving file..."
+        Path(path).write_text(xml_content, encoding="utf-8")
+        state.export_progress = 1.0
+        state.export_message = "Done!"
+    except Exception as e:
+        print(f"[Backend] bg_export error: {e}")
+        traceback.print_exc()
+        state.export_message = f"Error: {str(e)}"
+    finally:
+        import time
+        time.sleep(2) # Keep the message for a moment
+        state.export_active = False
+
+@router.post("/export/musicxml/start")
+async def start_export(data: ExportStartData, background_tasks: BackgroundTasks):
+    """Starts a background task to export the project to MusicXML."""
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+
+    # We copy the data to avoid thread issues if project changes
+    session_data = state.project.session_data.copy()
+    audio_name = state.project.audio_path.name
+
+    background_tasks.add_task(bg_export, data.path, session_data, audio_name)
+    return {"status": "started"}
+
+@router.get("/export/musicxml/progress")
+async def get_export_progress():
+    return {
+        "active": state.export_active,
+        "progress": state.export_progress,
+        "message": state.export_message
+    }
+
 @router.get("/export/musicxml")
 async def export_musicxml():
+    # Legacy endpoint for browser fallback
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
     try:

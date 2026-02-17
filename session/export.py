@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 from typing import List, Dict, Any
 import datetime
 
-def generate_musicxml(session_data: Dict[str, Any], audio_filename: str) -> str:
+def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progress_callback=None) -> str:
     root = ET.Element("score-partwise", version="4.0")
 
     # Work info
@@ -38,6 +38,9 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str) -> str:
         divisions = 480
 
         for i in range(len(rhythm_flags)):
+            if progress_callback:
+                progress_callback(i / len(rhythm_flags), f"Generating measure {i+1} of {len(rhythm_flags)}...")
+
             start_t = rhythm_flags[i]["t"]
 
             if i + 1 < len(rhythm_flags):
@@ -98,7 +101,13 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str) -> str:
             ET.SubElement(note, "duration").text = str(total_measure_div)
             ET.SubElement(note, "voice").text = "1"
 
+    if progress_callback:
+        progress_callback(0.9, "Finalizing XML structure...")
     xml_str = ET.tostring(root, encoding='unicode')
+
+    if progress_callback:
+        progress_callback(1.0, "Export complete.")
+
     return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + \
            '<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">\n' + \
            xml_str

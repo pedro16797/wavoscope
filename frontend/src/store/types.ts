@@ -29,6 +29,12 @@ export interface TimeSignature {
   denominator: number;
 }
 
+export interface ExportStatus {
+  active: boolean;
+  progress: number;
+  message: string;
+}
+
 export interface AppState {
   loaded: boolean;
   position: number;
@@ -61,6 +67,7 @@ export interface AppState {
   showSettings: boolean;
   editingFlagIdx: number | null;
   editingHarmonyFlagIdx: number | null;
+  export_status: ExportStatus;
 
   fetchStatus: () => Promise<void>;
   fetchThemes: () => Promise<void>;
