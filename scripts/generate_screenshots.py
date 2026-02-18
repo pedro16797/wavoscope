@@ -1,7 +1,15 @@
 import os
 import time
-import requests
+import urllib.request
+import json
 from playwright.sync_api import sync_playwright
+
+def post_json(url, data):
+    payload = json.dumps(data).encode('utf-8')
+    req = urllib.request.Request(url, data=payload, method='POST')
+    req.add_header('Content-Type', 'application/json')
+    with urllib.request.urlopen(req) as resp:
+        return resp.read()
 
 def generate():
     with sync_playwright() as p:
@@ -14,7 +22,7 @@ def generate():
 
         # 2. Load the audio file via API
         audio_path = os.path.abspath("tests/data/Test.mp3")
-        requests.post("http://127.0.0.1:8000/project/open", json={"path": audio_path})
+        post_json("http://127.0.0.1:8000/project/open", {"path": audio_path})
         time.sleep(2) # Wait for processing
 
         # 3. Take main UI screenshot
@@ -37,7 +45,6 @@ def generate():
 
         # 5. Screenshot: Settings Dialog
         # Set it in the store FIRST so the dialog picks it up when opened
-        page.evaluate("window.useStore.getState().updateConfig({high_quality_enhancement: true})")
         time.sleep(0.5)
         page.evaluate("window.useStore.getState().setShowSettings(true)")
         time.sleep(1)

@@ -4,8 +4,6 @@ soundfile>=0.12
 fastapi
 uvicorn
 websockets
-python-multipart
 pywebview
-requests
 python-stretch
 tinytag

@@ -2,4 +2,3 @@ pytest>=8.0
 nuitka
 playwright
 httpx
-zstandard

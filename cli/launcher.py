@@ -1,5 +1,5 @@
 import uvicorn
-import requests
+import urllib.request
 import time
 import threading
 
@@ -15,9 +15,9 @@ def start_backend_thread():
 def wait_for_backend(url='http://127.0.0.1:8000', max_retries=5):
     for i in range(max_retries):
         try:
-            resp = requests.get(f"{url}/status", timeout=1)
-            if resp.status_code == 200:
-                return True
+            with urllib.request.urlopen(f"{url}/status", timeout=1) as resp:
+                if resp.status == 200:
+                    return True
         except Exception:
             pass
         time.sleep(1)
