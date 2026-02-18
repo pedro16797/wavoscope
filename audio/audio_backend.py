@@ -6,7 +6,6 @@ from __future__ import annotations
 import threading
 from pathlib import Path
 from typing import Callable, List, Tuple, Any, Dict
-import traceback
 
 import numpy as np
 import soundfile as sf
@@ -16,6 +15,7 @@ from audio.engine.playback import PlaybackEngine
 from audio.engine.processing import AudioProcessor
 from audio.engine.metronome import MetronomeEngine
 from audio.engine.filters import FilterEngine
+from utils.logging import logger
 
 
 class AudioBackend:
@@ -287,6 +287,6 @@ class AudioBackend:
                     self._playback._on_finished()
 
         except Exception:
-            traceback.print_exc()
+            logger.exception("Error in audio callback")
         finally:
             self._playback._lock.release()

@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 import numpy as np
+from utils.logging import logger
 try:
     import sounddevice as sd
 except OSError:
@@ -31,7 +32,7 @@ class SimpleSynth:
             )
             self._stream.start()
         else:
-            print("[SimpleSynth] sounddevice/PortAudio not available. Synth output disabled.")
+            logger.warning("sounddevice/PortAudio not available. Synth output disabled.")
 
     # ---------- public ----------
     def start_tone(self, freq: float) -> None:

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Response, BackgroundTasks
 from pydantic import BaseModel
 from pathlib import Path
-import traceback
 import numpy as np
 from backend import state
+from utils.logging import logger
 from session.project import Project
 
 router = APIRouter(prefix="/project", tags=["project"])
@@ -49,8 +49,7 @@ async def add_flag(flag: FlagData):
         )
         return {"status": "ok", "flags": state.project.flags}
     except Exception as e:
-        print(f"[Backend] Error in add_flag: {e}")
-        traceback.print_exc()
+        logger.exception("Error in add_flag")
         raise HTTPException(status_code=500, detail=f"Failed to add flag: {str(e)}")
 
 @router.delete("/flags/{idx}")
@@ -93,8 +92,7 @@ async def update_flag(idx: int, flag: FlagData):
         )
         return {"status": "ok", "flags": state.project.flags}
     except Exception as e:
-        print(f"[Backend] Error in update_flag: {e}")
-        traceback.print_exc()
+        logger.exception("Error in update_flag")
         raise HTTPException(status_code=500, detail=f"Failed to update flag: {str(e)}")
 
 class FlagInsertN(BaseModel):
@@ -109,8 +107,7 @@ async def insert_n_flags(data: FlagInsertN):
         state.project.insert_equi_spaced_flags(data.left_idx, data.left_idx + 1, data.count)
         return {"status": "ok", "flags": state.project.flags}
     except Exception as e:
-        print(f"[Backend] Error in insert_n_flags: {e}")
-        traceback.print_exc()
+        logger.exception("Error in insert_n_flags")
         raise HTTPException(status_code=500, detail=f"Failed to insert flags: {str(e)}")
 
 @router.post("/time_signature")
@@ -131,8 +128,7 @@ async def add_harmony_flag(flag: HarmonyFlagData):
         state.project.add_harmony_flag(flag.t, flag.chord.model_dump())
         return {"status": "ok", "harmony_flags": state.project.harmony_flags}
     except Exception as e:
-        print(f"[Backend] Error in add_harmony_flag: {e}")
-        traceback.print_exc()
+        logger.exception("Error in add_harmony_flag")
         raise HTTPException(status_code=500, detail=f"Failed to add harmony flag: {str(e)}")
 
 @router.delete("/harmony_flags/{idx}")
@@ -167,8 +163,7 @@ async def update_harmony_flag(idx: int, flag: HarmonyFlagData):
         state.project.update_harmony_flag(idx, flag.t, flag.chord.model_dump())
         return {"status": "ok", "harmony_flags": state.project.harmony_flags}
     except Exception as e:
-        print(f"[Backend] Error in update_harmony_flag: {e}")
-        traceback.print_exc()
+        logger.exception("Error in update_harmony_flag")
         raise HTTPException(status_code=500, detail=f"Failed to update harmony flag: {str(e)}")
 
 @router.get("/analyze_chord")
@@ -202,8 +197,7 @@ async def analyze_chord(t: float):
         suggestion = analyze_chord_at(y_mono, sr, t)
         return suggestion
     except Exception as e:
-        print(f"[Backend] Error in analyze_chord: {e}")
-        traceback.print_exc()
+        logger.exception("Error in analyze_chord")
         raise HTTPException(status_code=500, detail=f"Chord analysis failed: {str(e)}")
 
 @router.post("/save")
@@ -244,8 +238,7 @@ def bg_export(path: str, session_data: dict, audio_name: str, audio_duration: fl
         state.export_progress = 1.0
         state.export_message = "Done!"
     except Exception as e:
-        print(f"[Backend] bg_export error: {e}")
-        traceback.print_exc()
+        logger.exception("bg_export error")
         state.export_message = f"Error: {str(e)}"
     finally:
         import time
@@ -290,8 +283,7 @@ async def export_musicxml():
             }
         )
     except Exception as e:
-        print(f"[Backend] Error in export_musicxml: {e}")
-        traceback.print_exc()
+        logger.exception("Error in export_musicxml")
         raise HTTPException(status_code=500, detail=f"Failed to export MusicXML: {str(e)}")
 
 class OpenProject(BaseModel):
@@ -301,7 +293,7 @@ class OpenProject(BaseModel):
 async def open_project(data: OpenProject):
     path = Path(data.path)
     if not path.exists():
-        print(f"[Backend] Error: File not found at {data.path}")
+        logger.error(f"File not found at {data.path}")
         raise HTTPException(status_code=404, detail=f"File not found: {data.path}")
 
     try:
@@ -313,6 +305,5 @@ async def open_project(data: OpenProject):
         state.project = new_project
         return {"status": "ok", "filename": path.name}
     except Exception as e:
-        print(f"[Backend] Exception during open_project: {e}")
-        traceback.print_exc()
+        logger.exception("Exception during open_project")
         raise HTTPException(status_code=500, detail=f"Failed to open project: {str(e)}")

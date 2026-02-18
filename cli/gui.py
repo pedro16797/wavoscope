@@ -1,5 +1,6 @@
 import webview
 import requests
+from utils.logging import logger
 
 def on_closing():
     try:
@@ -13,7 +14,7 @@ def on_closing():
 class Api:
     def browse(self):
         if not webview.windows:
-            print("[Api] Error: No windows found")
+            logger.error("No windows found")
             return
         window = webview.windows[0]
         file_types = ('Audio Files (*.wav;*.mp3;*.flac;*.ogg)', 'All files (*.*)')
@@ -24,13 +25,13 @@ class Api:
                 resp = requests.post('http://127.0.0.1:8000/project/open', json={'path': file_path})
                 resp.raise_for_status()
             except Exception as e:
-                print(f"[Api] Error opening file: {e}")
+                logger.error(f"Error opening file: {e}")
                 if hasattr(e, 'response') and e.response is not None:
-                    print(f"[Api] Backend Error Detail: {e.response.text}")
+                    logger.error(f"Backend Error Detail: {e.response.text}")
 
     def save_dialog(self, default_filename, directory=None):
         if not webview.windows:
-            print("[Api] Error: No windows found")
+            logger.error("No windows found")
             return None
         window = webview.windows[0]
         file_types = ('MusicXML Files (*.musicxml)', 'All files (*.*)')

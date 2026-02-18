@@ -45,35 +45,35 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
   fft_window: 0.3,
   octave_shift: 0,
 
-  controlPlayback: async (action, value) => {
+  controlPlayback: async (action: string, value?: number) => {
     try {
       await axios.post(`${API_BASE}/playback`, { action, value });
-      if (action === 'set_speed' && value !== undefined) set({ speed: value } as any);
-      if (action === 'set_volume' && value !== undefined) set({ volume: value } as any);
+      if (action === 'set_speed' && value !== undefined) set({ speed: value });
+      if (action === 'set_volume' && value !== undefined) set({ volume: value });
     } catch (e) {
       console.error(`[Store] Failed to control playback (${action}):`, e);
     }
   },
 
-  updatePosition: (pos) => {
-    set({ position: pos } as any);
+  updatePosition: (pos: number) => {
+    set({ position: pos });
   },
 
-  setPlaying: (playing) => {
-    set({ playing } as any);
+  setPlaying: (playing: boolean) => {
+    set({ playing });
   },
 
-  setLoopMode: async (mode) => {
+  setLoopMode: async (mode: string) => {
     try {
         await axios.post(`${API_BASE}/playback/loop`, { mode });
-        set({ loop_mode: mode } as any);
+        set({ loop_mode: mode });
         await get().fetchStatus();
     } catch (e) {
         console.error("[Store] Failed to set loop mode:", e);
     }
   },
 
-  updateFilter: async (filter) => {
+  updateFilter: async (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => {
     const oldState = get();
     const updates: any = {};
 
@@ -109,8 +109,8 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     }
   },
 
-  setFFTWindow: (sec) => set({ fft_window: sec } as any),
-  setOctaveShift: (shift) => {
+  setFFTWindow: (sec: number) => set({ fft_window: sec }),
+  setOctaveShift: (shift: number) => {
     const state = get();
     const maxShift = 6 - Math.floor(state.spectrum_keys / 12);
     const clampedShift = Math.max(-2, Math.min(maxShift, shift));

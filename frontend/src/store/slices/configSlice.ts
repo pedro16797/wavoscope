@@ -44,7 +44,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   fetchThemes: async () => {
     try {
       const res = await axios.get(`${API_BASE}/themes`);
-      set({ themes: res.data } as any);
+      set({ themes: res.data });
     } catch (e) {
       console.error("[Store] Failed to fetch themes:", e);
     }
@@ -82,7 +82,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         updates.filter_high_hz = midiToFreq(newBaseMidi + ratioHigh * newKeys);
       }
 
-      set(updates as any);
+      set(updates);
     } catch (e) {
       console.error("[Store] Failed to fetch config:", e);
     }
@@ -91,17 +91,17 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   setTheme: async (name) => {
     try {
         await axios.post(`${API_BASE}/config`, { theme: name });
-        set({ currentTheme: name } as any);
+        set({ currentTheme: name });
     } catch (e) {
         console.error("[Store] Failed to set theme:", e);
     }
   },
 
-  updateMetronome: async (enabled, volume) => {
+  updateMetronome: async (enabled?: boolean, volume?: number) => {
     try {
         await axios.post(`${API_BASE}/playback/metronome`, { enabled, volume });
-        if (enabled !== undefined) set({ metronome_enabled: enabled } as any);
-        if (volume !== undefined) set({ click_volume: volume } as any);
+        if (enabled !== undefined) set({ metronome_enabled: enabled });
+        if (volume !== undefined) set({ click_volume: volume });
     } catch (e) {
         console.error("[Store] Failed to update metronome:", e);
     }
@@ -111,11 +111,11 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
     try {
         const oldState = get();
         await axios.post(`${API_BASE}/config`, cfg);
-        if (cfg.theme) set({ currentTheme: cfg.theme } as any);
-        if (cfg.click_volume !== undefined) set({ click_volume: cfg.click_volume } as any);
-        if (cfg.high_quality_enhancement !== undefined) set({ high_quality_enhancement: cfg.high_quality_enhancement } as any);
-        if (cfg.default_output_folder !== undefined) set({ default_output_folder: cfg.default_output_folder } as any);
-        if (cfg.musicxml_author !== undefined) set({ musicxml_author: cfg.musicxml_author } as any);
+        if (cfg.theme) set({ currentTheme: cfg.theme });
+        if (cfg.click_volume !== undefined) set({ click_volume: cfg.click_volume });
+        if (cfg.high_quality_enhancement !== undefined) set({ high_quality_enhancement: cfg.high_quality_enhancement });
+        if (cfg.default_output_folder !== undefined) set({ default_output_folder: cfg.default_output_folder });
+        if (cfg.musicxml_author !== undefined) set({ musicxml_author: cfg.musicxml_author });
 
         if (cfg.spectrum_keys !== undefined && cfg.spectrum_keys !== oldState.spectrum_keys) {
             const newKeys = cfg.spectrum_keys;
@@ -155,5 +155,5 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
     }
   },
 
-  setShowSettings: (show) => set({ showSettings: show } as any),
+  setShowSettings: (show: boolean) => set({ showSettings: show }),
 });

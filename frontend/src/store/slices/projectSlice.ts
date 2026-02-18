@@ -84,7 +84,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  addFlag: async (t) => {
+  addFlag: async (t: number) => {
     try {
         await axios.post(`${API_BASE}/project/flags`, { t });
         get().fetchStatus();
@@ -93,7 +93,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  moveFlag: async (idx, t) => {
+  moveFlag: async (idx: number, t: number) => {
     try {
         await axios.post(`${API_BASE}/project/flags/move`, { idx, t });
         get().fetchStatus();
@@ -102,7 +102,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  removeFlag: async (idx) => {
+  removeFlag: async (idx: number) => {
     try {
         await axios.delete(`${API_BASE}/project/flags/${idx}`);
         get().fetchStatus();
@@ -111,7 +111,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  addHarmonyFlag: async (t, chord) => {
+  addHarmonyFlag: async (t: number, chord?: Chord) => {
     try {
         if (!chord) {
             chord = await get().analyzeChord(t);
@@ -125,7 +125,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  moveHarmonyFlag: async (idx, t) => {
+  moveHarmonyFlag: async (idx: number, t: number) => {
     try {
         await axios.post(`${API_BASE}/project/harmony_flags/move`, { idx, t });
         get().fetchStatus();
@@ -134,7 +134,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  removeHarmonyFlag: async (idx) => {
+  removeHarmonyFlag: async (idx: number) => {
     try {
         await axios.delete(`${API_BASE}/project/harmony_flags/${idx}`);
         get().fetchStatus();
@@ -143,7 +143,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  updateHarmonyFlag: async (idx, t, chord) => {
+  updateHarmonyFlag: async (idx: number, t: number, chord: Chord) => {
     try {
         await axios.patch(`${API_BASE}/project/harmony_flags/${idx}`, { t, chord });
         get().fetchStatus();
@@ -152,7 +152,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  analyzeChord: async (t) => {
+  analyzeChord: async (t: number) => {
     try {
         const res = await axios.get(`${API_BASE}/project/analyze_chord`, { params: { t } });
         return res.data;
@@ -171,7 +171,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  updateTimeSignature: async (numerator, denominator) => {
+  updateTimeSignature: async (numerator: number, denominator: number) => {
     try {
         await axios.post(`${API_BASE}/project/time_signature`, { numerator, denominator });
         get().fetchStatus();
@@ -183,7 +183,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   saveProject: async () => {
     try {
         await axios.post(`${API_BASE}/project/save`);
-        set({ dirty: false } as any);
+        set({ dirty: false });
     } catch (e) {
         console.error("[Store] Failed to save project:", e);
     }
@@ -212,7 +212,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
         } else {
             // Fallback for browser: direct download (old way)
             // But user wants a progress bar. We'll show an indeterminate one for browser case.
-            set({ export_status: { active: true, progress: 0, message: 'Generating MusicXML...' } } as any);
+            set({ export_status: { active: true, progress: 0, message: 'Generating MusicXML...' } });
             try {
                 const res = await axios.get(`${API_BASE}/project/export/musicxml`, { responseType: 'blob' });
                 const url = window.URL.createObjectURL(res.data);
@@ -226,11 +226,11 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
                 }, 100);
-                set({ export_status: { active: true, progress: 1.0, message: 'Done!' } } as any);
-                setTimeout(() => set({ export_status: { active: false, progress: 0, message: '' } } as any), 1000);
+                set({ export_status: { active: true, progress: 1.0, message: 'Done!' } });
+                setTimeout(() => set({ export_status: { active: false, progress: 0, message: '' } }), 1000);
                 return;
             } catch (e) {
-                set({ export_status: { active: false, progress: 0, message: '' } } as any);
+                set({ export_status: { active: false, progress: 0, message: '' } });
                 throw e;
             }
         }
@@ -244,13 +244,13 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
         const poll = async () => {
             try {
                 const res = await axios.get(`${API_BASE}/project/export/musicxml/progress`);
-                set({ export_status: res.data } as any);
+                set({ export_status: res.data });
                 if (res.data.active) {
                     setTimeout(poll, 200);
                 }
             } catch (e) {
                 console.error("[Store] Progress poll failed:", e);
-                set({ export_status: { active: false, progress: 0, message: '' } } as any);
+                set({ export_status: { active: false, progress: 0, message: '' } });
             }
         };
         poll();
@@ -258,10 +258,10 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     } catch (e) {
         console.error("[Store] Failed to export MusicXML:", e);
         alert("Failed to export MusicXML. Please check the backend console.");
-        set({ export_status: { active: false, progress: 0, message: '' } } as any);
+        set({ export_status: { active: false, progress: 0, message: '' } });
     }
   },
 
-  setEditingFlagIdx: (idx) => set({ editingFlagIdx: idx } as any),
-  setEditingHarmonyFlagIdx: (idx) => set({ editingHarmonyFlagIdx: idx } as any),
+  setEditingFlagIdx: (idx: number | null) => set({ editingFlagIdx: idx }),
+  setEditingHarmonyFlagIdx: (idx: number | null) => set({ editingHarmonyFlagIdx: idx }),
 });

@@ -1,6 +1,6 @@
-# OSCOPE - Audio Analysis & Transcription Tool
+# Wavoscope - Audio Analysis & Transcription Tool
 
-OSCOPE is a powerful, real-time audio visualization and transcription aid designed for musicians, transcribers, and audio engineers. It provides high-fidelity waveforms, spectral analysis, and a robust marker system to help you deconstruct complex audio.
+Wavoscope is a powerful, real-time audio visualization and transcription aid designed for musicians, transcribers, and audio engineers. It provides high-fidelity waveforms, spectral analysis, and a robust marker system to help you deconstruct complex audio.
 
 ![Main Interface](docs/images/main_view.png)
 
@@ -9,7 +9,7 @@ OSCOPE is a powerful, real-time audio visualization and transcription aid design
 ## 🚀 Getting Started
 
 ### Project Management
-OSCOPE uses a "sidecar" file system. When you open an audio file, OSCOPE creates or loads a `.oscope` file in the same directory to store your markers, loops, and settings.
+Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope creates or loads a `.oscope` file in the same directory to store your markers, loops, and settings.
 - **Open:** Click the folder icon in the playback bar to load any common audio format (MP3, WAV, FLAC, etc.).
 - **Save:** Click the floppy disk icon. The icon will glow with your theme's accent color when there are unsaved changes.
 
@@ -20,7 +20,7 @@ OSCOPE uses a "sidecar" file system. When you open an audio file, OSCOPE creates
 - **Zooming:** Use your **Mouse Wheel** over the waveform or spectrum to zoom in/out.
 - **Panning:** **Click and Drag** the waveform or spectrum to move through the timeline.
 - **Playback Cursor:** **Left Click** on the waveform to move the playhead.
-- **Speed Control:** Use the slider in the bottom bar to adjust speed from 0.1x to 2.0x. OSCOPE uses high-quality time-stretching that preserves pitch.
+- **Speed Control:** Use the slider in the bottom bar to adjust speed from 0.1x to 2.0x. Wavoscope uses high-quality time-stretching that preserves pitch.
 
 ### High-Quality Enhancement (NovaSR)
 When slowing down audio significantly, high-frequency detail is often lost. Enable **High Quality Enhancement** in the settings to use the integrated **NovaSR** neural network, which recovers clarity and "air" in real-time during slow playback.
@@ -43,7 +43,7 @@ You can isolate specific instruments or notes using the real-time band-pass filt
 
 ## 🚩 Markers & Transcription
 
-OSCOPE uses a dual-flag system to help you map out the structure and harmony of a track.
+Wavoscope uses a dual-flag system to help you map out the structure and harmony of a track.
 
 ### Rhythm Flags (Rhythm/Bar Markers)
 - **Placement:** Press `B` (default) or **Left Click** on the timeline to drop a rhythm flag.
@@ -56,7 +56,7 @@ OSCOPE uses a dual-flag system to help you map out the structure and harmony of 
 ### Harmony Flags (Chord Markers)
 - **Placement:** Press `H` (default) or **Right Click** on the timeline to drop a harmony flag.
 - **Chord Editor:** **Right Click** an existing flag to open the Chord Dialog. You can type chord names (e.g., "Am7", "C/G") or use the selectors.
-- **Automatic Analysis:** Use the **Suggest** button to let OSCOPE analyze the audio at that position and recommend the most likely chord.
+- **Automatic Analysis:** Use the **Suggest** button to let Wavoscope analyze the audio at that position and recommend the most likely chord.
 - **Auditioning:** **Hold Left Click** on a harmony flag handle or click the "Play" button in the dialog to hear the chord played via the internal synthesizer.
 
 ![Harmony Flag Dialog](docs/images/harmony_dialog.png)
@@ -78,7 +78,7 @@ Access the settings via the gear icon in the playback bar:
 - **High Quality Enhancement:** Toggle the NovaSR super-resolution engine.
 
 ### Themes
-OSCOPE is fully themeable. Choose a look that suits your environment:
+Wavoscope is fully themeable. Choose a look that suits your environment:
 - **Cosmic:** Deep purples and nebular accents.
 - **Dark:** Classic, easy-on-the-eyes dark mode.
 - **Doll:** High-energy pinks and playful tones.

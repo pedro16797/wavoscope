@@ -83,7 +83,7 @@ export const PlaybackBar: React.FC = () => {
                 </button>
                 {/* Metronome */}
                 <button onClick={() => updateMetronome(!metronome_enabled)}
-                        className={`p-2 rounded transition-colors ${metronome_enabled ? 'text-accent bg-accent/10' : 'opacity-40'}`}
+                        className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${metronome_enabled ? 'text-accent bg-accent/10' : 'opacity-40'}`}
                         title="Toggle Metronome">
                     <Timer size={18} />
                 </button>

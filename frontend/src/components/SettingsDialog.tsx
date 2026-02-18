@@ -18,6 +18,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const [author, setAuthor] = useState(musicxml_author);
   const [timeSig, setTimeSig] = useState(time_signature);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDenDropdownOpen, setIsDenDropdownOpen] = useState(false);
 
   const handleSave = async () => {
     updateConfig({
@@ -150,13 +151,27 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                 </div>
                                 <div className="text-xl opacity-20 mt-4">/</div>
                                 <div className="flex-1 space-y-1">
-                                    <label htmlFor="time-sig-den" className="text-[9px] opacity-40 uppercase">Denominator</label>
-                                    <select id="time-sig-den" value={timeSig.denominator}
-                                            onChange={(e) => setTimeSig({...timeSig, denominator: parseInt(e.target.value)})}
-                                            className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent accent-accent"
-                                            style={{ borderWidth: 'var(--ui-border)' }}>
-                                        {[2, 4, 8, 16].map(d => <option key={d} value={d}>{d}</option>)}
-                                    </select>
+                                    <label className="text-[9px] opacity-40 uppercase font-bold">Denominator</label>
+                                    <div className="relative">
+                                        <button onClick={() => setIsDenDropdownOpen(!isDenDropdownOpen)}
+                                                className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 flex justify-between items-center text-sm font-mono text-text outline-none focus:border-accent transition-colors"
+                                                style={{ borderWidth: 'var(--ui-border)' }}>
+                                            <span>{timeSig.denominator}</span>
+                                            <ChevronDown size={14} className={`transition-transform duration-200 ${isDenDropdownOpen ? 'rotate-180' : ''}`} />
+                                        </button>
+                                        {isDenDropdownOpen && (
+                                            <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-grid rounded-[var(--ui-radius)] shadow-2xl z-50 overflow-hidden"
+                                                 style={{ backgroundColor: 'var(--color-surface)', borderWidth: 'var(--ui-border)' }}>
+                                                {[2, 4, 8, 16].map(d => (
+                                                    <button key={d}
+                                                            onClick={() => { setTimeSig({...timeSig, denominator: d}); setIsDenDropdownOpen(false); }}
+                                                            className={`w-full text-left px-3 py-2 text-sm font-mono transition-colors ${timeSig.denominator === d ? 'bg-accent text-background font-bold' : 'hover:bg-accent/20 text-text'}`}>
+                                                        {d}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <p className="text-[10px] opacity-40 mt-2">

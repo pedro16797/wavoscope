@@ -2,17 +2,17 @@ import numpy as np
 import numpy.fft
 from typing import Dict, Any
 
-def analyze_chord_at(y: np.ndarray, sr: int, t: float, window_s: float = 0.5) -> Dict[str, Any]:
+def analyze_chord_at(audio_data: np.ndarray, sr: int, t: float, window_s: float = 0.5) -> Dict[str, Any]:
     """
     Suggest a chord based on audio chroma around time t.
     """
-    if y is None or len(y) == 0:
+    if audio_data is None or len(audio_data) == 0:
         return _default_chord()
 
     # Extract a chunk of audio around t
     start = max(0, int((t - window_s / 2) * sr))
-    end = min(len(y), int((t + window_s / 2) * sr))
-    chunk = y[start:end]
+    end = min(len(audio_data), int((t + window_s / 2) * sr))
+    chunk = audio_data[start:end]
 
     if len(chunk) < 1024:
         return _default_chord()
