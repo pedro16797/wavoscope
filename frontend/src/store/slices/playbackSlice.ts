@@ -27,6 +27,8 @@ export interface PlaybackSlice {
   updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
   setFFTWindow: (sec: number) => void;
   setOctaveShift: (shift: number) => void;
+  playTone: (freq: number, action: 'start' | 'stop') => Promise<void>;
+  stopAllTones: () => Promise<void>;
 }
 
 export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> = (set, get) => ({
@@ -106,6 +108,22 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
         } catch (e) {
             console.error("[Store] Failed to update filter:", e);
         }
+    }
+  },
+
+  playTone: async (freq: number, action: 'start' | 'stop') => {
+    try {
+        await axios.post(`${API_BASE}/playback/tone`, { freq, action });
+    } catch (e) {
+        console.error("[Store] Failed to play tone:", e);
+    }
+  },
+
+  stopAllTones: async () => {
+    try {
+        await axios.post(`${API_BASE}/playback/tone`, { freq: 0, action: 'stop' });
+    } catch (e) {
+        console.error("[Store] Failed to stop all tones:", e);
     }
   },
 

@@ -103,28 +103,6 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                 <>
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-bold opacity-50">Export Defaults</label>
-                            <div className="space-y-4 bg-black/20 p-4 rounded-[var(--ui-radius)] border border-grid">
-                                <div className="space-y-1">
-                                    <label htmlFor="output-folder" className="text-[9px] opacity-40 uppercase font-bold">Default Output Directory</label>
-                                    <input id="output-folder" type="text" value={outputFolder}
-                                           onChange={(e) => setOutputFolder(e.target.value)}
-                                           placeholder="e.g. /Users/Name/Documents"
-                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
-                                           style={{ borderWidth: 'var(--ui-border)' }} />
-                                </div>
-                                <div className="space-y-1">
-                                    <label htmlFor="musicxml-author" className="text-[9px] opacity-40 uppercase font-bold">MusicXML Author (Composer)</label>
-                                    <input id="musicxml-author" type="text" value={author}
-                                           onChange={(e) => setAuthor(e.target.value)}
-                                           placeholder="Your Name"
-                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
-                                           style={{ borderWidth: 'var(--ui-border)' }} />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
                             <label className="text-[10px] uppercase font-bold opacity-50">Measure Calculation</label>
                             <div className="flex items-center gap-4">
                                 <div className="flex-1 space-y-1">
@@ -162,6 +140,28 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                             <p className="text-[10px] opacity-40 mt-2">
                                 Used for MusicXML export to determine measure structure and tempo calculation.
                             </p>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold opacity-50">Export Defaults</label>
+                            <div className="space-y-4 bg-black/20 p-4 rounded-[var(--ui-radius)] border border-grid">
+                                <div className="space-y-1">
+                                    <label htmlFor="output-folder" className="text-[9px] opacity-40 uppercase font-bold">Default Output Directory</label>
+                                    <input id="output-folder" type="text" value={outputFolder}
+                                           onChange={(e) => setOutputFolder(e.target.value)}
+                                           placeholder="e.g. /Users/Name/Documents"
+                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                           style={{ borderWidth: 'var(--ui-border)' }} />
+                                </div>
+                                <div className="space-y-1">
+                                    <label htmlFor="musicxml-author" className="text-[9px] opacity-40 uppercase font-bold">MusicXML Author (Composer)</label>
+                                    <input id="musicxml-author" type="text" value={author}
+                                           onChange={(e) => setAuthor(e.target.value)}
+                                           placeholder="Your Name"
+                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                           style={{ borderWidth: 'var(--ui-border)' }} />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </>

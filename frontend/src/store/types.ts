@@ -108,6 +108,8 @@ export interface AppState {
   exportMusicXML: () => Promise<void>;
   setFFTWindow: (sec: number) => void;
   setOctaveShift: (shift: number) => void;
+  playTone: (freq: number, action: 'start' | 'stop') => Promise<void>;
+  stopAllTones: () => Promise<void>;
 
   setShowSettings: (show: boolean) => void;
   setEditingFlagIdx: (idx: number | null) => void;
