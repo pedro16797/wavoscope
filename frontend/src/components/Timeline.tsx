@@ -15,7 +15,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     loaded, duration, currentTheme, themes, flags, harmony_flags,
     addFlag, moveFlag, setEditingFlagIdx,
     addHarmonyFlag, moveHarmonyFlag, setEditingHarmonyFlagIdx,
-    loop_mode, loop_range
+    loop_mode, loop_range, playTone, stopAllTones
   } = useStore();
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dragHarmonyIdx, setDragHarmonyIdx] = useState<number | null>(null);
@@ -229,7 +229,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
             const chord = harmony_flags[foundHarmonyIdx].chord;
             const midis = getChordMidiNotes(chord);
             midis.forEach(m => {
-                axios.post(`${API_BASE}/playback/tone`, { freq: midiToFreq(m), action: 'start' });
+                playTone(midiToFreq(m), 'start');
             });
 
             setDragHarmonyIdx(foundHarmonyIdx);
@@ -243,7 +243,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
                 window.removeEventListener('mousemove', onMouseMove);
                 window.removeEventListener('mouseup', onMouseUp);
                 setDragHarmonyIdx(null);
-                axios.post(`${API_BASE}/playback/tone`, { freq: 0, action: 'stop' });
+                stopAllTones();
             };
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mouseup', onMouseUp);

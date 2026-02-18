@@ -11,7 +11,8 @@ export const Spectrum: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const {
     loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys,
-    filter_enabled, filter_low_enabled, filter_high_enabled, filter_low_hz, filter_high_hz, updateFilter
+    filter_enabled, filter_low_enabled, filter_high_enabled, filter_low_hz, filter_high_hz, updateFilter,
+    playTone: playToneStore, stopAllTones
   } = useStore();
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -227,11 +228,11 @@ export const Spectrum: React.FC = () => {
         } else if (dragging === 'high') {
             updateFilter({ high_hz: hz });
         } else {
-            playTone(moveEvent.clientX);
+            auditionTone(moveEvent.clientX);
         }
     };
 
-    const playTone = (clientX: number) => {
+    const auditionTone = (clientX: number) => {
         const x = clientX - rect.left;
         const spanLog = Math.log2(range.high / range.low);
         const hz = range.low * Math.pow(2, (x * spanLog / rect.width));
@@ -245,23 +246,23 @@ export const Spectrum: React.FC = () => {
         const now = Date.now();
         if (now - lastToneRef.current > 30) {
             if (currentHzRef.current > 0) {
-                axios.post(`${API_BASE}/playback/tone`, { freq: currentHzRef.current, action: 'stop' });
+                playToneStore(currentHzRef.current, 'stop');
             }
-            axios.post(`${API_BASE}/playback/tone`, { freq: snappedHz, action: 'start' });
+            playToneStore(snappedHz, 'start');
             currentHzRef.current = snappedHz;
             lastToneRef.current = now;
         }
     };
 
     if (dragging === 'tone') {
-        playTone(e.clientX);
+        auditionTone(e.clientX);
     }
 
     const onMouseUp = () => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
         if (dragging === 'tone') {
-            axios.post(`${API_BASE}/playback/tone`, { action: 'stop' });
+            stopAllTones();
             currentHzRef.current = 0;
         }
     };

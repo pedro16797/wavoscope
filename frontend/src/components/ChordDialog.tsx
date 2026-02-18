@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
 import type { HarmonyFlag, Chord } from '../store/types';
-import { formatChord } from '../store/utils';
+import { formatChord, getChordMidiNotes, midiToFreq } from '../store/utils';
+import { Volume2 } from 'lucide-react';
 
 interface ChordDialogProps {
   idx: number;
@@ -17,7 +18,7 @@ const ALTERATIONS = ['b5', '#5', 'b9', '#9', '#11', 'b13'];
 const ADDITIONS = ['add9', 'add11', 'add13'];
 
 export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) => {
-  const { updateHarmonyFlag, removeHarmonyFlag, duration } = useStore();
+  const { updateHarmonyFlag, removeHarmonyFlag, duration, playTone, stopAllTones } = useStore();
   const [chord, setChord] = useState<Chord>(flag.chord);
   const [t, setT] = useState(flag.t);
   const [chordText, setChordText] = useState(formatChord(flag.chord));
@@ -100,14 +101,25 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
     const newAlts = chord.alterations.includes(alt)
         ? chord.alterations.filter(a => a !== alt)
         : [...chord.alterations, alt];
-    setChord({ ...chord, alterations: newAlts });
+    updateChordFromSelectors({ alterations: newAlts });
   };
 
   const toggleAddition = (add: string) => {
     const newAdds = chord.additions.includes(add)
         ? chord.additions.filter(a => a !== add)
         : [...chord.additions, add];
-    setChord({ ...chord, additions: newAdds });
+    updateChordFromSelectors({ additions: newAdds });
+  };
+
+  const handlePlayStart = () => {
+    const midis = getChordMidiNotes(chord);
+    midis.forEach(m => {
+        playTone(midiToFreq(m), 'start');
+    });
+  };
+
+  const handlePlayStop = () => {
+    stopAllTones();
   };
 
   return (
@@ -124,14 +136,26 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
         <div className="p-4 space-y-4">
             <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold opacity-50">Chord Notation</label>
-                <input type="text" value={chordText}
-                       autoFocus
-                       onFocus={e => e.target.select()}
-                       onChange={(e) => handleTextChange(e.target.value)}
-                       onBlur={handleBlur}
-                       onKeyDown={e => e.key === 'Enter' && (handleBlur(), handleSave())}
-                       className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-3 outline-none focus:border-accent text-xl font-bold text-accent text-center"
-                       style={{ borderWidth: 'var(--ui-border)' }} />
+                <div className="flex gap-2">
+                    <input type="text" value={chordText}
+                           autoFocus
+                           onFocus={e => e.target.select()}
+                           onChange={(e) => handleTextChange(e.target.value)}
+                           onBlur={handleBlur}
+                           onKeyDown={e => e.key === 'Enter' && (handleBlur(), handleSave())}
+                           className="flex-1 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-3 outline-none focus:border-accent text-xl font-bold text-accent text-center"
+                           style={{ borderWidth: 'var(--ui-border)' }} />
+                    <button
+                        onMouseDown={handlePlayStart}
+                        onMouseUp={handlePlayStop}
+                        onMouseLeave={handlePlayStop}
+                        className="px-4 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] hover:bg-white/5 text-accent transition-colors flex items-center justify-center group active:scale-95"
+                        style={{ borderWidth: 'var(--ui-border)' }}
+                        title="Audition chord"
+                    >
+                        <Volume2 size={20} className="group-active:scale-110 transition-transform" />
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
