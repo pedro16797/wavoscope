@@ -57,6 +57,10 @@ class Project:
                 raise
             self._spectrum_cache: Dict[str, Any] = {}
 
+    def close(self) -> None:
+        with self._lock:
+            self.backend.close()
+
     def _extract_metadata(self, path: Path) -> None:
         try:
             from tinytag import TinyTag

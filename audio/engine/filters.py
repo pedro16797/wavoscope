@@ -102,8 +102,9 @@ class FilterEngine:
         self._enabled: bool = True
         self._low_enabled: bool = False
         self._high_enabled: bool = False
-        self._low_hz: float = 200.0
-        self._high_hz: float = 2000.0
+        # Match frontend defaults (10% and 90% of visible range MIDI 48..85)
+        self._low_hz: float = 161.98
+        self._high_hz: float = 895.38
         self._sos: np.ndarray | None = None
         self._zi: np.ndarray | None = None
         self.update_coeffs()

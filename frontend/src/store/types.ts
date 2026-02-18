@@ -98,7 +98,6 @@ export interface AppState {
   removeFlag: (idx: number) => Promise<void>;
   setLoopMode: (mode: string) => Promise<void>;
   updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
-  ensureFiltersVisible: () => void;
 
   addHarmonyFlag: (t: number, chord?: Chord) => Promise<HarmonyFlag | null>;
   moveHarmonyFlag: (idx: number, t: number) => Promise<void>;

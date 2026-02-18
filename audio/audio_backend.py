@@ -64,6 +64,7 @@ class AudioBackend:
         """Stop stream and release resources."""
         self._stop_event.set()
         self._playback.stop_stream()
+        self._synth.close()
 
     # ---------- playback control ----------
     def seek(self, sec: float) -> None:

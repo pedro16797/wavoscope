@@ -96,7 +96,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-bold opacity-50">Visible Piano Keys</label>
                         <input type="number" min="12" max="120" value={keys} onChange={(e) => setKeys(parseInt(e.target.value))}
-                               className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text"
+                               className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text accent-accent"
                                style={{ borderWidth: 'var(--ui-border)' }} />
                     </div>
                     <div className="pt-2">
@@ -145,7 +145,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                     <label htmlFor="time-sig-num" className="text-[9px] opacity-40 uppercase">Numerator</label>
                                     <input id="time-sig-num" type="number" min="1" max="32" value={timeSig.numerator}
                                            onChange={(e) => setTimeSig({...timeSig, numerator: parseInt(e.target.value)})}
-                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent accent-accent"
                                            style={{ borderWidth: 'var(--ui-border)' }} />
                                 </div>
                                 <div className="text-xl opacity-20 mt-4">/</div>
@@ -153,7 +153,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                     <label htmlFor="time-sig-den" className="text-[9px] opacity-40 uppercase">Denominator</label>
                                     <select id="time-sig-den" value={timeSig.denominator}
                                             onChange={(e) => setTimeSig({...timeSig, denominator: parseInt(e.target.value)})}
-                                            className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                            className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent accent-accent"
                                             style={{ borderWidth: 'var(--ui-border)' }}>
                                         {[2, 4, 8, 16].map(d => <option key={d} value={d}>{d}</option>)}
                                     </select>
