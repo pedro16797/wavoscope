@@ -55,12 +55,8 @@ class MetronomeEngine:
                 0.1 * np.sin(2 * np.pi * freq * 4 * t)
             ).astype(np.float32)
 
-            # Ultra-short noise burst for the initial impact
-            rng = np.random.default_rng(int(freq))
-            noise = (rng.random(click_dur).astype(np.float32) * 2 - 1) * 0.2
-            noise *= np.exp(-t * 1000)
-
-            click = (wave + noise) * envelope
+            # Simple percussive click via envelope
+            click = wave * envelope
 
             # Normalize to 1.0 peak
             peak = np.max(np.abs(click))

@@ -57,6 +57,7 @@ python -m nuitka --standalone ^
     --noinclude-data-files="**/__pycache__/**" ^
     --windows-icon-from-ico=resources/icons/app-icon.png ^
     --nofollow-import-to=torch ^
+    --nofollow-import-to=onnxruntime ^
     --nofollow-import-to=sympy ^
     --nofollow-import-to=mpmath ^
     --nofollow-import-to=pytest ^
@@ -65,7 +66,6 @@ python -m nuitka --standalone ^
     --nofollow-import-to=PIL ^
     --nofollow-import-to=ipython ^
     --nofollow-import-to=numpy.random ^
-    --nofollow-import-to=numpy.linalg ^
     --nofollow-import-to=numpy.tests ^
     --nofollow-import-to=numpy.f2py ^
     --nofollow-import-to=numpy.distutils ^

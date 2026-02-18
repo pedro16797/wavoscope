@@ -64,7 +64,6 @@ export interface AppState {
   themes: Record<string, Record<string, string>>;
   currentTheme: string;
   spectrum_keys: number;
-  high_quality_enhancement: boolean;
   default_output_folder: string;
   musicxml_author: string;
   fft_window: number;
@@ -89,7 +88,6 @@ export interface AppState {
     theme?: string,
     click_volume?: number,
     spectrum_keys?: number,
-    high_quality_enhancement?: boolean,
     default_output_folder?: string,
     musicxml_author?: string
   }) => Promise<void>;

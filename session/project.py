@@ -37,7 +37,6 @@ class Project:
         from utils.config import Config
         cfg = Config()
         self.backend.set_click_volume(cfg.get("ui.click_volume", 0.3))
-        self.backend.set_novasr_enabled(cfg.get("ui.high_quality_enhancement", False))
         self.backend.set_loop_provider(self.get_loop_range)
 
         self.wave_cache: WaveformCache | None = None
