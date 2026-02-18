@@ -62,7 +62,6 @@ python3 -m nuitka --standalone \
     --nofollow-import-to=tkinter \
     --nofollow-import-to=sqlite3 \
     --nofollow-import-to=_sqlite3 \
-    --nofollow-import-to=multiprocessing \
     --nofollow-import-to=_bz2 \
     --nofollow-import-to=_lzma \
     --nofollow-import-to=_decimal \
