@@ -8,6 +8,7 @@ sys.path.append(str(root_path))
 
 from cli.launcher import start_backend_thread, wait_for_backend
 from cli.gui import run_gui
+from utils.logging import logger
 
 def main():
     parser = argparse.ArgumentParser()
@@ -21,7 +22,7 @@ def main():
 
     # Wait for server to start
     if not wait_for_backend(url):
-        print("[Main] Backend failed to start. Exiting.")
+        logger.error("Backend failed to start. Exiting.")
         sys.exit(1)
 
     # Run GUI

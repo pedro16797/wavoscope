@@ -2,6 +2,7 @@ from __future__ import annotations
 import threading
 from typing import Callable, List, Dict, Any, Tuple
 import numpy as np
+from utils.logging import logger
 try:
     import sounddevice as sd
 except OSError:
@@ -49,7 +50,7 @@ class PlaybackEngine:
 
     def start_stream(self, callback: Callable):
         if sd is None:
-            print("[PlaybackEngine] sounddevice not available.")
+            logger.warning("sounddevice not available.")
             return
 
         if self._stream is not None:

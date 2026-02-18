@@ -48,25 +48,25 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
   controlPlayback: async (action, value) => {
     try {
       await axios.post(`${API_BASE}/playback`, { action, value });
-      if (action === 'set_speed' && value !== undefined) set({ speed: value } as any);
-      if (action === 'set_volume' && value !== undefined) set({ volume: value } as any);
+      if (action === 'set_speed' && value !== undefined) set({ speed: value });
+      if (action === 'set_volume' && value !== undefined) set({ volume: value });
     } catch (e) {
       console.error(`[Store] Failed to control playback (${action}):`, e);
     }
   },
 
   updatePosition: (pos) => {
-    set({ position: pos } as any);
+    set({ position: pos });
   },
 
   setPlaying: (playing) => {
-    set({ playing } as any);
+    set({ playing });
   },
 
   setLoopMode: async (mode) => {
     try {
         await axios.post(`${API_BASE}/playback/loop`, { mode });
-        set({ loop_mode: mode } as any);
+        set({ loop_mode: mode });
         await get().fetchStatus();
     } catch (e) {
         console.error("[Store] Failed to set loop mode:", e);
@@ -109,7 +109,7 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     }
   },
 
-  setFFTWindow: (sec) => set({ fft_window: sec } as any),
+  setFFTWindow: (sec) => set({ fft_window: sec }),
   setOctaveShift: (shift) => {
     const state = get();
     const maxShift = 6 - Math.floor(state.spectrum_keys / 12);

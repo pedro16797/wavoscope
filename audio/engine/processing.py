@@ -1,6 +1,6 @@
 from __future__ import annotations
-import traceback
 from typing import Any
+from utils.logging import logger
 import numpy as np
 import python_stretch.Signalsmith as ps
 from audio.ringbuffer import RingBuffer
@@ -41,7 +41,7 @@ class AudioProcessor:
                 from audio.novasr import NovaSR
                 self._novasr = NovaSR()
             except Exception:
-                traceback.print_exc()
+                logger.exception("Failed to load NovaSR")
                 self._novasr_enabled = False
 
     def process_stretch(self, chunk: np.ndarray) -> np.ndarray:

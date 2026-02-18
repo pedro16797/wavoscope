@@ -57,6 +57,15 @@ class FlagManager:
     def _recompute_auto_names(self) -> None:
         section_idx = 0
         measure = 0
+
+        def get_section_label(idx: int) -> str:
+            if idx <= 0: return ""
+            res = ""
+            while idx > 0:
+                idx, rem = divmod(idx - 1, 26)
+                res = chr(ord("A") + rem) + res
+            return res
+
         for flag in self.flags:
             if flag["type"] != "rhythm":
                 flag["auto_name"] = ""
@@ -64,8 +73,8 @@ class FlagManager:
             if flag.get("is_section_start", False):
                 section_idx += 1
                 measure = 0
-                flag["auto_name"] = chr(ord("A") + section_idx - 1)
+                flag["auto_name"] = get_section_label(section_idx)
             else:
                 measure += 1
-                section = chr(ord("A") + section_idx - 1) if section_idx else ""
+                section = get_section_label(section_idx)
                 flag["auto_name"] = f"{section}{measure:02d}".lstrip("0") or "00"

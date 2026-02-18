@@ -12,6 +12,7 @@ from fastapi.responses import FileResponse  # noqa: E402
 
 from backend import state  # noqa: E402
 from backend.routers import playback, audio, project, config, themes, ws  # noqa: E402
+from utils.logging import logger # noqa: E402
 
 app = FastAPI()
 
@@ -74,5 +75,5 @@ if frontend_path.exists():
 
 if __name__ == "__main__":
     import uvicorn
-    print("[Backend] Starting FastAPI server on http://127.0.0.1:8000")
+    logger.info("Starting FastAPI server on http://127.0.0.1:8000")
     uvicorn.run(app, host="127.0.0.1", port=8000)

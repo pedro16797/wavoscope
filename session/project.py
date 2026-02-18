@@ -12,6 +12,7 @@ from typing import List, Dict, Any, Callable, Tuple
 
 from audio.audio_backend import AudioBackend
 from audio.waveform_cache import WaveformCache
+from utils.logging import logger
 from session.manager import ProjectManager
 from session.flags import FlagManager
 from session.looping import LoopingEngine
@@ -52,8 +53,7 @@ class Project:
                 self.wave_cache = WaveformCache(self.backend._data, self.backend._sr)
                 self._extract_metadata(path)
             except Exception as e:
-                import traceback
-                traceback.print_exc()
+                logger.exception("Failed to open audio file")
                 raise
             self._spectrum_cache: Dict[str, Any] = {}
 
@@ -71,7 +71,7 @@ class Project:
                 "album": tag.album or ""
             }
         except Exception as e:
-            print(f"[Project] Metadata extraction failed: {e}")
+            logger.warning(f"Metadata extraction failed: {e}")
             self.metadata = {"title": "", "artist": "", "album": ""}
 
     def save(self) -> None:

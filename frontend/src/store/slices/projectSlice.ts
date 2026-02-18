@@ -183,7 +183,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   saveProject: async () => {
     try {
         await axios.post(`${API_BASE}/project/save`);
-        set({ dirty: false } as any);
+        set({ dirty: false });
     } catch (e) {
         console.error("[Store] Failed to save project:", e);
     }
@@ -212,7 +212,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
         } else {
             // Fallback for browser: direct download (old way)
             // But user wants a progress bar. We'll show an indeterminate one for browser case.
-            set({ export_status: { active: true, progress: 0, message: 'Generating MusicXML...' } } as any);
+            set({ export_status: { active: true, progress: 0, message: 'Generating MusicXML...' } });
             try {
                 const res = await axios.get(`${API_BASE}/project/export/musicxml`, { responseType: 'blob' });
                 const url = window.URL.createObjectURL(res.data);
@@ -226,11 +226,11 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
                 }, 100);
-                set({ export_status: { active: true, progress: 1.0, message: 'Done!' } } as any);
-                setTimeout(() => set({ export_status: { active: false, progress: 0, message: '' } } as any), 1000);
+                set({ export_status: { active: true, progress: 1.0, message: 'Done!' } });
+                setTimeout(() => set({ export_status: { active: false, progress: 0, message: '' } }), 1000);
                 return;
             } catch (e) {
-                set({ export_status: { active: false, progress: 0, message: '' } } as any);
+                set({ export_status: { active: false, progress: 0, message: '' } });
                 throw e;
             }
         }
@@ -244,13 +244,13 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
         const poll = async () => {
             try {
                 const res = await axios.get(`${API_BASE}/project/export/musicxml/progress`);
-                set({ export_status: res.data } as any);
+                set({ export_status: res.data });
                 if (res.data.active) {
                     setTimeout(poll, 200);
                 }
             } catch (e) {
                 console.error("[Store] Progress poll failed:", e);
-                set({ export_status: { active: false, progress: 0, message: '' } } as any);
+                set({ export_status: { active: false, progress: 0, message: '' } });
             }
         };
         poll();
@@ -258,10 +258,10 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     } catch (e) {
         console.error("[Store] Failed to export MusicXML:", e);
         alert("Failed to export MusicXML. Please check the backend console.");
-        set({ export_status: { active: false, progress: 0, message: '' } } as any);
+        set({ export_status: { active: false, progress: 0, message: '' } });
     }
   },
 
-  setEditingFlagIdx: (idx) => set({ editingFlagIdx: idx } as any),
-  setEditingHarmonyFlagIdx: (idx) => set({ editingHarmonyFlagIdx: idx } as any),
+  setEditingFlagIdx: (idx) => set({ editingFlagIdx: idx }),
+  setEditingHarmonyFlagIdx: (idx) => set({ editingHarmonyFlagIdx: idx }),
 });

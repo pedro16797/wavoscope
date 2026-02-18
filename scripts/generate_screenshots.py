@@ -13,7 +13,7 @@ def generate():
         time.sleep(2)
 
         # 2. Load the audio file via API
-        audio_path = os.path.abspath("tests/Test.mp3")
+        audio_path = os.path.abspath("tests/data/Test.mp3")
         requests.post("http://127.0.0.1:8000/project/open", json={"path": audio_path})
         time.sleep(2) # Wait for processing
 
