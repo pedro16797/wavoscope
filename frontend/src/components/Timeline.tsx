@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useStore, API_BASE } from '../store/useStore';
+import { useStore } from '../store/useStore';
 import { formatChord, getChordMidiNotes, midiToFreq } from '../store/utils';
-import axios from 'axios';
 
 interface TimelineProps {
   offset: number;
