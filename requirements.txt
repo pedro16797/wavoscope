@@ -8,7 +8,4 @@ python-multipart
 pywebview
 requests
 python-stretch
-onnxruntime
-soxr
-zstandard
 tinytag

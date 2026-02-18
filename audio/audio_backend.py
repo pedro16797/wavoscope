@@ -102,9 +102,6 @@ class AudioBackend:
     def set_metronome_enabled(self, enabled: bool) -> None:
         self._metronome.set_enabled(enabled)
 
-    def set_novasr_enabled(self, enabled: bool) -> None:
-        self._processor.set_novasr_enabled(enabled)
-
     def set_click_volume(self, volume: float) -> None:
         self._metronome.set_volume(volume)
 

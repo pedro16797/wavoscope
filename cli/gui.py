@@ -50,4 +50,4 @@ def run_gui(url, debug=False):
         js_api=api
     )
     window.events.closing += on_closing
-    webview.start(debug=debug)
+    webview.start(debug=debug, gui='edgechromium')

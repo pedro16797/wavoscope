@@ -12,8 +12,6 @@ class AudioProcessor:
         self._stretcher.preset(1, float(sr))
         self._tsm_buffer = RingBuffer(sr * 10)
         self._last_tsm_overlap: np.ndarray | None = None
-        self._novasr_enabled: bool = False
-        self._novasr: Any = None
 
     def reset(self, sr: int | None = None, speed: float = 1.0):
         if sr is not None:
@@ -26,28 +24,14 @@ class AudioProcessor:
             self._stretcher.reset()
             self._tsm_buffer.clear()
         self._last_tsm_overlap = None
-        if self._novasr:
-            self._novasr.reset()
 
     def set_speed(self, speed: float):
         self._stretcher.setTimeFactor(speed)
         self._tsm_buffer.clear()
         self._last_tsm_overlap = None
 
-    def set_novasr_enabled(self, enabled: bool):
-        self._novasr_enabled = enabled
-        if enabled and self._novasr is None:
-            try:
-                from audio.novasr import NovaSR
-                self._novasr = NovaSR()
-            except Exception:
-                logger.exception("Failed to load NovaSR")
-                self._novasr_enabled = False
-
     def process_stretch(self, chunk: np.ndarray) -> np.ndarray:
         stretched = self._stretcher.process(chunk.reshape(1, -1)).flatten()
-        if self._novasr_enabled and self._novasr is not None:
-            stretched = self._novasr.enhance(stretched, self._sr)
         return stretched
 
     def apply_overlap_add(self, stretched: np.ndarray):
