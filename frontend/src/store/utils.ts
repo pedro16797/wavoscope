@@ -1,6 +1,7 @@
 import type { Chord } from './types';
 
 export const midiToFreq = (midi: number) => 440.0 * Math.pow(2, (midi - 69) / 12);
+export const freqToMidi = (freq: number) => 12 * Math.log2(freq / 440) + 69;
 
 export const formatChord = (chord: Chord): string => {
   let s = chord.root + chord.accidental;

@@ -305,6 +305,9 @@ async def open_project(data: OpenProject):
         raise HTTPException(status_code=404, detail=f"File not found: {data.path}")
 
     try:
+        if state.project:
+            state.project.close()
+
         new_project = Project(path)
         new_project.open_file(path)
         state.project = new_project

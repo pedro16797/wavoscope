@@ -2,7 +2,7 @@ import type { StateCreator } from 'zustand';
 import axios from 'axios';
 import type { AppState } from '../types';
 import { API_BASE } from '../useStore';
-import { midiToFreq } from '../utils';
+import { midiToFreq, freqToMidi } from '../utils';
 
 export interface PlaybackSlice {
   position: number;
@@ -25,7 +25,6 @@ export interface PlaybackSlice {
   setPlaying: (playing: boolean) => void;
   setLoopMode: (mode: string) => Promise<void>;
   updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
-  ensureFiltersVisible: () => void;
   setFFTWindow: (sec: number) => void;
   setOctaveShift: (shift: number) => void;
 }
@@ -41,8 +40,8 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
   filter_enabled: true,
   filter_low_enabled: false,
   filter_high_enabled: false,
-  filter_low_hz: 200,
-  filter_high_hz: 800,
+  filter_low_hz: midiToFreq(48 + 37 * 0.1),
+  filter_high_hz: midiToFreq(48 + 37 * 0.9),
   fft_window: 0.3,
   octave_shift: 0,
 
@@ -78,24 +77,6 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     const oldState = get();
     const updates: any = {};
 
-    const baseMidi = 48 + oldState.octave_shift * 12;
-    const lowBound = midiToFreq(baseMidi);
-    const highBound = midiToFreq(baseMidi + oldState.spectrum_keys);
-
-    // Auto-positioning logic when enabling handles if they are out of bounds
-    if (filter.low_enabled === true && !oldState.filter_low_enabled) {
-        if (oldState.filter_low_hz < lowBound || oldState.filter_low_hz > highBound) {
-            updates.filter_low_hz = midiToFreq(baseMidi + oldState.spectrum_keys * 0.3);
-            if (filter.low_hz === undefined) filter.low_hz = updates.filter_low_hz;
-        }
-    }
-    if (filter.high_enabled === true && !oldState.filter_high_enabled) {
-        if (oldState.filter_high_hz < lowBound || oldState.filter_high_hz > highBound) {
-            updates.filter_high_hz = midiToFreq(baseMidi + oldState.spectrum_keys * 0.7);
-            if (filter.high_hz === undefined) filter.high_hz = updates.filter_high_hz;
-        }
-    }
-
     if (filter.enabled !== undefined) updates.filter_enabled = filter.enabled;
     if (filter.low_hz !== undefined) updates.filter_low_hz = filter.low_hz;
     if (filter.high_hz !== undefined) updates.filter_high_hz = filter.high_hz;
@@ -130,26 +111,37 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
 
   setFFTWindow: (sec) => set({ fft_window: sec } as any),
   setOctaveShift: (shift) => {
-    set({ octave_shift: shift } as any);
-    get().ensureFiltersVisible();
-  },
-
-  ensureFiltersVisible: () => {
     const state = get();
-    const baseMidi = 48 + state.octave_shift * 12;
-    const lowBound = midiToFreq(baseMidi);
-    const highBound = midiToFreq(baseMidi + state.spectrum_keys);
+    const clampedShift = Math.max(-2, Math.min(6, shift));
+    const oldShift = state.octave_shift;
+    if (clampedShift === oldShift) return;
 
-    const updates: any = {};
-    if (state.filter_low_hz < lowBound || state.filter_low_hz > highBound) {
-        updates.filter_low_hz = midiToFreq(baseMidi + state.spectrum_keys * 0.3);
-    }
-    if (state.filter_high_hz < lowBound || state.filter_high_hz > highBound) {
-        updates.filter_high_hz = midiToFreq(baseMidi + state.spectrum_keys * 0.7);
-    }
+    const updates: any = { octave_shift: clampedShift };
 
-    if (Object.keys(updates).length > 0) {
-        set(updates);
+    const oldBaseMidi = 48 + oldShift * 12;
+    const newBaseMidi = 48 + clampedShift * 12;
+
+    // Maintain screen position:
+    // ratio = (freqToMidi(oldHz) - oldBaseMidi) / spectrum_keys
+    // newHz = midiToFreq(newBaseMidi + ratio * spectrum_keys)
+    const ratioLow = (freqToMidi(state.filter_low_hz) - oldBaseMidi) / state.spectrum_keys;
+    updates.filter_low_hz = midiToFreq(newBaseMidi + ratioLow * state.spectrum_keys);
+
+    const ratioHigh = (freqToMidi(state.filter_high_hz) - oldBaseMidi) / state.spectrum_keys;
+    updates.filter_high_hz = midiToFreq(newBaseMidi + ratioHigh * state.spectrum_keys);
+
+    set(updates);
+
+    // If any enabled filter was updated, notify backend
+    if ((state.filter_low_enabled && updates.filter_low_hz) || (state.filter_high_enabled && updates.filter_high_hz)) {
+        const newState = get();
+        axios.post(`${API_BASE}/playback/filter`, {
+            enabled: newState.filter_enabled,
+            low_hz: newState.filter_low_hz,
+            high_hz: newState.filter_high_hz,
+            low_enabled: newState.filter_low_enabled,
+            high_enabled: newState.filter_high_enabled
+        }).catch(e => console.error("[Store] Failed to update filter after octave shift:", e));
     }
   },
 });

@@ -52,7 +52,6 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     try {
       const res = await axios.get(`${API_BASE}/status`);
       set(res.data);
-      get().ensureFiltersVisible();
     } catch (e) {
       console.error("[Store] Failed to fetch status:", e);
     }

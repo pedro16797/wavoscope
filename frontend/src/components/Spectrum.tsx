@@ -1,12 +1,10 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { useStore, API_BASE } from '../store/useStore';
-import { getChordMidiNotes, midiToFreq } from '../store/utils';
+import { getChordMidiNotes, midiToFreq, freqToMidi } from '../store/utils';
 import axios from 'axios';
 
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const WHITE_KEYS = new Set([0, 2, 4, 5, 7, 9, 11]);
-
-const freqToMidi = (freq: number) => 12 * Math.log2(freq / 440) + 69;
 
 export const Spectrum: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
