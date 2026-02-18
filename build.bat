@@ -65,6 +65,8 @@ python -m nuitka --standalone ^
     --enable-plugin=upx ^
     --upx-binary=upx.exe ^
     --output-dir=dist ^
+    --include-windows-runtime-dlls=no ^
+    --onefile-no-compression ^
     --assume-yes-for-downloads ^
     main.py
 
