@@ -60,8 +60,16 @@ python3 -m nuitka --standalone \
     --nofollow-import-to=bottle \
     --nofollow-import-to=yaml \
     --nofollow-import-to=tkinter \
+    --nofollow-import-to=sqlite3 \
+    --nofollow-import-to=_sqlite3 \
+    --nofollow-import-to=multiprocessing \
+    --nofollow-import-to=_bz2 \
+    --nofollow-import-to=_lzma \
+    --nofollow-import-to=_decimal \
+    --nofollow-import-to=_zoneinfo \
     --noinclude-data-files="**/pywebview-android.jar" \
     --noinclude-data-files="**/cacert.pem" \
+    --noinclude-data-files="resources/**/*.svg" \
     --noinclude-data-files="**/*.py" \
     --noinclude-data-files="**/*.pyi" \
     --windows-console-mode=disable \
