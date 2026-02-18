@@ -51,7 +51,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   fetchStatus: async () => {
     try {
       const res = await axios.get(`${API_BASE}/status`);
-      set(res.data);
+      const { filter_low_hz, filter_high_hz, ...rest } = res.data;
+      set(rest);
     } catch (e) {
       console.error("[Store] Failed to fetch status:", e);
     }
@@ -62,13 +63,22 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     try {
       if (pywindow.pywebview?.api?.browse) {
         await pywindow.pywebview.api.browse();
-        await get().fetchStatus();
       } else {
         const res = await axios.get(`${API_BASE}/browse`);
-        if (res.data.status === 'loaded') {
-          await get().fetchStatus();
-        }
+        if (res.data.status !== 'loaded') return;
       }
+
+      await get().fetchStatus();
+
+      // Sync filter to new backend
+      const state = get();
+      await state.updateFilter({
+          low_hz: state.filter_low_hz,
+          high_hz: state.filter_high_hz,
+          enabled: state.filter_enabled,
+          low_enabled: state.filter_low_enabled,
+          high_enabled: state.filter_high_enabled
+      });
     } catch (e) {
       console.error("[Store] Failed to browse or load file:", e);
     }
