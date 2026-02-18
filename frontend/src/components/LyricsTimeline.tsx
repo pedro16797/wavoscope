@@ -36,8 +36,8 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const width = canvas.width / (window.devicePixelRatio || 1);
         const dpr = window.devicePixelRatio || 1;
+        const width = canvas.width / dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, width, height);
 
@@ -123,7 +123,8 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         draw();
     }, [draw]);
 
-    const handleCanvasClick = (e: React.MouseEvent) => {
+    const handleMouseDown = (e: React.MouseEvent) => {
+        if (!loaded || e.button !== 0) return;
         const rect = canvasRef.current?.getBoundingClientRect();
         if (!rect) return;
         const x = e.clientX - rect.left;
@@ -140,21 +141,30 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
     };
 
     const handleDoubleClick = (e: React.MouseEvent) => {
+        if (!loaded || e.button !== 0) return;
         const rect = canvasRef.current?.getBoundingClientRect();
         if (!rect) return;
         const x = e.clientX - rect.left;
         const time = offset + x / zoom;
+        const snappedT = Math.round(time * 100) / 100;
 
         const clickedIdx = lyrics.findIndex(l => time >= l.timestamp && time <= l.timestamp + l.duration);
         if (clickedIdx === -1) {
             addLyric({
                 text: '',
-                timestamp: Math.round(time * 100) / 100,
+                timestamp: snappedT,
                 duration: 1.0
+            }).then(() => {
+                setTimeout(() => {
+                    const updatedLyrics = useStore.getState().lyrics;
+                    const idx = updatedLyrics.findIndex(l => Math.abs(l.timestamp - snappedT) < 0.01);
+                    if (idx !== -1) {
+                        setEditingIdx(idx);
+                        setEditValue('');
+                        setIsAdding(true);
+                    }
+                }, 50);
             });
-            setEditingIdx(lyrics.length);
-            setEditValue('');
-            setIsAdding(true);
         }
     };
 
@@ -169,19 +179,33 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                 text: '',
                 timestamp: snappedTime,
                 duration: 1.0
+            }).then(() => {
+                setTimeout(() => {
+                    const updatedLyrics = useStore.getState().lyrics;
+                    const idx = updatedLyrics.findIndex(l => Math.abs(l.timestamp - snappedTime) < 0.01);
+                    if (idx !== -1) {
+                        setEditingIdx(idx);
+                        setEditValue('');
+                        setIsAdding(true);
+                    }
+                }, 50);
             });
-            setEditingIdx(lyrics.length);
-            setEditValue('');
-            setIsAdding(true);
         } else {
             addLyric({
                 text: '',
                 timestamp: snappedTime,
                 duration: 1.0
+            }).then(() => {
+                setTimeout(() => {
+                    const updatedLyrics = useStore.getState().lyrics;
+                    const idx = updatedLyrics.findIndex(l => Math.abs(l.timestamp - snappedTime) < 0.01);
+                    if (idx !== -1) {
+                        setEditingIdx(idx);
+                        setEditValue('');
+                        setIsAdding(true);
+                    }
+                }, 50);
             });
-            setEditingIdx(lyrics.length);
-            setEditValue('');
-            setIsAdding(true);
         }
     }, [editingIdx, isAdding, lyrics, position, editValue, addLyric, updateLyric]);
 
@@ -202,17 +226,12 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             if (editingIdx === null) {
                 if (e.shiftKey && e.key === 'ArrowLeft') {
                     e.preventDefault();
-                    const prevIdx = [...lyrics].reverse().find(l => l.timestamp < position - 0.1);
-                    if (prevIdx) controlPlayback('seek', prevIdx.timestamp);
+                    const prev = [...lyrics].reverse().find(l => l.timestamp < position - 0.1);
+                    if (prev) controlPlayback('seek', prev.timestamp);
                 } else if (e.shiftKey && e.key === 'ArrowRight') {
                     e.preventDefault();
-                    const nextIdx = lyrics.find(l => l.timestamp > position + 0.1);
-                    if (nextIdx) controlPlayback('seek', nextIdx.timestamp);
-                } else if (e.code === 'Space' && (e.target as HTMLElement).tagName !== 'INPUT') {
-                    if (loaded) {
-                        e.preventDefault();
-                        startAddingAtPlayhead();
-                    }
+                    const next = lyrics.find(l => l.timestamp > position + 0.1);
+                    if (next) controlPlayback('seek', next.timestamp);
                 }
                 return;
             }
@@ -250,8 +269,9 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         <div ref={containerRef} className="relative w-full h-8 select-none bg-surface border-b" style={{ borderBottomColor: 'var(--color-grid)' }}>
             <canvas
                 ref={canvasRef}
-                onClick={handleCanvasClick}
+                onMouseDown={handleMouseDown}
                 onDoubleClick={handleDoubleClick}
+                onContextMenu={(e) => e.preventDefault()}
                 className="cursor-crosshair w-full h-full block"
             />
             {editingIdx !== null && lyrics[editingIdx] && (

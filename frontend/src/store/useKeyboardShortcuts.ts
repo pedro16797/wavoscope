@@ -2,14 +2,14 @@ import { useEffect } from 'react';
 import { useStore } from './useStore';
 
 export const useKeyboardShortcuts = () => {
-  const { loaded, playing, controlPlayback, position, duration, speed, browseFile } = useStore();
+  const { loaded, playing, controlPlayback, position, duration, speed, browseFile, showLyrics, setShowLyrics } = useStore();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!loaded && e.key !== 'o') return;
+      if (!loaded && !['o', 'l'].includes(e.key.toLowerCase())) return;
 
       // Prevent default for handled shortcuts
-      if ([' ', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 's', 'o'].includes(e.key)) {
+      if ([' ', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 's', 'o', 'l', 'L'].includes(e.key)) {
         if (e.target instanceof HTMLInputElement) return; // Don't interrupt typing
       }
 
@@ -17,6 +17,10 @@ export const useKeyboardShortcuts = () => {
         case ' ':
           e.preventDefault();
           controlPlayback(playing ? 'pause' : 'play');
+          break;
+        case 'l':
+        case 'L':
+          setShowLyrics(!showLyrics);
           break;
         case 'ArrowLeft':
           controlPlayback('seek', Math.max(0, position - 0.1));
