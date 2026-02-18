@@ -1,11 +1,28 @@
+export type ThemeName = string;
+
+export interface Theme {
+  name: string;
+  surface: string;
+  surfaceSecondary: string;
+  text: string;
+  accent: string;
+  grid: string;
+  playhead: string;
+  flagRhythm: string;
+  flagHarmony: string;
+  keyWhite: string;
+  keyBlack: string;
+  spectrum: string;
+}
+
 export interface Flag {
   t: number;
   type: string;
   subdivision: number;
   name: string;
+  auto_name?: string;
   is_section_start: boolean;
   shaded_subdivisions: boolean;
-  auto_name?: string;
 }
 
 export interface Chord {
@@ -24,6 +41,12 @@ export interface HarmonyFlag {
   chord: Chord;
 }
 
+export interface Lyric {
+  text: string;
+  timestamp: number;
+  duration: number;
+}
+
 export interface TimeSignature {
   numerator: number;
   denominator: number;
@@ -35,13 +58,8 @@ export interface ExportStatus {
   message: string;
 }
 
-export interface AppState {
+export interface ProjectSlice {
   loaded: boolean;
-  position: number;
-  duration: number;
-  playing: boolean;
-  speed: number;
-  volume: number;
   filename: string;
   metadata: {
     title: string;
@@ -50,68 +68,81 @@ export interface AppState {
   };
   flags: Flag[];
   harmony_flags: HarmonyFlag[];
+  lyrics: Lyric[];
   time_signature: TimeSignature;
   dirty: boolean;
-  metronome_enabled: boolean;
-  click_volume: number;
-  loop_mode: string;
-  loop_range: [number, number];
-  filter_enabled: boolean;
-  filter_low_enabled: boolean;
-  filter_high_enabled: boolean;
-  filter_low_hz: number;
-  filter_high_hz: number;
-  themes: Record<string, Record<string, string>>;
-  currentTheme: string;
-  spectrum_keys: number;
-  default_output_folder: string;
-  musicxml_author: string;
-  fft_window: number;
-  octave_shift: number;
-
-  // UI State
-  showSettings: boolean;
   editingFlagIdx: number | null;
   editingHarmonyFlagIdx: number | null;
   export_status: ExportStatus;
 
   fetchStatus: () => Promise<void>;
-  fetchThemes: () => Promise<void>;
-  fetchConfig: () => Promise<void>;
-  controlPlayback: (action: string, value?: number) => Promise<void>;
   browseFile: () => Promise<void>;
-  setTheme: (name: string) => Promise<void>;
-  updatePosition: (pos: number) => void;
-  setPlaying: (playing: boolean) => void;
-  updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
-  updateConfig: (cfg: {
-    theme?: string,
-    click_volume?: number,
-    spectrum_keys?: number,
-    default_output_folder?: string,
-    musicxml_author?: string
-  }) => Promise<void>;
   addFlag: (t: number) => Promise<void>;
   moveFlag: (idx: number, t: number) => Promise<void>;
   removeFlag: (idx: number) => Promise<void>;
-  setLoopMode: (mode: string) => Promise<void>;
-  updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
-
   addHarmonyFlag: (t: number, chord?: Chord) => Promise<HarmonyFlag | null>;
   moveHarmonyFlag: (idx: number, t: number) => Promise<void>;
   removeHarmonyFlag: (idx: number) => Promise<void>;
   updateHarmonyFlag: (idx: number, t: number, chord: Chord) => Promise<void>;
   analyzeChord: (t: number) => Promise<Chord>;
-
+  addLyric: (lyric: Lyric) => Promise<void>;
+  removeLyric: (idx: number) => Promise<void>;
+  updateLyric: (idx: number, lyric: Partial<Lyric>) => Promise<void>;
+  moveLyric: (idx: number, t: number) => Promise<void>;
   updateTimeSignature: (numerator: number, denominator: number) => Promise<void>;
   saveProject: () => Promise<void>;
   exportMusicXML: () => Promise<void>;
-  setFFTWindow: (sec: number) => void;
-  setOctaveShift: (shift: number) => void;
-  playTone: (freq: number, action: 'start' | 'stop') => Promise<void>;
-  stopAllTones: () => Promise<void>;
-
-  setShowSettings: (show: boolean) => void;
   setEditingFlagIdx: (idx: number | null) => void;
   setEditingHarmonyFlagIdx: (idx: number | null) => void;
 }
+
+export interface PlaybackSlice {
+  position: number;
+  duration: number;
+  playing: boolean;
+  speed: number;
+  volume: number;
+  loop_mode: string;
+  loop_range: [number, number];
+  fft_window: number;
+  octave_shift: number;
+
+  controlPlayback: (action: string, value?: number) => Promise<void>;
+  updatePosition: (pos: number) => void;
+  setPlaying: (playing: boolean) => void;
+  setLoopMode: (mode: string) => Promise<void>;
+  playTone: (freq: number, action: 'start' | 'stop') => Promise<void>;
+  stopAllTones: () => Promise<void>;
+  setFFTWindow: (sec: number) => void;
+  setOctaveShift: (shift: number) => void;
+}
+
+export interface ConfigSlice {
+  themes: Record<string, Theme>;
+  currentTheme: string;
+  metronome_enabled: boolean;
+  click_volume: number;
+  spectrum_keys: number;
+  default_output_folder: string;
+  musicxml_author: string;
+  showSettings: boolean;
+  showLyrics: boolean;
+
+  // Filter settings also seem to be here sometimes
+  filter_enabled: boolean;
+  filter_low_enabled: boolean;
+  filter_high_enabled: boolean;
+  filter_low_hz: number;
+  filter_high_hz: number;
+
+  fetchThemes: () => Promise<void>;
+  fetchConfig: () => Promise<void>;
+  setTheme: (name: string) => Promise<void>;
+  updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
+  updateConfig: (cfg: any) => Promise<void>;
+  setShowSettings: (show: boolean) => void;
+  setShowLyrics: (show: boolean) => void;
+  updateFilter: (filter: any) => Promise<void>;
+}
+
+export type AppState = ProjectSlice & PlaybackSlice & ConfigSlice;

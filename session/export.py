@@ -39,6 +39,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
 
     flags = session_data.get("flags", [])
     harmony_flags = session_data.get("harmony_flags", [])
+    lyrics = session_data.get("lyrics", [])
     project_time_sig = session_data.get("time_signature", {"numerator": 4, "denominator": 4})
 
     rhythm_flags = [f.copy() for f in flags if f.get("type") == "rhythm"]
@@ -85,7 +86,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
 
     if not rhythm_flags:
         # Minimal empty score
-        _add_measure_piano(part_piano, 1, project_time_sig["numerator"], project_time_sig["denominator"], 120, True, [], 480)
+        _add_measure_piano(part_piano, 1, project_time_sig["numerator"], project_time_sig["denominator"], 120, True, [], 480, lyrics=[])
         _add_measure_metro(part_metro, 1, project_time_sig["numerator"], project_time_sig["denominator"], True, 480)
     else:
         divisions = 480
@@ -151,10 +152,13 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
             measure_harmonies = [h for h in harmony_flags if start_t <= h["t"] < end_t]
             measure_harmonies.sort(key=lambda x: x["t"])
 
+            # Lyrics in this measure
+            measure_lyrics = [l for l in lyrics if (start_t <= l["timestamp"] < end_t) or (l["timestamp"] < start_t < l["timestamp"] + l["duration"])]
+
             is_first = (i == 0)
             attr_change = is_first or (num != last_num) or (den != last_den)
 
-            _add_measure_piano(part_piano, i+1, num, den, tempo_to_note, attr_change, measure_harmonies, divisions, start_t, end_t, rehearsal, annotation)
+            _add_measure_piano(part_piano, i+1, num, den, tempo_to_note, attr_change, measure_harmonies, divisions, start_t, end_t, rehearsal, annotation, measure_lyrics)
             _add_measure_metro(part_metro, i+1, num, den, attr_change, divisions)
 
             last_num = num
@@ -171,7 +175,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
            '<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">\n' + \
            xml_str
 
-def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, divisions, start_t=0, end_t=0, rehearsal=None, annotation=None):
+def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, divisions, start_t=0, end_t=0, rehearsal=None, annotation=None, lyrics=[]):
     measure = ET.SubElement(part, "measure", number=str(number))
 
     if attr_change:
@@ -206,29 +210,52 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
 
     total_dur_div = int(num * divisions * (4 / den))
 
-    # Place all harmony tags at the beginning of measure (or with offset)
-    # Reverting to simpler harmony-over-rests approach
-    if not harmonies:
+    # Combine harmony and lyric events for splitting
+    event_points = set([start_t, end_t])
+    for h in harmonies: event_points.add(h["t"])
+    for l in lyrics:
+        event_points.add(l["timestamp"])
+        event_points.add(l["timestamp"] + l["duration"])
+
+    sorted_points = sorted([p for p in event_points if start_t <= p <= end_t])
+
+    # Generate notes for each segment
+    for i in range(len(sorted_points) - 1):
+        seg_start = sorted_points[i]
+        seg_end = sorted_points[i+1]
+        seg_dur_ratio = (seg_end - seg_start) / (end_t - start_t)
+        seg_dur_div = int(seg_dur_ratio * total_dur_div)
+        if seg_dur_div <= 0: continue
+
+        # Check for harmony change at this start point
+        harmony = None
+        for h in harmonies:
+            if abs(h["t"] - seg_start) < 0.001:
+                harmony = h
+                break
+
+        if harmony:
+            _add_harmony_tag(measure, harmony["chord"])
+        elif i == 0:
+            # Check if there's a preceding harmony
+            # (In this simplified version we only add if it's explicitly at start or we'd need more logic)
+            pass
+
+        # Check for lyric in this segment
+        seg_mid = (seg_start + seg_end) / 2
+        active_lyric = None
+        for l in lyrics:
+            if l["timestamp"] <= seg_mid < l["timestamp"] + l["duration"]:
+                active_lyric = l
+                break
+
         note = ET.SubElement(measure, "note")
-        ET.SubElement(note, "rest", measure="yes")
-        ET.SubElement(note, "duration").text = str(total_dur_div)
+        ET.SubElement(note, "rest")
+        ET.SubElement(note, "duration").text = str(seg_dur_div)
         ET.SubElement(note, "voice").text = "1"
-    else:
-        for idx, h in enumerate(harmonies):
-            h_t = h["t"]
-            h_offset_ratio = (h_t - start_t) / (end_t - start_t)
-            h_offset_div = int(h_offset_ratio * total_dur_div)
-
-            # Snap offset to divisions to avoid 3356/3360 issues
-            safe_offset = min(h_offset_div, total_dur_div - 1)
-
-            _add_harmony_tag(measure, h["chord"], safe_offset)
-
-        # Add a whole rest for the measure
-        note = ET.SubElement(measure, "note")
-        ET.SubElement(note, "rest", measure="yes")
-        ET.SubElement(note, "duration").text = str(total_dur_div)
-        ET.SubElement(note, "voice").text = "1"
+        if active_lyric:
+            lyr_el = ET.SubElement(note, "lyric")
+            ET.SubElement(lyr_el, "text").text = active_lyric["text"]
 
 def _add_measure_metro(part, number, num, den, attr_change, divisions):
     measure = ET.SubElement(part, "measure", number=str(number))

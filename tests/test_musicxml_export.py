@@ -44,8 +44,11 @@ def test_musicxml_export_feedback(tmp_path):
     # Should have a whole rest note
     note = m1_piano.find("note")
     assert note.find("rest") is not None
-    # No more notes (explicit chord notes removed)
-    assert len(m1_piano.findall("note")) == 1
+    # Measure 1 should now have multiple notes/rests because of the harmony event at 0.5s
+    # First rest (0.0 to 0.5), Second rest (0.5 to 2.0)
+    notes = m1_piano.findall("note")
+    assert len(notes) >= 2
+    assert all(n.find("rest") is not None for n in notes)
 
     # Check Tempo markers (5 BPM threshold)
     # Measure 1: 120 BPM (Initial tempo, always noted)

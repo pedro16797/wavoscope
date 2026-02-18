@@ -145,6 +145,48 @@ class HarmonyFlagMove(BaseModel):
     idx: int
     t: float
 
+class LyricData(BaseModel):
+    text: str
+    timestamp: float
+    duration: float
+
+class LyricUpdate(BaseModel):
+    text: str | None = None
+    timestamp: float | None = None
+    duration: float | None = None
+
+class LyricMove(BaseModel):
+    idx: int
+    t: float
+
+@router.post("/lyrics")
+async def add_lyric(lyric: LyricData):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    state.project.add_lyric(lyric.text, lyric.timestamp, lyric.duration)
+    return {"status": "ok", "lyrics": state.project.lyrics}
+
+@router.delete("/lyrics/{idx}")
+async def remove_lyric(idx: int):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    state.project.remove_lyric(idx)
+    return {"status": "ok", "lyrics": state.project.lyrics}
+
+@router.patch("/lyrics/{idx}")
+async def update_lyric(idx: int, lyric: LyricUpdate):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    state.project.update_lyric(idx, lyric.text, lyric.timestamp, lyric.duration)
+    return {"status": "ok", "lyrics": state.project.lyrics}
+
+@router.post("/lyrics/move")
+async def move_lyric(move: LyricMove):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    state.project.move_lyric(move.idx, move.t)
+    return {"status": "ok", "lyrics": state.project.lyrics}
+
 @router.post("/harmony_flags/move")
 async def move_harmony_flag(move: HarmonyFlagMove):
     if not state.project:

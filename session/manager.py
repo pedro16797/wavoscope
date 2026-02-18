@@ -17,6 +17,7 @@ class ProjectManager:
                 data = json.loads(self.sidecar_path.read_text())
                 data.setdefault("harmony_flags", [])
                 data.setdefault("time_signature", {"numerator": 4, "denominator": 4})
+                data.setdefault("lyrics", [])
                 return data
             except Exception as e:
                 logger.error(f"Error loading sidecar {self.sidecar_path}: {e}")
@@ -26,6 +27,7 @@ class ProjectManager:
             "lastView": {},
             "flags": [],
             "harmony_flags": [],
+            "lyrics": [],
             "time_signature": {"numerator": 4, "denominator": 4}
         }
 
