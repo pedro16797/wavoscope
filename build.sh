@@ -52,6 +52,8 @@ python3 -m nuitka --standalone \
     --output-filename=Wavoscope \
     --enable-plugin=upx \
     --output-dir=dist \
+    --include-windows-runtime-dlls=no \
+    --onefile-no-compression \
     --assume-yes-for-downloads \
     main.py
 
