@@ -53,14 +53,36 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   fetchConfig: async () => {
     try {
       const res = await axios.get(`${API_BASE}/config`);
-      set({
+      const oldState = get();
+      const newKeys = res.data.spectrum_keys;
+
+      const updates: any = {
         currentTheme: res.data.theme,
         click_volume: res.data.click_volume,
-        spectrum_keys: res.data.spectrum_keys,
+        spectrum_keys: newKeys,
         high_quality_enhancement: res.data.high_quality_enhancement,
         default_output_folder: res.data.default_output_folder,
         musicxml_author: res.data.musicxml_author
-      } as any);
+      };
+
+      const maxShift = 6 - Math.floor(newKeys / 12);
+      let effectiveShift = oldState.octave_shift;
+      if (effectiveShift > maxShift) {
+        effectiveShift = maxShift;
+        updates.octave_shift = effectiveShift;
+      }
+
+      if (newKeys !== oldState.spectrum_keys || effectiveShift !== oldState.octave_shift) {
+        const oldBaseMidi = 48 + oldState.octave_shift * 12;
+        const newBaseMidi = 48 + effectiveShift * 12;
+
+        const ratioLow = (freqToMidi(oldState.filter_low_hz) - oldBaseMidi) / oldState.spectrum_keys;
+        updates.filter_low_hz = midiToFreq(newBaseMidi + ratioLow * newKeys);
+        const ratioHigh = (freqToMidi(oldState.filter_high_hz) - oldBaseMidi) / oldState.spectrum_keys;
+        updates.filter_high_hz = midiToFreq(newBaseMidi + ratioHigh * newKeys);
+      }
+
+      set(updates as any);
     } catch (e) {
       console.error("[Store] Failed to fetch config:", e);
     }
@@ -96,14 +118,24 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         if (cfg.musicxml_author !== undefined) set({ musicxml_author: cfg.musicxml_author } as any);
 
         if (cfg.spectrum_keys !== undefined && cfg.spectrum_keys !== oldState.spectrum_keys) {
-            const updates: any = { spectrum_keys: cfg.spectrum_keys };
-            const baseMidi = 48 + oldState.octave_shift * 12;
+            const newKeys = cfg.spectrum_keys;
+            const updates: any = { spectrum_keys: newKeys };
 
-            const ratioLow = (freqToMidi(oldState.filter_low_hz) - baseMidi) / oldState.spectrum_keys;
-            updates.filter_low_hz = midiToFreq(baseMidi + ratioLow * cfg.spectrum_keys);
+            const maxShift = 6 - Math.floor(newKeys / 12);
+            let effectiveShift = oldState.octave_shift;
+            if (effectiveShift > maxShift) {
+                effectiveShift = maxShift;
+                updates.octave_shift = effectiveShift;
+            }
 
-            const ratioHigh = (freqToMidi(oldState.filter_high_hz) - baseMidi) / oldState.spectrum_keys;
-            updates.filter_high_hz = midiToFreq(baseMidi + ratioHigh * cfg.spectrum_keys);
+            const oldBaseMidi = 48 + oldState.octave_shift * 12;
+            const newBaseMidi = 48 + effectiveShift * 12;
+
+            const ratioLow = (freqToMidi(oldState.filter_low_hz) - oldBaseMidi) / oldState.spectrum_keys;
+            updates.filter_low_hz = midiToFreq(newBaseMidi + ratioLow * newKeys);
+
+            const ratioHigh = (freqToMidi(oldState.filter_high_hz) - oldBaseMidi) / oldState.spectrum_keys;
+            updates.filter_high_hz = midiToFreq(newBaseMidi + ratioHigh * newKeys);
 
             set(updates);
 

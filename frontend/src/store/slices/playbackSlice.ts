@@ -112,7 +112,8 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
   setFFTWindow: (sec) => set({ fft_window: sec } as any),
   setOctaveShift: (shift) => {
     const state = get();
-    const clampedShift = Math.max(-2, Math.min(6, shift));
+    const maxShift = 6 - Math.floor(state.spectrum_keys / 12);
+    const clampedShift = Math.max(-2, Math.min(maxShift, shift));
     const oldShift = state.octave_shift;
     if (clampedShift === oldShift) return;
 
