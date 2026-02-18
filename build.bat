@@ -64,6 +64,14 @@ python -m nuitka --standalone ^
     --nofollow-import-to=matplotlib ^
     --nofollow-import-to=PIL ^
     --nofollow-import-to=ipython ^
+    --nofollow-import-to=numpy.random ^
+    --nofollow-import-to=numpy.linalg ^
+    --nofollow-import-to=numpy.tests ^
+    --nofollow-import-to=numpy.f2py ^
+    --nofollow-import-to=numpy.distutils ^
+    --nofollow-import-to=bottle ^
+    --nofollow-import-to=yaml ^
+    --nofollow-import-to=tkinter ^
     --noinclude-data-files="**/pywebview-android.jar" ^
     --noinclude-data-files="**/cacert.pem" ^
     --noinclude-data-files="**/*.py" ^
