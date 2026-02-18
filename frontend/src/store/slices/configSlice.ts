@@ -97,7 +97,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
     }
   },
 
-  updateMetronome: async (enabled, volume) => {
+  updateMetronome: async (enabled?: boolean, volume?: number) => {
     try {
         await axios.post(`${API_BASE}/playback/metronome`, { enabled, volume });
         if (enabled !== undefined) set({ metronome_enabled: enabled });
@@ -155,5 +155,5 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
     }
   },
 
-  setShowSettings: (show) => set({ showSettings: show }),
+  setShowSettings: (show: boolean) => set({ showSettings: show }),
 });

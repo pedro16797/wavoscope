@@ -84,7 +84,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  addFlag: async (t) => {
+  addFlag: async (t: number) => {
     try {
         await axios.post(`${API_BASE}/project/flags`, { t });
         get().fetchStatus();
@@ -93,7 +93,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  moveFlag: async (idx, t) => {
+  moveFlag: async (idx: number, t: number) => {
     try {
         await axios.post(`${API_BASE}/project/flags/move`, { idx, t });
         get().fetchStatus();
@@ -102,7 +102,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  removeFlag: async (idx) => {
+  removeFlag: async (idx: number) => {
     try {
         await axios.delete(`${API_BASE}/project/flags/${idx}`);
         get().fetchStatus();
@@ -111,7 +111,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  addHarmonyFlag: async (t, chord) => {
+  addHarmonyFlag: async (t: number, chord?: Chord) => {
     try {
         if (!chord) {
             chord = await get().analyzeChord(t);
@@ -125,7 +125,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  moveHarmonyFlag: async (idx, t) => {
+  moveHarmonyFlag: async (idx: number, t: number) => {
     try {
         await axios.post(`${API_BASE}/project/harmony_flags/move`, { idx, t });
         get().fetchStatus();
@@ -134,7 +134,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  removeHarmonyFlag: async (idx) => {
+  removeHarmonyFlag: async (idx: number) => {
     try {
         await axios.delete(`${API_BASE}/project/harmony_flags/${idx}`);
         get().fetchStatus();
@@ -143,7 +143,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  updateHarmonyFlag: async (idx, t, chord) => {
+  updateHarmonyFlag: async (idx: number, t: number, chord: Chord) => {
     try {
         await axios.patch(`${API_BASE}/project/harmony_flags/${idx}`, { t, chord });
         get().fetchStatus();
@@ -152,7 +152,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  analyzeChord: async (t) => {
+  analyzeChord: async (t: number) => {
     try {
         const res = await axios.get(`${API_BASE}/project/analyze_chord`, { params: { t } });
         return res.data;
@@ -171,7 +171,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  updateTimeSignature: async (numerator, denominator) => {
+  updateTimeSignature: async (numerator: number, denominator: number) => {
     try {
         await axios.post(`${API_BASE}/project/time_signature`, { numerator, denominator });
         get().fetchStatus();
@@ -262,6 +262,6 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     }
   },
 
-  setEditingFlagIdx: (idx) => set({ editingFlagIdx: idx }),
-  setEditingHarmonyFlagIdx: (idx) => set({ editingHarmonyFlagIdx: idx }),
+  setEditingFlagIdx: (idx: number | null) => set({ editingFlagIdx: idx }),
+  setEditingHarmonyFlagIdx: (idx: number | null) => set({ editingHarmonyFlagIdx: idx }),
 });
