@@ -12,9 +12,8 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
     const {
         loaded,
         lyrics,
-        duration,
-        currentTime,
-        setCurrentTime,
+        position,
+        controlPlayback,
         addLyric,
         updateLyric,
         removeLyric,
@@ -58,7 +57,6 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             if (x + w < 0 || x > width) return;
 
             // Box
-            // Using a slightly more vibrant fill for the non-editing state to make it "pop"
             ctx.fillStyle = index === editingIdx ? (theme.accent || '#4fd1c5') + '66' : (theme.accent || '#4fd1c5') + '22';
             ctx.strokeStyle = theme.accent || '#4fd1c5';
             ctx.lineWidth = index === editingIdx ? 2 : 1.5;
@@ -86,19 +84,16 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-            // Truncate text if it doesn't fit
             let text = lyric.text;
             const metrics = ctx.measureText(text);
             if (metrics.width > w - 10) {
-                // simple truncation
                 text = text.substring(0, Math.max(1, Math.floor((w-10)/8))) + '...';
             }
 
             ctx.fillText(text, x + w / 2, height / 2);
         });
 
-        // Draw playhead
-        const playheadX = (currentTime - offset) * zoom;
+        const playheadX = (position - offset) * zoom;
         if (playheadX >= 0 && playheadX <= width) {
             ctx.strokeStyle = theme.playhead || '#f56565';
             ctx.lineWidth = 2;
@@ -107,7 +102,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             ctx.lineTo(playheadX, height);
             ctx.stroke();
         }
-    }, [lyrics, currentTime, zoom, offset, editingIdx, themes, currentTheme]);
+    }, [lyrics, position, zoom, offset, editingIdx, themes, currentTheme]);
 
     useEffect(() => {
         const updateSize = () => {
@@ -134,7 +129,6 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         const x = e.clientX - rect.left;
         const time = offset + x / zoom;
 
-        // Check if clicked on a lyric
         const clickedIdx = lyrics.findIndex(l => time >= l.timestamp && time <= l.timestamp + l.duration);
         if (clickedIdx !== -1) {
             setEditingIdx(clickedIdx);
@@ -153,7 +147,6 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
 
         const clickedIdx = lyrics.findIndex(l => time >= l.timestamp && time <= l.timestamp + l.duration);
         if (clickedIdx === -1) {
-            // Add new lyric at this time
             addLyric({
                 text: '',
                 timestamp: Math.round(time * 100) / 100,
@@ -166,14 +159,12 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
     };
 
     const startAddingAtPlayhead = useCallback(() => {
-        const snappedTime = Math.round(currentTime * 100) / 100;
-        // If we are currently editing/adding a word, finish it
+        const snappedTime = Math.round(position * 100) / 100;
         if (editingIdx !== null && isAdding) {
             const currentLyric = lyrics[editingIdx];
             const newDuration = Math.max(0.1, snappedTime - currentLyric.timestamp);
             updateLyric(editingIdx, { ...currentLyric, duration: newDuration, text: editValue });
 
-            // Start NEXT word
             addLyric({
                 text: '',
                 timestamp: snappedTime,
@@ -183,7 +174,6 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             setEditValue('');
             setIsAdding(true);
         } else {
-            // Start FIRST word
             addLyric({
                 text: '',
                 timestamp: snappedTime,
@@ -193,7 +183,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             setEditValue('');
             setIsAdding(true);
         }
-    }, [editingIdx, isAdding, lyrics, currentTime, editValue, addLyric, updateLyric]);
+    }, [editingIdx, isAdding, lyrics, position, editValue, addLyric, updateLyric]);
 
     const finishEditing = useCallback(() => {
         if (editingIdx !== null) {
@@ -210,17 +200,14 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (editingIdx === null) {
-                // Navigation shortcuts
                 if (e.shiftKey && e.key === 'ArrowLeft') {
                     e.preventDefault();
-                    // Jump to previous word
-                    const prevIdx = [...lyrics].reverse().find(l => l.timestamp < currentTime - 0.1);
-                    if (prevIdx) setCurrentTime(prevIdx.timestamp);
+                    const prevIdx = [...lyrics].reverse().find(l => l.timestamp < position - 0.1);
+                    if (prevIdx) controlPlayback('seek', prevIdx.timestamp);
                 } else if (e.shiftKey && e.key === 'ArrowRight') {
                     e.preventDefault();
-                    // Jump to next word
-                    const nextIdx = lyrics.find(l => l.timestamp > currentTime + 0.1);
-                    if (nextIdx) setCurrentTime(nextIdx.timestamp);
+                    const nextIdx = lyrics.find(l => l.timestamp > position + 0.1);
+                    if (nextIdx) controlPlayback('seek', nextIdx.timestamp);
                 } else if (e.code === 'Space' && (e.target as HTMLElement).tagName !== 'INPUT') {
                     if (loaded) {
                         e.preventDefault();
@@ -230,7 +217,6 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                 return;
             }
 
-            // If editing
             if (e.key === 'Enter') {
                 finishEditing();
             } else if (e.key === 'Escape') {
@@ -245,7 +231,6 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             } else if (e.key === 'ArrowDown' && (e.target as HTMLElement).tagName !== 'INPUT') {
                 updateLyric(editingIdx, { duration: Math.max(0.1, lyrics[editingIdx].duration - 0.1) });
             } else if (e.code === 'Space' && isAdding) {
-                // Finish this word and start next
                 e.preventDefault();
                 startAddingAtPlayhead();
             }
@@ -253,7 +238,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [editingIdx, lyrics, currentTime, editValue, isAdding, startAddingAtPlayhead, finishEditing, setCurrentTime, moveLyric, updateLyric, loaded]);
+    }, [editingIdx, lyrics, position, editValue, isAdding, startAddingAtPlayhead, finishEditing, controlPlayback, moveLyric, updateLyric, loaded]);
 
     useEffect(() => {
         if (editingIdx !== null && inputRef.current) {

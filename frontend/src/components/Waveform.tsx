@@ -73,7 +73,7 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
   useEffect(() => {
     const canvas = canvasRef.current;
     const theme = themes[currentTheme];
-    if (!canvas || !theme?.waveform || size.width === 0) return;
+    if (!canvas || !theme || size.width === 0) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -91,7 +91,7 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
     bars.forEach((bar, i) => {
         const [min, max, , intensity] = bar;
         ctx.globalAlpha = intensity * 0.3;
-        ctx.strokeStyle = theme.waveform;
+        ctx.strokeStyle = theme.waveform || theme.accent || '#00aaff';
         ctx.lineWidth = Math.max(1, barWidth);
         ctx.beginPath();
         ctx.moveTo(i * barWidth, midY + min * scaleY);
@@ -103,7 +103,7 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
     bars.forEach((bar, i) => {
         const [, , rms, intensity] = bar;
         ctx.globalAlpha = intensity;
-        ctx.strokeStyle = theme.waveform;
+        ctx.strokeStyle = theme.waveform || theme.accent || '#00aaff';
         ctx.lineWidth = Math.max(1, barWidth);
         ctx.beginPath();
         ctx.moveTo(i * barWidth, midY - rms * scaleY);

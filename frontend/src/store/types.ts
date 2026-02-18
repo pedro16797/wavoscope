@@ -13,6 +13,11 @@ export interface Theme {
   keyWhite: string;
   keyBlack: string;
   spectrum: string;
+  waveform: string;
+  background: string;
+  radius: string;
+  font: string;
+  borderWidth: string;
 }
 
 export interface Flag {
@@ -104,6 +109,11 @@ export interface PlaybackSlice {
   volume: number;
   loop_mode: string;
   loop_range: [number, number];
+  filter_enabled: boolean;
+  filter_low_enabled: boolean;
+  filter_high_enabled: boolean;
+  filter_low_hz: number;
+  filter_high_hz: number;
   fft_window: number;
   octave_shift: number;
 
@@ -111,38 +121,39 @@ export interface PlaybackSlice {
   updatePosition: (pos: number) => void;
   setPlaying: (playing: boolean) => void;
   setLoopMode: (mode: string) => Promise<void>;
-  playTone: (freq: number, action: 'start' | 'stop') => Promise<void>;
-  stopAllTones: () => Promise<void>;
+  updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
   setFFTWindow: (sec: number) => void;
   setOctaveShift: (shift: number) => void;
+  playTone: (freq: number, action: 'start' | 'stop') => Promise<void>;
+  stopAllTones: () => Promise<void>;
 }
 
 export interface ConfigSlice {
   themes: Record<string, Theme>;
-  currentTheme: string;
+  currentTheme: ThemeName;
   metronome_enabled: boolean;
   click_volume: number;
   spectrum_keys: number;
   default_output_folder: string;
   musicxml_author: string;
   showSettings: boolean;
+  showSpectrum: boolean;
   showLyrics: boolean;
-
-  // Filter settings also seem to be here sometimes
-  filter_enabled: boolean;
-  filter_low_enabled: boolean;
-  filter_high_enabled: boolean;
-  filter_low_hz: number;
-  filter_high_hz: number;
 
   fetchThemes: () => Promise<void>;
   fetchConfig: () => Promise<void>;
-  setTheme: (name: string) => Promise<void>;
+  setTheme: (name: ThemeName) => Promise<void>;
   updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
-  updateConfig: (cfg: any) => Promise<void>;
+  updateConfig: (cfg: {
+    theme?: string,
+    click_volume?: number,
+    spectrum_keys?: number,
+    default_output_folder?: string,
+    musicxml_author?: string
+  }) => Promise<void>;
   setShowSettings: (show: boolean) => void;
+  setShowSpectrum: (show: boolean) => void;
   setShowLyrics: (show: boolean) => void;
-  updateFilter: (filter: any) => Promise<void>;
 }
 
 export type AppState = ProjectSlice & PlaybackSlice & ConfigSlice;

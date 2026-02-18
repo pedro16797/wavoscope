@@ -1,25 +1,39 @@
 import type { StateCreator } from 'zustand';
 import axios from 'axios';
-import type { AppState } from '../types';
+import type { AppState, ThemeName, Theme } from '../types';
 import { API_BASE } from '../useStore';
+import { midiToFreq, freqToMidi } from '../utils';
 
-export const createConfigSlice: StateCreator<AppState, [], [], any> = (set, get) => ({
-  themes: {
-    dark: {
-      name: 'dark',
-      surface: '#121212',
-      surfaceSecondary: '#1e1e1e',
-      text: '#e0e0e0',
-      accent: '#00aaff',
-      grid: '#333333',
-      playhead: '#ff4444',
-      flagRhythm: '#ff4757',
-      flagHarmony: '#00aaff',
-      keyWhite: '#fff',
-      keyBlack: '#333',
-      spectrum: '#00ff00'
-    }
-  },
+export interface ConfigSlice {
+  themes: Record<string, Theme>;
+  currentTheme: ThemeName;
+  metronome_enabled: boolean;
+  click_volume: number;
+  spectrum_keys: number;
+  default_output_folder: string;
+  musicxml_author: string;
+  showSettings: boolean;
+  showSpectrum: boolean;
+  showLyrics: boolean;
+
+  fetchThemes: () => Promise<void>;
+  fetchConfig: () => Promise<void>;
+  setTheme: (name: ThemeName) => Promise<void>;
+  updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
+  updateConfig: (cfg: {
+    theme?: string,
+    click_volume?: number,
+    spectrum_keys?: number,
+    default_output_folder?: string,
+    musicxml_author?: string
+  }) => Promise<void>;
+  setShowSettings: (show: boolean) => void;
+  setShowSpectrum: (show: boolean) => void;
+  setShowLyrics: (show: boolean) => void;
+}
+
+export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (set, get) => ({
+  themes: {},
   currentTheme: 'dark',
   metronome_enabled: true,
   click_volume: 0.3,
@@ -27,12 +41,8 @@ export const createConfigSlice: StateCreator<AppState, [], [], any> = (set, get)
   default_output_folder: '',
   musicxml_author: '',
   showSettings: false,
+  showSpectrum: true,
   showLyrics: false,
-  filter_enabled: false,
-  filter_low_enabled: false,
-  filter_high_enabled: false,
-  filter_low_hz: 100,
-  filter_high_hz: 5000,
 
   fetchThemes: async () => {
     try {
@@ -46,19 +56,41 @@ export const createConfigSlice: StateCreator<AppState, [], [], any> = (set, get)
   fetchConfig: async () => {
     try {
       const res = await axios.get(`${API_BASE}/config`);
-      set({
+      const oldState = get();
+      const newKeys = res.data.spectrum_keys;
+
+      const updates: any = {
         currentTheme: res.data.theme,
         click_volume: res.data.click_volume,
-        spectrum_keys: res.data.spectrum_keys,
+        spectrum_keys: newKeys,
         default_output_folder: res.data.default_output_folder,
         musicxml_author: res.data.musicxml_author
-      });
+      };
+
+      const maxShift = 6 - Math.floor(newKeys / 12);
+      let effectiveShift = oldState.octave_shift;
+      if (effectiveShift > maxShift) {
+        effectiveShift = maxShift;
+        updates.octave_shift = effectiveShift;
+      }
+
+      if (newKeys !== oldState.spectrum_keys || effectiveShift !== oldState.octave_shift) {
+        const oldBaseMidi = 48 + oldState.octave_shift * 12;
+        const newBaseMidi = 48 + effectiveShift * 12;
+
+        const ratioLow = (freqToMidi(oldState.filter_low_hz) - oldBaseMidi) / oldState.spectrum_keys;
+        updates.filter_low_hz = midiToFreq(newBaseMidi + ratioLow * newKeys);
+        const ratioHigh = (freqToMidi(oldState.filter_high_hz) - oldBaseMidi) / oldState.spectrum_keys;
+        updates.filter_high_hz = midiToFreq(newBaseMidi + ratioHigh * newKeys);
+      }
+
+      set(updates);
     } catch (e) {
       console.error("[Store] Failed to fetch config:", e);
     }
   },
 
-  setTheme: async (name: string) => {
+  setTheme: async (name: ThemeName) => {
     try {
         await axios.post(`${API_BASE}/config`, { theme: name });
         set({ currentTheme: name });
@@ -77,23 +109,54 @@ export const createConfigSlice: StateCreator<AppState, [], [], any> = (set, get)
     }
   },
 
-  updateConfig: async (cfg: any) => {
+  updateConfig: async (cfg) => {
     try {
+        const oldState = get();
         await axios.post(`${API_BASE}/config`, cfg);
-        set(cfg);
+        if (cfg.theme) set({ currentTheme: cfg.theme });
+        if (cfg.click_volume !== undefined) set({ click_volume: cfg.click_volume });
+        if (cfg.default_output_folder !== undefined) set({ default_output_folder: cfg.default_output_folder });
+        if (cfg.musicxml_author !== undefined) set({ musicxml_author: cfg.musicxml_author });
+
+        if (cfg.spectrum_keys !== undefined && cfg.spectrum_keys !== oldState.spectrum_keys) {
+            const newKeys = cfg.spectrum_keys;
+            const updates: any = { spectrum_keys: newKeys };
+
+            const maxShift = 6 - Math.floor(newKeys / 12);
+            let effectiveShift = oldState.octave_shift;
+            if (effectiveShift > maxShift) {
+                effectiveShift = maxShift;
+                updates.octave_shift = effectiveShift;
+            }
+
+            const oldBaseMidi = 48 + oldState.octave_shift * 12;
+            const newBaseMidi = 48 + effectiveShift * 12;
+
+            const ratioLow = (freqToMidi(oldState.filter_low_hz) - oldBaseMidi) / oldState.spectrum_keys;
+            updates.filter_low_hz = midiToFreq(newBaseMidi + ratioLow * newKeys);
+
+            const ratioHigh = (freqToMidi(oldState.filter_high_hz) - oldBaseMidi) / oldState.spectrum_keys;
+            updates.filter_high_hz = midiToFreq(newBaseMidi + ratioHigh * newKeys);
+
+            set(updates);
+
+            if ((oldState.filter_low_enabled && updates.filter_low_hz) || (oldState.filter_high_enabled && updates.filter_high_hz)) {
+                const newState = get();
+                axios.post(`${API_BASE}/playback/filter`, {
+                    enabled: newState.filter_enabled,
+                    low_hz: newState.filter_low_hz,
+                    high_hz: newState.filter_high_hz,
+                    low_enabled: newState.filter_low_enabled,
+                    high_enabled: newState.filter_high_enabled
+                }).catch(e => console.error("[Store] Failed to update filter after zoom change:", e));
+            }
+        }
     } catch (e) {
         console.error("[Store] Failed to update config:", e);
     }
   },
 
   setShowSettings: (show: boolean) => set({ showSettings: show }),
+  setShowSpectrum: (show: boolean) => set({ showSpectrum: show }),
   setShowLyrics: (show: boolean) => set({ showLyrics: show }),
-  updateFilter: async (filter: any) => {
-    try {
-        await axios.post(`${API_BASE}/playback/filter`, filter);
-        set(filter);
-    } catch (e) {
-        console.error("[Store] Failed to update filter:", e);
-    }
-  },
 });
