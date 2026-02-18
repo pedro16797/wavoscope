@@ -1,17 +1,10 @@
-try:
-    import onnxruntime as ort
-except ImportError:
-    ort = None
-
+import onnxruntime as ort
 import numpy as np
 import soxr
 from pathlib import Path
 
 class NovaSR:
     def __init__(self, model_path=None):
-        if ort is None:
-            raise ImportError("onnxruntime is not installed. NovaSR is unavailable.")
-
         self._resampler_in = None
         self._resampler_out = None
         self._current_sr = None

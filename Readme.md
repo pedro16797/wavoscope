@@ -22,6 +22,9 @@ Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope c
 - **Playback Cursor:** **Left Click** on the waveform to move the playhead.
 - **Speed Control:** Use the slider in the bottom bar to adjust speed from 0.1x to 2.0x. Wavoscope uses high-quality time-stretching that preserves pitch.
 
+### High-Quality Enhancement (NovaSR)
+When slowing down audio significantly, high-frequency detail is often lost. Enable **High Quality Enhancement** in the settings to use the integrated **NovaSR** neural network, which recovers clarity and "air" in real-time during slow playback.
+
 ---
 
 ## 🔍 Spectral Analysis & Filtering
@@ -72,6 +75,7 @@ Wavoscope uses a dual-flag system to help you map out the structure and harmony 
 Access the settings via the gear icon in the playback bar:
 - **Visible Piano Keys:** Adjust how many keys are shown in the spectrum's piano roll.
 - **Click Volume:** Control the loudness of the metronome subdivisions.
+- **High Quality Enhancement:** Toggle the NovaSR super-resolution engine.
 
 ### Themes
 Wavoscope is fully themeable. Choose a look that suits your environment:

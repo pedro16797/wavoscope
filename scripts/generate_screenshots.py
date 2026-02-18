@@ -41,7 +41,7 @@ def generate():
 
         # 5. Screenshot: Settings Dialog
         # Set it in the store FIRST so the dialog picks it up when opened
-        page.evaluate("window.useStore.getState().updateConfig({click_volume: 0.5})")
+        page.evaluate("window.useStore.getState().updateConfig({high_quality_enhancement: true})")
         time.sleep(0.5)
         page.evaluate("window.useStore.getState().setShowSettings(true)")
         time.sleep(1)

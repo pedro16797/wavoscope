@@ -55,11 +55,19 @@ python -m nuitka --standalone ^
     --noinclude-data-files="**/.git/**" ^
     --noinclude-data-files="**/venv/**" ^
     --noinclude-data-files="**/__pycache__/**" ^
-    --noinclude-data-files="resources/models/*.onnx" ^
     --noinclude-data-files="*/pywebview-android.jar" ^
     --noinclude-data-files="*/polyfill.js" ^
     --windows-icon-from-ico=resources/icons/app-icon.png ^
     --nofollow-import-to=torch ^
+    --nofollow-import-to=sympy ^
+    --nofollow-import-to=mpmath ^
+    --nofollow-import-to=pytest ^
+    --nofollow-import-to=playwright ^
+    --nofollow-import-to=matplotlib ^
+    --nofollow-import-to=PIL ^
+    --nofollow-import-to=ipython ^
+    --nofollow-import-to=pythonnet ^
+    --nofollow-import-to=clr_loader ^
     --windows-console-mode=disable ^
     --product-name="Wavoscope" ^
     --company-name="Lendas do Alén" ^
@@ -67,7 +75,6 @@ python -m nuitka --standalone ^
     --output-filename=Wavoscope ^
     --output-dir=dist ^
     --include-windows-runtime-dlls=no ^
-    --onefile-no-compression ^
     --assume-yes-for-downloads ^
     main.py
 

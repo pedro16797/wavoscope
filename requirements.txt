@@ -7,5 +7,7 @@ websockets
 python-multipart
 pywebview
 python-stretch
+onnxruntime
 soxr
+zstandard
 tinytag
