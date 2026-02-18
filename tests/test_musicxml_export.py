@@ -103,6 +103,27 @@ def test_musicxml_export_annotations(tmp_path):
     assert "Drum Fill" not in words3
     assert "" not in words3 or len(words3) == 1
 
+def test_musicxml_export_metadata(tmp_path):
+    from utils.config import Config
+    cfg = Config()
+    cfg.set("ui.musicxml_author", "Test Author")
+
+    audio_path = tmp_path / "test_metadata.wav"
+    audio_path.write_bytes(b"dummy")
+    project = Project(audio_path)
+    project.add_flag(0.0, kind="rhythm")
+    project.add_flag(2.0, kind="rhythm")
+
+    xml_content = project.generate_musicxml()
+    tree = ET.fromstring(xml_content)
+    creator = tree.find("identification/creator")
+    assert creator is not None
+    assert creator.text == "Test Author"
+    assert creator.attrib["type"] == "composer"
+
+    software = tree.find("identification/encoding/software")
+    assert software.text == "Wavoscope by Lendas do Alén"
+
 def test_musicxml_export_inheritance_and_gap(tmp_path):
     audio_path = tmp_path / "test_inheritance.wav"
     audio_path.write_bytes(b"dummy")

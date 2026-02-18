@@ -29,20 +29,17 @@ fi
 echo "Checking dependencies..."
 pip install -q -r requirements.txt
 
-# Build frontend if missing or outdated
-if [ ! -d "frontend/dist" ]; then
-    echo "Frontend build missing. Building now..."
-
-    if ! command -v npm &> /dev/null; then
-        echo "[ERROR] npm not found. Please install Node.js."
-        exit 1
-    fi
-
-    cd frontend
-    npm install
-    npm run build
-    cd ..
+# Build frontend
+echo "Building frontend..."
+if ! command -v npm &> /dev/null; then
+    echo "[ERROR] npm not found. Please install Node.js."
+    exit 1
 fi
+
+cd frontend
+npm install --no-fund --no-audit
+npm run build
+cd ..
 
 # Run the application
 echo "Launching Wavoscope..."

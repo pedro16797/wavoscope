@@ -43,6 +43,11 @@ export interface AppState {
   speed: number;
   volume: number;
   filename: string;
+  metadata: {
+    title: string;
+    artist: string;
+    album: string;
+  };
   flags: Flag[];
   harmony_flags: HarmonyFlag[];
   time_signature: TimeSignature;
@@ -60,6 +65,8 @@ export interface AppState {
   currentTheme: string;
   spectrum_keys: number;
   high_quality_enhancement: boolean;
+  default_output_folder: string;
+  musicxml_author: string;
   fft_window: number;
   octave_shift: number;
 
@@ -78,12 +85,20 @@ export interface AppState {
   updatePosition: (pos: number) => void;
   setPlaying: (playing: boolean) => void;
   updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
-  updateConfig: (cfg: { theme?: string, click_volume?: number, spectrum_keys?: number, high_quality_enhancement?: boolean }) => Promise<void>;
+  updateConfig: (cfg: {
+    theme?: string,
+    click_volume?: number,
+    spectrum_keys?: number,
+    high_quality_enhancement?: boolean,
+    default_output_folder?: string,
+    musicxml_author?: string
+  }) => Promise<void>;
   addFlag: (t: number) => Promise<void>;
   moveFlag: (idx: number, t: number) => Promise<void>;
   removeFlag: (idx: number) => Promise<void>;
   setLoopMode: (mode: string) => Promise<void>;
   updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
+  ensureFiltersVisible: () => void;
 
   addHarmonyFlag: (t: number, chord?: Chord) => Promise<HarmonyFlag | null>;
   moveHarmonyFlag: (idx: number, t: number) => Promise<void>;

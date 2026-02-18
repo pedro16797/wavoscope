@@ -10,23 +10,34 @@ export interface ConfigSlice {
   click_volume: number;
   spectrum_keys: number;
   high_quality_enhancement: boolean;
+  default_output_folder: string;
+  musicxml_author: string;
   showSettings: boolean;
 
   fetchThemes: () => Promise<void>;
   fetchConfig: () => Promise<void>;
   setTheme: (name: string) => Promise<void>;
   updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
-  updateConfig: (cfg: { theme?: string, click_volume?: number, spectrum_keys?: number, high_quality_enhancement?: boolean }) => Promise<void>;
+  updateConfig: (cfg: {
+    theme?: string,
+    click_volume?: number,
+    spectrum_keys?: number,
+    high_quality_enhancement?: boolean,
+    default_output_folder?: string,
+    musicxml_author?: string
+  }) => Promise<void>;
   setShowSettings: (show: boolean) => void;
 }
 
-export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (set) => ({
+export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (set, get) => ({
   themes: {},
   currentTheme: 'dark',
   metronome_enabled: true,
   click_volume: 0.3,
   spectrum_keys: 37,
   high_quality_enhancement: false,
+  default_output_folder: '',
+  musicxml_author: '',
   showSettings: false,
 
   fetchThemes: async () => {
@@ -45,7 +56,9 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         currentTheme: res.data.theme,
         click_volume: res.data.click_volume,
         spectrum_keys: res.data.spectrum_keys,
-        high_quality_enhancement: res.data.high_quality_enhancement
+        high_quality_enhancement: res.data.high_quality_enhancement,
+        default_output_folder: res.data.default_output_folder,
+        musicxml_author: res.data.musicxml_author
       } as any);
     } catch (e) {
       console.error("[Store] Failed to fetch config:", e);
@@ -78,6 +91,9 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         if (cfg.click_volume !== undefined) set({ click_volume: cfg.click_volume } as any);
         if (cfg.spectrum_keys !== undefined) set({ spectrum_keys: cfg.spectrum_keys } as any);
         if (cfg.high_quality_enhancement !== undefined) set({ high_quality_enhancement: cfg.high_quality_enhancement } as any);
+        if (cfg.default_output_folder !== undefined) set({ default_output_folder: cfg.default_output_folder } as any);
+        if (cfg.musicxml_author !== undefined) set({ musicxml_author: cfg.musicxml_author } as any);
+        if (cfg.spectrum_keys !== undefined) get().ensureFiltersVisible();
     } catch (e) {
         console.error("[Store] Failed to update config:", e);
     }

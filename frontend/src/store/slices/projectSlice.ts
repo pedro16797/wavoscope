@@ -6,6 +6,11 @@ import { API_BASE } from '../useStore';
 export interface ProjectSlice {
   loaded: boolean;
   filename: string;
+  metadata: {
+    title: string;
+    artist: string;
+    album: string;
+  };
   flags: Flag[];
   harmony_flags: HarmonyFlag[];
   time_signature: TimeSignature;
@@ -34,6 +39,7 @@ export interface ProjectSlice {
 export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = (set, get) => ({
   loaded: false,
   filename: '',
+  metadata: { title: '', artist: '', album: '' },
   flags: [],
   harmony_flags: [],
   time_signature: { numerator: 4, denominator: 4 },
@@ -46,6 +52,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     try {
       const res = await axios.get(`${API_BASE}/status`);
       set(res.data);
+      get().ensureFiltersVisible();
     } catch (e) {
       console.error("[Store] Failed to fetch status:", e);
     }
@@ -188,7 +195,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
         // 2. Prompt for save location
         const pywindow = window as any;
         if (pywindow.pywebview?.api?.save_dialog) {
-            const res = await pywindow.pywebview.api.save_dialog(defaultFilename);
+            const defaultDir = get().default_output_folder || null;
+            const res = await pywindow.pywebview.api.save_dialog(defaultFilename, defaultDir);
             if (res) {
                 savePath = Array.isArray(res) ? res[0] : res;
             }
