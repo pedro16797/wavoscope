@@ -1,12 +1,15 @@
 import webview
-import requests
+import urllib.request
+import json
 from utils.logging import logger
 
 def on_closing():
     try:
-        res = requests.get('http://127.0.0.1:8000/status')
-        if res.status_code == 200 and res.json().get('dirty'):
-            return webview.windows[0].confirm('You have unsaved changes. Save before closing?')
+        with urllib.request.urlopen('http://127.0.0.1:8000/status') as res:
+            if res.status == 200:
+                data = json.loads(res.read().decode())
+                if data.get('dirty'):
+                    return webview.windows[0].confirm('You have unsaved changes. Save before closing?')
     except Exception:
         pass
     return True
@@ -22,12 +25,13 @@ class Api:
         if res:
             file_path = res[0]
             try:
-                resp = requests.post('http://127.0.0.1:8000/project/open', json={'path': file_path})
-                resp.raise_for_status()
+                data = json.dumps({'path': file_path}).encode('utf-8')
+                req = urllib.request.Request('http://127.0.0.1:8000/project/open', data=data, headers={'Content-Type': 'application/json'})
+                with urllib.request.urlopen(req) as resp:
+                    if resp.status >= 400:
+                        logger.error(f"Error opening file: status {resp.status}")
             except Exception as e:
                 logger.error(f"Error opening file: {e}")
-                if hasattr(e, 'response') and e.response is not None:
-                    logger.error(f"Backend Error Detail: {e.response.text}")
 
     def save_dialog(self, default_filename, directory=None):
         if not webview.windows:

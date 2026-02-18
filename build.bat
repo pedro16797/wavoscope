@@ -55,6 +55,9 @@ python -m nuitka --standalone ^
     --noinclude-data-files="**/.git/**" ^
     --noinclude-data-files="**/venv/**" ^
     --noinclude-data-files="**/__pycache__/**" ^
+    --noinclude-data-files="resources/models/*.onnx" ^
+    --noinclude-data-files="*/pywebview-android.jar" ^
+    --noinclude-data-files="*/polyfill.js" ^
     --windows-icon-from-ico=resources/icons/app-icon.png ^
     --nofollow-import-to=torch ^
     --windows-console-mode=disable ^
@@ -62,8 +65,6 @@ python -m nuitka --standalone ^
     --company-name="Lendas do Alén" ^
     --file-version="1.0.0" ^
     --output-filename=Wavoscope ^
-    --enable-plugin=upx ^
-    --upx-binary=upx.exe ^
     --output-dir=dist ^
     --include-windows-runtime-dlls=no ^
     --onefile-no-compression ^

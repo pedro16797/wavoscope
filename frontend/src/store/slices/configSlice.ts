@@ -10,7 +10,6 @@ export interface ConfigSlice {
   metronome_enabled: boolean;
   click_volume: number;
   spectrum_keys: number;
-  high_quality_enhancement: boolean;
   default_output_folder: string;
   musicxml_author: string;
   showSettings: boolean;
@@ -23,7 +22,6 @@ export interface ConfigSlice {
     theme?: string,
     click_volume?: number,
     spectrum_keys?: number,
-    high_quality_enhancement?: boolean,
     default_output_folder?: string,
     musicxml_author?: string
   }) => Promise<void>;
@@ -36,7 +34,6 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   metronome_enabled: true,
   click_volume: 0.3,
   spectrum_keys: 37,
-  high_quality_enhancement: false,
   default_output_folder: '',
   musicxml_author: '',
   showSettings: false,
@@ -60,7 +57,6 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         currentTheme: res.data.theme,
         click_volume: res.data.click_volume,
         spectrum_keys: newKeys,
-        high_quality_enhancement: res.data.high_quality_enhancement,
         default_output_folder: res.data.default_output_folder,
         musicxml_author: res.data.musicxml_author
       };
@@ -113,7 +109,6 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         await axios.post(`${API_BASE}/config`, cfg);
         if (cfg.theme) set({ currentTheme: cfg.theme });
         if (cfg.click_volume !== undefined) set({ click_volume: cfg.click_volume });
-        if (cfg.high_quality_enhancement !== undefined) set({ high_quality_enhancement: cfg.high_quality_enhancement });
         if (cfg.default_output_folder !== undefined) set({ default_output_folder: cfg.default_output_folder });
         if (cfg.musicxml_author !== undefined) set({ musicxml_author: cfg.musicxml_author });
 
