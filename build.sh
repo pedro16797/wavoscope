@@ -45,6 +45,17 @@ python3 -m nuitka --standalone \
     --noinclude-data-files="**/__pycache__/**" \
     --windows-icon-from-ico=resources/icons/app-icon.png \
     --nofollow-import-to=torch \
+    --nofollow-import-to=sympy \
+    --nofollow-import-to=mpmath \
+    --nofollow-import-to=pytest \
+    --nofollow-import-to=playwright \
+    --nofollow-import-to=matplotlib \
+    --nofollow-import-to=PIL \
+    --nofollow-import-to=ipython \
+    --noinclude-data-files="**/pywebview-android.jar" \
+    --noinclude-data-files="**/cacert.pem" \
+    --noinclude-data-files="**/*.py" \
+    --noinclude-data-files="**/*.pyi" \
     --windows-console-mode=disable \
     --product-name="Wavoscope" \
     --company-name="Lendas do Alén" \
