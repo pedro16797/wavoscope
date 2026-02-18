@@ -57,7 +57,6 @@ python3 -m nuitka --standalone \
     --nofollow-import-to=numpy.tests \
     --nofollow-import-to=numpy.f2py \
     --nofollow-import-to=numpy.distutils \
-    --nofollow-import-to=bottle \
     --nofollow-import-to=yaml \
     --nofollow-import-to=tkinter \
     --nofollow-import-to=sqlite3 \
