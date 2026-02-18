@@ -70,9 +70,9 @@ python -m nuitka --standalone ^
 
 if %errorlevel% equ 0 (
     echo Packaging into Wavoscope.zip...
-    if exist "dist\Wavoscope.dist" (
+    if exist "dist\main.dist" (
         if exist "dist\Wavoscope" rd /s /q "dist\Wavoscope"
-        xcopy /E /I /Y "dist\Wavoscope.dist" "dist\Wavoscope" >nul
+        xcopy /E /I /Y "dist\main.dist" "dist\Wavoscope" >nul
         python -c "import shutil; shutil.make_archive('Wavoscope', 'zip', root_dir='dist', base_dir='Wavoscope')"
         rd /s /q "dist\Wavoscope"
         echo Wavoscope.zip created.

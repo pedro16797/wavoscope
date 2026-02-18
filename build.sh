@@ -56,9 +56,9 @@ python3 -m nuitka --standalone \
     main.py
 
 echo "Packaging into Wavoscope.zip..."
-if [ -d "dist/Wavoscope.dist" ]; then
+if [ -d "dist/main.dist" ]; then
     rm -rf dist/Wavoscope
-    cp -r dist/Wavoscope.dist dist/Wavoscope
+    cp -r dist/main.dist dist/Wavoscope
     python3 -c "import shutil; shutil.make_archive('Wavoscope', 'zip', root_dir='dist', base_dir='Wavoscope')"
     rm -rf dist/Wavoscope
     echo "Wavoscope.zip created."
