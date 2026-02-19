@@ -19,10 +19,11 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         removeLyric,
         moveLyric,
         currentTheme,
-        themes
+        themes,
+        selectedLyricIdx: selectedIdx,
+        setSelectedLyricIdx: setSelectedIdx
     } = useStore();
 
-    const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
     const [editingIdx, setEditingIdx] = useState<number | null>(null);
     const [editValue, setEditValue] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -333,7 +334,10 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                 setSelectedIdx(null);
             } else if (e.shiftKey && e.key === 'ArrowLeft') {
                 e.preventDefault();
-                if (selectedIdx > 0) {
+                const lyric = lyrics[selectedIdx];
+                if (position > lyric.timestamp + lyric.duration * 0.1) {
+                    controlPlayback('seek', lyric.timestamp);
+                } else if (selectedIdx > 0) {
                     const prev = lyrics[selectedIdx - 1];
                     controlPlayback('seek', prev.timestamp);
                     setSelectedIdx(selectedIdx - 1);

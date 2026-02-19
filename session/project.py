@@ -265,7 +265,7 @@ class Project:
                 if self.backend.active_loop_range:
                     return self.backend.active_loop_range
                 pos = self.backend.position
-            return self._looping.get_loop_range(pos, self.duration, self._flags.flags)
+            return self._looping.get_loop_range(pos, self.duration, self._flags.flags, self.lyrics)
 
     # ---------- metronome helpers ----------
     def subdivision_ticks_between(self, start: float, end: float) -> list[tuple[float, bool]]:

@@ -52,6 +52,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   dirty: false,
   editingFlagIdx: null,
   editingHarmonyFlagIdx: null,
+  selectedLyricIdx: null,
   export_status: { active: false, progress: 0, message: '' },
 
   fetchStatus: async () => {
@@ -287,4 +288,10 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   setEditingFlagIdx: (idx: number | null) => set({ editingFlagIdx: idx }),
   setEditingHarmonyFlagIdx: (idx: number | null) => set({ editingHarmonyFlagIdx: idx }),
+  setSelectedLyricIdx: (idx: number | null) => {
+    set({ selectedLyricIdx: idx });
+    if (idx === null && get().loop_mode === 'lyric') {
+      get().setLoopMode('none');
+    }
+  },
 });

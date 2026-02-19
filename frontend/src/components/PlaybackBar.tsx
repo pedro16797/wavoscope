@@ -7,7 +7,8 @@ export const PlaybackBar: React.FC = () => {
     loaded, position, duration, playing, speed, volume, filename, metadata,
     controlPlayback, currentTheme, themes,
     metronome_enabled, updateMetronome, setShowSettings, browseFile,
-    saveProject, exportMusicXML, dirty, loop_mode, setLoopMode
+    saveProject, exportMusicXML, dirty, loop_mode, setLoopMode,
+    selectedLyricIdx
   } = useStore();
 
   const theme = themes[currentTheme] || {};
@@ -22,12 +23,16 @@ export const PlaybackBar: React.FC = () => {
 
   const cycleLoopMode = () => {
     const modes = ['none', 'whole', 'section', 'bar'];
-    const nextIdx = (modes.indexOf(loop_mode) + 1) % modes.length;
+    if (selectedLyricIdx !== null) modes.push('lyric');
+
+    let currentIdx = modes.indexOf(loop_mode);
+    if (currentIdx === -1) currentIdx = 0; // If current mode was lyric but lyric was deselected
+    const nextIdx = (currentIdx + 1) % modes.length;
     setLoopMode(modes[nextIdx]);
   };
 
   const getLoopIcon = () => {
-    if (loop_mode === 'bar') return <Repeat1 size={20} />;
+    if (loop_mode === 'bar' || loop_mode === 'lyric') return <Repeat1 size={20} />;
     return <Repeat size={20} />;
   };
 
@@ -36,6 +41,7 @@ export const PlaybackBar: React.FC = () => {
         case 'whole': return 'Loop: Whole Song';
         case 'section': return 'Loop: Current Section';
         case 'bar': return 'Loop: Current Bar';
+        case 'lyric': return 'Loop: Selected Lyric';
         default: return 'Loop: Off';
     }
   };
@@ -80,6 +86,7 @@ export const PlaybackBar: React.FC = () => {
                         title={getLoopTitle()}>
                     {getLoopIcon()}
                     {loop_mode === 'section' && <span className="absolute top-1 right-1 text-[8px] font-bold bg-accent text-surface rounded-full w-3 h-3 flex items-center justify-center border border-surface shadow-sm">S</span>}
+                    {loop_mode === 'lyric' && <span className="absolute top-1 right-1 text-[8px] font-bold bg-accent text-surface rounded-full w-3 h-3 flex items-center justify-center border border-surface shadow-sm">L</span>}
                 </button>
                 {/* Metronome */}
                 <button onClick={() => updateMetronome(!metronome_enabled)}

@@ -78,6 +78,7 @@ export interface ProjectSlice {
   dirty: boolean;
   editingFlagIdx: number | null;
   editingHarmonyFlagIdx: number | null;
+  selectedLyricIdx: number | null;
   export_status: ExportStatus;
 
   fetchStatus: () => Promise<void>;
@@ -99,6 +100,7 @@ export interface ProjectSlice {
   exportMusicXML: () => Promise<void>;
   setEditingFlagIdx: (idx: number | null) => void;
   setEditingHarmonyFlagIdx: (idx: number | null) => void;
+  setSelectedLyricIdx: (idx: number | null) => void;
 }
 
 export interface PlaybackSlice {
