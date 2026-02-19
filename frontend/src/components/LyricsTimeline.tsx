@@ -108,7 +108,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             ctx.lineTo(playheadX, height);
             ctx.stroke();
         }
-    }, [lyrics, position, zoom, offset, editingIdx, themes, currentTheme]);
+    }, [lyrics, position, zoom, offset, editingIdx, selectedIdx, themes, currentTheme]);
 
     useEffect(() => {
         const updateSize = () => {
@@ -145,10 +145,6 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         if (e.button === 0) { // Left click
             if (clickedIdx !== -1) {
                 setSelectedIdx(clickedIdx);
-                if (e.detail === 2) { // Double click also sets editing
-                     setEditingIdx(clickedIdx);
-                     setEditValue(lyrics[clickedIdx].text);
-                }
                 if (editingIdx !== null && editingIdx !== clickedIdx) {
                     finishEditing();
                 }
@@ -209,10 +205,19 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
 
     const addLyricAt = useCallback((t: number) => {
         const snappedT = Math.round(t * 100) / 100;
+
+        // Clamping duration so it doesn't overlap with the next lyric
+        const nextLyric = lyrics.find(l => l.timestamp > snappedT);
+        let duration = 1.0;
+        if (nextLyric) {
+            duration = Math.min(1.0, nextLyric.timestamp - snappedT);
+            if (duration < 0.1) duration = 0.1;
+        }
+
         addLyric({
             text: '',
             timestamp: snappedT,
-            duration: 1.0
+            duration: duration
         }).then((res) => {
             if (res) {
                 setSelectedIdx(res.idx);
@@ -220,7 +225,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                 setEditValue('');
             }
         });
-    }, [addLyric]);
+    }, [addLyric, lyrics]);
 
     const finishEditing = useCallback(() => {
         if (editingIdx !== null) {
