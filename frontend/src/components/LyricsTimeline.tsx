@@ -78,19 +78,19 @@ export const LyricsTimeline: React.FC = () => {
 
         // Pass 1: Draw connecting lines for syllables
         lyrics.forEach((lyric, index) => {
-            if (lyric.text.endsWith('-') && index < lyrics.length - 1) {
+            if (lyric.s.endsWith('-') && index < lyrics.length - 1) {
                 const nextLyric = lyrics[index + 1];
 
-                let t1 = lyric.timestamp;
-                let d1 = lyric.duration;
+                let t1 = lyric.t;
+                let d1 = lyric.l;
                 if (draggingLyric && draggingLyric.idx === index) {
-                    t1 = draggingLyric.timestamp;
-                    d1 = draggingLyric.duration;
+                    t1 = draggingLyric.t;
+                    d1 = draggingLyric.l;
                 }
 
-                let t2 = nextLyric.timestamp;
+                let t2 = nextLyric.t;
                 if (draggingLyric && draggingLyric.idx === index + 1) {
-                    t2 = draggingLyric.timestamp;
+                    t2 = draggingLyric.t;
                 }
 
                 const x1 = (t1 + d1 - offset) * zoom;
@@ -110,17 +110,17 @@ export const LyricsTimeline: React.FC = () => {
 
         // Pass 2: Draw lyric boxes
         lyrics.forEach((lyric, index) => {
-            let timestamp = lyric.t;
-            let duration = lyric.l;
+            let t = lyric.t;
+            let l = lyric.l;
 
             // Apply local dragging state if active
             if (draggingLyric && draggingLyric.idx === index) {
-                timestamp = draggingLyric.t;
-                duration = draggingLyric.l;
+                t = draggingLyric.t;
+                l = draggingLyric.l;
             }
 
-            const x = (timestamp - offset) * zoom;
-            const w = duration * zoom;
+            const x = (t - offset) * zoom;
+            const w = l * zoom;
 
             if (x + w < 0 || x > width) return;
 
