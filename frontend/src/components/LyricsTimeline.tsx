@@ -86,18 +86,38 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             ctx.stroke();
 
             // Text
-            ctx.fillStyle = theme.text || 'white';
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(x, 0, w, height);
+            ctx.clip();
+
             ctx.font = '12px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-            let text = lyric.text;
+            const text = lyric.text;
             const metrics = ctx.measureText(text);
-            if (metrics.width > w - 10) {
-                text = text.substring(0, Math.max(1, Math.floor((w-10)/8))) + '...';
-            }
 
-            ctx.fillText(text, x + w / 2, height / 2);
+            if (w < 24) {
+                // Fade out for very small boxes (less than ~2 characters)
+                const gradient = ctx.createLinearGradient(x, 0, x + w, 0);
+                const color = theme.text || 'white';
+                gradient.addColorStop(0, 'transparent');
+                gradient.addColorStop(0.2, color);
+                gradient.addColorStop(0.8, color);
+                gradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = gradient;
+                ctx.fillText(text, x + w / 2, height / 2);
+            } else if (metrics.width > w - 8) {
+                // Truncate for medium boxes
+                const truncated = text.substring(0, Math.max(1, Math.floor((w-12)/7))) + '...';
+                ctx.fillStyle = theme.text || 'white';
+                ctx.fillText(truncated, x + w / 2, height / 2);
+            } else {
+                ctx.fillStyle = theme.text || 'white';
+                ctx.fillText(text, x + w / 2, height / 2);
+            }
+            ctx.restore();
         });
 
         const playheadX = (position - offset) * zoom;
@@ -388,7 +408,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
     }, [editingIdx]);
 
     return (
-        <div ref={containerRef} className="relative w-full h-8 select-none bg-surface border-b" style={{ borderBottomColor: 'var(--color-grid)' }}>
+        <div ref={containerRef} className="relative w-full h-8 select-none bg-surface border-b overflow-hidden" style={{ borderBottomColor: 'var(--color-grid)' }}>
             <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
