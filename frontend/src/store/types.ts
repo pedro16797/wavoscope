@@ -93,7 +93,7 @@ export interface ProjectSlice {
   addLyric: (lyric: Lyric) => Promise<{ idx: number, lyric: Lyric } | null>;
   removeLyric: (idx: number) => Promise<void>;
   updateLyric: (idx: number, lyric: Partial<Lyric>) => Promise<{ idx: number, lyric: Lyric } | null>;
-  moveLyric: (idx: number, t: number) => Promise<void>;
+  moveLyric: (idx: number, t: number) => Promise<{ idx: number, lyric: Lyric } | null>;
   updateTimeSignature: (numerator: number, denominator: number) => Promise<void>;
   saveProject: () => Promise<void>;
   exportMusicXML: () => Promise<void>;

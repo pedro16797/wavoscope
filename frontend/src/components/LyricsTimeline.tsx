@@ -158,10 +158,8 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                 }
                 const startX = e.clientX;
                 const startT = lyrics[clickedIdx].timestamp;
-                let dragged = false;
 
                 const onMouseMove = (moveEvent: MouseEvent) => {
-                    dragged = true;
                     const dx = moveEvent.clientX - startX;
                     const dt = dx / zoom;
                     let newT = Math.round((startT + dt) * 100) / 100;
