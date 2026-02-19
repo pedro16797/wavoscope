@@ -5,9 +5,10 @@ import { formatChord, getChordMidiNotes, midiToFreq, getTimelineStep, formatTime
 interface TimelineProps {
   offset: number;
   zoom: number;
+  onViewportChange: (offset: number, zoom: number) => void;
 }
 
-export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
+export const Timeline: React.FC<TimelineProps> = ({ offset, zoom, onViewportChange }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const {
@@ -262,6 +263,13 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     }
   };
 
+  const handleWheel = (e: React.WheelEvent) => {
+    const delta = e.deltaY;
+    const scrollAmount = delta / zoom;
+    const maxOffset = Math.max(0, duration - size.width / zoom);
+    onViewportChange(Math.max(0, Math.min(offset + scrollAmount, maxOffset)), zoom);
+  };
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -325,7 +333,8 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     <div ref={containerRef} className="h-10 w-full border-b select-none cursor-crosshair"
         style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
         onMouseDown={handleMouseDown}
-        onContextMenu={handleContextMenu}>
+        onContextMenu={handleContextMenu}
+        onWheel={handleWheel}>
         <canvas ref={canvasRef} className="w-full h-full block" />
     </div>
   );
