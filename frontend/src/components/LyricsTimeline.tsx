@@ -144,32 +144,51 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
 
         if (e.button === 0) { // Left click
             if (clickedIdx !== -1) {
+                const lyric = lyrics[clickedIdx];
+                const relativePos = (time - lyric.timestamp) / lyric.duration;
+                let dragMode: 'move' | 'left' | 'right' = 'move';
+                if (relativePos < 0.1) dragMode = 'left';
+                else if (relativePos > 0.9) dragMode = 'right';
+
                 setSelectedIdx(clickedIdx);
                 if (editingIdx !== null && editingIdx !== clickedIdx) {
                     finishEditing();
                 }
                 const startX = e.clientX;
-                const startT = lyrics[clickedIdx].timestamp;
+                const startT = lyric.timestamp;
+                const startD = lyric.duration;
 
                 const onMouseMove = (moveEvent: MouseEvent) => {
                     const dx = moveEvent.clientX - startX;
                     const dt = dx / zoom;
-                    let newT = Math.round((startT + dt) * 100) / 100;
 
-                    const prev = lyrics[clickedIdx - 1];
-                    const next = lyrics[clickedIdx + 1];
+                    if (dragMode === 'move') {
+                        let newT = Math.round((startT + dt) * 100) / 100;
+                        const prev = lyrics[clickedIdx - 1];
+                        const next = lyrics[clickedIdx + 1];
+                        if (prev && newT < prev.timestamp + prev.duration) newT = prev.timestamp + prev.duration;
+                        if (next && newT + lyric.duration > next.timestamp) newT = next.timestamp - lyric.duration;
+                        if (newT < 0) newT = 0;
+                        moveLyric(clickedIdx, newT).then(res => { if (res) setSelectedIdx(res.idx); });
+                    } else if (dragMode === 'left') {
+                        let newT = Math.round((startT + dt) * 100) / 100;
+                        const prev = lyrics[clickedIdx - 1];
+                        const minT = prev ? prev.timestamp + prev.duration : 0;
+                        if (newT < minT) newT = minT;
 
-                    if (prev && newT < prev.timestamp + prev.duration) {
-                        newT = prev.timestamp + prev.duration;
+                        let newD = startD - (newT - startT);
+                        if (newD < 0.2) {
+                            newD = 0.2;
+                            newT = startT + startD - 0.2;
+                        }
+                        updateLyric(clickedIdx, { timestamp: newT, duration: newD }).then(res => { if (res) setSelectedIdx(res.idx); });
+                    } else if (dragMode === 'right') {
+                        let newD = Math.round((startD + dt) * 100) / 100;
+                        if (newD < 0.2) newD = 0.2;
+                        const next = lyrics[clickedIdx + 1];
+                        if (next && lyric.timestamp + newD > next.timestamp) newD = next.timestamp - lyric.timestamp;
+                        updateLyric(clickedIdx, { duration: newD }).then(res => { if (res) setSelectedIdx(res.idx); });
                     }
-                    if (next && newT + lyrics[clickedIdx].duration > next.timestamp) {
-                        newT = next.timestamp - lyrics[clickedIdx].duration;
-                    }
-                    if (newT < 0) newT = 0;
-
-                    moveLyric(clickedIdx, newT).then(res => {
-                        if (res) setSelectedIdx(res.idx);
-                    });
                 };
 
                 const onMouseUp = () => {
@@ -211,7 +230,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         let duration = 1.0;
         if (nextLyric) {
             duration = Math.min(1.0, nextLyric.timestamp - snappedT);
-            if (duration < 0.1) duration = 0.1;
+            if (duration < 0.2) duration = 0.2;
         }
 
         addLyric({
@@ -303,7 +322,12 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             }
 
             if (e.key === 'Enter') {
-                finishEditing();
+                if (editingIdx === null) {
+                    setEditingIdx(selectedIdx);
+                    setEditValue(lyrics[selectedIdx].text);
+                } else {
+                    finishEditing();
+                }
             } else if (e.key === 'Escape') {
                 finishEditing();
                 setSelectedIdx(null);
@@ -345,7 +369,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 if (editingIdx !== null && (e.target as HTMLElement).tagName === 'INPUT') return;
-                updateLyric(selectedIdx, { duration: Math.max(0.1, lyrics[selectedIdx].duration - 0.1) }).then(res => { if(res) setSelectedIdx(res.idx); });
+                updateLyric(selectedIdx, { duration: Math.max(0.2, lyrics[selectedIdx].duration - 0.1) }).then(res => { if(res) setSelectedIdx(res.idx); });
             }
         };
 
