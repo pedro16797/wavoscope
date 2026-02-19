@@ -1,24 +1,22 @@
 import type { StateCreator } from 'zustand';
 import axios from 'axios';
-import type { AppState, ThemeName, Theme } from '../types';
+import type { AppState } from '../types';
 import { API_BASE } from '../useStore';
 import { midiToFreq, freqToMidi } from '../utils';
 
 export interface ConfigSlice {
-  themes: Record<string, Theme>;
-  currentTheme: ThemeName;
+  themes: Record<string, Record<string, string>>;
+  currentTheme: string;
   metronome_enabled: boolean;
   click_volume: number;
   spectrum_keys: number;
   default_output_folder: string;
   musicxml_author: string;
   showSettings: boolean;
-  showSpectrum: boolean;
-  showLyrics: boolean;
 
   fetchThemes: () => Promise<void>;
   fetchConfig: () => Promise<void>;
-  setTheme: (name: ThemeName) => Promise<void>;
+  setTheme: (name: string) => Promise<void>;
   updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
   updateConfig: (cfg: {
     theme?: string,
@@ -28,8 +26,6 @@ export interface ConfigSlice {
     musicxml_author?: string
   }) => Promise<void>;
   setShowSettings: (show: boolean) => void;
-  setShowSpectrum: (show: boolean) => void;
-  setShowLyrics: (show: boolean) => void;
 }
 
 export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (set, get) => ({
@@ -41,8 +37,6 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   default_output_folder: '',
   musicxml_author: '',
   showSettings: false,
-  showSpectrum: true,
-  showLyrics: false,
 
   fetchThemes: async () => {
     try {
@@ -90,7 +84,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
     }
   },
 
-  setTheme: async (name: ThemeName) => {
+  setTheme: async (name) => {
     try {
         await axios.post(`${API_BASE}/config`, { theme: name });
         set({ currentTheme: name });
@@ -157,6 +151,4 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   },
 
   setShowSettings: (show: boolean) => set({ showSettings: show }),
-  setShowSpectrum: (show: boolean) => set({ showSpectrum: show }),
-  setShowLyrics: (show: boolean) => set({ showLyrics: show }),
 });
