@@ -139,20 +139,16 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         const clickedIdx = lyrics.findIndex(l => time >= l.timestamp && time <= l.timestamp + l.duration);
 
         if (e.button === 2) { // Right click
-            if (clickedIdx !== -1) {
-                setSelectedIdx(clickedIdx);
-                setEditingIdx(clickedIdx);
-                setEditValue(lyrics[clickedIdx].text);
-            } else {
-                setSelectedIdx(null);
-                setEditingIdx(null);
-            }
             return;
         }
 
         if (e.button === 0) { // Left click
             if (clickedIdx !== -1) {
                 setSelectedIdx(clickedIdx);
+                if (e.detail === 2) { // Double click also sets editing
+                     setEditingIdx(clickedIdx);
+                     setEditValue(lyrics[clickedIdx].text);
+                }
                 if (editingIdx !== null && editingIdx !== clickedIdx) {
                     finishEditing();
                 }
@@ -188,6 +184,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                 window.addEventListener('mousemove', onMouseMove);
                 window.addEventListener('mouseup', onMouseUp);
             } else {
+                setSelectedIdx(null);
                 setEditingIdx(null);
             }
         }
@@ -245,6 +242,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             if (e.code === 'Space' && (e.target as HTMLElement).tagName !== 'INPUT') {
                 if (loaded) {
                     e.preventDefault();
+                    e.stopImmediatePropagation();
                     const state = useStore.getState();
                     const currentLyrics = state.lyrics;
 
@@ -297,6 +295,10 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             }
 
             // If an element is selected
+            if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Escape'].includes(e.key)) {
+                e.stopImmediatePropagation();
+            }
+
             if (e.key === 'Enter') {
                 finishEditing();
             } else if (e.key === 'Escape') {
@@ -317,31 +319,35 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                     setSelectedIdx(selectedIdx + 1);
                 }
             } else if (e.key === 'ArrowLeft' && !e.shiftKey) {
+                e.preventDefault();
                 if (editingIdx !== null && (e.target as HTMLElement).tagName === 'INPUT') return;
                 let newT = lyrics[selectedIdx].timestamp - 0.1;
                 const prev = lyrics[selectedIdx - 1];
                 if (prev && newT < prev.timestamp + prev.duration) newT = prev.timestamp + prev.duration;
                 moveLyric(selectedIdx, Math.max(0, newT)).then(res => { if(res) setSelectedIdx(res.idx); });
             } else if (e.key === 'ArrowRight' && !e.shiftKey) {
+                e.preventDefault();
                 if (editingIdx !== null && (e.target as HTMLElement).tagName === 'INPUT') return;
                 let newT = lyrics[selectedIdx].timestamp + 0.1;
                 const next = lyrics[selectedIdx + 1];
                 if (next && newT + lyrics[selectedIdx].duration > next.timestamp) newT = next.timestamp - lyrics[selectedIdx].duration;
                 moveLyric(selectedIdx, newT).then(res => { if(res) setSelectedIdx(res.idx); });
             } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
                 if (editingIdx !== null && (e.target as HTMLElement).tagName === 'INPUT') return;
                 let newD = lyrics[selectedIdx].duration + 0.1;
                 const next = lyrics[selectedIdx + 1];
                 if (next && lyrics[selectedIdx].timestamp + newD > next.timestamp) newD = next.timestamp - lyrics[selectedIdx].timestamp;
                 updateLyric(selectedIdx, { duration: newD }).then(res => { if(res) setSelectedIdx(res.idx); });
             } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
                 if (editingIdx !== null && (e.target as HTMLElement).tagName === 'INPUT') return;
                 updateLyric(selectedIdx, { duration: Math.max(0.1, lyrics[selectedIdx].duration - 0.1) }).then(res => { if(res) setSelectedIdx(res.idx); });
             }
         };
 
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener('keydown', handleKeyDown, { capture: true });
+        return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
     }, [selectedIdx, editingIdx, lyrics, position, editValue, finishEditing, addLyricAt, controlPlayback, moveLyric, updateLyric, loaded]);
 
     useEffect(() => {
