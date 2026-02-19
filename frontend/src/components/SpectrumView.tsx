@@ -2,6 +2,7 @@ import React from 'react';
 import { useStore } from '../store/useStore';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Spectrum } from './Spectrum';
+import { Tooltip } from './Tooltip';
 
 export const SpectrumView: React.FC = () => {
   const {
@@ -18,9 +19,11 @@ export const SpectrumView: React.FC = () => {
             {/* FFT Window */}
             <div className="flex items-center gap-2 h-full border-l border-white/10 pl-4">
                 <span className="text-[9px] opacity-60 font-bold">FFT</span>
-                <input type="range" min="0.05" max="1.0" step="0.05" value={fft_window}
-                    onChange={(e) => setFFTWindow(parseFloat(e.target.value))}
-                    className="w-32 accent-current" title={`FFT Window: ${fft_window}s`} />
+                <Tooltip content={`FFT Window: ${fft_window}s`}>
+                    <input type="range" min="0.05" max="1.0" step="0.05" value={fft_window}
+                        onChange={(e) => setFFTWindow(parseFloat(e.target.value))}
+                        className="w-32 accent-current" />
+                </Tooltip>
                 <span className="text-[10px] font-mono w-8">{fft_window.toFixed(2)}s</span>
             </div>
 
