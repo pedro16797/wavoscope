@@ -52,6 +52,7 @@ Wavoscope utilise un système à double marqueur pour vous aider à cartographie
 - **Placement :** Appuyez sur `B` (par défaut) ou faites un **clic gauche** sur la timeline pour placer un marqueur de rythme.
 - **Subdivisions :** Ouvrez le dialogue du marqueur (**clic droit** sur la poignée) pour définir les subdivisions (ex: 4 pour des noires). Celles-ci apparaissent sous forme de fines lignes verticales sur la timeline.
 - **Métronome :** Les marqueurs de rythme déclenchent automatiquement un clic de métronome pendant la lecture si les clics de subdivision sont activés.
+- **Maj + Clic :** Place automatiquement un nouveau marqueur au même intervalle que le précédent, parfait pour cartographier rapidement un rythme régulier.
 - **Sections :** Marquez un marqueur comme "Début de section" pour lui donner une étiquette (comme "Couplet" ou "Refrain").
 
 ![Dialogue Marqueur de Rythme](docs/images/rhythm_dialog.png)
@@ -171,6 +172,7 @@ Wavoscope est conçu pour être géré par la communauté. Vous pouvez ajouter o
 | Zone | Action | Interaction |
 | :--- | :--- | :--- |
 | **Timeline** | Ajouter Marqueur Rythme | `Clic Gauche` |
+| **Timeline** | Placement Auto du Marqueur de Rythme | `Maj + Clic Gauche` |
 | **Timeline** | Ajouter Marqueur Harmonie | `Clic Droit` |
 | **Timeline** | Déplacer Marqueur | `Glisser Gauche` |
 | **Timeline** | Écouter Accord | `Maintenir Clic Gauche` sur Harmonie |

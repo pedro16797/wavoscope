@@ -52,6 +52,7 @@ Wavoscope utiliza un sistema de doble marca para ayudarte a mapear la estructura
 - **Colocación:** Presiona `B` (por defecto) o haz **clic izquierdo** en la línea de tiempo para colocar una marca de ritmo.
 - **Subdivisiones:** Abre el diálogo de la marca (**clic derecho** en el controlador de la marca) para establecer subdivisiones (p. ej., 4 para negras). Estas aparecen como líneas verticales tenues en la línea de tiempo.
 - **Metrónomo:** Las marcas de ritmo activan automáticamente un clic de metrónomo durante la reproducción si los clics de subdivisión están activados.
+- **Shift-Click:** Coloca automáticamente una nueva marca al mismo intervalo que la anterior, ideal para mapear rápidamente un ritmo regular.
 - **Secciones:** Marca una marca como "Inicio de sección" para darle una etiqueta (como "Verso" o "Estribillo").
 
 ![Diálogo de marca de ritmo](docs/images/rhythm_dialog.png)
@@ -171,6 +172,7 @@ Wavoscope está diseñado para ser impulsado por la comunidad. Puedes añadir o 
 | Área | Acción | Interacción |
 | :--- | :--- | :--- |
 | **Línea de tiempo** | Añadir marca de ritmo | `Clic izquierdo` |
+| **Línea de tiempo** | Autocolocar marca de ritmo | `Shift + Clic izquierdo` |
 | **Línea de tiempo** | Añadir marca de armonía | `Clic derecho` |
 | **Línea de tiempo** | Mover marca | `Arrastrar con el izquierdo` |
 | **Línea de tiempo** | Escuchar acorde | **Mantener clic izquierdo** en la marca de armonía |

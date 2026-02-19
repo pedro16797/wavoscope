@@ -52,6 +52,7 @@ Wavoscope utilizza un sistema a doppio marcatore per aiutarti a mappare la strut
 - **Posizionamento:** Premi `B` (predefinito) o fai **clic sinistro** sulla timeline per inserire un marcatore di ritmo.
 - **Suddivisioni:** Apri il dialogo del marcatore (**clic destro** sulla maniglia) per impostare le suddivisioni (es. 4 per i quarti). Queste appaiono come sottili linee verticali sulla timeline.
 - **Metronomo:** I marcatori di ritmo attivano automaticamente un clic del metronomo durante la riproduzione se i clic di suddivisione sono abilitati.
+- **Maiusc + Clic:** Posiziona automaticamente un nuovo marcatore allo stesso intervallo del precedente, perfetto per mappare rapidamente un ritmo regolare.
 - **Sezioni:** Imposta un marcatore come "Inizio Sezione" per dargli un'etichetta (come "Strofa" o "Ritornello").
 
 ![Dialogo Marcatore Ritmo](docs/images/rhythm_dialog.png)
@@ -171,6 +172,7 @@ Wavoscope è progettato per essere guidato dalla comunità. Puoi aggiungere o mo
 | Area | Azione | Interazione |
 | :--- | :--- | :--- |
 | **Timeline** | Aggiungi Marcatore Ritmo | `Clic Sinistro` |
+| **Timeline** | Posizionamento Auto Marcatore Ritmo | `Maiusc + Clic Sinistro` |
 | **Timeline** | Aggiungi Marcatore Armonia | `Clic Destro` |
 | **Timeline** | Sposta Marcatore | `Trascina Sinistro` |
 | **Timeline** | Ascolta Accordo | `Tieni Premuto Clic Sinistro` |

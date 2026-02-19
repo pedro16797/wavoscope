@@ -15,6 +15,7 @@ A forma mais eficiente de transcrever uma música é seguindo este fluxo:
 1.  **Início:** Pressione `L` ou clique em um espaço vazio para criar a primeira letra na posição atual do cursor.
 2.  **Digitar:** Digite a primeira palavra.
 3.  **Dividir:** Pressione `Espaço` (para novas palavras) ou `-` (para sílabas dentro de uma palavra). Isso confirma o texto atual e cria imediatamente uma nova caixa de letra.
+    - **Diferenciação visual:** As palavras divididas por hifens (sílabas) são conectadas visualmente por uma linha horizontal na linha do tempo. O próprio hífen é armazenado nos dados, mas oculto na interface do utilizador quando não está a ser editado, proporcionando um aspeto limpo.
 4.  **Repetir:** O foco é transferido automaticamente para a nova caixa, permitindo que você continue transcrevendo enquanto a música toca.
 5.  **Confirmar:** Pressione `Enter` ou clique em outro lugar para encerrar a edição.
 
