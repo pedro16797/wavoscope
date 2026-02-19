@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
-import { formatChord, getChordMidiNotes, midiToFreq } from '../store/utils';
+import { formatChord, getChordMidiNotes, midiToFreq, getTimelineStep, formatTimelineLabel } from '../store/utils';
 
 interface TimelineProps {
   offset: number;
@@ -55,7 +55,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     ctx.fillStyle = theme.text || '#e0e0e0';
     ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 
-    const step = Math.max(0.1, Math.pow(10, Math.floor(Math.log10(span / 5))));
+    const step = getTimelineStep(span);
     const startTick = Math.floor(offset / step) * step;
 
     for (let t = startTick; t <= end; t += step) {
@@ -67,14 +67,8 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         ctx.lineTo(x, size.height);
         ctx.stroke();
 
-        const m = Math.floor(t / 60);
-        const s = Math.floor(t % 60);
-        const ms = Math.floor((t % 1) * 100);
-        if (step < 1) {
-            ctx.fillText(`${m}:${s.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`, x + 4, 15);
-        } else {
-            ctx.fillText(`${m}:${s.toString().padStart(2, '0')}`, x + 4, 15);
-        }
+        const label = formatTimelineLabel(t, step);
+        ctx.fillText(label, x + 4, 15);
     }
 
     // Draw Loop Range
