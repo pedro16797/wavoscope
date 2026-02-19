@@ -1,0 +1,164 @@
+<p align="center">
+  <img src="resources/icons/WavoscopeLogo.svg" alt="Wavoscope Logo" width="256">
+</p>
+
+# Wavoscope - Strumento di Analisi e Trascrizione Audio
+
+Wavoscope è un potente strumento di visualizzazione audio in tempo reale e aiuto alla trascrizione, progettato per musicisti, trascrittori ed ingegneri del suono. Offre forme d'onda ad alta fedeltà, analisi spettrale e un robusto sistema di marcatori per aiutarti a deconstruire flussi audio complessi.
+
+![Interfaccia Principale](docs/images/main_view.png)
+
+---
+
+## 🚀 Per Iniziare
+
+### Gestione del Progetto
+Wavoscope utilizza un sistema di file "sidecar". Quando apri un file audio, Wavoscope crea o carica un file `.oscope` nella stessa cartella per memorizzare marcatori, loop e impostazioni.
+- **Apri:** Clicca sull'icona della cartella nella barra di riproduzione per caricare qualsiasi formato audio comune (MP3, WAV, FLAC, ecc.).
+- **Salva:** Clicca sull'icona del floppy disk. L'icona si illuminerà con il colore di accento del tuo tema quando ci sono modifiche non salvate.
+
+---
+
+## 🎵 Navigazione e Riproduzione
+
+- **Zoom:** Usa la **rotella del mouse** sulla forma d'onda o sullo spettro per ingrandire o rimpicciolire.
+- **Scorrimento:** Usa la **rotella del mouse** sulla **timeline** per scorrere avanti o indietro nel tempo.
+- **Panoramica:** **Clicca e trascina** la forma d'onda o lo spettro per spostarti lungo la timeline.
+- **Suddivisioni Adattive:** La timeline regola automaticamente i passi della griglia (da 0.01s a diverse ore) mentre esegui lo zoom, garantendo il miglior dettaglio senza affollamento visivo.
+- **Cursore di Riproduzione:** **Clic sinistro** sulla forma d'onda per spostare la testina di riproduzione.
+- **Controllo Velocità:** Usa lo slider nella barra inferiore per regolare la velocità da 0.1x a 2.0x. Wavoscope utilizza un algoritmo di time-stretching di alta qualità che preserva l'intonazione (pitch).
+
+---
+
+## 🔍 Analisi Spettrale e Filtraggio
+
+La metà inferiore dello schermo mostra uno spettrogramma a trasformata Q costante (CQT), mappato su una tastiera di pianoforte. Puoi regolare la **finestra FFT** e lo **spostamento d'ottava** usando i controlli nell'intestazione dell'analizzatore di spettro.
+
+![Filtraggio Spettrale](docs/images/spectrum_filter.png)
+
+### Filtraggio Avanzato
+Puoi isolare strumenti o note specifiche usando il filtro passa-banda in tempo reale. Le maniglie del filtro (linee verticali sullo spettro) sono sempre disponibili:
+- **Attiva/Disattiva Taglio:** **Clic destro** su una maniglia del filtro per abilitare o disabilitare quel limite.
+- **Posizionamento Rapido:** **Clic destro** in qualsiasi punto dello spettrogramma per spostare la maniglia del filtro più vicina e abilitarla.
+- **Feedback Visivo:** Quando un taglio è abilitato, l'area esterna al suo intervallo viene oscurata per aiutarti a concentrarti. Se entrambi sono disabilitati, il filtro viene bypassato.
+
+---
+
+## 🚩 Marcatori e Trascrizione
+
+Wavoscope utilizza un sistema a doppio marcatore per aiutarti a mappare la struttura e l'armonia di un brano.
+
+### Marcatori di Ritmo (Misure/Battute)
+- **Posizionamento:** Premi `B` (predefinito) o fai **clic sinistro** sulla timeline per inserire un marcatore di ritmo.
+- **Suddivisioni:** Apri il dialogo del marcatore (**clic destro** sulla maniglia) per impostare le suddivisioni (es. 4 per i quarti). Queste appaiono come sottili linee verticali sulla timeline.
+- **Metronomo:** I marcatori di ritmo attivano automaticamente un clic del metronomo durante la riproduzione se i clic di suddivisione sono abilitati.
+- **Sezioni:** Imposta un marcatore come "Inizio Sezione" per dargli un'etichetta (come "Strofa" o "Ritornello").
+
+![Dialogo Marcatore Ritmo](docs/images/rhythm_dialog.png)
+
+### Marcatori di Armonia (Accordi)
+- **Posizionamento:** Premi `H` (predefinito) o fai **clic destro** sulla timeline per inserire un marcatore di armonia.
+- **Editor Accordi:** **Clic destro** su un marcatore esistente per aprire il dialogo degli accordi. Puoi digitare i nomi degli accordi (es. "Am7", "C/G") o usare i selettori.
+- **Analisi Automatica:** Usa il pulsante **Suggerisci** per lasciare che Wavoscope analizzi l'audio in quella posizione e raccomandi l'accordo più probabile.
+- **Ascolto:** **Tieni premuto il clic sinistro** sulla maniglia di un marcatore di armonia o clicca sul pulsante "Play" nel dialogo per ascoltare l'accordo tramite il sintetizzatore interno.
+
+![Dialogo Marcatore Armonia](docs/images/harmony_dialog.png)
+
+### Gestione dei Marcatori
+- **Trascinamento:** Puoi **cliccare e trascinare** qualsiasi maniglia di marcatore sulla timeline per affinarne la posizione.
+- **Sovrapposizioni:** Quando un marcatore di Ritmo e uno di Armonia occupano lo stesso spazio, vengono visualizzati a mezza altezza (Armonia sopra, Ritmo sotto) in modo da poter interagire con entrambi.
+- **Loop:** Usa il pulsante Loop nella barra di riproduzione per passare tra i marcatori o l'intero brano.
+
+---
+
+## 🎤 Trascrizione del Testo
+
+Wavoscope include una traccia interattiva per i testi che permette una trascrizione e un allineamento ad alta velocità.
+
+![Trascrizione Testo](docs/images/lyrics_track.png)
+
+### Flusso di Lavoro per la Trascrizione
+1. **Attiva Traccia:** Clicca sul pulsante "Testo" nell'intestazione della forma d'onda per mostrare la traccia di trascrizione.
+2. **Aggiungi e Digita:** Premi `L` o fai un **singolo clic** in uno spazio vuoto della traccia per aggiungere una parola.
+3. **Inserimento Rapido:** Mentre digiti in una casella di testo, premi **Spazio** o **Trattino (`-`)**. Questo avverrà automaticamente:
+    - Conferma la parola corrente.
+    - Crea una nuova casella di testo immediatamente dopo (alla posizione attuale o alla fine della precedente).
+    - Sposta il focus sulla nuova casella così puoi continuare a digitare senza fermare la musica.
+4. **Navigazione:** Usa `Maiusc + Sinistra/Destra` per saltare tra gli elementi del testo. Perfetto per verificare il timing.
+
+### Modifica e Ridimensionamento
+- **Spostamento:** **Trascina** il centro (80%) di una casella di testo per spostarla.
+- **Timing:** **Trascina** i bordi (soglia del 10%) di una casella di testo per regolare l'inizio o la fine.
+- **Precisione:** Usa le **frecce della tastiera** quando un testo è selezionato per spostarlo di 0.1s. Usa le frecce **Su/Giù** per regolare la durata.
+- **Formattazione:** Le caselle di testo sfumano e nascondono il testo automaticamente quando diventano troppo piccole a bassi livelli di zoom, mantenendo l'interfaccia pulita.
+
+---
+
+## ⚙️ Impostazioni e Personalizzazione
+
+![Dialogo Impostazioni](docs/images/settings_dialog.png)
+
+Accedi alle impostazioni tramite l'icona dell'ingranaggio nella barra di riproduzione:
+- **Tasti Piano Visibili:** Regola quanti tasti vengono mostrati nella tastiera dello spettro.
+- **Volume Clic:** Controlla il volume delle suddivisioni del metronomo.
+
+### Temi
+Wavoscope è completamente personalizzabile tramite i temi. Scegli lo stile che preferisci:
+- **Cosmic:** Viola profondo e accenti nebulosi.
+- **Dark:** Modalità scura classica, riposante per gli occhi.
+- **Doll:** Rosa energico e toni giocosi.
+- **Hacker:** Verde terminale retrò su nero.
+- **Light:** Aspetto professionale pulito e ad alta luminosità.
+- **Neon:** Blu elettrico e vibrazioni ad alto contrasto.
+- **OLED:** Sfondo nero puro per il massimo contrasto.
+- **Retrowave:** Estetica synthwave anni '80.
+- **Toy:** Colori primari vivaci.
+- **Warm:** Toni caldi e naturali per sessioni prolungate.
+
+---
+
+## 🌍 Localizzazione
+
+Wavoscope supporta diverse lingue. Puoi cambiare la lingua nella scheda **Impostazioni > Globale**.
+
+### Traduzioni Personalizzate
+Wavoscope è progettato per essere guidato dalla comunità. Puoi aggiungere o modificare le traduzioni modificando i file JSON nella cartella `resources/locales`.
+- Per aggiungere una nuova lingua, crea un nuovo file JSON (es. `fr.json`) e aggiungi un campo `"meta": { "name": "Français" }`.
+- L'applicazione rileverà ed elencherà automaticamente ogni file di traduzione valido nel menu delle impostazioni.
+
+---
+
+## ⌨️ Comandi Completi
+
+### Scorciatoie da Tastiera
+| Azione | Tasto |
+| :--- | :--- |
+| **Riproduci / Pausa** | `Spazio` |
+| **Salta Avanti/Indietro** | `Sinistra` / `Destra` |
+| **Aumenta/Diminuisci Velocità** | `Su` / `Giù` |
+| **Aggiungi Marcatore Ritmo** | `B` |
+| **Aggiungi Marcatore Armonia** | `H` |
+| **Aggiungi/Conferma Testo** | `L` |
+| **Dividi e Avanza Testo**| `Spazio` / `-` (Dentro l'input) |
+| **Cicla Modalità Loop** | `Tab` |
+| **Deseleziona Tutto** | `Maiusc + L` |
+| **Salta tra i Testi** | `Maiusc + Sinistra/Destra` |
+| **Elimina Elemento** | `Canc` / `Backspace` |
+| **Apri File** | `Ctrl + O` |
+| **Salva Progetto** | `Ctrl + S` |
+
+### Interazioni Mouse
+| Area | Azione | Interazione |
+| :--- | :--- | :--- |
+| **Timeline** | Aggiungi Marcatore Ritmo | `Clic Sinistro` |
+| **Timeline** | Aggiungi Marcatore Armonia | `Clic Destro` |
+| **Timeline** | Sposta Marcatore | `Trascina Sinistro` |
+| **Timeline** | Ascolta Accordo | `Tieni Premuto Clic Sinistro` |
+| **Timeline** | Scorrimento Vista | `Rotella Mouse` |
+| **Forma d'Onda** | Sposta Testina | `Clic Sinistro` |
+| **Forma d'Onda** | Panoramica Vista | `Trascina Sinistro` |
+| **Forma d'Onda** | Zoom | `Rotella Mouse` |
+| **Spettro** | Suona Nota Sinusoidale | `Clic / Trascina Sinistro` |
+| **Spettro** | Attiva/Disattiva Taglio | `Clic Destro` maniglia |
+| **Spettro** | Posiziona Taglio | `Clic Destro` ovunque |
+| **Spettro** | Regola Taglio | `Trascina Sinistro` maniglia |
