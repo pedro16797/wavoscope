@@ -43,7 +43,7 @@ python3 -m nuitka --standalone \
     --noinclude-data-files="**/.git/**" \
     --noinclude-data-files="**/venv/**" \
     --noinclude-data-files="**/__pycache__/**" \
-    --windows-icon-from-ico=resources/icons/app-icon.png \
+    --windows-icon-from-ico=resources/icons/app-icon.ico \
     --nofollow-import-to=pytest \
     --nofollow-import-to=playwright \
     --nofollow-import-to=matplotlib \

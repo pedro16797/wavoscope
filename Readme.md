@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="resources/icons/WavoscopeLogo.svg" alt="Wavoscope Logo" width="256">
+</p>
+
 # Wavoscope - Audio Analysis & Transcription Tool
 
 Wavoscope is a powerful, real-time audio visualization and transcription aid designed for musicians, transcribers, and audio engineers. It provides high-fidelity waveforms, spectral analysis, and a robust marker system to help you deconstruct complex audio.
