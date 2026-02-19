@@ -145,6 +145,7 @@ export interface ConfigSlice {
   spectrum_keys: number;
   default_output_folder: string;
   musicxml_author: string;
+  language: string;
   showSettings: boolean;
   showSpectrum: boolean;
   showLyrics: boolean;
@@ -161,7 +162,8 @@ export interface ConfigSlice {
     click_volume?: number,
     spectrum_keys?: number,
     default_output_folder?: string,
-    musicxml_author?: string
+    musicxml_author?: string,
+    language?: string
   }) => Promise<void>;
   setShowSettings: (show: boolean) => void;
   setShowSpectrum: (show: boolean) => void;
