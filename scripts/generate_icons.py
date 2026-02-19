@@ -52,6 +52,12 @@ def generate_icons():
     img.save(ico_path, format="ICO", sizes=[(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
     print(f"Created {ico_path}, size: {os.path.getsize(ico_path)} bytes")
 
+    # Create ICNS file for macOS
+    icns_path = output_dir / "app-icon.icns"
+    img_icns = Image.open(png_paths[512])
+    img_icns.save(icns_path, format="ICNS")
+    print(f"Created {icns_path}, size: {os.path.getsize(icns_path)} bytes")
+
     app_icon_png = output_dir / "app-icon.png"
     shutil.copy(png_paths[512], app_icon_png)
 
