@@ -7,7 +7,7 @@
     "delete": "Eliminar",
     "ok": "Aceptar",
     "none": "Ningún",
-    "ready": "Listo para cargar audio"
+    "ready": "Todo listo para cargar audio"
   },
   "settings": {
     "title": "Axustes",
@@ -21,12 +21,12 @@
     "measure_calc": "Cálculo de compás",
     "numerator": "Numerador",
     "denominator": "Denominador",
-    "measure_hint": "Utilizado para a exportación MusicXML para determinar a estrutura do compás e o cálculo do tempo.",
+    "measure_hint": "Úsase na exportación MusicXML para estruturar os compases e calcular o tempo.",
     "export_defaults": "Valores predeterminados de exportación",
     "output_dir": "Directorio de saída predeterminado",
     "author": "Autor de MusicXML (Compositor)",
     "kb_play_pause": "Reproducir / Pausa",
-    "kb_seek": "Avanzar/Retroceder",
+    "kb_seek": "Saltar adiante/atrás",
     "kb_speed": "Axustar velocidade",
     "kb_rhythm": "Engadir marca de ritmo",
     "kb_harmony": "Engadir marca de harmonía",
@@ -40,14 +40,14 @@
     "kb_finish_edit": "Rematar edición",
     "kb_move_word": "Mover palabra",
     "kb_resize_word": "Redimensionar palabra",
-    "kb_jump_word": "Saltar á palabra",
+    "kb_jump_word": "Ir á palabra",
     "interactions": "Interaccións na liña de tempo",
     "kb_move_flag": "Mover marca",
     "kb_audition": "Escoitar harmonía",
-    "kb_scroll": "Desprazar vista",
+    "kb_scroll": "Mover a vista",
     "waveform": "Forma de onda",
     "spectrum": "Espectro",
-    "kb_seek_playhead": "Mover cursor de reprodución",
+    "kb_seek_playhead": "Mover o cursor",
     "kb_pan": "Mover vista",
     "kb_zoom": "Zoom",
     "kb_play_note": "Tocar nota",
@@ -107,11 +107,11 @@
     "name": "Nome",
     "time": "Tempo (s)",
     "subdivisions": "Subdivisión",
-    "sub_hint": "Número de clics por compás. Establece a 0 para desactivar o metrónomo nesta marca.",
+    "sub_hint": "Número de clics por compás. Poñelo a 0 desactiva o metrónomo nesta marca.",
     "section_start": "Inicio de sección",
     "shaded": "Sombrear corcheas",
     "insert_n": "Inserir N marcas entre esta e a seguinte",
-    "insert_prompt": "Cantas marcas queres inserir entre esta e a seguinte?"
+    "insert_prompt": "Cantas marcas queres introducir entre esta e a seguinte?"
   },
   "lyrics": {
     "track_label": "Letras",
@@ -120,7 +120,7 @@
   },
   "progress": {
     "title": "Procesando...",
-    "please_wait": "Agarda mentres procesamos a túa solicitude."
+    "please_wait": "Agarda mentres procesamos o pedido."
   },
   "views": {
     "timeline_waveform": "Liña de tempo e Forma de onda",
