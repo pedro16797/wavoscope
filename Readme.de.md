@@ -52,6 +52,7 @@ Wavoscope verwendet ein duales Markierungssystem, um Ihnen bei der Kartierung de
 - **Platzierung:** Drücken Sie `B` (Standard) oder **Linksklick** auf die Timeline, um eine Rhythmus-Markierung zu setzen.
 - **Unterteilungen:** Öffnen Sie den Markierungsdialog (**Rechtsklick** auf den Markierungsgriff), um Unterteilungen festzulegen (z. B. 4 für Viertelnoten). Diese erscheinen als schwache vertikale Linien in der Timeline.
 - **Metronom:** Rhythmus-Markierungen lösen während der Wiedergabe automatisch einen Metronom-Klick aus, wenn Unterteilungsklicks aktiviert sind.
+- **Umschalt-Klick:** Platziert automatisch eine neue Flagge im gleichen Intervall wie die vorherige, ideal zum schnellen Zuordnen eines regelmäßigen Schlags.
 - **Abschnitte:** Markieren Sie eine Markierung als "Abschnittsbeginn", um ihr ein Label zu geben (wie "Strophe" oder "Refrain").
 
 ![Rhythmus-Markierungsdialog](docs/images/rhythm_dialog.png)
@@ -171,6 +172,7 @@ Wavoscope ist so konzipiert, dass es von der Community getragen wird. Sie könne
 | Bereich | Aktion | Interaktion |
 | :--- | :--- | :--- |
 | **Timeline** | Rhythmus-Markierung | `Linksklick` |
+| **Timeline** | Rhythmus-Flag automatisch platzieren | `Umschalt + Linksklick` |
 | **Timeline** | Harmonie-Markierung | `Rechtsklick` |
 | **Timeline** | Markierung verschieben | `Links ziehen` |
 | **Timeline** | Harmonie anhören | `Linksklick halten` auf Markierung |

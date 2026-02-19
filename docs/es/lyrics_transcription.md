@@ -15,6 +15,7 @@ La forma más eficiente de transcribir una canción es siguiendo este flujo de t
 1.  **Inicio:** Presiona `L` o haz clic en un espacio vacío para crear la primera letra en la posición actual del cursor.
 2.  **Escribir:** Introduce la primera palabra.
 3.  **Dividir:** Presiona `Espacio` (para nuevas palabras) o `-` (para sílabas dentro de una palabra). Esto confirma el texto actual y crea inmediatamente una nueva caja de letra.
+    - **Diferenciación visual:** Las palabras divididas por guiones (sílabas) se conectan visualmente mediante una línea horizontal en la línea de tiempo. El guion en sí se almacena en los datos pero se oculta en la interfaz de usuario cuando no se está editando, proporcionando un aspecto limpio.
 4.  **Repetir:** El foco se transfiere automáticamente a la nueva caja, permitiéndote continuar transcribiendo mientras la música suena.
 5.  **Confirmar:** Presiona `Enter` o haz clic en otro lugar para finalizar la edición.
 

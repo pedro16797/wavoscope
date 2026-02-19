@@ -15,6 +15,7 @@ La méthode la plus efficace pour transcrire une chanson est de suivre ce flux d
 1.  **Démarrage :** Appuyez sur `L` ou cliquez sur un espace vide pour créer la première parole à la position actuelle de lecture.
 2.  **Saisie :** Tapez le premier mot.
 3.  **Division :** Appuyez sur `Espace` (pour les nouveaux mots) ou `-` (pour les syllabes au sein d'un mot). Cela valide le texte actuel et crée immédiatement une nouvelle boîte de paroles.
+    - **Différenciation visuelle :** Les mots divisés par des traits d'union (syllabes) sont visuellement reliés par une ligne horizontale dans la timeline. Le trait d'union lui-même est stocké dans les données mais masqué dans l'interface utilisateur lorsqu'il n'est pas en cours d'édition, offrant un aspect épuré.
 4.  **Répétition :** Le focus est automatiquement transféré à la nouvelle boîte, vous permettant de continuer la transcription pendant que la musique joue.
 5.  **Validation :** Appuyez sur `Entrée` ou cliquez ailleurs pour terminer l'édition.
 

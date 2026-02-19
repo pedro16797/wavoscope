@@ -216,6 +216,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.interactions')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                         <span className="opacity-60">{t('settings.kb_rhythm')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_click')}</span>
+                        <span className="opacity-60">{t('settings.kb_rhythm_auto')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift')} + {t('keys.left_click')}</span>
                         <span className="opacity-60">{t('settings.kb_harmony')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click')}</span>
                         <span className="opacity-60">{t('settings.kb_move_flag')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_drag')}</span>
                         <span className="opacity-60">{t('settings.kb_audition')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.hold_click')}</span>

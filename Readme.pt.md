@@ -52,6 +52,7 @@ Wavoscope utiliza um sistema de marcadores duplos para ajudar você a mapear a e
 - **Posicionamento:** Pressione `B` (padrão) ou **clique esquerdo** na linha do tempo para inserir um marcador de ritmo.
 - **Subdivisões:** Abra o diálogo do marcador (**clique direito** na alça) para definir subdivisões (ex: 4 para semínimas). Elas aparecem como linhas verticais suaves na linha do tempo.
 - **Metrônomo:** Marcadores de ritmo acionam automaticamente um clique de metrônomo durante a reprodução se os cliques de subdivisão estiverem ativados.
+- **Shift-Click:** Coloca automaticamente uma nova marca com o mesmo intervalo da anterior, ideal para mapear rapidamente um ritmo regular.
 - **Seções:** Marque um marcador como "Início de Seção" para dar a ele um rótulo (como "Verso" ou "Refrão").
 
 ![Diálogo de Marcador de Ritmo](docs/images/rhythm_dialog.png)
@@ -171,6 +172,7 @@ Wavoscope foi projetado para ser impulsionado pela comunidade. Você pode adicio
 | Área | Ação | Interação |
 | :--- | :--- | :--- |
 | **Linha do Tempo** | Adicionar Marcador Ritmo | `Clique Esquerdo` |
+| **Linha do Tempo** | Colocação Auto de Marcador de Ritmo | `Shift + Clique Esquerdo` |
 | **Linha do Tempo** | Adicionar Marcador Harmonia | `Clique Direito` |
 | **Linha do Tempo** | Mover Marcador | `Arrastar com Esquerdo` |
 | **Linha do Tempo** | Ouvir Acorde | `Manter Clique Esquerdo` no marcador de harmonia |
