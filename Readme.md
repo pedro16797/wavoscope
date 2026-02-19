@@ -52,6 +52,7 @@ Wavoscope uses a dual-flag system to help you map out the structure and harmony 
 - **Placement:** Press `B` (default) or **Left Click** on the timeline to drop a rhythm flag.
 - **Subdivisions:** Open the flag dialog (**Right Click** the flag handle) to set subdivisions (e.g., 4 for quarter notes). These appear as faint vertical lines on the timeline.
 - **Metronome:** Rhythm flags automatically trigger a metronome click during playback if subdivision clicks are enabled.
+- **Shift-Click:** Automatically places a new flag at the same interval as the previous one, perfect for quickly mapping out a regular beat.
 - **Sections:** Mark a flag as a "Section Start" to give it a label (like "Verse" or "Chorus").
 
 ![Rhythm Flag Dialog](docs/images/rhythm_dialog.png)
@@ -171,6 +172,7 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | Area | Action | Interaction |
 | :--- | :--- | :--- |
 | **Timeline** | Add Rhythm Flag | `Left Click` |
+| **Timeline** | Auto-place Rhythm Flag | `Shift + Left Click` |
 | **Timeline** | Add Harmony Flag | `Right Click` |
 | **Timeline** | Move Flag | `Left Drag` |
 | **Timeline** | Audition Chord | `Hold Left Click` on Harmony Flag |

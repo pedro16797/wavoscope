@@ -15,6 +15,7 @@ Der effizienteste Weg, einen Song zu transkribieren, ist dieser Workflow:
 1.  **Start:** Drücken Sie `L` oder klicken Sie auf eine leere Stelle, um das erste Element an der aktuellen Abspielposition zu erstellen.
 2.  **Tippen:** Geben Sie das erste Wort ein.
 3.  **Teilen:** Drücken Sie die `Leertaste` (für neue Wörter) oder `-` (für Silben innerhalb eines Wortes). Dies bestätigt den aktuellen Text und erstellt sofort eine neue Textbox.
+    - **Visuelle Differenzierung:** Durch Bindestriche getrennte Wörter (Silben) werden in der Timeline visuell durch eine horizontale Linie verbunden. Der Bindestrich selbst wird in den Daten gespeichert, aber in der Benutzeroberfläche ausgeblendet, wenn er nicht bearbeitet wird, was für ein sauberes Erscheinungsbild sorgt.
 4.  **Wiederholen:** Der Fokus springt automatisch in die neue Box, sodass Sie weiterschreiben können, während die Musik läuft.
 5.  **Bestätigen:** Drücken Sie `Enter` oder klicken Sie an eine andere Stelle, um die Bearbeitung zu beenden.
 

@@ -237,6 +237,16 @@ export const Timeline: React.FC = () => {
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mouseup', onMouseUp);
         } else if (foundIdx !== -1) {
+            if (e.shiftKey) {
+                if (foundIdx > 0) {
+                    const delta = flags[foundIdx].t - flags[foundIdx - 1].t;
+                    const newT = flags[foundIdx].t + delta;
+                    if (newT <= duration) {
+                        addFlag(Math.round(newT * 100) / 100);
+                    }
+                }
+                return;
+            }
             setDragIdx(foundIdx);
             const onMouseMove = (moveEvent: MouseEvent) => {
                 const newX = moveEvent.clientX - rect.left;
