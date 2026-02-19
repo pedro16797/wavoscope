@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useStore } from './useStore';
 
 export const useKeyboardShortcuts = () => {
-  const { loaded, playing, controlPlayback, position, duration, speed, browseFile, showLyrics, setShowLyrics } = useStore();
+  const { loaded, playing, controlPlayback, position, duration, speed, browseFile } = useStore();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
