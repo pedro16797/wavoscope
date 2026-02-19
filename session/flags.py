@@ -4,6 +4,7 @@ from typing import List, Dict, Any, Callable
 class FlagManager:
     def __init__(self, session_data: Dict[str, Any]):
         self.session_data = session_data
+        self._recompute_auto_names()
 
     @property
     def flags(self) -> List[Dict[str, Any]]:
