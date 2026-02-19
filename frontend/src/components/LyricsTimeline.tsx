@@ -233,6 +233,7 @@ export const LyricsTimeline: React.FC = () => {
 
         if (e.button === 0) { // Left click
             if (clickedIdx !== -1) {
+                const isAlreadySelected = selectedIdx === clickedIdx;
                 const lyric = lyrics[clickedIdx];
                 const relativePos = (time - lyric.timestamp) / lyric.duration;
                 let dragMode: 'move' | 'left' | 'right' = 'move';
@@ -241,7 +242,10 @@ export const LyricsTimeline: React.FC = () => {
                 if (relativePos < 0.1) dragMode = 'left';
                 else if (relativePos > 0.9) dragMode = 'right';
 
-                setSelectedIdx(clickedIdx);
+                if (!isAlreadySelected) {
+                    setSelectedIdx(clickedIdx);
+                }
+
                 if (editingIdx !== null && editingIdx !== clickedIdx) {
                     finishEditing();
                 }
@@ -249,9 +253,11 @@ export const LyricsTimeline: React.FC = () => {
                 const startX = e.clientX;
                 const startT = lyric.timestamp;
                 const startD = lyric.duration;
+                let hasMoved = false;
 
                 const onMouseMove = (moveEvent: MouseEvent) => {
                     const dx = moveEvent.clientX - startX;
+                    if (Math.abs(dx) > 5) hasMoved = true;
                     const dt = dx / zoom;
 
                     let newT = startT;
@@ -288,6 +294,10 @@ export const LyricsTimeline: React.FC = () => {
                 const onMouseUp = () => {
                     window.removeEventListener('mousemove', onMouseMove);
                     window.removeEventListener('mouseup', onMouseUp);
+
+                    if (!hasMoved && isAlreadySelected) {
+                        setSelectedIdx(null);
+                    }
 
                     setDraggingLyric(currentDragging => {
                         if (currentDragging) {
@@ -327,6 +337,7 @@ export const LyricsTimeline: React.FC = () => {
 
         const clickedIdx = lyrics.findIndex(l => time >= l.timestamp && time <= l.timestamp + l.duration);
         if (clickedIdx !== -1) {
+            setSelectedIdx(clickedIdx);
             setEditingIdx(clickedIdx);
             setEditValue(lyrics[clickedIdx].text);
         }

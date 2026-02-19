@@ -23,6 +23,7 @@ The most efficient way to transcribe a song is using the following workflow:
 ### Mouse Control
 - **Single Click (Empty Space):** Adds a new lyric at that timestamp and enters edit mode.
 - **Left Click (Existing Box):** Selects the lyric.
+- Single Click (Selected Box): Deselects the lyric.
 - **Drag (Center 80%):** Moves the lyric element along the timeline.
 - **Drag (Edges 10%):** Resizes the lyric. Dragging the left edge adjusts the start time; dragging the right edge adjusts the duration.
 - **Double Click:** Enters edit mode for the clicked lyric.
