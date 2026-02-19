@@ -97,7 +97,7 @@
     "quality_ext": "Qualité & Ext",
     "alterations": "Altérations",
     "added_tones": "Notes ajoutées",
-    "bass": "Basse (Slash)",
+    "bass": "Basse (Barre /)",
     "time": "Temps (s)",
     "suggest": "Suggérer",
     "triad": "triade"
@@ -107,7 +107,7 @@
     "name": "Nom",
     "time": "Temps (s)",
     "subdivisions": "Subdivision",
-    "sub_hint": "Clics par mesure. Mettre à 0 désactive le métronome pour ce marqueur.",
+    "sub_hint": "Clics par mesure. La valeur 0 désactive le métronome pour ce marqueur.",
     "section_start": "Début de section",
     "shaded": "Ombrer les croches",
     "insert_n": "Insérer N marqueurs entre celui-ci et le suivant",

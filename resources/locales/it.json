@@ -107,7 +107,7 @@
     "name": "Nome",
     "time": "Tempo (s)",
     "subdivisions": "Suddivisione",
-    "sub_hint": "Clic per battuta. Impostare a 0 disattiva il metronomo per questo marcatore.",
+    "sub_hint": "Clic per battuta. Il valore 0 disattiva il metronomo per questo marcatore.",
     "section_start": "Inizio Sezione",
     "shaded": "Ombreggia crome",
     "insert_n": "Inserisci N marcatori tra questo e il prossimo",

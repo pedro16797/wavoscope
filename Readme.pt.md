@@ -154,7 +154,7 @@ Wavoscope foi projetado para ser impulsionado pela comunidade. Você pode adicio
 | **Linha do Tempo** | Adicionar Marcador Harmonia | `Clique Direito` |
 | **Linha do Tempo** | Mover Marcador | `Arrastar com Esquerdo` |
 | **Linha do Tempo** | Ouvir Acorde | `Manter Clique Esquerdo` no marcador de harmonia |
-| **Linha do Tempo** | Mover a Vista | `Roda do Mouse` |
+| **Linha do Tempo** | Rolar a Vista | `Roda do Mouse` |
 | **Forma de Onda** | Mover o Cursor | `Clique Esquerdo` |
 | **Forma de Onda** | Mover a Vista | `Arrastar com Esquerdo` |
 | **Forma de Onda** | Zoom | `Roda do Mouse` |

@@ -97,7 +97,7 @@
     "quality_ext": "Qualität & Ext",
     "alterations": "Alterationen",
     "added_tones": "Zusatztöne",
-    "bass": "Basston (Slash)",
+    "bass": "Basston (Schrägstrich /)",
     "time": "Zeit (s)",
     "suggest": "Vorschlagen",
     "triad": "Dreiklang"
@@ -107,7 +107,7 @@
     "name": "Name",
     "time": "Zeit (s)",
     "subdivisions": "Unterteilung",
-    "sub_hint": "Klicks pro Takt. Auf 0 setzen deaktiviert das Metronom für diese Markierung.",
+    "sub_hint": "Klicks pro Takt. Der Wert 0 deaktiviert das Metronom für diese Markierung.",
     "section_start": "Abschnittsbeginn",
     "shaded": "Achtelnoten schattieren",
     "insert_n": "N Markierungen dazwischen einfügen",
