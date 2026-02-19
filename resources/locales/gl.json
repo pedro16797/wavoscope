@@ -24,7 +24,7 @@
     "measure_hint": "Úsase na exportación MusicXML para estruturar os compases e calcular o tempo.",
     "export_defaults": "Valores predeterminados de exportación",
     "output_dir": "Directorio de saída predeterminado",
-    "author": "Autor de MusicXML (Compositor)",
+    "author": "Autor do MusicXML (Compositor)",
     "kb_play_pause": "Reproducir / Pausa",
     "kb_seek": "Saltar adiante/atrás",
     "kb_speed": "Axustar velocidade",
@@ -97,7 +97,7 @@
     "quality_ext": "Calidade e Ext",
     "alterations": "Alteracións",
     "added_tones": "Tons engadidos",
-    "bass": "Nota baixo (Slash)",
+    "bass": "Nota do baixo (Barra /)",
     "time": "Tempo (s)",
     "suggest": "Suxerir",
     "triad": "tríada"

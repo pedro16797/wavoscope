@@ -124,7 +124,7 @@ Wavoscope soporta varios idiomas. Puedes cambiar el idioma en la pestaña **Ajus
 ### Traducciones personalizadas
 Wavoscope está diseñado para ser impulsado por la comunidad. Puedes añadir o modificar traducciones editando los archivos JSON en el directorio `resources/locales`.
 - Para añadir un nuevo idioma, crea un nuevo archivo JSON (p. ej., `fr.json`) y añade un campo `"meta": { "name": "Français" }`.
-- El app detectará y listará automáticamente cualquier archivo de traducción válido en el menú de ajustes.
+- La aplicación detectará y listará automáticamente cualquier archivo de traducción válido en el menú de ajustes.
 
 ---
 
