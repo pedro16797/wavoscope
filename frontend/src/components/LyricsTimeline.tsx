@@ -180,8 +180,11 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                 window.addEventListener('mousemove', onMouseMove);
                 window.addEventListener('mouseup', onMouseUp);
             } else {
-                setSelectedIdx(null);
-                setEditingIdx(null);
+                if (editingIdx !== null) {
+                    finishEditing();
+                }
+                const snappedT = Math.round(time * 100) / 100;
+                addLyricAt(snappedT);
             }
         }
     };
@@ -192,12 +195,9 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         if (!rect) return;
         const x = e.clientX - rect.left;
         const time = offset + x / zoom;
-        const snappedT = Math.round(time * 100) / 100;
 
         const clickedIdx = lyrics.findIndex(l => time >= l.timestamp && time <= l.timestamp + l.duration);
-        if (clickedIdx === -1) {
-            addLyricAt(snappedT);
-        } else {
+        if (clickedIdx !== -1) {
             setEditingIdx(clickedIdx);
             setEditValue(lyrics[clickedIdx].text);
         }
@@ -244,8 +244,8 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.code === 'Space' && (e.target as HTMLElement).tagName !== 'INPUT') {
-                if (loaded) {
+            if (e.key.toLowerCase() === 'l') {
+                if (loaded && (e.target as HTMLElement).tagName !== 'INPUT') {
                     e.preventDefault();
                     e.stopImmediatePropagation();
                     const state = useStore.getState();
@@ -253,8 +253,6 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
 
                     if (selectedIdx !== null && selectedIdx < currentLyrics.length) {
                         const current = currentLyrics[selectedIdx];
-                        // If we are editing, finish it first.
-                        // If it's empty, it will be removed and selectedIdx set to null.
                         if (editingIdx !== null) {
                             const trimmed = editValue.trim();
                             if (trimmed === '') {
@@ -387,6 +385,24 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                         style={{ borderColor: themes[currentTheme]?.accent || '#4fd1c5' }}
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === ' ' || e.key === '-') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const trimmed = editValue.trim();
+                                if (editingIdx !== null) {
+                                    const current = lyrics[editingIdx];
+                                    if (trimmed === '') {
+                                        removeLyric(editingIdx);
+                                        addLyricAt(current.timestamp);
+                                    } else {
+                                        updateLyric(editingIdx, { text: trimmed });
+                                        addLyricAt(current.timestamp + current.duration);
+                                    }
+                                    setEditingIdx(null);
+                                }
+                            }
+                        }}
                         onBlur={finishEditing}
                         autoFocus
                     />
