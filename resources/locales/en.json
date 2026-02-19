@@ -53,6 +53,26 @@
     "kb_place_cutoff": "Place Cutoff",
     "kb_adjust_cutoff": "Adjust Cutoff"
   },
+  "keys": {
+    "space": "Space",
+    "enter": "Enter",
+    "delete": "Del / Bksp",
+    "ctrl": "Ctrl",
+    "shift": "Shift",
+    "left_right": "← / →",
+    "up_down": "↑ / ↓",
+    "shift_arrows": "Shift + ← / →",
+    "left_click": "Left Click",
+    "right_click": "Right Click",
+    "left_drag": "Left Drag",
+    "hold_click": "Hold Click",
+    "mouse_wheel": "Mouse Wheel",
+    "waveform_click": "Waveform Click",
+    "waveform_drag": "Waveform Drag",
+    "spectrum_click": "Spectrum Click",
+    "right_click_handle": "Right Click handle",
+    "handle_drag": "Handle Drag"
+  },
   "playback": {
     "open": "Open Audio File",
     "save_dirty": "Save Project (Unsaved changes)",
@@ -77,7 +97,8 @@
     "added_tones": "Added Tones",
     "bass": "Bass Note (Slash)",
     "time": "Time (s)",
-    "suggest": "Suggest"
+    "suggest": "Suggest",
+    "triad": "triad"
   },
   "flag": {
     "edit_title": "Edit Rhythm Flag",

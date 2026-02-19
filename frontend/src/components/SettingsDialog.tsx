@@ -192,44 +192,44 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                 <div className="space-y-4 text-xs">
                     <div className="font-bold border-b border-grid pb-1 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.keybinds')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        <span className="opacity-60">{t('settings.kb_play_pause')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Space</span>
-                        <span className="opacity-60">{t('settings.kb_seek')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">← / →</span>
-                        <span className="opacity-60">{t('settings.kb_speed')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">↑ / ↓</span>
+                        <span className="opacity-60">{t('settings.kb_play_pause')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.space')}</span>
+                        <span className="opacity-60">{t('settings.kb_seek')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_right')}</span>
+                        <span className="opacity-60">{t('settings.kb_speed')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.up_down')}</span>
                         <span className="opacity-60">{t('settings.kb_rhythm')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">B</span>
                         <span className="opacity-60">{t('settings.kb_harmony')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">H</span>
                         <span className="opacity-60">{t('settings.kb_lyrics')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">L</span>
-                        <span className="opacity-60">{t('settings.kb_delete')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Del / Bksp</span>
-                        <span className="opacity-60">{t('settings.kb_open')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Ctrl+O</span>
-                        <span className="opacity-60">{t('settings.kb_save')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Ctrl+S</span>
+                        <span className="opacity-60">{t('settings.kb_delete')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.delete')}</span>
+                        <span className="opacity-60">{t('settings.kb_open')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')}+O</span>
+                        <span className="opacity-60">{t('settings.kb_save')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')}+S</span>
                     </div>
 
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.transcription')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        <span className="opacity-60">{t('settings.kb_add_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Space</span>
-                        <span className="opacity-60">{t('settings.kb_finish_edit')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Enter</span>
-                        <span className="opacity-60">{t('settings.kb_move_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">← / →</span>
-                        <span className="opacity-60">{t('settings.kb_resize_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">↑ / ↓</span>
-                        <span className="opacity-60">{t('settings.kb_jump_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Shift + ← / →</span>
+                        <span className="opacity-60">{t('settings.kb_add_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.space')}</span>
+                        <span className="opacity-60">{t('settings.kb_finish_edit')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.enter')}</span>
+                        <span className="opacity-60">{t('settings.kb_move_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_right')}</span>
+                        <span className="opacity-60">{t('settings.kb_resize_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.up_down')}</span>
+                        <span className="opacity-60">{t('settings.kb_jump_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift_arrows')}</span>
                     </div>
 
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.interactions')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        <span className="opacity-60">{t('settings.kb_rhythm')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Left Click</span>
-                        <span className="opacity-60">{t('settings.kb_harmony')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Right Click</span>
-                        <span className="opacity-60">{t('settings.kb_move_flag')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Left Drag</span>
-                        <span className="opacity-60">{t('settings.kb_audition')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Hold Click</span>
-                        <span className="opacity-60">{t('settings.kb_scroll')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Mouse Wheel</span>
+                        <span className="opacity-60">{t('settings.kb_rhythm')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_click')}</span>
+                        <span className="opacity-60">{t('settings.kb_harmony')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click')}</span>
+                        <span className="opacity-60">{t('settings.kb_move_flag')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_drag')}</span>
+                        <span className="opacity-60">{t('settings.kb_audition')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.hold_click')}</span>
+                        <span className="opacity-60">{t('settings.kb_scroll')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.mouse_wheel')}</span>
                     </div>
 
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.waveform_spectrum')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        <span className="opacity-60">{t('settings.kb_seek_playhead')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Waveform Click</span>
-                        <span className="opacity-60">{t('settings.kb_pan')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Waveform Drag</span>
-                        <span className="opacity-60">{t('settings.kb_zoom')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Mouse Wheel</span>
-                        <span className="opacity-60">{t('settings.kb_play_note')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Spectrum Click</span>
-                        <span className="opacity-60">{t('settings.kb_toggle_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Right Click handle</span>
-                        <span className="opacity-60">{t('settings.kb_place_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Right Click</span>
-                        <span className="opacity-60">{t('settings.kb_adjust_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Handle Drag</span>
+                        <span className="opacity-60">{t('settings.kb_seek_playhead')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.waveform_click')}</span>
+                        <span className="opacity-60">{t('settings.kb_pan')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.waveform_drag')}</span>
+                        <span className="opacity-60">{t('settings.kb_zoom')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.mouse_wheel')}</span>
+                        <span className="opacity-60">{t('settings.kb_play_note')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.spectrum_click')}</span>
+                        <span className="opacity-60">{t('settings.kb_toggle_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click_handle')}</span>
+                        <span className="opacity-60">{t('settings.kb_place_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click')}</span>
+                        <span className="opacity-60">{t('settings.kb_adjust_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.handle_drag')}</span>
                     </div>
                 </div>
             )}

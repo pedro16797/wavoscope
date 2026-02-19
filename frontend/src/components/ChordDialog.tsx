@@ -189,7 +189,7 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
                         <select value={chord.extension} onChange={e => updateChordFromSelectors({ extension: e.target.value })}
                                 className="w-14 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 text-sm outline-none text-text"
                                 style={{ borderWidth: 'var(--ui-border)' }}>
-                            {EXTENSIONS.map(ex => <option key={ex} value={ex}>{ex || 'triad'}</option>)}
+                            {EXTENSIONS.map(ex => <option key={ex} value={ex}>{ex || t('chord.triad')}</option>)}
                         </select>
                     </div>
                 </div>

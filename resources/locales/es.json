@@ -53,6 +53,26 @@
     "kb_place_cutoff": "Colocar corte",
     "kb_adjust_cutoff": "Ajustar corte"
   },
+  "keys": {
+    "space": "Espacio",
+    "enter": "Intro",
+    "delete": "Supr / Retroceso",
+    "ctrl": "Ctrl",
+    "shift": "Mayús",
+    "left_right": "← / →",
+    "up_down": "↑ / ↓",
+    "shift_arrows": "Mayús + ← / →",
+    "left_click": "Clic izquierdo",
+    "right_click": "Clic derecho",
+    "left_drag": "Arrastrar izquierdo",
+    "hold_click": "Mantener clic",
+    "mouse_wheel": "Rueda del ratón",
+    "waveform_click": "Clic en forma de onda",
+    "waveform_drag": "Arrastrar forma de onda",
+    "spectrum_click": "Clic en espectro",
+    "right_click_handle": "Clic derecho en controlador",
+    "handle_drag": "Arrastrar controlador"
+  },
   "playback": {
     "open": "Abrir archivo de audio",
     "save_dirty": "Guardar proyecto (Cambios sin guardar)",
@@ -77,7 +97,8 @@
     "added_tones": "Tonos añadidos",
     "bass": "Nota bajo (Slash)",
     "time": "Tiempo (s)",
-    "suggest": "Sugerir"
+    "suggest": "Sugerir",
+    "triad": "tríada"
   },
   "flag": {
     "edit_title": "Editar marca de ritmo",
