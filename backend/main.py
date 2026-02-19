@@ -72,7 +72,10 @@ async def read_index():
     return {"detail": "Frontend not built. Please run 'npm run build' in frontend directory."}
 
 if frontend_path.exists():
-    app.mount("/assets", StaticFiles(directory=str(frontend_path / "assets")), name="assets")
+    # Serve static files from frontend/dist
+    # We mount it at / so that favicons and other root files are accessible
+    # Note: app.mount("/") should be added after all other routes to avoid overriding them
+    app.mount("/", StaticFiles(directory=str(frontend_path)), name="frontend")
 
 if __name__ == "__main__":
     import uvicorn
