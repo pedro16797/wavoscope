@@ -145,6 +145,62 @@ class HarmonyFlagMove(BaseModel):
     idx: int
     t: float
 
+class LyricData(BaseModel):
+    text: str
+    timestamp: float
+    duration: float
+
+class LyricUpdate(BaseModel):
+    text: str | None = None
+    timestamp: float | None = None
+    duration: float | None = None
+
+class LyricMove(BaseModel):
+    idx: int
+    t: float
+
+class LyricSelect(BaseModel):
+    idx: int | None = None
+
+@router.post("/lyrics")
+async def add_lyric(lyric: LyricData):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    res = state.project.add_lyric(lyric.text, lyric.timestamp, lyric.duration)
+    return {"status": "ok", "lyrics": state.project.lyrics, "new_lyric": res["lyric"], "idx": res["idx"]}
+
+@router.delete("/lyrics/{idx}")
+async def remove_lyric(idx: int):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    state.project.remove_lyric(idx)
+    return {"status": "ok", "lyrics": state.project.lyrics}
+
+@router.patch("/lyrics/{idx}")
+async def update_lyric(idx: int, lyric: LyricUpdate):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    res = state.project.update_lyric(idx, lyric.text, lyric.timestamp, lyric.duration)
+    if res is None:
+        raise HTTPException(status_code=404, detail="Lyric not found")
+    return {"status": "ok", "lyrics": state.project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
+
+@router.post("/lyrics/select")
+async def select_lyric(select: LyricSelect):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    state.project.set_selected_lyric(select.idx)
+    return {"status": "ok"}
+
+@router.post("/lyrics/move")
+async def move_lyric(move: LyricMove):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    res = state.project.move_lyric(move.idx, move.t)
+    if res is None:
+        raise HTTPException(status_code=404, detail="Lyric not found")
+    return {"status": "ok", "lyrics": state.project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
+
 @router.post("/harmony_flags/move")
 async def move_harmony_flag(move: HarmonyFlagMove):
     if not state.project:

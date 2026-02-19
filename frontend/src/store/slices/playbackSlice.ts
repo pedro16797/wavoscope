@@ -4,32 +4,7 @@ import type { AppState } from '../types';
 import { API_BASE } from '../useStore';
 import { midiToFreq, freqToMidi } from '../utils';
 
-export interface PlaybackSlice {
-  position: number;
-  duration: number;
-  playing: boolean;
-  speed: number;
-  volume: number;
-  loop_mode: string;
-  loop_range: [number, number];
-  filter_enabled: boolean;
-  filter_low_enabled: boolean;
-  filter_high_enabled: boolean;
-  filter_low_hz: number;
-  filter_high_hz: number;
-  fft_window: number;
-  octave_shift: number;
-
-  controlPlayback: (action: string, value?: number) => Promise<void>;
-  updatePosition: (pos: number) => void;
-  setPlaying: (playing: boolean) => void;
-  setLoopMode: (mode: string) => Promise<void>;
-  updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
-  setFFTWindow: (sec: number) => void;
-  setOctaveShift: (shift: number) => void;
-  playTone: (freq: number, action: 'start' | 'stop') => Promise<void>;
-  stopAllTones: () => Promise<void>;
-}
+import type { PlaybackSlice } from '../types';
 
 export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> = (set, get) => ({
   position: 0,
@@ -75,6 +50,30 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     }
   },
 
+  cycleLoopMode: async () => {
+    const state = get();
+    const modes = ['none', 'lyric', 'section', 'bar', 'whole'];
+
+    const isAvailable = (mode: string) => {
+        if (mode === 'none' || mode === 'whole') return true;
+        if (mode === 'lyric') return state.selectedLyricIdx !== null;
+        if (mode === 'section') return state.flags.some(f => f.is_section_start && f.t <= state.position);
+        if (mode === 'bar') return state.flags.some(f => f.type === 'rhythm' && f.t <= state.position);
+        return false;
+    };
+
+    let nextMode = 'none';
+    const currentIdx = modes.indexOf(state.loop_mode);
+    for (let i = 1; i < modes.length; i++) {
+        const candidate = modes[(currentIdx + i) % modes.length];
+        if (isAvailable(candidate)) {
+            nextMode = candidate;
+            break;
+        }
+    }
+    await state.setLoopMode(nextMode);
+  },
+
   updateFilter: async (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => {
     const oldState = get();
     const updates: any = {};
@@ -86,7 +85,6 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     if (filter.high_enabled !== undefined) updates.filter_high_enabled = filter.high_enabled;
     set(updates);
 
-    // Only update backend if we are toggling something, or moving an ENABLED handle
     const shouldUpdateBackend =
         filter.low_enabled !== undefined ||
         filter.high_enabled !== undefined ||
@@ -136,22 +134,16 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     if (clampedShift === oldShift) return;
 
     const updates: any = { octave_shift: clampedShift };
-
     const oldBaseMidi = 48 + oldShift * 12;
     const newBaseMidi = 48 + clampedShift * 12;
 
-    // Maintain screen position:
-    // ratio = (freqToMidi(oldHz) - oldBaseMidi) / spectrum_keys
-    // newHz = midiToFreq(newBaseMidi + ratio * spectrum_keys)
     const ratioLow = (freqToMidi(state.filter_low_hz) - oldBaseMidi) / state.spectrum_keys;
     updates.filter_low_hz = midiToFreq(newBaseMidi + ratioLow * state.spectrum_keys);
-
     const ratioHigh = (freqToMidi(state.filter_high_hz) - oldBaseMidi) / state.spectrum_keys;
     updates.filter_high_hz = midiToFreq(newBaseMidi + ratioHigh * state.spectrum_keys);
 
     set(updates);
 
-    // If any enabled filter was updated, notify backend
     if ((state.filter_low_enabled && updates.filter_low_hz) || (state.filter_high_enabled && updates.filter_high_hz)) {
         const newState = get();
         axios.post(`${API_BASE}/playback/filter`, {

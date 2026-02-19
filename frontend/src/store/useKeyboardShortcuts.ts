@@ -2,18 +2,29 @@ import { useEffect } from 'react';
 import { useStore } from './useStore';
 
 export const useKeyboardShortcuts = () => {
-  const { loaded, playing, controlPlayback, position, duration, speed, browseFile } = useStore();
+  const { loaded, playing, controlPlayback, position, duration, speed, browseFile, cycleLoopMode, setSelectedLyricIdx } = useStore();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!loaded && e.key !== 'o') return;
+      if (!loaded && !['o'].includes(e.key.toLowerCase())) return;
+
+      if (e.key === 'L' && e.shiftKey) {
+        if (e.target instanceof HTMLInputElement) return;
+        e.preventDefault();
+        setSelectedLyricIdx(null);
+        return;
+      }
 
       // Prevent default for handled shortcuts
-      if ([' ', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 's', 'o'].includes(e.key)) {
+      if ([' ', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 's', 'o', 'Tab'].includes(e.key)) {
         if (e.target instanceof HTMLInputElement) return; // Don't interrupt typing
       }
 
       switch (e.key) {
+        case 'Tab':
+          e.preventDefault();
+          cycleLoopMode();
+          break;
         case ' ':
           e.preventDefault();
           controlPlayback(playing ? 'pause' : 'play');

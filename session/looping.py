@@ -9,8 +9,18 @@ class LoopingEngine:
     def set_loop_mode(self, mode: str):
         self.loop_mode = mode
 
-    def get_loop_range(self, pos: float, duration: float, flags: List[Dict[str, Any]]) -> Tuple[float, float]:
+    def get_loop_range(self, pos: float, duration: float, flags: List[Dict[str, Any]], lyrics: List[Dict[str, Any]] = [], selected_lyric_idx: int | None = None) -> Tuple[float, float]:
         if self.loop_mode == "none" or self.loop_mode == "whole":
+            return (0.0, duration)
+
+        if self.loop_mode == "lyric" and lyrics:
+            if selected_lyric_idx is not None and 0 <= selected_lyric_idx < len(lyrics):
+                l = lyrics[selected_lyric_idx]
+                return (l["timestamp"], l["timestamp"] + l["duration"])
+            # Fallback to current position if no selection
+            for l in lyrics:
+                if l["timestamp"] <= pos <= l["timestamp"] + l["duration"]:
+                    return (l["timestamp"], l["timestamp"] + l["duration"])
             return (0.0, duration)
 
         if self.loop_mode == "section":

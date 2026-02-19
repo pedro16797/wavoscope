@@ -174,9 +174,19 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <span className="opacity-60">Adjust Speed</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">↑ / ↓</span>
                         <span className="opacity-60">Add Rhythm Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">B</span>
                         <span className="opacity-60">Add Harmony Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">H</span>
+                        <span className="opacity-60">Toggle Lyrics</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">L</span>
                         <span className="opacity-60">Delete Selected</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Del / Bksp</span>
                         <span className="opacity-60">Open File</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Ctrl+O</span>
                         <span className="opacity-60">Save Project</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Ctrl+S</span>
+                    </div>
+
+                    <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">Lyrics Transcription</div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                        <span className="opacity-60">Add Word (Editing)</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Space</span>
+                        <span className="opacity-60">Finish Editing</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Enter</span>
+                        <span className="opacity-60">Move Word</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">← / →</span>
+                        <span className="opacity-60">Resize Word</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">↑ / ↓</span>
+                        <span className="opacity-60">Jump to Word</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Shift + ← / →</span>
                     </div>
 
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">Timeline Interactions</div>

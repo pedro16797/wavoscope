@@ -1,40 +1,9 @@
 import type { StateCreator } from 'zustand';
 import axios from 'axios';
-import type { AppState, Flag, HarmonyFlag, Chord, TimeSignature, ExportStatus } from '../types';
+import type { AppState, Chord, Lyric } from '../types';
 import { API_BASE } from '../useStore';
 
-export interface ProjectSlice {
-  loaded: boolean;
-  filename: string;
-  metadata: {
-    title: string;
-    artist: string;
-    album: string;
-  };
-  flags: Flag[];
-  harmony_flags: HarmonyFlag[];
-  time_signature: TimeSignature;
-  dirty: boolean;
-  editingFlagIdx: number | null;
-  editingHarmonyFlagIdx: number | null;
-  export_status: ExportStatus;
-
-  fetchStatus: () => Promise<void>;
-  browseFile: () => Promise<void>;
-  addFlag: (t: number) => Promise<void>;
-  moveFlag: (idx: number, t: number) => Promise<void>;
-  removeFlag: (idx: number) => Promise<void>;
-  addHarmonyFlag: (t: number, chord?: Chord) => Promise<HarmonyFlag | null>;
-  moveHarmonyFlag: (idx: number, t: number) => Promise<void>;
-  removeHarmonyFlag: (idx: number) => Promise<void>;
-  updateHarmonyFlag: (idx: number, t: number, chord: Chord) => Promise<void>;
-  analyzeChord: (t: number) => Promise<Chord>;
-  updateTimeSignature: (numerator: number, denominator: number) => Promise<void>;
-  saveProject: () => Promise<void>;
-  exportMusicXML: () => Promise<void>;
-  setEditingFlagIdx: (idx: number | null) => void;
-  setEditingHarmonyFlagIdx: (idx: number | null) => void;
-}
+import type { ProjectSlice } from '../types';
 
 export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = (set, get) => ({
   loaded: false,
@@ -42,10 +11,12 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   metadata: { title: '', artist: '', album: '' },
   flags: [],
   harmony_flags: [],
+  lyrics: [],
   time_signature: { numerator: 4, denominator: 4 },
   dirty: false,
   editingFlagIdx: null,
   editingHarmonyFlagIdx: null,
+  selectedLyricIdx: null,
   export_status: { active: false, progress: 0, message: '' },
 
   fetchStatus: async () => {
@@ -59,7 +30,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   browseFile: async () => {
-    const pywindow = window as Window & { pywebview?: { api: { browse: () => Promise<void> } } };
+    const pywindow = window as any;
     try {
       if (pywindow.pywebview?.api?.browse) {
         await pywindow.pywebview.api.browse();
@@ -70,7 +41,6 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
       await get().fetchStatus();
 
-      // Sync filter to new backend
       const state = get();
       await state.updateFilter({
           low_hz: state.filter_low_hz,
@@ -159,15 +129,51 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     } catch (e) {
         console.error("[Store] Failed to analyze chord:", e);
         return {
-            root: 'C',
-            accidental: '',
-            quality: 'M',
-            extension: '',
-            alterations: [],
-            additions: [],
-            bass: '',
-            bass_accidental: ''
+            root: 'C', accidental: '', quality: 'M', extension: '',
+            alterations: [], additions: [], bass: '', bass_accidental: ''
         };
+    }
+  },
+
+  addLyric: async (lyric: Lyric) => {
+    try {
+        const res = await axios.post(`${API_BASE}/project/lyrics`, lyric);
+        get().fetchStatus();
+        return { idx: res.data.idx, lyric: res.data.new_lyric };
+    } catch (e) {
+        console.error("[Store] Failed to add lyric:", e);
+        return null;
+    }
+  },
+
+  removeLyric: async (idx: number) => {
+    try {
+        await axios.delete(`${API_BASE}/project/lyrics/${idx}`);
+        get().fetchStatus();
+    } catch (e) {
+        console.error("[Store] Failed to remove lyric:", e);
+    }
+  },
+
+  updateLyric: async (idx: number, lyric: Partial<Lyric>) => {
+    try {
+        const res = await axios.patch(`${API_BASE}/project/lyrics/${idx}`, lyric);
+        get().fetchStatus();
+        return { idx: res.data.new_idx, lyric: res.data.updated_lyric };
+    } catch (e) {
+        console.error("[Store] Failed to update lyric:", e);
+        return null;
+    }
+  },
+
+  moveLyric: async (idx: number, t: number) => {
+    try {
+        const res = await axios.post(`${API_BASE}/project/lyrics/move`, { idx, t });
+        get().fetchStatus();
+        return { idx: res.data.new_idx, lyric: res.data.updated_lyric };
+    } catch (e) {
+        console.error("[Store] Failed to move lyric:", e);
+        return null;
     }
   },
 
@@ -191,7 +197,6 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   exportMusicXML: async () => {
     try {
-        // 1. Check if export is possible
         const checkRes = await axios.get(`${API_BASE}/project/export/musicxml/check`);
         if (!checkRes.data.can_export) {
             alert(checkRes.data.reason || "Cannot export project.");
@@ -201,31 +206,21 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
         const defaultFilename = (get().filename || 'transcription').replace(/\.[^/.]+$/, "") + ".musicxml";
         let savePath: string | null = null;
 
-        // 2. Prompt for save location
         const pywindow = window as any;
         if (pywindow.pywebview?.api?.save_dialog) {
-            const defaultDir = get().default_output_folder || null;
-            const res = await pywindow.pywebview.api.save_dialog(defaultFilename, defaultDir);
-            if (res) {
-                savePath = Array.isArray(res) ? res[0] : res;
-            }
+            const res = await pywindow.pywebview.api.save_dialog(defaultFilename, get().default_output_folder || null);
+            if (res) savePath = Array.isArray(res) ? res[0] : res;
         } else {
-            // Fallback for browser: direct download (old way)
-            // But user wants a progress bar. We'll show an indeterminate one for browser case.
             set({ export_status: { active: true, progress: 0, message: 'Generating MusicXML...' } });
             try {
                 const res = await axios.get(`${API_BASE}/project/export/musicxml`, { responseType: 'blob' });
                 const url = window.URL.createObjectURL(res.data);
                 const link = document.createElement('a');
-                link.style.display = 'none';
-                link.href = url;
+                link.style.display = 'none'; link.href = url;
                 link.setAttribute('download', defaultFilename);
                 document.body.appendChild(link);
                 link.click();
-                setTimeout(() => {
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                }, 100);
+                setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); }, 100);
                 set({ export_status: { active: true, progress: 1.0, message: 'Done!' } });
                 setTimeout(() => set({ export_status: { active: false, progress: 0, message: '' } }), 1000);
                 return;
@@ -235,33 +230,35 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
             }
         }
 
-        if (!savePath) return; // User cancelled
-
-        // 3. Start export task
+        if (!savePath) return;
         await axios.post(`${API_BASE}/project/export/musicxml/start`, { path: savePath });
 
-        // 4. Poll for progress
         const poll = async () => {
             try {
                 const res = await axios.get(`${API_BASE}/project/export/musicxml/progress`);
                 set({ export_status: res.data });
-                if (res.data.active) {
-                    setTimeout(poll, 200);
-                }
+                if (res.data.active) setTimeout(poll, 200);
             } catch (e) {
                 console.error("[Store] Progress poll failed:", e);
                 set({ export_status: { active: false, progress: 0, message: '' } });
             }
         };
         poll();
-
     } catch (e) {
         console.error("[Store] Failed to export MusicXML:", e);
-        alert("Failed to export MusicXML. Please check the backend console.");
         set({ export_status: { active: false, progress: 0, message: '' } });
     }
   },
 
   setEditingFlagIdx: (idx: number | null) => set({ editingFlagIdx: idx }),
   setEditingHarmonyFlagIdx: (idx: number | null) => set({ editingHarmonyFlagIdx: idx }),
+  setSelectedLyricIdx: (idx: number | null) => {
+    set({ selectedLyricIdx: idx });
+    axios.post(`${API_BASE}/project/lyrics/select`, { idx })
+      .then(() => get().fetchStatus())
+      .catch(e => console.error("[Store] Failed to sync lyric selection:", e));
+    if (idx === null && get().loop_mode === 'lyric') {
+      get().setLoopMode('none');
+    }
+  },
 });

@@ -47,6 +47,7 @@ async def get_status():
         "metadata": state.project.metadata,
         "flags": state.project.flags,
         "harmony_flags": state.project.harmony_flags,
+        "lyrics": state.project.lyrics,
         "time_signature": state.project.time_signature,
         "dirty": state.project._dirty,
         "metronome_enabled": state.project.backend._metronome_enabled,

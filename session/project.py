@@ -28,6 +28,7 @@ class Project:
         self._manager = ProjectManager(audio_path)
         self._flags = FlagManager(self._manager.session_data)
         self._looping = LoopingEngine()
+        self.selected_lyric_idx: int | None = None
 
         self.backend = AudioBackend()
         self.backend.set_tick_provider(self.subdivision_ticks_between)
@@ -116,6 +117,11 @@ class Project:
         with self._lock:
             return list(self._flags.harmony_flags)
 
+    @property
+    def lyrics(self) -> List[Dict[str, Any]]:
+        with self._lock:
+            return list(self.session_data.get("lyrics", []))
+
     def add_flag(self, time: float, kind: str = "rhythm", subdivision: int = 0, name: str = "", section_start: bool = False, shaded: bool = False) -> None:
         with self._lock:
             if self._flags.add_flag(time, kind, subdivision, name, section_start, shaded):
@@ -142,6 +148,57 @@ class Project:
             if self._flags.remove_harmony_flag(idx):
                 self.mark_dirty()
                 self._emit("flag_removed", idx)
+
+    def add_lyric(self, text: str, time: float, duration: float) -> dict:
+        with self._lock:
+            lyrics = self.session_data.get("lyrics", [])
+            new_lyric = {"text": text, "timestamp": time, "duration": duration}
+            lyrics.append(new_lyric)
+            lyrics.sort(key=lambda l: l["timestamp"])
+            self.session_data["lyrics"] = lyrics
+            self.mark_dirty()
+            idx = lyrics.index(new_lyric)
+            return {"idx": idx, "lyric": new_lyric}
+
+    def remove_lyric(self, idx: int) -> None:
+        with self._lock:
+            lyrics = self.session_data.get("lyrics", [])
+            if 0 <= idx < len(lyrics):
+                lyrics.pop(idx)
+                self.mark_dirty()
+
+    def update_lyric(self, idx: int, text: str | None = None, time: float | None = None, duration: float | None = None) -> dict | None:
+        with self._lock:
+            lyrics = self.session_data.get("lyrics", [])
+            if 0 <= idx < len(lyrics):
+                lyric = lyrics[idx]
+                if text is not None: lyric["text"] = text
+                if time is not None: lyric["timestamp"] = time
+                if duration is not None: lyric["duration"] = duration
+                lyrics.sort(key=lambda l: l["timestamp"])
+                self.mark_dirty()
+                self.backend.reset_loop_range()
+                new_idx = lyrics.index(lyric)
+                return {"idx": new_idx, "lyric": lyric}
+            return None
+
+    def set_selected_lyric(self, idx: int | None) -> None:
+        with self._lock:
+            self.selected_lyric_idx = idx
+            self.backend.reset_loop_range()
+
+    def move_lyric(self, idx: int, new_time: float) -> dict | None:
+        with self._lock:
+            lyrics = self.session_data.get("lyrics", [])
+            if 0 <= idx < len(lyrics):
+                lyric = lyrics[idx]
+                lyric["timestamp"] = new_time
+                lyrics.sort(key=lambda l: l["timestamp"])
+                self.mark_dirty()
+                self.backend.reset_loop_range()
+                new_idx = lyrics.index(lyric)
+                return {"idx": new_idx, "lyric": lyric}
+            return None
 
     def move_harmony_flag(self, idx: int, new_time: float) -> None:
         with self._lock:
@@ -216,7 +273,7 @@ class Project:
                 if self.backend.active_loop_range:
                     return self.backend.active_loop_range
                 pos = self.backend.position
-            return self._looping.get_loop_range(pos, self.duration, self._flags.flags)
+            return self._looping.get_loop_range(pos, self.duration, self._flags.flags, self.lyrics, self.selected_lyric_idx)
 
     # ---------- metronome helpers ----------
     def subdivision_ticks_between(self, start: float, end: float) -> list[tuple[float, bool]]:
