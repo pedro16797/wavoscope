@@ -90,9 +90,9 @@ export interface ProjectSlice {
   removeHarmonyFlag: (idx: number) => Promise<void>;
   updateHarmonyFlag: (idx: number, t: number, chord: Chord) => Promise<void>;
   analyzeChord: (t: number) => Promise<Chord>;
-  addLyric: (lyric: Lyric) => Promise<void>;
+  addLyric: (lyric: Lyric) => Promise<{ idx: number, lyric: Lyric } | null>;
   removeLyric: (idx: number) => Promise<void>;
-  updateLyric: (idx: number, lyric: Partial<Lyric>) => Promise<void>;
+  updateLyric: (idx: number, lyric: Partial<Lyric>) => Promise<{ idx: number, lyric: Lyric } | null>;
   moveLyric: (idx: number, t: number) => Promise<void>;
   updateTimeSignature: (numerator: number, denominator: number) => Promise<void>;
   saveProject: () => Promise<void>;

@@ -30,10 +30,10 @@ export interface ProjectSlice {
   removeHarmonyFlag: (idx: number) => Promise<void>;
   updateHarmonyFlag: (idx: number, t: number, chord: Chord) => Promise<void>;
   analyzeChord: (t: number) => Promise<Chord>;
-  addLyric: (lyric: Lyric) => Promise<void>;
+  addLyric: (lyric: Lyric) => Promise<{ idx: number, lyric: Lyric } | null>;
   removeLyric: (idx: number) => Promise<void>;
-  updateLyric: (idx: number, lyric: Partial<Lyric>) => Promise<void>;
-  moveLyric: (idx: number, t: number) => Promise<void>;
+  updateLyric: (idx: number, lyric: Partial<Lyric>) => Promise<{ idx: number, lyric: Lyric } | null>;
+  moveLyric: (idx: number, t: number) => Promise<{ idx: number, lyric: Lyric } | null>;
   updateTimeSignature: (numerator: number, denominator: number) => Promise<void>;
   saveProject: () => Promise<void>;
   exportMusicXML: () => Promise<void>;
@@ -172,10 +172,12 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   addLyric: async (lyric: Lyric) => {
     try {
-        await axios.post(`${API_BASE}/project/lyrics`, lyric);
+        const res = await axios.post(`${API_BASE}/project/lyrics`, lyric);
         get().fetchStatus();
+        return { idx: res.data.idx, lyric: res.data.new_lyric };
     } catch (e) {
         console.error("[Store] Failed to add lyric:", e);
+        return null;
     }
   },
 
@@ -190,19 +192,23 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   updateLyric: async (idx: number, lyric: Partial<Lyric>) => {
     try {
-        await axios.patch(`${API_BASE}/project/lyrics/${idx}`, lyric);
+        const res = await axios.patch(`${API_BASE}/project/lyrics/${idx}`, lyric);
         get().fetchStatus();
+        return { idx: res.data.new_idx, lyric: res.data.updated_lyric };
     } catch (e) {
         console.error("[Store] Failed to update lyric:", e);
+        return null;
     }
   },
 
   moveLyric: async (idx: number, t: number) => {
     try {
-        await axios.post(`${API_BASE}/project/lyrics/move`, { idx, t });
+        const res = await axios.post(`${API_BASE}/project/lyrics/move`, { idx, t });
         get().fetchStatus();
+        return { idx: res.data.new_idx, lyric: res.data.updated_lyric };
     } catch (e) {
         console.error("[Store] Failed to move lyric:", e);
+        return null;
     }
   },
 

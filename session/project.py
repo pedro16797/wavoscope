@@ -148,13 +148,16 @@ class Project:
                 self.mark_dirty()
                 self._emit("flag_removed", idx)
 
-    def add_lyric(self, text: str, time: float, duration: float) -> None:
+    def add_lyric(self, text: str, time: float, duration: float) -> dict:
         with self._lock:
             lyrics = self.session_data.get("lyrics", [])
-            lyrics.append({"text": text, "timestamp": time, "duration": duration})
+            new_lyric = {"text": text, "timestamp": time, "duration": duration}
+            lyrics.append(new_lyric)
             lyrics.sort(key=lambda l: l["timestamp"])
             self.session_data["lyrics"] = lyrics
             self.mark_dirty()
+            idx = lyrics.index(new_lyric)
+            return {"idx": idx, "lyric": new_lyric}
 
     def remove_lyric(self, idx: int) -> None:
         with self._lock:
@@ -163,23 +166,31 @@ class Project:
                 lyrics.pop(idx)
                 self.mark_dirty()
 
-    def update_lyric(self, idx: int, text: str | None = None, time: float | None = None, duration: float | None = None) -> None:
+    def update_lyric(self, idx: int, text: str | None = None, time: float | None = None, duration: float | None = None) -> dict | None:
         with self._lock:
             lyrics = self.session_data.get("lyrics", [])
             if 0 <= idx < len(lyrics):
-                if text is not None: lyrics[idx]["text"] = text
-                if time is not None: lyrics[idx]["timestamp"] = time
-                if duration is not None: lyrics[idx]["duration"] = duration
+                lyric = lyrics[idx]
+                if text is not None: lyric["text"] = text
+                if time is not None: lyric["timestamp"] = time
+                if duration is not None: lyric["duration"] = duration
                 lyrics.sort(key=lambda l: l["timestamp"])
                 self.mark_dirty()
+                new_idx = lyrics.index(lyric)
+                return {"idx": new_idx, "lyric": lyric}
+            return None
 
-    def move_lyric(self, idx: int, new_time: float) -> None:
+    def move_lyric(self, idx: int, new_time: float) -> dict | None:
         with self._lock:
             lyrics = self.session_data.get("lyrics", [])
             if 0 <= idx < len(lyrics):
-                lyrics[idx]["timestamp"] = new_time
+                lyric = lyrics[idx]
+                lyric["timestamp"] = new_time
                 lyrics.sort(key=lambda l: l["timestamp"])
                 self.mark_dirty()
+                new_idx = lyrics.index(lyric)
+                return {"idx": new_idx, "lyric": lyric}
+            return None
 
     def move_harmony_flag(self, idx: int, new_time: float) -> None:
         with self._lock:
