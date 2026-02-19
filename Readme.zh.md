@@ -117,6 +117,26 @@ Wavoscope 支持完整的主题定制。选择适合您环境的外观：
 
 ---
 
+## 🛠️ 从源码构建
+
+可以使用 Nuitka 将 Wavoscope 构建为独立的可执行文件。
+
+### 前置条件
+- Python 3.10+
+- Node.js & npm (用于构建前端)
+
+### 构建说明
+运行适用于您平台的构建脚本：
+- **Windows:** 运行 `build.bat`
+- **Linux/macOS:** 运行 `build.sh`
+
+最终生成的软件包将位于 `dist/` 目录下，命名为 `Wavoscope.zip`（在 macOS 上为 `Wavoscope-Mac.zip`）。
+
+> [!WARNING]
+> 虽然我们已经添加了对 **Linux** 和 **macOS** 构建的支持，但这些平台尚未经过充分测试。如果您遇到任何问题，请向我们反馈！
+
+---
+
 ## 🌍 本地化
 
 Wavoscope 支持多种语言。您可以在 **设置 > 全局** 选项卡中更改语言。
