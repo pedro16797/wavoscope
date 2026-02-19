@@ -2,20 +2,15 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
 import { formatChord, getChordMidiNotes, midiToFreq, getTimelineStep, formatTimelineLabel } from '../store/utils';
 
-interface TimelineProps {
-  offset: number;
-  zoom: number;
-  onViewportChange: (offset: number, zoom: number) => void;
-}
-
-export const Timeline: React.FC<TimelineProps> = ({ offset, zoom, onViewportChange }) => {
+export const Timeline: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const {
     loaded, duration, currentTheme, themes, flags, harmony_flags,
     addFlag, moveFlag, setEditingFlagIdx,
     addHarmonyFlag, moveHarmonyFlag, setEditingHarmonyFlagIdx,
-    loop_mode, loop_range, playTone, stopAllTones
+    loop_mode, loop_range, playTone, stopAllTones,
+    offset, zoom, setViewport
   } = useStore();
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dragHarmonyIdx, setDragHarmonyIdx] = useState<number | null>(null);
@@ -267,7 +262,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom, onViewportChan
     const delta = e.deltaY;
     const scrollAmount = delta / zoom;
     const maxOffset = Math.max(0, duration - size.width / zoom);
-    onViewportChange(Math.max(0, Math.min(offset + scrollAmount, maxOffset)), zoom);
+    setViewport(Math.max(0, Math.min(offset + scrollAmount, maxOffset)), zoom);
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {

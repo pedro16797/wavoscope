@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useStore } from '../store/useStore';
 
-interface LyricsTimelineProps {
-    offset: number;
-    zoom: number;
-}
-
 /**
  * LyricsTimeline: Interactive track for lyrics transcription.
  *
@@ -22,7 +17,7 @@ interface LyricsTimelineProps {
  * - Shift + Left/Right to seek between words.
  * - Arrow keys to move/resize selected lyric by 0.1s.
  */
-export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) => {
+export const LyricsTimeline: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const {
@@ -37,12 +32,17 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         currentTheme,
         themes,
         selectedLyricIdx: selectedIdx,
-        setSelectedLyricIdx: setSelectedIdx
+        setSelectedLyricIdx: setSelectedIdx,
+        offset,
+        zoom,
+        setViewport,
+        duration: projectDuration
     } = useStore();
 
     const [editingIdx, setEditingIdx] = useState<number | null>(null);
     const [editValue, setEditValue] = useState('');
     const [draggingLyric, setDraggingLyric] = useState<{idx: number, timestamp: number, duration: number, mode: 'move' | 'left' | 'right'} | null>(null);
+    const [viewWidth, setViewWidth] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const height = 32;
@@ -130,23 +130,24 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             const text = (isEditing && index === editingIdx) ? editValue : lyric.text;
             const metrics = ctx.measureText(text);
 
-            if (w < 24) {
-                // Fade out for very small boxes (less than ~2 characters)
-                const gradient = ctx.createLinearGradient(x, 0, x + w, 0);
-                const color = theme.text || 'white';
-                gradient.addColorStop(0, 'transparent');
-                gradient.addColorStop(0.2, color);
-                gradient.addColorStop(0.8, color);
-                gradient.addColorStop(1, 'transparent');
-                ctx.fillStyle = gradient;
-                ctx.fillText(text, x + w / 2, height / 2);
-            } else if (metrics.width > w - 8) {
-                // Truncate for medium boxes
-                const truncated = text.substring(0, Math.max(1, Math.floor((w-12)/7))) + '...';
-                ctx.fillStyle = theme.text || 'white';
-                ctx.fillText(truncated, x + w / 2, height / 2);
-            } else {
-                ctx.fillStyle = theme.text || 'white';
+            if (w > 12) {
+                // Fade opacity as box gets very small
+                if (w < 48) {
+                    ctx.globalAlpha = Math.max(0, (w - 12) / 36);
+                }
+
+                if (metrics.width > w - 8) {
+                    // Use gradient to fade text edges if it doesn't fit
+                    const gradient = ctx.createLinearGradient(x, 0, x + w, 0);
+                    const color = theme.text || 'white';
+                    gradient.addColorStop(0, 'transparent');
+                    gradient.addColorStop(0.15, color);
+                    gradient.addColorStop(0.85, color);
+                    gradient.addColorStop(1, 'transparent');
+                    ctx.fillStyle = gradient;
+                } else {
+                    ctx.fillStyle = theme.text || 'white';
+                }
                 ctx.fillText(text, x + w / 2, height / 2);
             }
             ctx.restore();
@@ -167,8 +168,10 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         const updateSize = () => {
             if (containerRef.current && canvasRef.current) {
                 const dpr = window.devicePixelRatio || 1;
-                canvasRef.current.width = containerRef.current.clientWidth * dpr;
+                const width = containerRef.current.clientWidth;
+                canvasRef.current.width = width * dpr;
                 canvasRef.current.height = height * dpr;
+                setViewWidth(width);
                 draw();
             }
         };
@@ -182,19 +185,19 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         draw();
     }, [draw]);
 
-    const addLyricAt = useCallback(async (t: number, text: string = '') => {
+    const addLyricAt = useCallback(async (t: number, text: string = '', duration: number = 1.0) => {
         const { lyrics: currentLyrics } = stateRef.current;
         const snappedT = Math.round(t * 100) / 100;
 
         // Clamping duration so it doesn't overlap with the next lyric
         const nextLyric = currentLyrics.find(l => l.timestamp > snappedT);
-        let duration = 1.0;
+        let finalDuration = duration;
         if (nextLyric) {
-            duration = Math.min(1.0, nextLyric.timestamp - snappedT);
-            if (duration < 0.2) duration = 0.2;
+            finalDuration = Math.min(duration, nextLyric.timestamp - snappedT);
+            if (finalDuration < 0.2) finalDuration = 0.2;
         }
 
-        const res = await addLyric({ text, timestamp: snappedT, duration });
+        const res = await addLyric({ text, timestamp: snappedT, duration: finalDuration });
         if (res) {
             setSelectedIdx(res.idx);
             setEditingIdx(res.idx);
@@ -461,6 +464,37 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         }
     }, [editingIdx]);
 
+    // Auto-scroll logic
+    useEffect(() => {
+        if (selectedIdx === null || selectedIdx >= lyrics.length || viewWidth === 0) return;
+        const lyric = lyrics[selectedIdx];
+        const span = viewWidth / zoom;
+        const margin = 0.05 * span; // 5% margin
+
+        const start = lyric.timestamp;
+        const end = lyric.timestamp + lyric.duration;
+
+        let newOffset = offset;
+
+        if (lyric.duration > span) {
+            // If lyric is wider than view, just ensure start is visible with small margin
+            if (start < offset || start > offset + margin) {
+                newOffset = Math.max(0, start - margin);
+            }
+        } else {
+            // Ensure whole lyric is visible
+            if (start < offset + margin) {
+                newOffset = Math.max(0, start - margin);
+            } else if (end > offset + span - margin) {
+                newOffset = Math.min(projectDuration - span, end - span + margin);
+            }
+        }
+
+        if (Math.abs(newOffset - offset) > 0.001) {
+            setViewport(newOffset, zoom);
+        }
+    }, [selectedIdx, lyrics, viewWidth, zoom, projectDuration, setViewport]);
+
     const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === ' ' || e.key === '-') {
             e.preventDefault();
@@ -473,10 +507,10 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                 setEditValue('');
                 if (trimmed === '') {
                     removeLyric(currentEditingIdx);
-                    addLyricAt(current.timestamp);
+                    addLyricAt(current.timestamp, '', current.duration);
                 } else {
                     updateLyric(currentEditingIdx, { text: trimmed });
-                    addLyricAt(current.timestamp + current.duration);
+                    addLyricAt(current.timestamp + current.duration, '', current.duration);
                 }
             }
         }

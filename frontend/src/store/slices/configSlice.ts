@@ -17,6 +17,8 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   showSettings: false,
   showSpectrum: true,
   showLyrics: false,
+  offset: 0,
+  zoom: 100,
 
   fetchThemes: async () => {
     try {
@@ -133,4 +135,5 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   setShowSettings: (show: boolean) => set({ showSettings: show }),
   setShowSpectrum: (show: boolean) => set({ showSpectrum: show }),
   setShowLyrics: (show: boolean) => set({ showLyrics: show }),
+  setViewport: (offset: number, zoom: number) => set({ offset, zoom }),
 });

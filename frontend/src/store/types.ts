@@ -142,6 +142,8 @@ export interface ConfigSlice {
   showSettings: boolean;
   showSpectrum: boolean;
   showLyrics: boolean;
+  offset: number;
+  zoom: number;
 
   fetchThemes: () => Promise<void>;
   fetchConfig: () => Promise<void>;
@@ -157,6 +159,7 @@ export interface ConfigSlice {
   setShowSettings: (show: boolean) => void;
   setShowSpectrum: (show: boolean) => void;
   setShowLyrics: (show: boolean) => void;
+  setViewport: (offset: number, zoom: number) => void;
 }
 
 export type AppState = ProjectSlice & PlaybackSlice & ConfigSlice;

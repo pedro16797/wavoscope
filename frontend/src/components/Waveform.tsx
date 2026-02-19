@@ -2,16 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import { useStore, API_BASE } from '../store/useStore';
 import axios from 'axios';
 
-interface WaveformProps {
-  offset: number;
-  zoom: number;
-  onViewportChange: (offset: number, zoom: number) => void;
-}
-
-export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChange }) => {
+export const Waveform: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { loaded, position, duration, currentTheme, themes, controlPlayback, addHarmonyFlag, setEditingHarmonyFlagIdx } = useStore();
+  const {
+    loaded, position, duration, currentTheme, themes, controlPlayback,
+    addHarmonyFlag, setEditingHarmonyFlagIdx,
+    offset, zoom, setViewport
+  } = useStore();
   const [bars, setBars] = React.useState<number[][]>([]);
   const [size, setSize] = React.useState({ width: 0, height: 0 });
   const inFlightRef = useRef(false);
@@ -141,7 +139,7 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
     const newZoom = Math.max(zoom * factor, canvasRef.current.width / (duration || 1));
     const newOffset = Math.max(0, Math.min(mouseSec - x / newZoom, duration - canvasRef.current.width / newZoom));
 
-    onViewportChange(newOffset, newZoom);
+    setViewport(newOffset, newZoom);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -184,7 +182,7 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
         if (Math.abs(dx) > 5) dragged = true;
         const secDelta = dx / zoom;
         const maxOffset = Math.max(0, duration - (canvasRef.current?.width || 0) / zoom);
-        onViewportChange(Math.max(0, Math.min(startOffset - secDelta, maxOffset)), zoom);
+        setViewport(Math.max(0, Math.min(startOffset - secDelta, maxOffset)), zoom);
     };
 
     const onMouseUp = (upEvent: MouseEvent) => {
