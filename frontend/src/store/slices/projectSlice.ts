@@ -3,45 +3,7 @@ import axios from 'axios';
 import type { AppState, Flag, HarmonyFlag, Chord, TimeSignature, ExportStatus, Lyric } from '../types';
 import { API_BASE } from '../useStore';
 
-export interface ProjectSlice {
-  loaded: boolean;
-  filename: string;
-  metadata: {
-    title: string;
-    artist: string;
-    album: string;
-  };
-  flags: Flag[];
-  harmony_flags: HarmonyFlag[];
-  lyrics: Lyric[];
-  time_signature: TimeSignature;
-  dirty: boolean;
-  editingFlagIdx: number | null;
-  editingHarmonyFlagIdx: number | null;
-  selectedLyricIdx: number | null;
-  export_status: ExportStatus;
-
-  fetchStatus: () => Promise<void>;
-  browseFile: () => Promise<void>;
-  addFlag: (t: number) => Promise<void>;
-  moveFlag: (idx: number, t: number) => Promise<void>;
-  removeFlag: (idx: number) => Promise<void>;
-  addHarmonyFlag: (t: number, chord?: Chord) => Promise<HarmonyFlag | null>;
-  moveHarmonyFlag: (idx: number, t: number) => Promise<void>;
-  removeHarmonyFlag: (idx: number) => Promise<void>;
-  updateHarmonyFlag: (idx: number, t: number, chord: Chord) => Promise<void>;
-  analyzeChord: (t: number) => Promise<Chord>;
-  addLyric: (lyric: Lyric) => Promise<{ idx: number, lyric: Lyric } | null>;
-  removeLyric: (idx: number) => Promise<void>;
-  updateLyric: (idx: number, lyric: Partial<Lyric>) => Promise<{ idx: number, lyric: Lyric } | null>;
-  moveLyric: (idx: number, t: number) => Promise<{ idx: number, lyric: Lyric } | null>;
-  updateTimeSignature: (numerator: number, denominator: number) => Promise<void>;
-  saveProject: () => Promise<void>;
-  exportMusicXML: () => Promise<void>;
-  setEditingFlagIdx: (idx: number | null) => void;
-  setEditingHarmonyFlagIdx: (idx: number | null) => void;
-  setSelectedLyricIdx: (idx: number | null) => void;
-}
+import type { ProjectSlice } from '../types';
 
 export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = (set, get) => ({
   loaded: false,

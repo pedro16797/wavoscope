@@ -4,35 +4,7 @@ import type { AppState } from '../types';
 import { API_BASE } from '../useStore';
 import { midiToFreq, freqToMidi } from '../utils';
 
-import type { Theme, ThemeName } from '../types';
-
-export interface ConfigSlice {
-  themes: Record<string, Theme>;
-  currentTheme: ThemeName;
-  metronome_enabled: boolean;
-  click_volume: number;
-  spectrum_keys: number;
-  default_output_folder: string;
-  musicxml_author: string;
-  showSettings: boolean;
-  showSpectrum: boolean;
-  showLyrics: boolean;
-
-  fetchThemes: () => Promise<void>;
-  fetchConfig: () => Promise<void>;
-  setTheme: (name: ThemeName) => Promise<void>;
-  updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
-  updateConfig: (cfg: {
-    theme?: string,
-    click_volume?: number,
-    spectrum_keys?: number,
-    default_output_folder?: string,
-    musicxml_author?: string
-  }) => Promise<void>;
-  setShowSettings: (show: boolean) => void;
-  setShowSpectrum: (show: boolean) => void;
-  setShowLyrics: (show: boolean) => void;
-}
+import type { ConfigSlice } from '../types';
 
 export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (set, get) => ({
   themes: {},

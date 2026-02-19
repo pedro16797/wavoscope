@@ -4,32 +4,7 @@ import type { AppState } from '../types';
 import { API_BASE } from '../useStore';
 import { midiToFreq, freqToMidi } from '../utils';
 
-export interface PlaybackSlice {
-  position: number;
-  duration: number;
-  playing: boolean;
-  speed: number;
-  volume: number;
-  loop_mode: string;
-  loop_range: [number, number];
-  filter_enabled: boolean;
-  filter_low_enabled: boolean;
-  filter_high_enabled: boolean;
-  filter_low_hz: number;
-  filter_high_hz: number;
-  fft_window: number;
-  octave_shift: number;
-
-  controlPlayback: (action: string, value?: number) => Promise<void>;
-  updatePosition: (pos: number) => void;
-  setPlaying: (playing: boolean) => void;
-  setLoopMode: (mode: string) => Promise<void>;
-  updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
-  setFFTWindow: (sec: number) => void;
-  setOctaveShift: (shift: number) => void;
-  playTone: (freq: number, action: 'start' | 'stop') => Promise<void>;
-  stopAllTones: () => Promise<void>;
-}
+import type { PlaybackSlice } from '../types';
 
 export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> = (set, get) => ({
   position: 0,
