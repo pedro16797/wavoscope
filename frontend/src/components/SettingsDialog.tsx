@@ -195,6 +195,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <span className="opacity-60">Add Harmony Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Right Click</span>
                         <span className="opacity-60">Move Flag</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Left Drag</span>
                         <span className="opacity-60">Audition Harmony</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Hold Click</span>
+                        <span className="opacity-60">Scroll View</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Mouse Wheel</span>
                     </div>
 
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">Waveform & Spectrum</div>

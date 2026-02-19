@@ -27,7 +27,7 @@ export const WaveformView: React.FC = () => {
           <span>Lyrics</span>
         </button>
       </div>
-      <Timeline offset={viewport.offset} zoom={viewport.zoom} />
+      <Timeline offset={viewport.offset} zoom={viewport.zoom} onViewportChange={handleViewportChange} />
       {showLyrics && <LyricsTimeline offset={viewport.offset} zoom={viewport.zoom} />}
       <div className="flex-1 min-h-0">
         <Waveform offset={viewport.offset} zoom={viewport.zoom} onViewportChange={handleViewportChange} />

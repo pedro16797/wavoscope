@@ -1,13 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
-import { formatChord, getChordMidiNotes, midiToFreq } from '../store/utils';
+import { formatChord, getChordMidiNotes, midiToFreq, getTimelineStep, formatTimelineLabel } from '../store/utils';
 
 interface TimelineProps {
   offset: number;
   zoom: number;
+  onViewportChange: (offset: number, zoom: number) => void;
 }
 
-export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
+export const Timeline: React.FC<TimelineProps> = ({ offset, zoom, onViewportChange }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const {
@@ -55,7 +56,7 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     ctx.fillStyle = theme.text || '#e0e0e0';
     ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 
-    const step = Math.max(0.1, Math.pow(10, Math.floor(Math.log10(span / 5))));
+    const step = getTimelineStep(span);
     const startTick = Math.floor(offset / step) * step;
 
     for (let t = startTick; t <= end; t += step) {
@@ -67,14 +68,8 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
         ctx.lineTo(x, size.height);
         ctx.stroke();
 
-        const m = Math.floor(t / 60);
-        const s = Math.floor(t % 60);
-        const ms = Math.floor((t % 1) * 100);
-        if (step < 1) {
-            ctx.fillText(`${m}:${s.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`, x + 4, 15);
-        } else {
-            ctx.fillText(`${m}:${s.toString().padStart(2, '0')}`, x + 4, 15);
-        }
+        const label = formatTimelineLabel(t, step);
+        ctx.fillText(label, x + 4, 15);
     }
 
     // Draw Loop Range
@@ -268,6 +263,13 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     }
   };
 
+  const handleWheel = (e: React.WheelEvent) => {
+    const delta = e.deltaY;
+    const scrollAmount = delta / zoom;
+    const maxOffset = Math.max(0, duration - size.width / zoom);
+    onViewportChange(Math.max(0, Math.min(offset + scrollAmount, maxOffset)), zoom);
+  };
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -331,7 +333,8 @@ export const Timeline: React.FC<TimelineProps> = ({ offset, zoom }) => {
     <div ref={containerRef} className="h-10 w-full border-b select-none cursor-crosshair"
         style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
         onMouseDown={handleMouseDown}
-        onContextMenu={handleContextMenu}>
+        onContextMenu={handleContextMenu}
+        onWheel={handleWheel}>
         <canvas ref={canvasRef} className="w-full h-full block" />
     </div>
   );

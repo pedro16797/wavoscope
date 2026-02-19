@@ -18,7 +18,9 @@ Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope c
 ## 🎵 Navigation & Playback
 
 - **Zooming:** Use your **Mouse Wheel** over the waveform or spectrum to zoom in/out.
+- **Scrolling:** Use your **Mouse Wheel** over the **timeline** to scroll back/forth in time.
 - **Panning:** **Click and Drag** the waveform or spectrum to move through the timeline.
+- **Adaptive Subdivisions:** The timeline automatically adjusts its grid steps (from 0.01s up to several hours) as you zoom, ensuring optimal detail without overcrowding.
 - **Playback Cursor:** **Left Click** on the waveform to move the playhead.
 - **Speed Control:** Use the slider in the bottom bar to adjust speed from 0.1x to 2.0x. Wavoscope uses high-quality time-stretching that preserves pitch.
 
@@ -110,6 +112,7 @@ Wavoscope is fully themeable. Choose a look that suits your environment:
 | **Timeline** | Add Harmony Flag | `Right Click` |
 | **Timeline** | Move Flag | `Left Drag` |
 | **Timeline** | Audition Chord | `Hold Left Click` on Harmony Flag |
+| **Timeline** | Scroll View | `Mouse Wheel` |
 | **Waveform** | Move Playhead | `Left Click` |
 | **Waveform** | Pan View | `Left Drag` |
 | **Waveform** | Zoom In/Out | `Mouse Wheel` |
