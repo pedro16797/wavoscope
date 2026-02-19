@@ -159,6 +159,9 @@ class LyricMove(BaseModel):
     idx: int
     t: float
 
+class LyricSelect(BaseModel):
+    idx: int | None = None
+
 @router.post("/lyrics")
 async def add_lyric(lyric: LyricData):
     if not state.project:
@@ -181,6 +184,13 @@ async def update_lyric(idx: int, lyric: LyricUpdate):
     if res is None:
         raise HTTPException(status_code=404, detail="Lyric not found")
     return {"status": "ok", "lyrics": state.project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
+
+@router.post("/lyrics/select")
+async def select_lyric(select: LyricSelect):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    state.project.set_selected_lyric(select.idx)
+    return {"status": "ok"}
 
 @router.post("/lyrics/move")
 async def move_lyric(move: LyricMove):

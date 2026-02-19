@@ -28,6 +28,7 @@ class Project:
         self._manager = ProjectManager(audio_path)
         self._flags = FlagManager(self._manager.session_data)
         self._looping = LoopingEngine()
+        self.selected_lyric_idx: int | None = None
 
         self.backend = AudioBackend()
         self.backend.set_tick_provider(self.subdivision_ticks_between)
@@ -180,6 +181,11 @@ class Project:
                 return {"idx": new_idx, "lyric": lyric}
             return None
 
+    def set_selected_lyric(self, idx: int | None) -> None:
+        with self._lock:
+            self.selected_lyric_idx = idx
+            self.backend.reset_loop_range()
+
     def move_lyric(self, idx: int, new_time: float) -> dict | None:
         with self._lock:
             lyrics = self.session_data.get("lyrics", [])
@@ -265,7 +271,7 @@ class Project:
                 if self.backend.active_loop_range:
                     return self.backend.active_loop_range
                 pos = self.backend.position
-            return self._looping.get_loop_range(pos, self.duration, self._flags.flags, self.lyrics)
+            return self._looping.get_loop_range(pos, self.duration, self._flags.flags, self.lyrics, self.selected_lyric_idx)
 
     # ---------- metronome helpers ----------
     def subdivision_ticks_between(self, start: float, end: float) -> list[tuple[float, bool]]:
