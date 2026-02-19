@@ -76,6 +76,39 @@ export const LyricsTimeline: React.FC = () => {
         ctx.lineTo(width, height - 0.5);
         ctx.stroke();
 
+        // Pass 1: Draw connecting lines for syllables
+        lyrics.forEach((lyric, index) => {
+            if (lyric.text.endsWith('-') && index < lyrics.length - 1) {
+                const nextLyric = lyrics[index + 1];
+
+                let t1 = lyric.timestamp;
+                let d1 = lyric.duration;
+                if (draggingLyric && draggingLyric.idx === index) {
+                    t1 = draggingLyric.timestamp;
+                    d1 = draggingLyric.duration;
+                }
+
+                let t2 = nextLyric.timestamp;
+                if (draggingLyric && draggingLyric.idx === index + 1) {
+                    t2 = draggingLyric.timestamp;
+                }
+
+                const x1 = (t1 + d1 - offset) * zoom;
+                const x2 = (t2 - offset) * zoom;
+
+                if (x2 >= x1) {
+                    ctx.strokeStyle = theme.accent || '#4fd1c5';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    // Extend line slightly into the boxes to ensure visibility for contiguous syllables
+                    ctx.moveTo(x1 - 2, height / 2);
+                    ctx.lineTo(x2 + 2, height / 2);
+                    ctx.stroke();
+                }
+            }
+        });
+
+        // Pass 2: Draw lyric boxes
         lyrics.forEach((lyric, index) => {
             let timestamp = lyric.timestamp;
             let duration = lyric.duration;
@@ -129,7 +162,10 @@ export const LyricsTimeline: React.FC = () => {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-            const text = (isEditing && index === editingIdx) ? editValue : lyric.text;
+            let text = (isEditing && index === editingIdx) ? editValue : lyric.text;
+            if (text.endsWith('-') && !isEditing) {
+                text = text.slice(0, -1);
+            }
             const metrics = ctx.measureText(text);
 
             if (w > 12) {
@@ -518,11 +554,14 @@ export const LyricsTimeline: React.FC = () => {
                 const current = currentLyrics[currentEditingIdx];
                 setEditingIdx(null);
                 setEditValue('');
-                if (trimmed === '') {
+
+                const textToSave = e.key === '-' ? trimmed + '-' : trimmed;
+
+                if (trimmed === '' && e.key !== '-') {
                     removeLyric(currentEditingIdx);
                     addLyricAt(current.timestamp, '', current.duration);
                 } else {
-                    updateLyric(currentEditingIdx, { text: trimmed });
+                    updateLyric(currentEditingIdx, { text: textToSave });
                     addLyricAt(current.timestamp + current.duration, '', current.duration);
                 }
             }
