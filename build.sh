@@ -35,59 +35,98 @@ npm install --no-fund --no-audit
 npm run build
 cd ..
 
-# Build Executable with Nuitka
-echo "Building standalone executable..."
-python3 -m nuitka --standalone \
-    --include-data-dir=frontend/dist=frontend/dist \
-    --include-data-dir=resources=resources \
-    --noinclude-data-files="**/.git/**" \
-    --noinclude-data-files="**/venv/**" \
-    --noinclude-data-files="**/__pycache__/**" \
-    --windows-icon-from-ico=resources/icons/app-icon.ico \
-    --nofollow-import-to=pytest \
-    --nofollow-import-to=playwright \
-    --nofollow-import-to=matplotlib \
-    --nofollow-import-to=PIL \
-    --nofollow-import-to=ipython \
-    --nofollow-import-to=numpy.random \
-    --nofollow-import-to=numpy.tests \
-    --nofollow-import-to=numpy.f2py \
-    --nofollow-import-to=numpy.distutils \
-    --nofollow-import-to=yaml \
-    --nofollow-import-to=tkinter \
-    --nofollow-import-to=sqlite3 \
-    --nofollow-import-to=_sqlite3 \
-    --nofollow-import-to=_bz2 \
-    --nofollow-import-to=_lzma \
-    --nofollow-import-to=_decimal \
-    --nofollow-import-to=_zoneinfo \
-    --noinclude-data-files="**/pywebview-android.jar" \
-    --noinclude-data-files="**/cacert.pem" \
-    --noinclude-data-files="resources/**/*.svg" \
-    --noinclude-data-files="**/*.py" \
-    --noinclude-data-files="**/*.pyi" \
-    --windows-console-mode=disable \
-    --product-name="Wavoscope" \
-    --company-name="Lendas do Alén" \
-    --file-version="1.0.0" \
-    --output-filename=Wavoscope \
-    --enable-plugin=upx \
-    --output-dir=dist \
-    --include-windows-runtime-dlls=no \
-    --onefile-no-compression \
-    --assume-yes-for-downloads \
-    main.py
-
-echo "Packaging into Wavoscope.zip..."
-if [ -d "dist/main.dist" ]; then
-    rm -rf dist/Wavoscope
-    cp -r dist/main.dist dist/Wavoscope
-    python3 -c "import shutil; shutil.make_archive('Wavoscope', 'zip', root_dir='dist', base_dir='Wavoscope')"
-    rm -rf dist/Wavoscope
-    echo "Wavoscope.zip created."
-else
-    echo "[ERROR] Nuitka output directory not found."
-    exit 1
+# Platform detection
+OS_TYPE="linux"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    OS_TYPE="macos"
+elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
+    OS_TYPE="windows"
 fi
 
-echo "Build complete. Check Wavoscope.zip and the 'dist' directory."
+echo "Detected platform: $OS_TYPE"
+
+# Build Executable with Nuitka
+echo "Building standalone executable..."
+
+NUITKA_FLAGS=(
+    --standalone
+    --include-data-dir=frontend/dist=frontend/dist
+    --include-data-dir=resources=resources
+    --noinclude-data-files="**/.git/**"
+    --noinclude-data-files="**/venv/**"
+    --noinclude-data-files="**/__pycache__/**"
+    --nofollow-import-to=pytest
+    --nofollow-import-to=playwright
+    --nofollow-import-to=matplotlib
+    --nofollow-import-to=PIL
+    --nofollow-import-to=ipython
+    --nofollow-import-to=numpy.random
+    --nofollow-import-to=numpy.tests
+    --nofollow-import-to=numpy.f2py
+    --nofollow-import-to=numpy.distutils
+    --nofollow-import-to=yaml
+    --nofollow-import-to=tkinter
+    --nofollow-import-to=sqlite3
+    --nofollow-import-to=_sqlite3
+    --nofollow-import-to=_bz2
+    --nofollow-import-to=_lzma
+    --nofollow-import-to=_decimal
+    --nofollow-import-to=_zoneinfo
+    --noinclude-data-files="**/pywebview-android.jar"
+    --noinclude-data-files="**/cacert.pem"
+    --noinclude-data-files="resources/**/*.svg"
+    --noinclude-data-files="**/*.py"
+    --noinclude-data-files="**/*.pyi"
+    --product-name="Wavoscope"
+    --company-name="Lendas do Alén"
+    --file-version="1.0.0"
+    --output-filename=Wavoscope
+    --output-dir=dist
+    --onefile-no-compression
+    --assume-yes-for-downloads
+)
+
+if [ "$OS_TYPE" == "windows" ]; then
+    NUITKA_FLAGS+=(
+        --windows-icon-from-ico=resources/icons/app-icon.ico
+        --windows-console-mode=disable
+        --include-windows-runtime-dlls=no
+        --enable-plugin=upx
+    )
+elif [ "$OS_TYPE" == "macos" ]; then
+    NUITKA_FLAGS+=(
+        --macos-create-app-bundle
+        --macos-app-icon=resources/icons/app-icon.icns
+    )
+else
+    # Linux
+    NUITKA_FLAGS+=(
+        --enable-plugin=upx
+    )
+fi
+
+python3 -m nuitka "${NUITKA_FLAGS[@]}" main.py
+
+echo "Packaging..."
+if [ "$OS_TYPE" == "macos" ]; then
+    if [ -d "dist/Wavoscope.app" ]; then
+        python3 -c "import shutil; shutil.make_archive('dist/Wavoscope-Mac', 'zip', root_dir='dist', base_dir='Wavoscope.app')"
+        echo "dist/Wavoscope-Mac.zip created."
+    else
+        echo "[ERROR] Wavoscope.app not found."
+        exit 1
+    fi
+else
+    if [ -d "dist/main.dist" ]; then
+        rm -rf dist/Wavoscope
+        cp -r dist/main.dist dist/Wavoscope
+        python3 -c "import shutil; shutil.make_archive('dist/Wavoscope', 'zip', root_dir='dist', base_dir='Wavoscope')"
+        rm -rf dist/Wavoscope
+        echo "dist/Wavoscope.zip created."
+    else
+        echo "[ERROR] Nuitka output directory not found."
+        exit 1
+    fi
+fi
+
+echo "Build complete."
