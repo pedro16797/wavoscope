@@ -15,6 +15,7 @@ The most efficient way to transcribe a song is using the following workflow:
 1.  **Start:** Press `L` or click an empty spot to create the first lyric at the current playhead.
 2.  **Type:** Enter the first word.
 3.  **Split:** Press `Space` (for new words) or `-` (for syllables within a word). This commits the current text and immediately spawns a new lyric box.
+    - **Visual Differentiation:** Words split by hyphens (syllables) are visually connected by a horizontal line in the timeline. The hyphen itself is stored in the data but hidden in the UI when not editing, providing a clean look.
 4.  **Repeat:** Focus is automatically transferred to the new box, allowing you to continue transcribing as the music plays.
 5.  **Commit:** Press `Enter` or click elsewhere to finish editing.
 
