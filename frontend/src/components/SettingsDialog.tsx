@@ -206,6 +206,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.transcription')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                         <span className="opacity-60">{t('settings.kb_add_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.space')}</span>
+                        <span className="opacity-60">{t('settings.kb_add_syllable')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">-</span>
                         <span className="opacity-60">{t('settings.kb_finish_edit')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.enter')}</span>
                         <span className="opacity-60">{t('settings.kb_move_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_right')}</span>
                         <span className="opacity-60">{t('settings.kb_resize_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.up_down')}</span>
@@ -221,11 +222,15 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <span className="opacity-60">{t('settings.kb_scroll')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.mouse_wheel')}</span>
                     </div>
 
-                    <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.waveform_spectrum')}</div>
+                    <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.waveform')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                         <span className="opacity-60">{t('settings.kb_seek_playhead')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.waveform_click')}</span>
                         <span className="opacity-60">{t('settings.kb_pan')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.waveform_drag')}</span>
                         <span className="opacity-60">{t('settings.kb_zoom')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.mouse_wheel')}</span>
+                    </div>
+
+                    <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.spectrum')}</div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                         <span className="opacity-60">{t('settings.kb_play_note')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.spectrum_click')}</span>
                         <span className="opacity-60">{t('settings.kb_toggle_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click_handle')}</span>
                         <span className="opacity-60">{t('settings.kb_place_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click')}</span>
