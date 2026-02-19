@@ -131,9 +131,15 @@ export interface PlaybackSlice {
   stopAllTones: () => Promise<void>;
 }
 
+export interface Locale {
+  code: string;
+  name: string;
+}
+
 export interface ConfigSlice {
   themes: Record<string, Theme>;
   currentTheme: ThemeName;
+  locales: Locale[];
   metronome_enabled: boolean;
   click_volume: number;
   spectrum_keys: number;
@@ -146,6 +152,7 @@ export interface ConfigSlice {
   zoom: number;
 
   fetchThemes: () => Promise<void>;
+  fetchLocales: () => Promise<void>;
   fetchConfig: () => Promise<void>;
   setTheme: (name: ThemeName) => Promise<void>;
   updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;

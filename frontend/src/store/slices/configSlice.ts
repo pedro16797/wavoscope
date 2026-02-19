@@ -1,5 +1,6 @@
 import type { StateCreator } from 'zustand';
 import axios from 'axios';
+import i18n from '../../i18n';
 import type { AppState } from '../types';
 import { API_BASE } from '../useStore';
 import { midiToFreq, freqToMidi } from '../utils';
@@ -9,6 +10,8 @@ import type { ConfigSlice } from '../types';
 export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (set, get) => ({
   themes: {},
   currentTheme: 'dark',
+  locales: [],
+  language: 'en',
   metronome_enabled: true,
   click_volume: 0.3,
   spectrum_keys: 37,
@@ -29,6 +32,15 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
     }
   },
 
+  fetchLocales: async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/locales-api/list`);
+      set({ locales: res.data });
+    } catch (e) {
+      console.error("[Store] Failed to fetch locales:", e);
+    }
+  },
+
   fetchConfig: async () => {
     try {
       const res = await axios.get(`${API_BASE}/config`);
@@ -37,6 +49,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
 
       const updates: any = {
         currentTheme: res.data.theme,
+        language: res.data.language,
         click_volume: res.data.click_volume,
         spectrum_keys: newKeys,
         default_output_folder: res.data.default_output_folder,
@@ -48,6 +61,10 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
       if (effectiveShift > maxShift) {
         effectiveShift = maxShift;
         updates.octave_shift = effectiveShift;
+      }
+
+      if (res.data.language && res.data.language !== i18n.language) {
+        i18n.changeLanguage(res.data.language);
       }
 
       if (newKeys !== oldState.spectrum_keys || effectiveShift !== oldState.octave_shift) {
@@ -90,6 +107,10 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         const oldState = get();
         await axios.post(`${API_BASE}/config`, cfg);
         if (cfg.theme) set({ currentTheme: cfg.theme });
+        if (cfg.language) {
+            set({ language: cfg.language });
+            i18n.changeLanguage(cfg.language);
+        }
         if (cfg.click_volume !== undefined) set({ click_volume: cfg.click_volume });
         if (cfg.default_output_folder !== undefined) set({ default_output_folder: cfg.default_output_folder });
         if (cfg.musicxml_author !== undefined) set({ musicxml_author: cfg.musicxml_author });

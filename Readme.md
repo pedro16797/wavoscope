@@ -117,6 +117,17 @@ Wavoscope is fully themeable. Choose a look that suits your environment:
 
 ---
 
+## 🌍 Localization
+
+Wavoscope supports multiple languages. You can change the language in the **Settings > Global** tab.
+
+### Custom Translations
+Wavoscope is designed to be community-driven. You can add or modify translations by editing the JSON files in the \`resources/locales\` directory.
+- To add a new language, create a new JSON file (e.g., \`fr.json\`) and add a \`"meta": { "name": "Français" }\` field.
+- The app will automatically detect and list any valid translation files in the settings menu.
+
+---
+
 ## ⌨️ Comprehensive Controls
 
 ### Keyboard Bindings

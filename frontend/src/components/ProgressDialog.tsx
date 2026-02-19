@@ -1,7 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
 
 export const ProgressDialog: React.FC = () => {
+  const { t } = useTranslation();
   const export_status = useStore(state => state.export_status);
 
   if (!export_status.active) return null;
@@ -11,7 +13,7 @@ export const ProgressDialog: React.FC = () => {
       <div className="bg-surface border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] shadow-2xl w-full max-w-sm overflow-hidden text-text flex flex-col p-6 space-y-4"
            style={{ backgroundColor: 'var(--color-surface)', borderWidth: 'var(--ui-border)' }}>
         <div className="text-center space-y-2">
-            <h3 className="font-bold text-sm uppercase tracking-widest opacity-80">Exporting MusicXML</h3>
+            <h3 className="font-bold text-sm uppercase tracking-widest opacity-80">{t('playback.export_xml')}</h3>
             <p className="text-xs opacity-60 h-4">{export_status.message}</p>
         </div>
 
