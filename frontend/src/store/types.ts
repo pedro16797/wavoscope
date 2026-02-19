@@ -123,6 +123,7 @@ export interface PlaybackSlice {
   updatePosition: (pos: number) => void;
   setPlaying: (playing: boolean) => void;
   setLoopMode: (mode: string) => Promise<void>;
+  cycleLoopMode: () => Promise<void>;
   updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
   setFFTWindow: (sec: number) => void;
   setOctaveShift: (shift: number) => void;

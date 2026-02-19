@@ -177,6 +177,7 @@ class Project:
                 if duration is not None: lyric["duration"] = duration
                 lyrics.sort(key=lambda l: l["timestamp"])
                 self.mark_dirty()
+                self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
                 return {"idx": new_idx, "lyric": lyric}
             return None
@@ -194,6 +195,7 @@ class Project:
                 lyric["timestamp"] = new_time
                 lyrics.sort(key=lambda l: l["timestamp"])
                 self.mark_dirty()
+                self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
                 return {"idx": new_idx, "lyric": lyric}
             return None

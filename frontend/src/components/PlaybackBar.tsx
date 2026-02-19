@@ -7,8 +7,7 @@ export const PlaybackBar: React.FC = () => {
     loaded, position, duration, playing, speed, volume, filename, metadata,
     controlPlayback, currentTheme, themes,
     metronome_enabled, updateMetronome, setShowSettings, browseFile,
-    saveProject, exportMusicXML, dirty, loop_mode, setLoopMode,
-    selectedLyricIdx
+    saveProject, exportMusicXML, dirty, loop_mode, cycleLoopMode
   } = useStore();
 
   const theme = themes[currentTheme] || {};
@@ -21,15 +20,6 @@ export const PlaybackBar: React.FC = () => {
 
   const progressPercent = duration > 0 ? (position / duration) * 100 : 0;
 
-  const cycleLoopMode = () => {
-    const modes = ['none', 'whole', 'section', 'bar'];
-    if (selectedLyricIdx !== null) modes.push('lyric');
-
-    let currentIdx = modes.indexOf(loop_mode);
-    if (currentIdx === -1) currentIdx = 0; // If current mode was lyric but lyric was deselected
-    const nextIdx = (currentIdx + 1) % modes.length;
-    setLoopMode(modes[nextIdx]);
-  };
 
   const getLoopIcon = () => {
     if (loop_mode === 'bar' || loop_mode === 'lyric') return <Repeat1 size={20} />;
@@ -81,7 +71,7 @@ export const PlaybackBar: React.FC = () => {
                 <button onClick={() => controlPlayback('stop')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-1">
                 <Square size={20} fill="currentColor" />
                 </button>
-                <button onClick={cycleLoopMode}
+                <button onClick={() => cycleLoopMode()}
                         className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors relative ${loop_mode !== 'none' ? 'text-accent' : 'opacity-40'}`}
                         title={getLoopTitle()}>
                     {getLoopIcon()}

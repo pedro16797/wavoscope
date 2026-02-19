@@ -292,7 +292,9 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   setEditingHarmonyFlagIdx: (idx: number | null) => set({ editingHarmonyFlagIdx: idx }),
   setSelectedLyricIdx: (idx: number | null) => {
     set({ selectedLyricIdx: idx });
-    axios.post(`${API_BASE}/project/lyrics/select`, { idx }).catch(e => console.error("[Store] Failed to sync lyric selection:", e));
+    axios.post(`${API_BASE}/project/lyrics/select`, { idx })
+      .then(() => get().fetchStatus())
+      .catch(e => console.error("[Store] Failed to sync lyric selection:", e));
     if (idx === null && get().loop_mode === 'lyric') {
       get().setLoopMode('none');
     }

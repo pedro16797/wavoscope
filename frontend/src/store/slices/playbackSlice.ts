@@ -75,6 +75,30 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     }
   },
 
+  cycleLoopMode: async () => {
+    const state = get();
+    const modes = ['none', 'lyric', 'section', 'bar', 'whole'];
+
+    const isAvailable = (mode: string) => {
+        if (mode === 'none' || mode === 'whole') return true;
+        if (mode === 'lyric') return state.selectedLyricIdx !== null;
+        if (mode === 'section') return state.flags.some(f => f.is_section_start && f.t <= state.position);
+        if (mode === 'bar') return state.flags.some(f => f.type === 'rhythm' && f.t <= state.position);
+        return false;
+    };
+
+    let nextMode = 'none';
+    const currentIdx = modes.indexOf(state.loop_mode);
+    for (let i = 1; i < modes.length; i++) {
+        const candidate = modes[(currentIdx + i) % modes.length];
+        if (isAvailable(candidate)) {
+            nextMode = candidate;
+            break;
+        }
+    }
+    await state.setLoopMode(nextMode);
+  },
+
   updateFilter: async (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => {
     const oldState = get();
     const updates: any = {};
