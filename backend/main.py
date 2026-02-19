@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles  # noqa: E402
 from fastapi.responses import FileResponse  # noqa: E402
 
 from backend import state  # noqa: E402
-from backend.routers import playback, audio, project, config, themes, ws  # noqa: E402
+from backend.routers import playback, audio, project, config, themes, ws, locales  # noqa: E402
 from utils.logging import logger # noqa: E402
 
 app = FastAPI()
@@ -31,6 +31,12 @@ app.include_router(project.router)
 app.include_router(config.router)
 app.include_router(themes.router)
 app.include_router(ws.router)
+app.include_router(locales.router)
+
+# Serve locales
+locales_path = root_path / "resources" / "locales"
+if locales_path.exists():
+    app.mount("/locales", StaticFiles(directory=str(locales_path)), name="locales")
 
 @app.get("/status")
 async def get_status():

@@ -1,10 +1,12 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Spectrum } from './Spectrum';
 import { Tooltip } from './Tooltip';
 
 export const SpectrumView: React.FC = () => {
+  const { t } = useTranslation();
   const {
     fft_window, setFFTWindow, octave_shift, setOctaveShift
   } = useStore();
@@ -13,13 +15,13 @@ export const SpectrumView: React.FC = () => {
     <div className="flex flex-col h-full w-full min-h-0">
       <div className="h-6 border-b-[width:var(--ui-border)] flex items-center px-4 font-bold text-[10px] uppercase tracking-widest shrink-0 bg-surface justify-between"
            style={{ borderBottomColor: 'var(--color-grid)' }}>
-        <span className="opacity-50">Spectrum Analyzer</span>
+        <span className="opacity-50">{t('views.spectrum_analyzer')}</span>
 
         <div className="flex items-center gap-4 h-full">
             {/* FFT Window */}
             <div className="flex items-center gap-2 h-full border-l border-white/10 pl-4">
                 <span className="text-[9px] opacity-60 font-bold">FFT</span>
-                <Tooltip content={`FFT Window: ${fft_window}s`}>
+                <Tooltip content={t('views.fft_window', { val: fft_window.toFixed(2) })}>
                     <input type="range" min="0.05" max="1.0" step="0.05" value={fft_window}
                         onChange={(e) => setFFTWindow(parseFloat(e.target.value))}
                         className="w-32 accent-current" />

@@ -40,6 +40,12 @@ As an agent, you are responsible for keeping the project documentation accurate 
 -   **`AGENTS.md`**: (This file) Update with major goals and guidelines.
 -   **`docs/project_structure.md`**: Update whenever directories or major files are added, moved, or removed.
 
+## Localization & Internationalization
+Wavoscope supports multiple languages. To contribute a new translation:
+1.  **Frontend Strings:** Add a new JSON file to `resources/locales/` (e.g., `fr.json`). Follow the structure of `en.json`. Include a `"meta": { "name": "Français" }` field to set the display name.
+2.  **Automatic Discovery:** The application automatically populates the language selector from available JSON files in the `resources/locales` directory.
+3.  **Documentation:** Create a new subdirectory in `docs/` (e.g., `docs/fr/`) and translate the markdown files. Create a translated README in the root (e.g., `Readme.fr.md`).
+
 ### Formatting & Style:
 -   Use clear, concise Markdown.
 -   Use cross-links between documentation files where appropriate.

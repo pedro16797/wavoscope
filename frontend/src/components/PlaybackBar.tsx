@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
 import { Play, Pause, Square, Volume2, Settings, Timer, FolderOpen, Save, Repeat, Repeat1, FileDown } from 'lucide-react';
 import { Tooltip } from './Tooltip';
 
 export const PlaybackBar: React.FC = () => {
+  const { t } = useTranslation();
   const {
     loaded, position, duration, playing, speed, volume, filename, metadata,
     controlPlayback, currentTheme, themes,
@@ -29,16 +31,16 @@ export const PlaybackBar: React.FC = () => {
 
   const getLoopTitle = () => {
     switch (loop_mode) {
-        case 'whole': return 'Loop: Whole Song';
-        case 'section': return 'Loop: Current Section';
-        case 'bar': return 'Loop: Current Bar';
-        case 'lyric': return 'Loop: Selected Lyric';
-        default: return 'Loop: Off';
+        case 'whole': return t('playback.loop_whole');
+        case 'section': return t('playback.loop_section');
+        case 'bar': return t('playback.loop_bar');
+        case 'lyric': return t('playback.loop_lyric');
+        default: return t('playback.loop_off');
     }
   };
 
   const getHeaderText = () => {
-    if (!loaded) return 'Ready to load audio';
+    if (!loaded) return t('common.ready');
     const parts = [];
     if (metadata.title) parts.push(metadata.title);
     if (metadata.artist) parts.push(metadata.artist);
@@ -51,19 +53,19 @@ export const PlaybackBar: React.FC = () => {
   return (
     <div className="p-2 flex items-center gap-4 border-b-[width:var(--ui-border)] select-none h-16 shrink-0 bg-surface" style={{ color: theme.text }}>
       <div className="flex items-center gap-1">
-        <Tooltip content="Open Audio File">
-            <button onClick={browseFile} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
+        <Tooltip content={t('playback.open')}>
+            <button onClick={browseFile} aria-label={t('playback.open')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
                 <FolderOpen size={20} />
             </button>
         </Tooltip>
-        <Tooltip content={dirty ? "Save Project (Unsaved changes)" : "Save Project"}>
-            <button onClick={saveProject} disabled={!loaded}
+        <Tooltip content={dirty ? t('playback.save_dirty') : t('playback.save_clean')}>
+            <button onClick={saveProject} disabled={!loaded} aria-label={t('playback.save_clean')}
                     className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${!loaded ? 'opacity-20' : 'opacity-90'}`}>
                 <Save size={20} className={dirty ? 'text-accent' : 'text-text'} />
             </button>
         </Tooltip>
-        <Tooltip content="Export as MusicXML">
-            <button onClick={exportMusicXML} disabled={!loaded}
+        <Tooltip content={t('playback.export_xml')}>
+            <button onClick={exportMusicXML} disabled={!loaded} aria-label={t('playback.export_xml')}
                     className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : 'opacity-90'}`}>
                 <FileDown size={20} />
             </button>
@@ -77,7 +79,7 @@ export const PlaybackBar: React.FC = () => {
                 <Square size={20} fill="currentColor" />
                 </button>
                 <Tooltip content={getLoopTitle()}>
-                    <button onClick={() => cycleLoopMode()}
+                    <button onClick={() => cycleLoopMode()} aria-label={getLoopTitle()}
                             className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors relative ${loop_mode !== 'none' ? 'text-accent' : 'opacity-40'}`}>
                         {getLoopIcon()}
                         {loop_mode === 'section' && <span className="absolute top-1 right-1 text-[8px] font-bold bg-accent text-surface rounded-full w-3 h-3 flex items-center justify-center border border-surface shadow-sm">S</span>}
@@ -85,8 +87,8 @@ export const PlaybackBar: React.FC = () => {
                     </button>
                 </Tooltip>
                 {/* Metronome */}
-                <Tooltip content="Toggle Metronome">
-                    <button onClick={() => updateMetronome(!metronome_enabled)}
+                <Tooltip content={t('playback.metronome')}>
+                    <button onClick={() => updateMetronome(!metronome_enabled)} aria-label={t('playback.metronome')}
                             className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${metronome_enabled ? 'text-accent bg-accent/10' : 'opacity-40'}`}>
                         <Timer size={18} />
                     </button>
@@ -120,7 +122,7 @@ export const PlaybackBar: React.FC = () => {
       <div className="flex items-center gap-4 pr-2">
         {/* Speed & Volume */}
         <div className="flex items-center gap-2 border-l-[width:var(--ui-border)] border-white/10 pl-4">
-            <span className="text-[9px] opacity-60 font-bold">SPEED</span>
+            <span className="text-[9px] opacity-60 font-bold">{t('playback.speed')}</span>
             <input type="range" min="0.1" max="2" step="0.1" value={speed}
                    onChange={(e) => controlPlayback('set_speed', parseFloat(e.target.value))}
                    className="w-16 accent-current" />
@@ -133,8 +135,8 @@ export const PlaybackBar: React.FC = () => {
                    className="w-16 accent-current" />
         </div>
 
-        <Tooltip content="Settings">
-            <button onClick={() => setShowSettings(true)} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
+        <Tooltip content={t('playback.settings')}>
+            <button onClick={() => setShowSettings(true)} aria-label={t('playback.settings')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
                 <Settings size={18} />
             </button>
         </Tooltip>

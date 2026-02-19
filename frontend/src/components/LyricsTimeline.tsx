@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
 
 /**
@@ -18,6 +19,7 @@ import { useStore } from '../store/useStore';
  * - Arrow keys to move/resize selected lyric by 0.1s.
  */
 export const LyricsTimeline: React.FC = () => {
+    const { t } = useTranslation();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const {
@@ -75,17 +77,17 @@ export const LyricsTimeline: React.FC = () => {
         ctx.stroke();
 
         lyrics.forEach((lyric, index) => {
-            let t = lyric.timestamp;
-            let d = lyric.duration;
+            let timestamp = lyric.timestamp;
+            let duration = lyric.duration;
 
             // Apply local dragging state if active
             if (draggingLyric && draggingLyric.idx === index) {
-                t = draggingLyric.timestamp;
-                d = draggingLyric.duration;
+                timestamp = draggingLyric.timestamp;
+                duration = draggingLyric.duration;
             }
 
-            const x = (t - offset) * zoom;
-            const w = d * zoom;
+            const x = (timestamp - offset) * zoom;
+            const w = duration * zoom;
 
             if (x + w < 0 || x > width) return;
 
@@ -549,6 +551,7 @@ export const LyricsTimeline: React.FC = () => {
                     <input
                         ref={inputRef}
                         type="text"
+                        placeholder={t('lyrics.placeholder')}
                         className="w-full h-full bg-gray-900 text-white text-xs px-2 border-2 rounded outline-none shadow-2xl"
                         style={{ borderColor: themes[currentTheme]?.accent || '#4fd1c5' }}
                         value={editValue}
