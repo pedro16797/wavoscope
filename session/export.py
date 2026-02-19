@@ -42,11 +42,11 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
     lyrics = session_data.get("lyrics", [])
     project_time_sig = session_data.get("time_signature", {"numerator": 4, "denominator": 4})
 
-    rhythm_flags = [f.copy() for f in flags if f.get("type") == "rhythm"]
+    rhythm_flags = [f.copy() for f in flags if f.get("type", "rhythm") == "rhythm"]
 
     if rhythm_flags:
         # Get the subdivision of the first real flag to use as default for the gap
-        first_real_subdiv = rhythm_flags[0].get("subdivision", project_time_sig["numerator"])
+        first_real_subdiv = rhythm_flags[0].get("div", project_time_sig["numerator"])
         if first_real_subdiv == 0:
             first_real_subdiv = project_time_sig["numerator"]
 
@@ -55,9 +55,9 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
             virtual_start = {
                 "t": 0.0,
                 "type": "rhythm",
-                "subdivision": first_real_subdiv,
-                "is_section_start": False,
-                "name": "",
+                "div": first_real_subdiv,
+                "s": False,
+                "n": "",
                 "auto_name": "0"
             }
             rhythm_flags.insert(0, virtual_start)
@@ -77,9 +77,9 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
                 rhythm_flags.append({
                     "t": curr_t,
                     "type": "rhythm",
-                    "subdivision": rhythm_flags[-1]["subdivision"],
-                    "is_section_start": False,
-                    "name": "",
+                    "div": rhythm_flags[-1]["div"],
+                    "s": False,
+                    "n": "",
                     "auto_name": ""
                 })
                 curr_t += interval
@@ -110,7 +110,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
             duration = max(0.1, end_t - start_t)
 
             # Determine Time Signature Numerator from subdivision (with inheritance)
-            subdiv = rhythm_flags[i].get("subdivision", 0)
+            subdiv = rhythm_flags[i].get("div", 0)
             if subdiv != 0:
                 current_subdiv = subdiv
 
@@ -142,18 +142,18 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
 
             # Section start (Rehearsal mark)
             rehearsal = None
-            if rhythm_flags[i].get("is_section_start"):
+            if rhythm_flags[i].get("s"):
                 rehearsal = rhythm_flags[i].get("auto_name")
 
-            # Custom name (Text note)
-            annotation = rhythm_flags[i].get("name")
+            # Custom n (Text note)
+            annotation = rhythm_flags[i].get("n")
 
             # Harmony flags in this measure
             measure_harmonies = [h for h in harmony_flags if start_t <= h["t"] < end_t]
             measure_harmonies.sort(key=lambda x: x["t"])
 
             # Lyrics in this measure
-            measure_lyrics = [l for l in lyrics if (start_t <= l["timestamp"] < end_t) or (l["timestamp"] < start_t < l["timestamp"] + l["duration"])]
+            measure_lyrics = [l for l in lyrics if (start_t <= l["t"] < end_t) or (l["t"] < start_t < l["t"] + l["l"])]
 
             is_first = (i == 0)
             attr_change = is_first or (num != last_num) or (den != last_den)
@@ -214,8 +214,8 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
     event_points = set([start_t, end_t])
     for h in harmonies: event_points.add(h["t"])
     for l in lyrics:
-        event_points.add(l["timestamp"])
-        event_points.add(l["timestamp"] + l["duration"])
+        event_points.add(l["t"])
+        event_points.add(l["t"] + l["l"])
 
     sorted_points = sorted([p for p in event_points if start_t <= p <= end_t])
 
@@ -235,7 +235,7 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
                 break
 
         if harmony:
-            _add_harmony_tag(measure, harmony["chord"])
+            _add_harmony_tag(measure, harmony["c"])
         elif i == 0:
             # Check if there's a preceding harmony
             # (In this simplified version we only add if it's explicitly at start or we'd need more logic)
@@ -245,7 +245,7 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
         seg_mid = (seg_start + seg_end) / 2
         active_lyric = None
         for l in lyrics:
-            if l["timestamp"] <= seg_mid < l["timestamp"] + l["duration"]:
+            if l["t"] <= seg_mid < l["t"] + l["l"]:
                 active_lyric = l
                 break
 
@@ -255,7 +255,7 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
         ET.SubElement(note, "voice").text = "1"
         if active_lyric:
             lyr_el = ET.SubElement(note, "lyric")
-            ET.SubElement(lyr_el, "text").text = active_lyric["text"]
+            ET.SubElement(lyr_el, "text").text = active_lyric["s"]
 
 def _add_measure_metro(part, number, num, den, attr_change, divisions):
     measure = ET.SubElement(part, "measure", number=str(number))
@@ -296,16 +296,16 @@ def _add_harmony_tag(measure, chord_data, offset_div=0):
     if offset_div != 0:
         ET.SubElement(harmony, "offset").text = str(offset_div)
     root = ET.SubElement(harmony, "root")
-    ET.SubElement(root, "root-step").text = chord_data["root"]
+    ET.SubElement(root, "root-step").text = chord_data["r"]
     alter = 0
-    if chord_data["accidental"] == "#": alter = 1
-    elif chord_data["accidental"] == "b": alter = -1
+    if chord_data["ca"] == "#": alter = 1
+    elif chord_data["ca"] == "b": alter = -1
     if alter != 0:
         ET.SubElement(root, "root-alter").text = str(alter)
 
     kind = ET.SubElement(harmony, "kind")
-    quality = chord_data.get("quality", "M")
-    ext = chord_data.get("extension", "")
+    quality = chord_data.get("q", "")
+    ext = chord_data.get("ext", "")
 
     kind_val = "major"
     if quality == "m":
@@ -322,7 +322,7 @@ def _add_harmony_tag(measure, chord_data, offset_div=0):
         kind_val = "suspended-second"
     elif quality == "sus4":
         kind_val = "suspended-fourth"
-    elif quality == "M":
+    elif quality in ["M", ""]:
         if ext == "7": kind_val = "dominant"
         elif ext == "9": kind_val = "dominant-ninth"
         elif ext == "11": kind_val = "dominant-11th"
@@ -332,10 +332,10 @@ def _add_harmony_tag(measure, chord_data, offset_div=0):
     kind.set("text", _format_chord_simple(chord_data))
 
 def _format_chord_simple(c):
-    s = c["root"] + c["accidental"]
-    if c["quality"] != "M": s += c["quality"]
-    s += c["extension"]
-    for a in c.get("alterations", []): s += a
-    for a in c.get("additions", []): s += a
-    if c.get("bass"): s += "/" + c["bass"] + c.get("bass_accidental", "")
+    s = c["r"] + c["ca"]
+    if c["q"] not in ["M", ""]: s += c["q"]
+    s += c["ext"]
+    for a in c.get("alt", []): s += a
+    for a in c.get("add", []): s += a
+    if c.get("b"): s += "/" + c["b"] + c.get("ba", "")
     return s

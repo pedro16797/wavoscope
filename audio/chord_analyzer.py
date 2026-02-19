@@ -50,9 +50,9 @@ def analyze_chord_at(audio_data: np.ndarray, sr: int, t: float, window_s: float 
     m7_template = np.array([1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0])
 
     templates = [
-        (major_template, "M", ""),
+        (major_template, "", ""),
         (minor_template, "m", ""),
-        (dom7_template, "M", "7"),
+        (dom7_template, "", "7"),
         (m7_template, "m", "7"),
     ]
 
@@ -69,26 +69,26 @@ def analyze_chord_at(audio_data: np.ndarray, sr: int, t: float, window_s: float 
                 best_score = score
                 root_name = roots[i]
                 best_chord = {
-                    "root": root_name[0],
-                    "accidental": root_name[1:] if len(root_name) > 1 else "",
-                    "quality": quality,
-                    "extension": extension,
-                    "alterations": [],
-                    "additions": [],
-                    "bass": "",
-                    "bass_accidental": "",
+                    "r": root_name[0],
+                    "ca": root_name[1:] if len(root_name) > 1 else "",
+                    "q": quality,
+                    "ext": extension,
+                    "alt": [],
+                    "add": [],
+                    "b": "",
+                    "ba": "",
                 }
 
     return best_chord
 
 def _default_chord() -> Dict[str, Any]:
     return {
-        "root": "C",
-        "accidental": "",
-        "quality": "M",
-        "extension": "",
-        "alterations": [],
-        "additions": [],
-        "bass": "",
-        "bass_accidental": "",
+        "r": "C",
+        "ca": "",
+        "q": "",
+        "ext": "",
+        "alt": [],
+        "add": [],
+        "b": "",
+        "ba": "",
     }

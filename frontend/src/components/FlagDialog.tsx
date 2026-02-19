@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
 import type { Flag } from '../store/types';
 import axios from 'axios';
+import { API_BASE } from '../store/useStore';
 
 interface FlagDialogProps {
   idx: number;
@@ -14,11 +15,11 @@ export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) =>
   const { t } = useTranslation();
   const { fetchStatus, duration, flags } = useStore();
 
-  const [name, setName] = useState(flag?.name || '');
+  const [name, setName] = useState(flag?.n || '');
   const [time, setTime] = useState(flag?.t || 0);
-  const [subdivision, setSubdivision] = useState(flag?.subdivision || 0);
-  const [sectionStart, setSectionStart] = useState(flag?.is_section_start || false);
-  const [shaded, setShaded] = useState(flag?.shaded_subdivisions || false);
+  const [subdivision, setSubdivision] = useState(flag?.div || 0);
+  const [sectionStart, setSectionStart] = useState(flag?.s || false);
+  const [shaded, setShaded] = useState(flag?.divshade || false);
 
   if (!flag) {
     console.error("FlagDialog opened but flag is missing at index", idx);
@@ -28,13 +29,13 @@ export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) =>
 
   const handleSave = async () => {
     try {
-        await axios.patch(`/project/flags/${idx}`, {
+        await axios.patch(`${API_BASE}/project/flags/${idx}`, {
             t: time,
-            name,
-            subdivision,
+            n: name,
+            div: subdivision,
             type: flag.type,
-            is_section_start: sectionStart,
-            shaded_subdivisions: shaded
+            s: sectionStart,
+            divshade: shaded
         });
         fetchStatus();
         onClose();
@@ -45,7 +46,7 @@ export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) =>
 
   const handleDelete = async () => {
     try {
-        await axios.delete(`/project/flags/${idx}`);
+        await axios.delete(`${API_BASE}/project/flags/${idx}`);
         fetchStatus();
         onClose();
     } catch (e) {
@@ -60,7 +61,7 @@ export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) =>
     if (isNaN(count) || count <= 0) return;
 
     try {
-        await axios.post('/project/flags/insert_n', {
+        await axios.post(`${API_BASE}/project/flags/insert_n`, {
             left_idx: idx,
             count: count
         });

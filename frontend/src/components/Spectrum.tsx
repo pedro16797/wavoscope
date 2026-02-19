@@ -87,7 +87,7 @@ export const Spectrum: React.FC = () => {
         if (f.t <= position) activeFlag = f;
         else break;
     }
-    return activeFlag ? getChordMidiNotes(activeFlag.chord) : [];
+    return activeFlag ? getChordMidiNotes(activeFlag.c) : [];
   }, [position, harmony_flags]);
 
   useEffect(() => {

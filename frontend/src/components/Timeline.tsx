@@ -112,7 +112,7 @@ export const Timeline: React.FC = () => {
             ctx.stroke();
 
             ctx.fillStyle = theme.surface || '#252525';
-            const label = formatChord(f.chord);
+            const label = formatChord(f.c);
 
             const textWidth = ctx.measureText(label).width;
             ctx.fillRect(x - textWidth/2 - 2, 5, textWidth + 4, 12);
@@ -137,7 +137,7 @@ export const Timeline: React.FC = () => {
             ctx.stroke();
 
             ctx.fillStyle = theme.surface || '#252525';
-            const label = f.name || f.auto_name || '';
+            const label = f.n || f.auto_name || '';
             const textWidth = ctx.measureText(label).width;
             ctx.fillRect(x - textWidth/2 - 2, 20, textWidth + 4, 12);
             ctx.fillStyle = theme.text || '#fff';
@@ -147,11 +147,11 @@ export const Timeline: React.FC = () => {
         // Draw subdivisions
         if (f.type === 'rhythm' && idx < flags.length - 1) {
             const nxt = flags[idx + 1];
-            let subdiv = f.subdivision || 0;
+            let subdiv = f.div || 0;
             if (subdiv === 0) {
                 for (let i = idx; i >= 0; i--) {
-                    if (flags[i].type === 'rhythm' && flags[i].subdivision !== 0) {
-                        subdiv = flags[i].subdivision;
+                    if (flags[i].type === 'rhythm' && flags[i].div !== 0) {
+                        subdiv = flags[i].div;
                         break;
                     }
                 }
@@ -167,7 +167,7 @@ export const Timeline: React.FC = () => {
                     if (sx >= 0 && sx <= canvas.width) {
                         const baseColor = theme.flagRhythm || '#ff4757';
                         let opacity = "44"; // dimmed
-                        if (f.shaded_subdivisions && k % 2 === 1) {
+                        if (f.divshade && k % 2 === 1) {
                             opacity = "99"; // brighter
                         }
                         ctx.strokeStyle = baseColor + opacity;
@@ -215,7 +215,7 @@ export const Timeline: React.FC = () => {
     if (e.button === 0) {
         if (foundHarmonyIdx !== -1) {
             // Play Chord on Hold
-            const chord = harmony_flags[foundHarmonyIdx].chord;
+            const chord = harmony_flags[foundHarmonyIdx].c;
             const midis = getChordMidiNotes(chord);
             midis.forEach(m => {
                 playTone(midiToFreq(m), 'start');

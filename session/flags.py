@@ -4,6 +4,7 @@ from typing import List, Dict, Any, Callable
 class FlagManager:
     def __init__(self, session_data: Dict[str, Any]):
         self.session_data = session_data
+        self._recompute_auto_names()
 
     @property
     def flags(self) -> List[Dict[str, Any]]:
@@ -13,7 +14,7 @@ class FlagManager:
     def harmony_flags(self) -> List[Dict[str, Any]]:
         return self.session_data.setdefault("harmony_flags", [])
 
-    def add_flag(self, time: float, kind: str, subdivision: int, name: str, section_start: bool, shaded: bool) -> bool:
+    def add_flag(self, time: float, kind: str, div: int, n: str, s: bool, divshade: bool) -> bool:
         flags = self.flags
         if any(abs(f["t"] - time) < 0.001 for f in flags):
             return False
@@ -21,10 +22,10 @@ class FlagManager:
         flags.append({
             "t": time,
             "type": kind,
-            "subdivision": subdivision,
-            "name": name,
-            "is_section_start": section_start,
-            "shaded_subdivisions": shaded,
+            "div": div,
+            "n": n,
+            "s": s,
+            "divshade": divshade,
         })
         flags.sort(key=lambda f: f["t"])
         self._recompute_auto_names()
@@ -43,7 +44,7 @@ class FlagManager:
         if any(abs(f["t"] - time) < 0.001 for f in flags):
             return False
 
-        flags.append({"t": time, "chord": chord})
+        flags.append({"t": time, "c": chord})
         flags.sort(key=lambda f: f["t"])
         return True
 
@@ -67,10 +68,10 @@ class FlagManager:
             return res
 
         for flag in self.flags:
-            if flag["type"] != "rhythm":
+            if flag.get("type", "rhythm") != "rhythm":
                 flag["auto_name"] = ""
                 continue
-            if flag.get("is_section_start", False):
+            if flag.get("s", False):
                 section_idx += 1
                 measure = 0
                 flag["auto_name"] = get_section_label(section_idx)

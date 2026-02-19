@@ -106,13 +106,13 @@ class MetronomeEngine:
                     if 0 <= idx < len(flags) - 1:
                         prev = flags[idx]
                         nxt = flags[idx + 1]
-                        if prev.get("type") == "rhythm":
-                            subdiv = prev.get("subdivision", 1)
+                        if prev.get("type", "rhythm") == "rhythm":
+                            subdiv = prev.get("div", 1)
                             if subdiv > 1:
                                 span = nxt["t"] - prev["t"]
                                 step = span / subdiv
                                 k = int((tick_time - prev["t"] + 1e-6) / step)
-                                shaded = prev.get("shaded_subdivisions", False) and k % 2 == 1
+                                shaded = prev.get("divshade", False) and k % 2 == 1
 
             volume = self._click_volume * (0.5 if shaded else 1.0)
             click_src = self._strong_click if is_strong else self._weak_click

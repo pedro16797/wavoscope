@@ -90,7 +90,7 @@ class Project:
     @property
     def can_export(self) -> bool:
         with self._lock:
-            return any(f.get("type") == "rhythm" for f in self._flags.flags)
+            return any(f.get("type", "rhythm") == "rhythm" for f in self._flags.flags)
 
     def update_time_signature(self, numerator: int, denominator: int) -> None:
         with self._lock:
@@ -122,9 +122,9 @@ class Project:
         with self._lock:
             return list(self.session_data.get("lyrics", []))
 
-    def add_flag(self, time: float, kind: str = "rhythm", subdivision: int = 0, name: str = "", section_start: bool = False, shaded: bool = False) -> None:
+    def add_flag(self, time: float, kind: str = "rhythm", div: int = 0, n: str = "", s: bool = False, divshade: bool = False) -> None:
         with self._lock:
-            if self._flags.add_flag(time, kind, subdivision, name, section_start, shaded):
+            if self._flags.add_flag(time, kind, div, n, s, divshade):
                 self._clear_backend_cache()
                 self.mark_dirty()
                 self._emit("flag_added", time)
@@ -138,7 +138,7 @@ class Project:
     def add_harmony_flag(self, time: float, chord: Dict[str, Any] | None = None) -> None:
         with self._lock:
             if chord is None:
-                chord = {"root": "C", "accidental": "", "quality": "M", "extension": "", "alterations": [], "additions": [], "bass": "", "bass_accidental": ""}
+                chord = {"r": "C", "ca": "", "q": "", "ext": "", "alt": [], "add": [], "b": "", "ba": ""}
             if self._flags.add_harmony_flag(time, chord):
                 self.mark_dirty()
                 self._emit("flag_added", time)
@@ -152,9 +152,9 @@ class Project:
     def add_lyric(self, text: str, time: float, duration: float) -> dict:
         with self._lock:
             lyrics = self.session_data.get("lyrics", [])
-            new_lyric = {"text": text, "timestamp": time, "duration": duration}
+            new_lyric = {"s": text, "t": time, "l": duration}
             lyrics.append(new_lyric)
-            lyrics.sort(key=lambda l: l["timestamp"])
+            lyrics.sort(key=lambda l: l["t"])
             self.session_data["lyrics"] = lyrics
             self.mark_dirty()
             idx = lyrics.index(new_lyric)
@@ -172,10 +172,10 @@ class Project:
             lyrics = self.session_data.get("lyrics", [])
             if 0 <= idx < len(lyrics):
                 lyric = lyrics[idx]
-                if text is not None: lyric["text"] = text
-                if time is not None: lyric["timestamp"] = time
-                if duration is not None: lyric["duration"] = duration
-                lyrics.sort(key=lambda l: l["timestamp"])
+                if text is not None: lyric["s"] = text
+                if time is not None: lyric["t"] = time
+                if duration is not None: lyric["l"] = duration
+                lyrics.sort(key=lambda l: l["t"])
                 self.mark_dirty()
                 self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
@@ -192,8 +192,8 @@ class Project:
             lyrics = self.session_data.get("lyrics", [])
             if 0 <= idx < len(lyrics):
                 lyric = lyrics[idx]
-                lyric["timestamp"] = new_time
-                lyrics.sort(key=lambda l: l["timestamp"])
+                lyric["t"] = new_time
+                lyrics.sort(key=lambda l: l["t"])
                 self.mark_dirty()
                 self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
@@ -212,7 +212,7 @@ class Project:
         with self._lock:
             flags = self._flags.harmony_flags
             if 0 <= idx < len(flags):
-                flags[idx] = {"t": time, "chord": chord}
+                flags[idx] = {"t": time, "c": chord}
                 flags.sort(key=lambda f: f["t"])
                 self.mark_dirty()
 
@@ -226,11 +226,11 @@ class Project:
                 self._clear_backend_cache()
                 self.mark_dirty()
 
-    def update_flag(self, idx: int, time: float, kind: str = "rhythm", subdivision: int = 0, name: str = "", section_start: bool = False, shaded: bool = False) -> None:
+    def update_flag(self, idx: int, time: float, kind: str = "rhythm", div: int = 0, n: str = "", s: bool = False, divshade: bool = False) -> None:
         with self._lock:
             flags = self._flags.flags
             if 0 <= idx < len(flags):
-                flags[idx] = {"t": time, "type": kind, "subdivision": subdivision, "name": name, "is_section_start": section_start, "shaded_subdivisions": shaded}
+                flags[idx] = {"t": time, "type": kind, "div": div, "n": n, "s": s, "divshade": divshade}
                 flags.sort(key=lambda f: f["t"])
                 self._flags._recompute_auto_names()
                 self._clear_backend_cache()
@@ -281,15 +281,15 @@ class Project:
         ticks: list[tuple[float, bool]] = []
         flags = self._flags.flags
         for i, prev in enumerate(flags):
-            if prev["type"] != "rhythm": continue
+            if prev.get("type", "rhythm") != "rhythm": continue
             if start <= prev["t"] < end: ticks.append((prev["t"], True))
             if i + 1 < len(flags):
                 nxt = flags[i + 1]
-                subdiv = prev.get("subdivision", 0)
+                subdiv = prev.get("div", 0)
                 if subdiv == 0:
                     for p in reversed(flags[: i + 1]):
-                        if p["type"] == "rhythm" and p.get("subdivision", 0) != 0:
-                            subdiv = p["subdivision"]
+                        if p.get("type", "rhythm") == "rhythm" and p.get("div", 0) != 0:
+                            subdiv = p["div"]
                             break
                     else: subdiv = 1
                 if subdiv > 1:
@@ -318,10 +318,10 @@ class Project:
             if right["t"] <= left["t"]: return
             span = right["t"] - left["t"]
             step = span / (count + 1)
-            subdivision = left.get("subdivision", 0)
+            subdiv = left.get("div", 0)
             for i in range(1, count + 1):
                 t = left["t"] + i * step
-                flags.append({"t": t, "type": "rhythm", "subdivision": subdivision, "name": "", "is_section_start": False, "shaded_subdivisions": False})
+                flags.append({"t": t, "type": "rhythm", "div": subdiv, "n": "", "s": False, "divshade": False})
             flags.sort(key=lambda f: f["t"])
             self._flags._recompute_auto_names()
             self._clear_backend_cache()

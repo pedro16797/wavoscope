@@ -29,8 +29,8 @@ def generate():
         # Add some flags and lyrics first
         page.evaluate("window.useStore.getState().setShowLyrics(true)")
         page.evaluate("window.useStore.getState().addFlag(1.0)")
-        page.evaluate("window.useStore.getState().addHarmonyFlag(2.0, {root: 'G', accidental: '', quality: 'm', extension: '7', alterations: [], additions: [], bass: '', bass_accidental: ''})")
-        page.evaluate("window.useStore.getState().addLyric({text: 'Wavoscope', timestamp: 1.5, duration: 1.0})")
+        page.evaluate("window.useStore.getState().addHarmonyFlag(2.0, {r: 'G', ca: '', q: 'm', ext: '7', alt: [], add: [], b: '', ba: ''})")
+        page.evaluate("window.useStore.getState().addLyric({s: 'Wavoscope', t: 1.5, l: 1.0})")
         time.sleep(1)
 
         # Screenshot: Main View

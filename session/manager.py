@@ -18,10 +18,10 @@ class ProjectManager:
                 data.setdefault("harmony_flags", [])
                 data.setdefault("time_signature", {"numerator": 4, "denominator": 4})
                 data.setdefault("lyrics", [])
-                return data
+                return self._fill_defaults(data)
             except Exception as e:
                 logger.error(f"Error loading sidecar {self.sidecar_path}: {e}")
-        return {
+        return self._fill_defaults({
             "labels": [],
             "loopPoints": [],
             "lastView": {},
@@ -29,14 +29,64 @@ class ProjectManager:
             "harmony_flags": [],
             "lyrics": [],
             "time_signature": {"numerator": 4, "denominator": 4}
-        }
+        })
 
     def save(self):
         try:
-            self.sidecar_path.write_text(json.dumps(self.session_data, indent=2))
+            scrubbed_data = self._scrub_defaults(self.session_data)
+            self.sidecar_path.write_text(json.dumps(scrubbed_data, indent=2, ensure_ascii=False))
             self._dirty = False
         except Exception as e:
             logger.error(f"Error saving sidecar: {e}")
+
+    def _scrub_defaults(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        import copy
+        data = copy.deepcopy(data)
+
+        if "flags" in data:
+            for f in data["flags"]:
+                f.pop("auto_name", None)
+                if f.get("type") == "rhythm": f.pop("type", None)
+                if f.get("div") == 0: f.pop("div", None)
+                if f.get("n") == "": f.pop("n", None)
+                if f.get("s") is False: f.pop("s", None)
+                if f.get("divshade") is False: f.pop("divshade", None)
+
+        if "harmony_flags" in data:
+            for f in data["harmony_flags"]:
+                chord = f.get("c", {})
+                if chord.get("ca") == "": chord.pop("ca", None)
+                if chord.get("q") in ["", "M"]: chord.pop("q", None)
+                if chord.get("ext") == "": chord.pop("ext", None)
+                if chord.get("alt") == []: chord.pop("alt", None)
+                if chord.get("add") == []: chord.pop("add", None)
+                if chord.get("b") == "": chord.pop("b", None)
+                if chord.get("ba") == "": chord.pop("ba", None)
+
+        return data
+
+    def _fill_defaults(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        if "flags" in data:
+            for f in data["flags"]:
+                f.setdefault("type", "rhythm")
+                f.setdefault("div", 0)
+                f.setdefault("n", "")
+                f.setdefault("s", False)
+                f.setdefault("divshade", False)
+
+        if "harmony_flags" in data:
+            for f in data["harmony_flags"]:
+                chord = f.setdefault("c", {})
+                chord.setdefault("r", "C")
+                chord.setdefault("ca", "")
+                chord.setdefault("q", "")
+                chord.setdefault("ext", "")
+                chord.setdefault("alt", [])
+                chord.setdefault("add", [])
+                chord.setdefault("b", "")
+                chord.setdefault("ba", "")
+
+        return data
 
     def mark_dirty(self):
         self._dirty = True

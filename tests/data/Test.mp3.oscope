@@ -1,142 +1,80 @@
 {
   "labels": [],
   "loopPoints": [],
-  "lastView": {},
+  "lastView": {
+    "offset": 0,
+    "zoom": 100
+  },
   "flags": [
     {
-      "t": 7.081111111111111,
-      "type": "rhythm",
-      "subdivision": 7,
-      "name": "",
-      "is_section_start": false,
-      "shaded_subdivisions": false,
-      "auto_name": "1"
+      "t": 0.0,
+      "div": 4,
+      "s": true
     },
     {
-      "t": 9.162222222222223,
-      "type": "rhythm",
-      "subdivision": 0,
-      "name": "",
-      "is_section_start": true,
-      "shaded_subdivisions": false,
-      "auto_name": "A"
+      "t": 2.0
     },
     {
-      "t": 11.243333333333334,
-      "type": "rhythm",
-      "subdivision": 0,
-      "name": "",
-      "is_section_start": false,
-      "shaded_subdivisions": false,
-      "auto_name": "A01"
+      "t": 4.0
     },
     {
-      "t": 13.324444444444445,
-      "type": "rhythm",
-      "subdivision": 0,
-      "name": "",
-      "is_section_start": false,
-      "shaded_subdivisions": false,
-      "auto_name": "A02"
+      "t": 6.0
     },
     {
-      "t": 15.41,
-      "type": "rhythm",
-      "subdivision": 4,
-      "name": "",
-      "is_section_start": false,
-      "shaded_subdivisions": false,
-      "auto_name": "A03"
+      "t": 8.0,
+      "div": 4,
+      "s": true
     },
     {
-      "t": 17.486666666666668,
-      "type": "rhythm",
-      "subdivision": 0,
-      "name": "",
-      "is_section_start": false,
-      "shaded_subdivisions": false,
-      "auto_name": "A04"
+      "t": 10.0
     },
     {
-      "t": 19.567777777777778,
-      "type": "rhythm",
-      "subdivision": 0,
-      "name": "",
-      "is_section_start": true,
-      "shaded_subdivisions": false,
-      "auto_name": "B"
+      "t": 12.0
     },
     {
-      "t": 21.64888888888889,
-      "type": "rhythm",
-      "subdivision": 0,
-      "name": "",
-      "is_section_start": false,
-      "shaded_subdivisions": false,
-      "auto_name": "B01"
+      "t": 14.0
     },
     {
-      "t": 23.73,
-      "type": "rhythm",
-      "subdivision": 0,
-      "name": "",
-      "is_section_start": false,
-      "shaded_subdivisions": false,
-      "auto_name": "B02"
+      "t": 16.0
     }
   ],
   "harmony_flags": [
     {
-      "t": 7.08,
-      "chord": {
-        "root": "A",
-        "accidental": "",
-        "quality": "M",
-        "extension": "7",
-        "alterations": [],
-        "additions": [],
-        "bass": "",
-        "bass_accidental": ""
+      "t": 0.0,
+      "c": {
+        "r": "C"
       }
     },
     {
-      "t": 9.16,
-      "chord": {
-        "root": "C",
-        "accidental": "",
-        "quality": "M",
-        "extension": "7",
-        "alterations": [],
-        "additions": [],
-        "bass": "",
-        "bass_accidental": ""
+      "t": 4.0,
+      "c": {
+        "r": "G"
       }
     },
     {
-      "t": 11.25,
-      "chord": {
-        "root": "A",
-        "accidental": "",
-        "quality": "m",
-        "extension": "7",
-        "alterations": [],
-        "additions": [],
-        "bass": "",
-        "bass_accidental": ""
+      "t": 8.0,
+      "c": {
+        "r": "A",
+        "q": "m"
       }
     },
     {
-      "t": 15.41,
-      "chord": {
-        "root": "C",
-        "accidental": "",
-        "quality": "M",
-        "extension": "7",
-        "alterations": [],
-        "additions": [],
-        "bass": "",
-        "bass_accidental": ""
+      "t": 12.0,
+      "c": {
+        "r": "F"
       }
+    }
+  ],
+  "lyrics": [
+    {
+      "s": "Hello",
+      "t": 0.0,
+      "l": 2.0
+    },
+    {
+      "s": "World",
+      "t": 2.0,
+      "l": 2.0
     }
   ],
   "time_signature": {

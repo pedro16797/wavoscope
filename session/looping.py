@@ -16,15 +16,15 @@ class LoopingEngine:
         if self.loop_mode == "lyric" and lyrics:
             if selected_lyric_idx is not None and 0 <= selected_lyric_idx < len(lyrics):
                 l = lyrics[selected_lyric_idx]
-                return (l["timestamp"], l["timestamp"] + l["duration"])
+                return (l["t"], l["t"] + l["l"])
             # Fallback to current position if no selection
             for l in lyrics:
-                if l["timestamp"] <= pos <= l["timestamp"] + l["duration"]:
-                    return (l["timestamp"], l["timestamp"] + l["duration"])
+                if l["t"] <= pos <= l["t"] + l["l"]:
+                    return (l["t"], l["t"] + l["l"])
             return (0.0, duration)
 
         if self.loop_mode == "section":
-            section_starts = [f["t"] for f in flags if f.get("is_section_start")]
+            section_starts = [f["t"] for f in flags if f.get("s")]
             if not section_starts:
                 return (0.0, duration)
             idx = bisect.bisect_right(section_starts, pos) - 1
@@ -33,7 +33,7 @@ class LoopingEngine:
             return (start, end)
 
         if self.loop_mode == "bar":
-            times = [f["t"] for f in flags if f.get("type") == "rhythm"]
+            times = [f["t"] for f in flags if f.get("type", "rhythm") == "rhythm"]
             if not times:
                 return (0.0, duration)
             idx = bisect.bisect_right(times, pos) - 1
