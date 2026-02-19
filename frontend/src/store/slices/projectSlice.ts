@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand';
 import axios from 'axios';
-import type { AppState, Flag, HarmonyFlag, Chord, TimeSignature, ExportStatus, Lyric } from '../types';
+import type { AppState, Chord, Lyric } from '../types';
 import { API_BASE } from '../useStore';
 
 import type { ProjectSlice } from '../types';
