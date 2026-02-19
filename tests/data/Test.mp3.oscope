@@ -67,14 +67,14 @@
   ],
   "lyrics": [
     {
-      "text": "Hello",
-      "timestamp": 0.0,
-      "duration": 2.0
+      "s": "Hello",
+      "t": 0.0,
+      "l": 2.0
     },
     {
-      "text": "World",
-      "timestamp": 2.0,
-      "duration": 2.0
+      "s": "World",
+      "t": 2.0,
+      "l": 2.0
     }
   ],
   "time_signature": {

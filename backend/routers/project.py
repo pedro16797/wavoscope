@@ -146,14 +146,14 @@ class HarmonyFlagMove(BaseModel):
     t: float
 
 class LyricData(BaseModel):
-    text: str
-    timestamp: float
-    duration: float
+    s: str
+    t: float
+    l: float
 
 class LyricUpdate(BaseModel):
-    text: str | None = None
-    timestamp: float | None = None
-    duration: float | None = None
+    s: str | None = None
+    t: float | None = None
+    l: float | None = None
 
 class LyricMove(BaseModel):
     idx: int
@@ -166,7 +166,7 @@ class LyricSelect(BaseModel):
 async def add_lyric(lyric: LyricData):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    res = state.project.add_lyric(lyric.text, lyric.timestamp, lyric.duration)
+    res = state.project.add_lyric(lyric.s, lyric.t, lyric.l)
     return {"status": "ok", "lyrics": state.project.lyrics, "new_lyric": res["lyric"], "idx": res["idx"]}
 
 @router.delete("/lyrics/{idx}")
@@ -180,7 +180,7 @@ async def remove_lyric(idx: int):
 async def update_lyric(idx: int, lyric: LyricUpdate):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    res = state.project.update_lyric(idx, lyric.text, lyric.timestamp, lyric.duration)
+    res = state.project.update_lyric(idx, lyric.s, lyric.t, lyric.l)
     if res is None:
         raise HTTPException(status_code=404, detail="Lyric not found")
     return {"status": "ok", "lyrics": state.project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}

@@ -153,7 +153,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
             measure_harmonies.sort(key=lambda x: x["t"])
 
             # Lyrics in this measure
-            measure_lyrics = [l for l in lyrics if (start_t <= l["timestamp"] < end_t) or (l["timestamp"] < start_t < l["timestamp"] + l["duration"])]
+            measure_lyrics = [l for l in lyrics if (start_t <= l["t"] < end_t) or (l["t"] < start_t < l["t"] + l["l"])]
 
             is_first = (i == 0)
             attr_change = is_first or (num != last_num) or (den != last_den)
@@ -214,8 +214,8 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
     event_points = set([start_t, end_t])
     for h in harmonies: event_points.add(h["t"])
     for l in lyrics:
-        event_points.add(l["timestamp"])
-        event_points.add(l["timestamp"] + l["duration"])
+        event_points.add(l["t"])
+        event_points.add(l["t"] + l["l"])
 
     sorted_points = sorted([p for p in event_points if start_t <= p <= end_t])
 
@@ -245,7 +245,7 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
         seg_mid = (seg_start + seg_end) / 2
         active_lyric = None
         for l in lyrics:
-            if l["timestamp"] <= seg_mid < l["timestamp"] + l["duration"]:
+            if l["t"] <= seg_mid < l["t"] + l["l"]:
                 active_lyric = l
                 break
 
@@ -255,7 +255,7 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
         ET.SubElement(note, "voice").text = "1"
         if active_lyric:
             lyr_el = ET.SubElement(note, "lyric")
-            ET.SubElement(lyr_el, "text").text = active_lyric["text"]
+            ET.SubElement(lyr_el, "text").text = active_lyric["s"]
 
 def _add_measure_metro(part, number, num, den, attr_change, divisions):
     measure = ET.SubElement(part, "measure", number=str(number))

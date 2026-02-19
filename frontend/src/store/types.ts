@@ -47,9 +47,9 @@ export interface HarmonyFlag {
 }
 
 export interface Lyric {
-  text: string;
-  timestamp: number;
-  duration: number;
+  s: string;
+  t: number;
+  l: number;
 }
 
 export interface TimeSignature {
@@ -76,9 +76,9 @@ export interface ProjectSlice {
   lyrics: Lyric[];
   time_signature: TimeSignature;
   dirty: boolean;
-  editingFlagIdx: number | null;
-  editingHarmonyFlagIdx: number | null;
-  selectedLyricIdx: number | null;
+  editingFlagIdx: null | number;
+  editingHarmonyFlagIdx: null | number;
+  selectedLyricIdx: null | number;
   export_status: ExportStatus;
 
   fetchStatus: () => Promise<void>;

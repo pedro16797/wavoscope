@@ -16,11 +16,11 @@ class LoopingEngine:
         if self.loop_mode == "lyric" and lyrics:
             if selected_lyric_idx is not None and 0 <= selected_lyric_idx < len(lyrics):
                 l = lyrics[selected_lyric_idx]
-                return (l["timestamp"], l["timestamp"] + l["duration"])
+                return (l["t"], l["t"] + l["l"])
             # Fallback to current position if no selection
             for l in lyrics:
-                if l["timestamp"] <= pos <= l["timestamp"] + l["duration"]:
-                    return (l["timestamp"], l["timestamp"] + l["duration"])
+                if l["t"] <= pos <= l["t"] + l["l"]:
+                    return (l["t"], l["t"] + l["l"])
             return (0.0, duration)
 
         if self.loop_mode == "section":

@@ -181,6 +181,24 @@ def test_musicxml_export_inheritance_and_gap(tmp_path):
     assert m6.find("attributes/time/beats").text == "4"
     assert m6.find("attributes/time/beat-type").text == "4"
 
+def test_musicxml_export_lyrics(tmp_path):
+    audio_path = tmp_path / "test_lyrics.wav"
+    audio_path.write_bytes(b"dummy")
+    project = Project(audio_path)
+    project.add_flag(0.0, kind="rhythm", div=4)
+    project.add_flag(4.0, kind="rhythm", div=4)
+    project.add_lyric("Hello", 0.0, 2.0)
+    project.add_lyric("World", 2.0, 2.0)
+
+    xml_content = project.generate_musicxml()
+    tree = ET.fromstring(xml_content)
+    piano_part = tree.find("part[@id='P1']")
+    m1 = piano_part.find("measure[@number='1']")
+    notes = m1.findall("note")
+    assert len(notes) == 2
+    assert notes[0].find("lyric/text").text == "Hello"
+    assert notes[1].find("lyric/text").text == "World"
+
 if __name__ == "__main__":
     import pytest
     pytest.main([__file__])

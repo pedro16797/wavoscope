@@ -68,6 +68,25 @@ def test_loop_range_logic(dummy_project):
     # At 15.0, should be between 10.0 and 20.0
     assert proj.get_loop_range(15.0) == (10.0, 20.0)
 
+def test_loop_range_lyrics(dummy_project):
+    proj, _ = dummy_project
+    proj.add_lyric("Word1", 1.0, 2.0)
+    proj.add_lyric("Word2", 4.0, 1.0)
+
+    proj.set_loop_mode("lyric")
+
+    # Selected lyric
+    proj.set_selected_lyric(0)
+    assert proj.get_loop_range(0.0) == (1.0, 3.0)
+
+    proj.set_selected_lyric(1)
+    assert proj.get_loop_range(0.0) == (4.0, 5.0)
+
+    # No selection, should find lyric at position
+    proj.set_selected_lyric(None)
+    assert proj.get_loop_range(1.5) == (1.0, 3.0)
+    assert proj.get_loop_range(4.2) == (4.0, 5.0)
+
 def test_auto_naming(dummy_project):
     proj, _ = dummy_project
     proj.add_flag(0.0, kind="rhythm", s=True)

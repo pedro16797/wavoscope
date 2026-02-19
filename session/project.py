@@ -152,9 +152,9 @@ class Project:
     def add_lyric(self, text: str, time: float, duration: float) -> dict:
         with self._lock:
             lyrics = self.session_data.get("lyrics", [])
-            new_lyric = {"text": text, "timestamp": time, "duration": duration}
+            new_lyric = {"s": text, "t": time, "l": duration}
             lyrics.append(new_lyric)
-            lyrics.sort(key=lambda l: l["timestamp"])
+            lyrics.sort(key=lambda l: l["t"])
             self.session_data["lyrics"] = lyrics
             self.mark_dirty()
             idx = lyrics.index(new_lyric)
@@ -172,10 +172,10 @@ class Project:
             lyrics = self.session_data.get("lyrics", [])
             if 0 <= idx < len(lyrics):
                 lyric = lyrics[idx]
-                if text is not None: lyric["text"] = text
-                if time is not None: lyric["timestamp"] = time
-                if duration is not None: lyric["duration"] = duration
-                lyrics.sort(key=lambda l: l["timestamp"])
+                if text is not None: lyric["s"] = text
+                if time is not None: lyric["t"] = time
+                if duration is not None: lyric["l"] = duration
+                lyrics.sort(key=lambda l: l["t"])
                 self.mark_dirty()
                 self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
@@ -192,8 +192,8 @@ class Project:
             lyrics = self.session_data.get("lyrics", [])
             if 0 <= idx < len(lyrics):
                 lyric = lyrics[idx]
-                lyric["timestamp"] = new_time
-                lyrics.sort(key=lambda l: l["timestamp"])
+                lyric["t"] = new_time
+                lyrics.sort(key=lambda l: l["t"])
                 self.mark_dirty()
                 self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
