@@ -11,24 +11,24 @@ router = APIRouter(prefix="/project", tags=["project"])
 class FlagData(BaseModel):
     t: float
     type: str = "rhythm"
-    subdivision: int = 0
-    name: str = ""
-    is_section_start: bool = False
-    shaded_subdivisions: bool = False
+    div: int = 0
+    n: str = ""
+    s: bool = False
+    divshade: bool = False
 
 class ChordData(BaseModel):
-    root: str
-    accidental: str = ""
-    quality: str = "M"
-    extension: str = ""
-    alterations: list[str] = []
-    additions: list[str] = []
-    bass: str = ""
-    bass_accidental: str = ""
+    r: str
+    ca: str = ""
+    q: str = ""
+    ext: str = ""
+    alt: list[str] = []
+    add: list[str] = []
+    b: str = ""
+    ba: str = ""
 
 class HarmonyFlagData(BaseModel):
     t: float
-    chord: ChordData
+    c: ChordData
 
 class TimeSignatureData(BaseModel):
     numerator: int
@@ -42,10 +42,10 @@ async def add_flag(flag: FlagData):
         state.project.add_flag(
             flag.t,
             flag.type,
-            flag.subdivision,
-            flag.name,
-            flag.is_section_start,
-            flag.shaded_subdivisions
+            flag.div,
+            flag.n,
+            flag.s,
+            flag.divshade
         )
         return {"status": "ok", "flags": state.project.flags}
     except Exception as e:
@@ -85,10 +85,10 @@ async def update_flag(idx: int, flag: FlagData):
             idx,
             flag.t,
             flag.type,
-            flag.subdivision,
-            flag.name,
-            flag.is_section_start,
-            flag.shaded_subdivisions
+            flag.div,
+            flag.n,
+            flag.s,
+            flag.divshade
         )
         return {"status": "ok", "flags": state.project.flags}
     except Exception as e:
@@ -125,7 +125,7 @@ async def add_harmony_flag(flag: HarmonyFlagData):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
     try:
-        state.project.add_harmony_flag(flag.t, flag.chord.model_dump())
+        state.project.add_harmony_flag(flag.t, flag.c.model_dump())
         return {"status": "ok", "harmony_flags": state.project.harmony_flags}
     except Exception as e:
         logger.exception("Error in add_harmony_flag")
@@ -216,7 +216,7 @@ async def update_harmony_flag(idx: int, flag: HarmonyFlagData):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
     try:
-        state.project.update_harmony_flag(idx, flag.t, flag.chord.model_dump())
+        state.project.update_harmony_flag(idx, flag.t, flag.c.model_dump())
         return {"status": "ok", "harmony_flags": state.project.harmony_flags}
     except Exception as e:
         logger.exception("Error in update_harmony_flag")
@@ -234,14 +234,14 @@ async def analyze_chord(t: float):
         sr = state.project.backend._sr
         if y is None or sr == 0:
              return {
-                "root": "C",
-                "accidental": "",
-                "quality": "M",
-                "extension": "",
-                "alterations": [],
-                "additions": [],
-                "bass": "",
-                "bass_accidental": "",
+                "r": "C",
+                "ca": "",
+                "q": "",
+                "ext": "",
+                "alt": [],
+                "add": [],
+                "b": "",
+                "ba": "",
             }
 
         # If stereo, mix to mono for analysis

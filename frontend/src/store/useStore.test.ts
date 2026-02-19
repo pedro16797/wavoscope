@@ -5,14 +5,14 @@ import type { Chord } from './types';
 describe('Store Utilities', () => {
   it('formats chords correctly', () => {
     const chord: Chord = {
-      root: 'C',
-      accidental: '#',
-      quality: 'm',
-      extension: '7',
-      alterations: ['b5'],
-      additions: ['add9'],
-      bass: 'G',
-      bass_accidental: ''
+      r: 'C',
+      ca: '#',
+      q: 'm',
+      ext: '7',
+      alt: ['b5'],
+      add: ['add9'],
+      b: 'G',
+      ba: ''
     };
     // C#m7b5add9/G
     expect(formatChord(chord)).toBe('C#m7b5add9/G');
@@ -25,14 +25,14 @@ describe('Store Utilities', () => {
 
   it('gets correct midi notes for a major chord', () => {
     const chord: Chord = {
-      root: 'C',
-      accidental: '',
-      quality: 'M',
-      extension: '',
-      alterations: [],
-      additions: [],
-      bass: '',
-      bass_accidental: ''
+      r: 'C',
+      ca: '',
+      q: '',
+      ext: '',
+      alt: [],
+      add: [],
+      b: '',
+      ba: ''
     };
     const notes = getChordMidiNotes(chord);
     // C4(60), E4(64), G4(67) + Bass C3(48)

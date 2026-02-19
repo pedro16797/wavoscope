@@ -23,27 +23,27 @@ export interface Theme {
 export interface Flag {
   t: number;
   type: string;
-  subdivision: number;
-  name: string;
+  div: number;
+  n: string;
   auto_name?: string;
-  is_section_start: boolean;
-  shaded_subdivisions: boolean;
+  s: boolean;
+  divshade: boolean;
 }
 
 export interface Chord {
-  root: string;
-  accidental: string;
-  quality: string;
-  extension: string;
-  alterations: string[];
-  additions: string[];
-  bass: string;
-  bass_accidental: string;
+  r: string;
+  ca: string;
+  q: string;
+  ext: string;
+  alt: string[];
+  add: string[];
+  b: string;
+  ba: string;
 }
 
 export interface HarmonyFlag {
   t: number;
-  chord: Chord;
+  c: Chord;
 }
 
 export interface Lyric {

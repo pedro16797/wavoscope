@@ -86,9 +86,9 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
         if (!chord) {
             chord = await get().analyzeChord(t);
         }
-        await axios.post(`${API_BASE}/project/harmony_flags`, { t, chord });
+        await axios.post(`${API_BASE}/project/harmony_flags`, { t, c: chord });
         await get().fetchStatus();
-        return { t, chord };
+        return { t, c: chord };
     } catch (e) {
         console.error("[Store] Failed to add harmony flag:", e);
         return null;
@@ -115,7 +115,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   updateHarmonyFlag: async (idx: number, t: number, chord: Chord) => {
     try {
-        await axios.patch(`${API_BASE}/project/harmony_flags/${idx}`, { t, chord });
+        await axios.patch(`${API_BASE}/project/harmony_flags/${idx}`, { t, c: chord });
         get().fetchStatus();
     } catch (e) {
         console.error("[Store] Failed to update harmony flag:", e);
@@ -129,8 +129,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     } catch (e) {
         console.error("[Store] Failed to analyze chord:", e);
         return {
-            root: 'C', accidental: '', quality: 'M', extension: '',
-            alterations: [], additions: [], bass: '', bass_accidental: ''
+            r: 'C', ca: '', q: '', ext: '',
+            alt: [], add: [], b: '', ba: ''
         };
     }
   },

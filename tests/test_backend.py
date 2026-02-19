@@ -60,11 +60,11 @@ def test_tone_playback():
 def test_harmony_flags():
     # Mock project
     mock_project = MagicMock()
-    mock_project.harmony_flags = [{"t": 0.5, "chord": {"root": "C", "quality": "M"}}]
+    mock_project.harmony_flags = [{"t": 0.5, "c": {"r": "C", "q": ""}}]
     state.project = mock_project
 
     # Test add
-    response = client.post("/project/harmony_flags", json={"t": 1.5, "chord": {"root": "G", "quality": "M"}})
+    response = client.post("/project/harmony_flags", json={"t": 1.5, "c": {"r": "G", "q": ""}})
     assert response.status_code == 200
     mock_project.add_harmony_flag.assert_called_once()
 
@@ -82,7 +82,7 @@ def test_harmony_flags():
     mock_project.backend._data = None # Trigger default in mock
     response = client.get("/project/analyze_chord?t=1.0")
     assert response.status_code == 200
-    assert "root" in response.json()
+    assert "r" in response.json()
 
     # Cleanup
     state.project = None

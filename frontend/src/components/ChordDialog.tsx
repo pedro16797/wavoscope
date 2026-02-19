@@ -14,7 +14,7 @@ interface ChordDialogProps {
 
 const ROOTS = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 const ACCIDENTALS = ['', '#', 'b'];
-const QUALITIES = ['M', 'm', 'dim', 'aug', 'sus2', 'sus4'];
+const QUALITIES = ['', 'm', 'dim', 'aug', 'sus2', 'sus4'];
 const EXTENSIONS = ['', '7', '9', '11', '13'];
 const ALTERATIONS = ['b5', '#5', 'b9', '#9', '#11', 'b13'];
 const ADDITIONS = ['add9', 'add11', 'add13'];
@@ -22,9 +22,9 @@ const ADDITIONS = ['add9', 'add11', 'add13'];
 export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) => {
   const { t } = useTranslation();
   const { updateHarmonyFlag, removeHarmonyFlag, duration, playTone, stopAllTones } = useStore();
-  const [chord, setChord] = useState<Chord>(flag.chord);
+  const [chord, setChord] = useState<Chord>(flag.c);
   const [time, setTime] = useState(flag.t);
-  const [chordText, setChordText] = useState(formatChord(flag.chord));
+  const [chordText, setChordText] = useState(formatChord(flag.c));
 
   const handleTextChange = (text: string) => {
     setChordText(text);
@@ -36,22 +36,22 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
     const match = text.match(mainRegex);
 
     if (match) {
-        newChord.root = match[1];
-        newChord.accidental = match[2];
-        newChord.quality = match[3] || 'M';
-        newChord.extension = match[4] || '';
+        newChord.r = match[1];
+        newChord.ca = match[2];
+        newChord.q = match[3] === 'M' ? '' : (match[3] || '');
+        newChord.ext = match[4] || '';
 
         let rest = match[5];
 
         // Parse Bass
         const bassMatch = rest.match(/\/([A-G])([#b]?)$/);
         if (bassMatch) {
-            newChord.bass = bassMatch[1];
-            newChord.bass_accidental = bassMatch[2];
+            newChord.b = bassMatch[1];
+            newChord.ba = bassMatch[2];
             rest = rest.replace(/\/([A-G])([#b]?)$/, '');
         } else {
-            newChord.bass = '';
-            newChord.bass_accidental = '';
+            newChord.b = '';
+            newChord.ba = '';
         }
 
         // Parse Alterations
@@ -62,7 +62,7 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
                 rest = rest.replace(a, '');
             }
         });
-        newChord.alterations = alts;
+        newChord.alt = alts;
 
         // Parse Additions
         const adds: string[] = [];
@@ -72,7 +72,7 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
                 rest = rest.replace(a, '');
             }
         });
-        newChord.additions = adds;
+        newChord.add = adds;
 
         // Only update the chord object if we have a clean parse or at least a root
         // This avoids resetting the quality/extension while the user is typing "dim" for example.
@@ -100,18 +100,18 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
     onClose();
   };
 
-  const toggleAlteration = (alt: string) => {
-    const newAlts = chord.alterations.includes(alt)
-        ? chord.alterations.filter(a => a !== alt)
-        : [...chord.alterations, alt];
-    updateChordFromSelectors({ alterations: newAlts });
+  const toggleAlteration = (altVal: string) => {
+    const newAlts = chord.alt.includes(altVal)
+        ? chord.alt.filter(a => a !== altVal)
+        : [...chord.alt, altVal];
+    updateChordFromSelectors({ alt: newAlts });
   };
 
-  const toggleAddition = (add: string) => {
-    const newAdds = chord.additions.includes(add)
-        ? chord.additions.filter(a => a !== add)
-        : [...chord.additions, add];
-    updateChordFromSelectors({ additions: newAdds });
+  const toggleAddition = (addVal: string) => {
+    const newAdds = chord.add.includes(addVal)
+        ? chord.add.filter(a => a !== addVal)
+        : [...chord.add, addVal];
+    updateChordFromSelectors({ add: newAdds });
   };
 
   const handlePlayStart = () => {
@@ -166,12 +166,12 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
                 <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.root')}</label>
                     <div className="flex gap-1">
-                        <select value={chord.root} onChange={e => updateChordFromSelectors({ root: e.target.value })}
+                        <select value={chord.r} onChange={e => updateChordFromSelectors({ r: e.target.value })}
                                 className="flex-1 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 text-sm outline-none text-text"
                                 style={{ borderWidth: 'var(--ui-border)' }}>
                             {ROOTS.map(r => <option key={r} value={r}>{r}</option>)}
                         </select>
-                        <select value={chord.accidental} onChange={e => updateChordFromSelectors({ accidental: e.target.value })}
+                        <select value={chord.ca} onChange={e => updateChordFromSelectors({ ca: e.target.value })}
                                 className="w-12 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 text-sm outline-none text-text"
                                 style={{ borderWidth: 'var(--ui-border)' }}>
                             {ACCIDENTALS.map(a => <option key={a} value={a}>{a || '♮'}</option>)}
@@ -181,12 +181,12 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
                 <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.quality_ext')}</label>
                     <div className="flex gap-1">
-                        <select value={chord.quality} onChange={e => updateChordFromSelectors({ quality: e.target.value })}
+                        <select value={chord.q} onChange={e => updateChordFromSelectors({ q: e.target.value })}
                                 className="flex-1 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 text-sm outline-none text-text"
                                 style={{ borderWidth: 'var(--ui-border)' }}>
-                            {QUALITIES.map(q => <option key={q} value={q}>{q}</option>)}
+                            {QUALITIES.map(q => <option key={q} value={q}>{q || 'M'}</option>)}
                         </select>
-                        <select value={chord.extension} onChange={e => updateChordFromSelectors({ extension: e.target.value })}
+                        <select value={chord.ext} onChange={e => updateChordFromSelectors({ ext: e.target.value })}
                                 className="w-14 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 text-sm outline-none text-text"
                                 style={{ borderWidth: 'var(--ui-border)' }}>
                             {EXTENSIONS.map(ex => <option key={ex} value={ex}>{ex || t('chord.triad')}</option>)}
@@ -198,11 +198,11 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
             <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.alterations')}</label>
                 <div className="flex flex-wrap gap-2">
-                    {ALTERATIONS.map(alt => (
-                        <button key={alt} onClick={() => toggleAlteration(alt)}
-                                className={`px-2 py-1 rounded-[var(--ui-radius)] text-[10px] font-bold border-[var(--ui-border)] transition-colors ${chord.alterations.includes(alt) ? 'bg-accent text-background border-accent' : 'bg-white/5 border-grid hover:bg-white/10'}`}
+                    {ALTERATIONS.map(altVal => (
+                        <button key={altVal} onClick={() => toggleAlteration(altVal)}
+                                className={`px-2 py-1 rounded-[var(--ui-radius)] text-[10px] font-bold border-[var(--ui-border)] transition-colors ${chord.alt.includes(altVal) ? 'bg-accent text-background border-accent' : 'bg-white/5 border-grid hover:bg-white/10'}`}
                                 style={{ borderWidth: 'var(--ui-border)' }}>
-                            {alt}
+                            {altVal}
                         </button>
                     ))}
                 </div>
@@ -211,11 +211,11 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
             <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.added_tones')}</label>
                 <div className="flex flex-wrap gap-2">
-                    {ADDITIONS.map(add => (
-                        <button key={add} onClick={() => toggleAddition(add)}
-                                className={`px-2 py-1 rounded-[var(--ui-radius)] text-[10px] font-bold border-[var(--ui-border)] transition-colors ${chord.additions.includes(add) ? 'bg-accent text-background border-accent' : 'bg-white/5 border-grid hover:bg-white/10'}`}
+                    {ADDITIONS.map(addVal => (
+                        <button key={addVal} onClick={() => toggleAddition(addVal)}
+                                className={`px-2 py-1 rounded-[var(--ui-radius)] text-[10px] font-bold border-[var(--ui-border)] transition-colors ${chord.add.includes(addVal) ? 'bg-accent text-background border-accent' : 'bg-white/5 border-grid hover:bg-white/10'}`}
                                 style={{ borderWidth: 'var(--ui-border)' }}>
-                            {add}
+                            {addVal}
                         </button>
                     ))}
                 </div>
@@ -225,13 +225,13 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
                  <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.bass')}</label>
                     <div className="flex gap-1">
-                        <select value={chord.bass} onChange={e => updateChordFromSelectors({ bass: e.target.value })}
+                        <select value={chord.b} onChange={e => updateChordFromSelectors({ b: e.target.value })}
                                 className="flex-1 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 text-sm outline-none text-text"
                                 style={{ borderWidth: 'var(--ui-border)' }}>
                             <option value="">{t('common.none')}</option>
                             {ROOTS.map(r => <option key={r} value={r}>{r}</option>)}
                         </select>
-                        <select value={chord.bass_accidental} onChange={e => updateChordFromSelectors({ bass_accidental: e.target.value })}
+                        <select value={chord.ba} onChange={e => updateChordFromSelectors({ ba: e.target.value })}
                                 className="w-12 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 text-sm outline-none text-text"
                                 style={{ borderWidth: 'var(--ui-border)' }}>
                             {ACCIDENTALS.map(a => <option key={a} value={a}>{a || '♮'}</option>)}
