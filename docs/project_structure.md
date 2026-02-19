@@ -36,4 +36,6 @@ This document outlines the directory structure and the purpose of each component
 -   **`main.py`**: The entry point for the application. Now launches FastAPI + pywebview.
 -   **`AGENTS.md`**: Guidance and roadmap for AI agents working on the project.
 -   **`Readme.md`**: General project overview and setup instructions.
+-   **`LICENSE`**: The project's MIT license terms.
+-   **`SECURITY.md`**: Policy for reporting security vulnerabilities.
 -   **`requirements.txt`**: Python dependencies.
