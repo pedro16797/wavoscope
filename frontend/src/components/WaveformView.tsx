@@ -4,6 +4,7 @@ import { Timeline } from './Timeline';
 import { Waveform } from './Waveform';
 import { LyricsTimeline } from './LyricsTimeline';
 import { Type } from 'lucide-react';
+import { Tooltip } from './Tooltip';
 
 export const WaveformView: React.FC = () => {
   const { showLyrics, setShowLyrics } = useStore();
@@ -18,14 +19,15 @@ export const WaveformView: React.FC = () => {
       <div className="h-6 border-b-[width:var(--ui-border)] flex items-center justify-between px-4 font-bold text-[10px] opacity-50 uppercase tracking-widest shrink-0 bg-surface"
            style={{ borderBottomColor: 'var(--color-grid)' }}>
         <span>Timeline & Waveform</span>
-        <button
-          onClick={() => setShowLyrics(!showLyrics)}
-          className={`flex items-center gap-1 px-1 rounded transition-colors ${showLyrics ? 'bg-accent text-white opacity-100' : 'hover:bg-white/10'}`}
-          title="Toggle Lyrics Track"
-        >
-          <Type size={12} />
-          <span>Lyrics</span>
-        </button>
+        <Tooltip content="Toggle Lyrics Track">
+          <button
+            onClick={() => setShowLyrics(!showLyrics)}
+            className={`flex items-center gap-1 px-1 rounded transition-colors ${showLyrics ? 'bg-accent text-white opacity-100' : 'hover:bg-white/10'}`}
+          >
+            <Type size={12} />
+            <span>Lyrics</span>
+          </button>
+        </Tooltip>
       </div>
       <Timeline offset={viewport.offset} zoom={viewport.zoom} onViewportChange={handleViewportChange} />
       {showLyrics && <LyricsTimeline offset={viewport.offset} zoom={viewport.zoom} />}

@@ -3,6 +3,7 @@ import { useStore } from '../store/useStore';
 import type { HarmonyFlag, Chord } from '../store/types';
 import { formatChord, getChordMidiNotes, midiToFreq } from '../store/utils';
 import { Volume2 } from 'lucide-react';
+import { Tooltip } from './Tooltip';
 
 interface ChordDialogProps {
   idx: number;
@@ -145,16 +146,17 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
                            onKeyDown={e => e.key === 'Enter' && (handleBlur(), handleSave())}
                            className="flex-1 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-3 outline-none focus:border-accent text-xl font-bold text-accent text-center"
                            style={{ borderWidth: 'var(--ui-border)' }} />
-                    <button
-                        onMouseDown={handlePlayStart}
-                        onMouseUp={handlePlayStop}
-                        onMouseLeave={handlePlayStop}
-                        className="px-4 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] hover:bg-white/5 text-accent transition-colors flex items-center justify-center group active:scale-95"
-                        style={{ borderWidth: 'var(--ui-border)' }}
-                        title="Audition chord"
-                    >
-                        <Volume2 size={20} className="group-active:scale-110 transition-transform" />
-                    </button>
+                    <Tooltip content="Audition chord">
+                        <button
+                            onMouseDown={handlePlayStart}
+                            onMouseUp={handlePlayStop}
+                            onMouseLeave={handlePlayStop}
+                            className="px-4 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] hover:bg-white/5 text-accent transition-colors flex items-center justify-center group active:scale-95"
+                            style={{ borderWidth: 'var(--ui-border)' }}
+                        >
+                            <Volume2 size={20} className="group-active:scale-110 transition-transform" />
+                        </button>
+                    </Tooltip>
                 </div>
             </div>
 
