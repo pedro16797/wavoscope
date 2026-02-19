@@ -55,23 +55,26 @@ class WaveformCache:
 
         # For mean of absolute values, we use add.reduceat on abs(y)
         abs_y = np.abs(self.y)
-        sums = np.add.reduceat(abs_y, indices)
+        sums_abs = np.add.reduceat(abs_y, indices)
+        sums_raw = np.add.reduceat(self.y, indices)
 
         # Calculate actual bucket sizes for the means
         bucket_sizes = np.diff(np.append(indices, end_idx))
-        avgs = sums / bucket_sizes
+        avgs_abs = sums_abs / bucket_sizes
+        avgs_raw = sums_raw / bucket_sizes
 
         # Crest factor -> intensity for colour alpha
         crest = (np.abs(mins) + np.abs(maxs)) * 0.5
-        intensity = np.clip(4 * avgs / (1e-12 + crest), 0, 1)
+        intensity = np.clip(4 * avgs_abs / (1e-12 + crest), 0, 1)
         intensity = (intensity + 2) / 3  # remap 0…1 → 0.66…1
 
         # Normalise waveform range to [-1, 1] symmetrically around 0
         limit = max(abs(self.low_clip), abs(self.high_clip), 1e-6)
         mins_norm = np.clip(mins, -limit, limit) / limit
         maxs_norm = np.clip(maxs, -limit, limit) / limit
+        means_norm = np.clip(avgs_raw, -limit, limit) / limit
 
         # RMS (average absolute value) normalized relative to the same limit
-        rms_norm = np.clip(avgs / limit, 0, 1)
+        rms_norm = np.clip(avgs_abs / limit, 0, 1)
 
-        return list(zip(mins_norm.tolist(), maxs_norm.tolist(), rms_norm.tolist(), intensity.tolist()))
+        return list(zip(mins_norm.tolist(), maxs_norm.tolist(), means_norm.tolist(), rms_norm.tolist(), intensity.tolist()))

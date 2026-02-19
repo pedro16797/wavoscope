@@ -15,7 +15,7 @@ export const WaveformView: React.FC = () => {
            style={{ borderBottomColor: 'var(--color-grid)' }}>
         Timeline & Waveform
       </div>
-      <Timeline offset={viewport.offset} zoom={viewport.zoom} />
+      <Timeline offset={viewport.offset} zoom={viewport.zoom} onViewportChange={handleViewportChange} />
       <div className="flex-1 min-h-0">
         <Waveform offset={viewport.offset} zoom={viewport.zoom} onViewportChange={handleViewportChange} />
       </div>
