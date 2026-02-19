@@ -89,25 +89,31 @@ export const Waveform: React.FC<WaveformProps> = ({ offset, zoom, onViewportChan
 
     // First pass: Peak envelope (semi-transparent)
     bars.forEach((bar, i) => {
-        const [min, max, , intensity] = bar;
+        const [min, max, , , intensity] = bar;
         ctx.globalAlpha = intensity * 0.3;
         ctx.strokeStyle = theme.waveform;
         ctx.lineWidth = Math.max(1, barWidth);
         ctx.beginPath();
-        ctx.moveTo(i * barWidth, midY + min * scaleY);
-        ctx.lineTo(i * barWidth, midY + max * scaleY);
+        // Use - for Y because positive samples should go UP (smaller Y)
+        const y1 = midY - min * scaleY;
+        const y2 = midY - max * scaleY;
+        ctx.moveTo(i * barWidth, y1);
+        ctx.lineTo(i * barWidth, Math.abs(y2 - y1) < 1 ? y1 - 1 : y2);
         ctx.stroke();
     });
 
     // Second pass: RMS envelope (more opaque)
     bars.forEach((bar, i) => {
-        const [, , rms, intensity] = bar;
+        const [, , mean, rms, intensity] = bar;
         ctx.globalAlpha = intensity;
         ctx.strokeStyle = theme.waveform;
         ctx.lineWidth = Math.max(1, barWidth);
         ctx.beginPath();
-        ctx.moveTo(i * barWidth, midY - rms * scaleY);
-        ctx.lineTo(i * barWidth, midY + rms * scaleY);
+        // RMS is centered around the mean and respects offset
+        const y1 = midY - (mean - rms) * scaleY;
+        const y2 = midY - (mean + rms) * scaleY;
+        ctx.moveTo(i * barWidth, y1);
+        ctx.lineTo(i * barWidth, y2);
         ctx.stroke();
     });
 
