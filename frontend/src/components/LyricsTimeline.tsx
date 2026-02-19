@@ -6,6 +6,22 @@ interface LyricsTimelineProps {
     zoom: number;
 }
 
+/**
+ * LyricsTimeline: Interactive track for lyrics transcription.
+ *
+ * Workflow:
+ * 1. Click on empty space or press 'L' to add a lyric at playhead.
+ * 2. Type text.
+ * 3. Press 'Space' or '-' to commit the word and automatically create
+ *    the next lyric element at the current playhead or end of previous.
+ * 4. Press 'Enter' to finish editing.
+ *
+ * Interactions:
+ * - Drag center 80% to move.
+ * - Drag edges (10%) to resize.
+ * - Shift + Left/Right to seek between words.
+ * - Arrow keys to move/resize selected lyric by 0.1s.
+ */
 export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -26,9 +42,16 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
 
     const [editingIdx, setEditingIdx] = useState<number | null>(null);
     const [editValue, setEditValue] = useState('');
+    const [draggingLyric, setDraggingLyric] = useState<{idx: number, timestamp: number, duration: number, mode: 'move' | 'left' | 'right'} | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const height = 32;
+
+    // Stable references for the keyboard listener to avoid frequent re-attachment
+    const stateRef = useRef({ lyrics, position, selectedIdx, editingIdx, editValue, loaded });
+    useEffect(() => {
+        stateRef.current = { lyrics, position, selectedIdx, editingIdx, editValue, loaded };
+    }, [lyrics, position, selectedIdx, editingIdx, editValue, loaded]);
 
     const draw = useCallback(() => {
         const canvas = canvasRef.current;
@@ -52,8 +75,17 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         ctx.stroke();
 
         lyrics.forEach((lyric, index) => {
-            const x = (lyric.timestamp - offset) * zoom;
-            const w = lyric.duration * zoom;
+            let t = lyric.timestamp;
+            let d = lyric.duration;
+
+            // Apply local dragging state if active
+            if (draggingLyric && draggingLyric.idx === index) {
+                t = draggingLyric.timestamp;
+                d = draggingLyric.duration;
+            }
+
+            const x = (t - offset) * zoom;
+            const w = d * zoom;
 
             if (x + w < 0 || x > width) return;
 
@@ -95,7 +127,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-            const text = lyric.text;
+            const text = (isEditing && index === editingIdx) ? editValue : lyric.text;
             const metrics = ctx.measureText(text);
 
             if (w < 24) {
@@ -129,7 +161,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
             ctx.lineTo(playheadX, height);
             ctx.stroke();
         }
-    }, [lyrics, position, zoom, offset, editingIdx, selectedIdx, themes, currentTheme]);
+    }, [lyrics, position, zoom, offset, editingIdx, selectedIdx, themes, currentTheme, draggingLyric, editValue]);
 
     useEffect(() => {
         const updateSize = () => {
@@ -150,6 +182,43 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         draw();
     }, [draw]);
 
+    const addLyricAt = useCallback(async (t: number, text: string = '') => {
+        const { lyrics: currentLyrics } = stateRef.current;
+        const snappedT = Math.round(t * 100) / 100;
+
+        // Clamping duration so it doesn't overlap with the next lyric
+        const nextLyric = currentLyrics.find(l => l.timestamp > snappedT);
+        let duration = 1.0;
+        if (nextLyric) {
+            duration = Math.min(1.0, nextLyric.timestamp - snappedT);
+            if (duration < 0.2) duration = 0.2;
+        }
+
+        const res = await addLyric({ text, timestamp: snappedT, duration });
+        if (res) {
+            setSelectedIdx(res.idx);
+            setEditingIdx(res.idx);
+            setEditValue(text);
+        }
+        return res;
+    }, [addLyric, setSelectedIdx]);
+
+    const finishEditing = useCallback(async () => {
+        const { editingIdx: currentEditingIdx, editValue: currentEditValue } = stateRef.current;
+        if (currentEditingIdx !== null) {
+            const trimmed = currentEditValue.trim();
+            if (trimmed === '') {
+                await removeLyric(currentEditingIdx);
+                setSelectedIdx(null);
+            } else {
+                const res = await updateLyric(currentEditingIdx, { text: trimmed });
+                if (res) setSelectedIdx(res.idx);
+            }
+            setEditingIdx(null);
+            setEditValue('');
+        }
+    }, [removeLyric, updateLyric, setSelectedIdx]);
+
     const handleMouseDown = (e: React.MouseEvent) => {
         if (!loaded) return;
         const rect = canvasRef.current?.getBoundingClientRect();
@@ -159,15 +228,13 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
 
         const clickedIdx = lyrics.findIndex(l => time >= l.timestamp && time <= l.timestamp + l.duration);
 
-        if (e.button === 2) { // Right click
-            return;
-        }
-
         if (e.button === 0) { // Left click
             if (clickedIdx !== -1) {
                 const lyric = lyrics[clickedIdx];
                 const relativePos = (time - lyric.timestamp) / lyric.duration;
                 let dragMode: 'move' | 'left' | 'right' = 'move';
+
+                // 10% edge detection for resizing
                 if (relativePos < 0.1) dragMode = 'left';
                 else if (relativePos > 0.9) dragMode = 'right';
 
@@ -175,6 +242,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                 if (editingIdx !== null && editingIdx !== clickedIdx) {
                     finishEditing();
                 }
+
                 const startX = e.clientX;
                 const startT = lyric.timestamp;
                 const startD = lyric.duration;
@@ -183,38 +251,56 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                     const dx = moveEvent.clientX - startX;
                     const dt = dx / zoom;
 
+                    let newT = startT;
+                    let newD = startD;
+
                     if (dragMode === 'move') {
-                        let newT = Math.round((startT + dt) * 100) / 100;
+                        newT = Math.round((startT + dt) * 100) / 100;
                         const prev = lyrics[clickedIdx - 1];
                         const next = lyrics[clickedIdx + 1];
                         if (prev && newT < prev.timestamp + prev.duration) newT = prev.timestamp + prev.duration;
                         if (next && newT + lyric.duration > next.timestamp) newT = next.timestamp - lyric.duration;
                         if (newT < 0) newT = 0;
-                        moveLyric(clickedIdx, newT).then(res => { if (res) setSelectedIdx(res.idx); });
                     } else if (dragMode === 'left') {
-                        let newT = Math.round((startT + dt) * 100) / 100;
+                        newT = Math.round((startT + dt) * 100) / 100;
                         const prev = lyrics[clickedIdx - 1];
                         const minT = prev ? prev.timestamp + prev.duration : 0;
                         if (newT < minT) newT = minT;
 
-                        let newD = startD - (newT - startT);
+                        newD = startD - (newT - startT);
                         if (newD < 0.2) {
                             newD = 0.2;
                             newT = startT + startD - 0.2;
                         }
-                        updateLyric(clickedIdx, { timestamp: newT, duration: newD }).then(res => { if (res) setSelectedIdx(res.idx); });
                     } else if (dragMode === 'right') {
-                        let newD = Math.round((startD + dt) * 100) / 100;
+                        newD = Math.round((startD + dt) * 100) / 100;
                         if (newD < 0.2) newD = 0.2;
                         const next = lyrics[clickedIdx + 1];
                         if (next && lyric.timestamp + newD > next.timestamp) newD = next.timestamp - lyric.timestamp;
-                        updateLyric(clickedIdx, { duration: newD }).then(res => { if (res) setSelectedIdx(res.idx); });
                     }
+
+                    setDraggingLyric({ idx: clickedIdx, timestamp: newT, duration: newD, mode: dragMode });
                 };
 
                 const onMouseUp = () => {
                     window.removeEventListener('mousemove', onMouseMove);
                     window.removeEventListener('mouseup', onMouseUp);
+
+                    setDraggingLyric(currentDragging => {
+                        if (currentDragging) {
+                            const { idx, timestamp, duration, mode } = currentDragging;
+                            const promise = mode === 'move'
+                                ? moveLyric(idx, timestamp)
+                                : updateLyric(idx, { timestamp, duration });
+
+                            promise.then(res => {
+                                if (res) setSelectedIdx(res.idx);
+                                setDraggingLyric(null);
+                            });
+                            return currentDragging; // Keep visual state until backend confirms
+                        }
+                        return null;
+                    });
                 };
 
                 window.addEventListener('mousemove', onMouseMove);
@@ -243,72 +329,37 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
         }
     };
 
-    const addLyricAt = useCallback((t: number) => {
-        const snappedT = Math.round(t * 100) / 100;
-
-        // Clamping duration so it doesn't overlap with the next lyric
-        const nextLyric = lyrics.find(l => l.timestamp > snappedT);
-        let duration = 1.0;
-        if (nextLyric) {
-            duration = Math.min(1.0, nextLyric.timestamp - snappedT);
-            if (duration < 0.2) duration = 0.2;
-        }
-
-        addLyric({
-            text: '',
-            timestamp: snappedT,
-            duration: duration
-        }).then((res) => {
-            if (res) {
-                setSelectedIdx(res.idx);
-                setEditingIdx(res.idx);
-                setEditValue('');
-            }
-        });
-    }, [addLyric, lyrics]);
-
-    const finishEditing = useCallback(() => {
-        if (editingIdx !== null) {
-            const trimmed = editValue.trim();
-            if (trimmed === '') {
-                removeLyric(editingIdx);
-                setSelectedIdx(null);
-            } else {
-                updateLyric(editingIdx, { text: trimmed }).then(res => {
-                    if (res) setSelectedIdx(res.idx);
-                });
-            }
-            setEditingIdx(null);
-        }
-    }, [editingIdx, editValue, updateLyric, removeLyric]);
-
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key.toLowerCase() === 'l') {
-                if (loaded && (e.target as HTMLElement).tagName !== 'INPUT') {
+            const { loaded, lyrics, position, selectedIdx, editingIdx, editValue } = stateRef.current;
+            if (!loaded) return;
+
+            // Global transcription key: 'L'
+            if (e.key.toLowerCase() === 'l' && !e.shiftKey) {
+                if ((e.target as HTMLElement).tagName !== 'INPUT') {
                     e.preventDefault();
                     e.stopImmediatePropagation();
-                    const state = useStore.getState();
-                    const currentLyrics = state.lyrics;
 
-                    if (selectedIdx !== null && selectedIdx < currentLyrics.length) {
-                        const current = currentLyrics[selectedIdx];
+                    if (selectedIdx !== null && selectedIdx < lyrics.length) {
+                        const current = lyrics[selectedIdx];
                         if (editingIdx !== null) {
+                            // Already editing, commit and move to next
                             const trimmed = editValue.trim();
                             if (trimmed === '') {
                                 removeLyric(editingIdx);
-                                setSelectedIdx(null);
-                                addLyricAt(position);
-                                return;
-                            } else {
-                                updateLyric(editingIdx, { text: trimmed }).then(res => {
-                                    if (res) setSelectedIdx(res.idx);
-                                });
                                 setEditingIdx(null);
+                                addLyricAt(position);
+                            } else {
+                                setEditingIdx(null);
+                                updateLyric(editingIdx, { text: trimmed }).then(() => {
+                                    const nextStart = Math.max(position, current.timestamp + current.duration);
+                                    addLyricAt(nextStart);
+                                });
                             }
+                        } else {
+                            const nextStart = Math.max(position, current.timestamp + current.duration);
+                            addLyricAt(nextStart);
                         }
-                        const nextStart = Math.max(position, current.timestamp + current.duration);
-                        addLyricAt(nextStart);
                     } else {
                         addLyricAt(position);
                     }
@@ -316,7 +367,70 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                 return;
             }
 
-            if (selectedIdx === null) {
+            // Shortcuts when something is selected
+            if (selectedIdx !== null) {
+                if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Escape'].includes(e.key)) {
+                    if ((e.target as HTMLElement).tagName !== 'INPUT') {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                    }
+                }
+
+                if (e.key === 'Enter') {
+                    if (editingIdx === null) {
+                        setEditingIdx(selectedIdx);
+                        setEditValue(lyrics[selectedIdx].text);
+                    } else {
+                        finishEditing();
+                    }
+                } else if (e.key === 'Escape') {
+                    finishEditing();
+                    setSelectedIdx(null);
+                } else if (e.shiftKey && e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    const lyric = lyrics[selectedIdx];
+                    if (position > lyric.timestamp + lyric.duration * 0.1) {
+                        controlPlayback('seek', lyric.timestamp);
+                    } else if (selectedIdx > 0) {
+                        const prev = lyrics[selectedIdx - 1];
+                        controlPlayback('seek', prev.timestamp);
+                        setSelectedIdx(selectedIdx - 1);
+                    }
+                } else if (e.shiftKey && e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    if (selectedIdx < lyrics.length - 1) {
+                        const next = lyrics[selectedIdx + 1];
+                        controlPlayback('seek', next.timestamp);
+                        setSelectedIdx(selectedIdx + 1);
+                    }
+                } else if (e.key === 'ArrowLeft' && !e.shiftKey) {
+                    if (editingIdx !== null) return;
+                    e.preventDefault();
+                    let newT = Math.round((lyrics[selectedIdx].timestamp - 0.1) * 100) / 100;
+                    const prev = lyrics[selectedIdx - 1];
+                    if (prev && newT < prev.timestamp + prev.duration) newT = prev.timestamp + prev.duration;
+                    moveLyric(selectedIdx, Math.max(0, newT)).then(res => { if(res) setSelectedIdx(res.idx); });
+                } else if (e.key === 'ArrowRight' && !e.shiftKey) {
+                    if (editingIdx !== null) return;
+                    e.preventDefault();
+                    let newT = Math.round((lyrics[selectedIdx].timestamp + 0.1) * 100) / 100;
+                    const next = lyrics[selectedIdx + 1];
+                    if (next && newT + lyrics[selectedIdx].duration > next.timestamp) newT = next.timestamp - lyrics[selectedIdx].duration;
+                    moveLyric(selectedIdx, newT).then(res => { if(res) setSelectedIdx(res.idx); });
+                } else if (e.key === 'ArrowUp') {
+                    if (editingIdx !== null) return;
+                    e.preventDefault();
+                    let newD = Math.round((lyrics[selectedIdx].duration + 0.1) * 100) / 100;
+                    const next = lyrics[selectedIdx + 1];
+                    if (next && lyrics[selectedIdx].timestamp + newD > next.timestamp) newD = next.timestamp - lyrics[selectedIdx].timestamp;
+                    updateLyric(selectedIdx, { duration: newD }).then(res => { if(res) setSelectedIdx(res.idx); });
+                } else if (e.key === 'ArrowDown') {
+                    if (editingIdx !== null) return;
+                    e.preventDefault();
+                    updateLyric(selectedIdx, { duration: Math.max(0.2, Math.round((lyrics[selectedIdx].duration - 0.1) * 100) / 100) }).then(res => { if(res) setSelectedIdx(res.idx); });
+                }
+            } else {
+                // Seek between words even if none selected
                 if (e.shiftKey && e.key === 'ArrowLeft') {
                     e.preventDefault();
                     const prev = [...lyrics].reverse().find(l => l.timestamp < position - 0.1);
@@ -334,78 +448,39 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                         setSelectedIdx(idx);
                     }
                 }
-                return;
-            }
-
-            // If an element is selected
-            if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Escape'].includes(e.key)) {
-                e.stopImmediatePropagation();
-            }
-
-            if (e.key === 'Enter') {
-                if (editingIdx === null) {
-                    setEditingIdx(selectedIdx);
-                    setEditValue(lyrics[selectedIdx].text);
-                } else {
-                    finishEditing();
-                }
-            } else if (e.key === 'Escape') {
-                finishEditing();
-                setSelectedIdx(null);
-            } else if (e.shiftKey && e.key === 'ArrowLeft') {
-                e.preventDefault();
-                const lyric = lyrics[selectedIdx];
-                if (position > lyric.timestamp + lyric.duration * 0.1) {
-                    controlPlayback('seek', lyric.timestamp);
-                } else if (selectedIdx > 0) {
-                    const prev = lyrics[selectedIdx - 1];
-                    controlPlayback('seek', prev.timestamp);
-                    setSelectedIdx(selectedIdx - 1);
-                }
-            } else if (e.shiftKey && e.key === 'ArrowRight') {
-                e.preventDefault();
-                if (selectedIdx < lyrics.length - 1) {
-                    const next = lyrics[selectedIdx + 1];
-                    controlPlayback('seek', next.timestamp);
-                    setSelectedIdx(selectedIdx + 1);
-                }
-            } else if (e.key === 'ArrowLeft' && !e.shiftKey) {
-                e.preventDefault();
-                if (editingIdx !== null && (e.target as HTMLElement).tagName === 'INPUT') return;
-                let newT = lyrics[selectedIdx].timestamp - 0.1;
-                const prev = lyrics[selectedIdx - 1];
-                if (prev && newT < prev.timestamp + prev.duration) newT = prev.timestamp + prev.duration;
-                moveLyric(selectedIdx, Math.max(0, newT)).then(res => { if(res) setSelectedIdx(res.idx); });
-            } else if (e.key === 'ArrowRight' && !e.shiftKey) {
-                e.preventDefault();
-                if (editingIdx !== null && (e.target as HTMLElement).tagName === 'INPUT') return;
-                let newT = lyrics[selectedIdx].timestamp + 0.1;
-                const next = lyrics[selectedIdx + 1];
-                if (next && newT + lyrics[selectedIdx].duration > next.timestamp) newT = next.timestamp - lyrics[selectedIdx].duration;
-                moveLyric(selectedIdx, newT).then(res => { if(res) setSelectedIdx(res.idx); });
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                if (editingIdx !== null && (e.target as HTMLElement).tagName === 'INPUT') return;
-                let newD = lyrics[selectedIdx].duration + 0.1;
-                const next = lyrics[selectedIdx + 1];
-                if (next && lyrics[selectedIdx].timestamp + newD > next.timestamp) newD = next.timestamp - lyrics[selectedIdx].timestamp;
-                updateLyric(selectedIdx, { duration: newD }).then(res => { if(res) setSelectedIdx(res.idx); });
-            } else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                if (editingIdx !== null && (e.target as HTMLElement).tagName === 'INPUT') return;
-                updateLyric(selectedIdx, { duration: Math.max(0.2, lyrics[selectedIdx].duration - 0.1) }).then(res => { if(res) setSelectedIdx(res.idx); });
             }
         };
 
         window.addEventListener('keydown', handleKeyDown, { capture: true });
         return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
-    }, [selectedIdx, editingIdx, lyrics, position, editValue, finishEditing, addLyricAt, controlPlayback, moveLyric, updateLyric, loaded]);
+    }, [controlPlayback, moveLyric, updateLyric, removeLyric, addLyricAt, setSelectedIdx]);
 
     useEffect(() => {
         if (editingIdx !== null && inputRef.current) {
             inputRef.current.focus();
         }
     }, [editingIdx]);
+
+    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === ' ' || e.key === '-') {
+            e.preventDefault();
+            e.stopPropagation();
+            const { editingIdx: currentEditingIdx, editValue: currentEditValue, lyrics: currentLyrics } = stateRef.current;
+            const trimmed = currentEditValue.trim();
+            if (currentEditingIdx !== null) {
+                const current = currentLyrics[currentEditingIdx];
+                setEditingIdx(null);
+                setEditValue('');
+                if (trimmed === '') {
+                    removeLyric(currentEditingIdx);
+                    addLyricAt(current.timestamp);
+                } else {
+                    updateLyric(currentEditingIdx, { text: trimmed });
+                    addLyricAt(current.timestamp + current.duration);
+                }
+            }
+        }
+    };
 
     return (
         <div ref={containerRef} className="relative w-full h-8 select-none bg-surface border-b overflow-hidden" style={{ borderBottomColor: 'var(--color-grid)' }}>
@@ -433,24 +508,7 @@ export const LyricsTimeline: React.FC<LyricsTimelineProps> = ({ offset, zoom }) 
                         style={{ borderColor: themes[currentTheme]?.accent || '#4fd1c5' }}
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === ' ' || e.key === '-') {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const trimmed = editValue.trim();
-                                if (editingIdx !== null) {
-                                    const current = lyrics[editingIdx];
-                                    if (trimmed === '') {
-                                        removeLyric(editingIdx);
-                                        addLyricAt(current.timestamp);
-                                    } else {
-                                        updateLyric(editingIdx, { text: trimmed });
-                                        addLyricAt(current.timestamp + current.duration);
-                                    }
-                                    setEditingIdx(null);
-                                }
-                            }
-                        }}
+                        onKeyDown={handleInputKeyDown}
                         onBlur={finishEditing}
                         autoFocus
                     />

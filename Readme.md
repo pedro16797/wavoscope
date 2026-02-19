@@ -67,6 +67,29 @@ Wavoscope uses a dual-flag system to help you map out the structure and harmony 
 
 ---
 
+## 🎤 Lyrics Transcription
+
+Wavoscope features an interactive lyrics track that allows for high-speed transcription and alignment.
+
+![Lyrics Transcription](docs/images/lyrics_track.png)
+
+### Transcription Workflow
+1. **Toggle Track:** Click the "Lyrics" button in the waveform header to show the transcription track.
+2. **Add & Type:** Press `L` or **Single Click** an empty spot on the lyrics track to add a word.
+3. **High-Speed Entry:** While typing in a lyric box, press **Space** or **Dash (`-`)**. This will automatically:
+    - Commit the current word.
+    - Create a new lyric box immediately following it (at the current playhead or previous end).
+    - Move focus to the new box so you can keep typing without stopping the music.
+4. **Seeking:** Use `Shift + Left/Right` to jump between lyric elements. This is perfect for verifying timing.
+
+### Editing & Resizing
+- **Movement:** **Drag** the center 80% of a lyric box to move it.
+- **Timing:** **Drag** the edges (10% threshold) of a lyric box to adjust its start or end time.
+- **Precision:** Use the **Arrow Keys** when a lyric is selected to nudge it by 0.1s. Use **Up/Down** arrows to adjust duration.
+- **Formatting:** Lyric boxes automatically fade and mask text when they become too small at low zoom levels, keeping the interface clean.
+
+---
+
 ## ⚙️ Settings & Customization
 
 ![Settings Dialog](docs/images/settings_dialog.png)
@@ -100,10 +123,14 @@ Wavoscope is fully themeable. Choose a look that suits your environment:
 | **Increase/Decrease Speed** | `Up` / `Down` |
 | **Add Rhythm Flag** | `B` |
 | **Add Harmony Flag** | `H` |
-| **Delete Selected Flag** | `Delete` / `Backspace` |
+| **Add/Commit Lyric** | `L` |
+| **Split & Advance Lyric**| `Space` / `-` (Inside Input) |
+| **Cycle Loop Modes** | `Tab` |
+| **Deselect Selection** | `Shift + L` |
+| **Seek between Lyrics** | `Shift + Left/Right` |
+| **Delete Selected Item** | `Delete` / `Backspace` |
 | **Open File** | `Ctrl + O` |
 | **Save Project** | `Ctrl + S` |
-| **Toggle Looping** | `L` |
 
 ### Mouse Interactions
 | Area | Action | Interaction |

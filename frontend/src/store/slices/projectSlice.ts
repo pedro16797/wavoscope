@@ -138,7 +138,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   addLyric: async (lyric: Lyric) => {
     try {
         const res = await axios.post(`${API_BASE}/project/lyrics`, lyric);
-        get().fetchStatus();
+        set({ lyrics: res.data.lyrics });
         return { idx: res.data.idx, lyric: res.data.new_lyric };
     } catch (e) {
         console.error("[Store] Failed to add lyric:", e);
@@ -148,8 +148,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   removeLyric: async (idx: number) => {
     try {
-        await axios.delete(`${API_BASE}/project/lyrics/${idx}`);
-        get().fetchStatus();
+        const res = await axios.delete(`${API_BASE}/project/lyrics/${idx}`);
+        set({ lyrics: res.data.lyrics });
     } catch (e) {
         console.error("[Store] Failed to remove lyric:", e);
     }
@@ -158,7 +158,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   updateLyric: async (idx: number, lyric: Partial<Lyric>) => {
     try {
         const res = await axios.patch(`${API_BASE}/project/lyrics/${idx}`, lyric);
-        get().fetchStatus();
+        set({ lyrics: res.data.lyrics });
         return { idx: res.data.new_idx, lyric: res.data.updated_lyric };
     } catch (e) {
         console.error("[Store] Failed to update lyric:", e);
@@ -169,7 +169,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   moveLyric: async (idx: number, t: number) => {
     try {
         const res = await axios.post(`${API_BASE}/project/lyrics/move`, { idx, t });
-        get().fetchStatus();
+        set({ lyrics: res.data.lyrics });
         return { idx: res.data.new_idx, lyric: res.data.updated_lyric };
     } catch (e) {
         console.error("[Store] Failed to move lyric:", e);
