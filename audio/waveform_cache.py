@@ -15,9 +15,8 @@ class WaveformCache:
     """
 
     def __init__(self, y: np.ndarray, sr: int) -> None:
-        self.y: np.ndarray = y.astype(np.float32)
+        self.y: np.ndarray = np.asarray(y, dtype=np.float32)
         self.sr: int = sr
-        self._cache: dict[Tuple[int, int], Tuple[float, float]] = {}
 
         # Pre-calculate percentiles for normalization
         if len(self.y) > 0:

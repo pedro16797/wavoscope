@@ -2,18 +2,10 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
 import type { Flag } from '../store/types';
-import axios from 'axios';
-import { API_BASE } from '../store/useStore';
 
-interface FlagDialogProps {
-  idx: number;
-  flag: Flag;
-  onClose: () => void;
-}
-
-export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) => {
+export const FlagDialog: React.FC<{ idx: number; flag: Flag; onClose: () => void }> = ({ idx, flag, onClose }) => {
   const { t } = useTranslation();
-  const { fetchStatus, duration, flags } = useStore();
+  const { duration, flags, removeFlag, updateFlag, insertNFlags } = useStore();
 
   const [name, setName] = useState(flag?.n || '');
   const [time, setTime] = useState(flag?.t || 0);
@@ -28,30 +20,20 @@ export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) =>
   }
 
   const handleSave = async () => {
-    try {
-        await axios.patch(`${API_BASE}/project/flags/${idx}`, {
-            t: time,
-            n: name,
-            div: subdivision,
-            type: flag.type,
-            s: sectionStart,
-            divshade: shaded
-        });
-        fetchStatus();
-        onClose();
-    } catch (e) {
-        console.error(e);
-    }
+    await updateFlag(idx, {
+        t: time,
+        n: name,
+        div: subdivision,
+        type: flag.type,
+        s: sectionStart,
+        divshade: shaded
+    });
+    onClose();
   };
 
   const handleDelete = async () => {
-    try {
-        await axios.delete(`${API_BASE}/project/flags/${idx}`);
-        fetchStatus();
-        onClose();
-    } catch (e) {
-        console.error(e);
-    }
+    await removeFlag(idx);
+    onClose();
   };
 
   const handleInsertN = async () => {
@@ -60,16 +42,8 @@ export const FlagDialog: React.FC<FlagDialogProps> = ({ idx, flag, onClose }) =>
     const count = parseInt(countStr);
     if (isNaN(count) || count <= 0) return;
 
-    try {
-        await axios.post(`${API_BASE}/project/flags/insert_n`, {
-            left_idx: idx,
-            count: count
-        });
-        fetchStatus();
-        onClose();
-    } catch (e) {
-        console.error(e);
-    }
+    await insertNFlags(idx, count);
+    onClose();
   };
 
   const hasNext = idx < flags.length - 1;

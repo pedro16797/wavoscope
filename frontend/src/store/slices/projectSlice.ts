@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand';
 import axios from 'axios';
-import type { AppState, Chord, Lyric } from '../types';
+import type { AppState, Chord, Lyric, Flag } from '../types';
 import { API_BASE } from '../useStore';
 
 import type { ProjectSlice } from '../types';
@@ -35,8 +35,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
       if (pywindow.pywebview?.api?.browse) {
         await pywindow.pywebview.api.browse();
       } else {
-        const res = await axios.get(`${API_BASE}/browse`);
-        if (res.data.status !== 'loaded') return;
+        console.warn("[Store] browseFile fallback is not implemented in the backend.");
+        return;
       }
 
       await get().fetchStatus();
@@ -56,8 +56,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   addFlag: async (t: number) => {
     try {
-        await axios.post(`${API_BASE}/project/flags`, { t });
-        get().fetchStatus();
+        const res = await axios.post(`${API_BASE}/project/flags`, { t });
+        set({ flags: res.data.flags });
     } catch (e) {
         console.error("[Store] Failed to add flag:", e);
     }
@@ -65,8 +65,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   moveFlag: async (idx: number, t: number) => {
     try {
-        await axios.post(`${API_BASE}/project/flags/move`, { idx, t });
-        get().fetchStatus();
+        const res = await axios.post(`${API_BASE}/project/flags/move`, { idx, t });
+        set({ flags: res.data.flags });
     } catch (e) {
         console.error("[Store] Failed to move flag:", e);
     }
@@ -74,10 +74,28 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   removeFlag: async (idx: number) => {
     try {
-        await axios.delete(`${API_BASE}/project/flags/${idx}`);
-        get().fetchStatus();
+        const res = await axios.delete(`${API_BASE}/project/flags/${idx}`);
+        set({ flags: res.data.flags });
     } catch (e) {
         console.error("[Store] Failed to remove flag:", e);
+    }
+  },
+
+  updateFlag: async (idx: number, flag: Partial<Flag>) => {
+    try {
+        const res = await axios.patch(`${API_BASE}/project/flags/${idx}`, flag);
+        set({ flags: res.data.flags });
+    } catch (e) {
+        console.error("[Store] Failed to update flag:", e);
+    }
+  },
+
+  insertNFlags: async (left_idx: number, count: number) => {
+    try {
+        const res = await axios.post(`${API_BASE}/project/flags/insert_n`, { left_idx, count });
+        set({ flags: res.data.flags });
+    } catch (e) {
+        console.error("[Store] Failed to insert flags:", e);
     }
   },
 
@@ -86,8 +104,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
         if (!chord) {
             chord = await get().analyzeChord(t);
         }
-        await axios.post(`${API_BASE}/project/harmony_flags`, { t, c: chord });
-        await get().fetchStatus();
+        const res = await axios.post(`${API_BASE}/project/harmony_flags`, { t, c: chord });
+        set({ harmony_flags: res.data.harmony_flags });
         return { t, c: chord };
     } catch (e) {
         console.error("[Store] Failed to add harmony flag:", e);
@@ -97,8 +115,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   moveHarmonyFlag: async (idx: number, t: number) => {
     try {
-        await axios.post(`${API_BASE}/project/harmony_flags/move`, { idx, t });
-        get().fetchStatus();
+        const res = await axios.post(`${API_BASE}/project/harmony_flags/move`, { idx, t });
+        set({ harmony_flags: res.data.harmony_flags });
     } catch (e) {
         console.error("[Store] Failed to move harmony flag:", e);
     }
@@ -106,8 +124,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   removeHarmonyFlag: async (idx: number) => {
     try {
-        await axios.delete(`${API_BASE}/project/harmony_flags/${idx}`);
-        get().fetchStatus();
+        const res = await axios.delete(`${API_BASE}/project/harmony_flags/${idx}`);
+        set({ harmony_flags: res.data.harmony_flags });
     } catch (e) {
         console.error("[Store] Failed to remove harmony flag:", e);
     }
@@ -115,8 +133,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   updateHarmonyFlag: async (idx: number, t: number, chord: Chord) => {
     try {
-        await axios.patch(`${API_BASE}/project/harmony_flags/${idx}`, { t, c: chord });
-        get().fetchStatus();
+        const res = await axios.patch(`${API_BASE}/project/harmony_flags/${idx}`, { t, c: chord });
+        set({ harmony_flags: res.data.harmony_flags });
     } catch (e) {
         console.error("[Store] Failed to update harmony flag:", e);
     }
@@ -179,8 +197,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
   updateTimeSignature: async (numerator: number, denominator: number) => {
     try {
-        await axios.post(`${API_BASE}/project/time_signature`, { numerator, denominator });
-        get().fetchStatus();
+        const res = await axios.post(`${API_BASE}/project/time_signature`, { numerator, denominator });
+        set({ time_signature: res.data.time_signature });
     } catch (e) {
         console.error("[Store] Failed to update time signature:", e);
     }

@@ -346,6 +346,7 @@ export const LyricsTimeline: React.FC = () => {
 
                             promise.then(res => {
                                 if (res) setSelectedIdx(res.idx);
+                            }).finally(() => {
                                 setDraggingLyric(null);
                             });
                             return currentDragging; // Keep visual state until backend confirms

@@ -319,11 +319,14 @@ class Project:
             span = right["t"] - left["t"]
             step = span / (count + 1)
             subdiv = left.get("div", 0)
+
+            added = False
             for i in range(1, count + 1):
                 t = left["t"] + i * step
-                flags.append({"t": t, "type": "rhythm", "div": subdiv, "n": "", "s": False, "divshade": False})
-            flags.sort(key=lambda f: f["t"])
-            self._flags._recompute_auto_names()
-            self._clear_backend_cache()
-            self.mark_dirty()
-            self._emit("flag_added", left["t"])
+                if self._flags.add_flag(t, kind="rhythm", div=subdiv, n="", s=False, divshade=False):
+                    added = True
+
+            if added:
+                self._clear_backend_cache()
+                self.mark_dirty()
+                self._emit("flag_added", left["t"])

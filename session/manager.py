@@ -14,7 +14,7 @@ class ProjectManager:
     def _load_or_create_sidecar(self) -> Dict[str, Any]:
         if self.sidecar_path.exists():
             try:
-                data = json.loads(self.sidecar_path.read_text())
+                data = json.loads(self.sidecar_path.read_text(encoding="utf-8"))
                 data.setdefault("harmony_flags", [])
                 data.setdefault("time_signature", {"numerator": 4, "denominator": 4})
                 data.setdefault("lyrics", [])
@@ -34,7 +34,7 @@ class ProjectManager:
     def save(self):
         try:
             scrubbed_data = self._scrub_defaults(self.session_data)
-            self.sidecar_path.write_text(json.dumps(scrubbed_data, indent=2, ensure_ascii=False))
+            self.sidecar_path.write_text(json.dumps(scrubbed_data, indent=2, ensure_ascii=False), encoding="utf-8")
             self._dirty = False
         except Exception as e:
             logger.error(f"Error saving sidecar: {e}")
@@ -45,6 +45,7 @@ class ProjectManager:
 
         if "flags" in data:
             for f in data["flags"]:
+                if "t" in f: f["t"] = round(float(f["t"]), 3)
                 f.pop("auto_name", None)
                 if f.get("type") == "rhythm": f.pop("type", None)
                 if f.get("div") == 0: f.pop("div", None)
@@ -54,6 +55,7 @@ class ProjectManager:
 
         if "harmony_flags" in data:
             for f in data["harmony_flags"]:
+                if "t" in f: f["t"] = round(float(f["t"]), 3)
                 chord = f.get("c", {})
                 if chord.get("ca") == "": chord.pop("ca", None)
                 if chord.get("q") in ["", "M"]: chord.pop("q", None)
@@ -62,6 +64,11 @@ class ProjectManager:
                 if chord.get("add") == []: chord.pop("add", None)
                 if chord.get("b") == "": chord.pop("b", None)
                 if chord.get("ba") == "": chord.pop("ba", None)
+
+        if "lyrics" in data:
+            for l in data["lyrics"]:
+                if "t" in l: l["t"] = round(float(l["t"]), 3)
+                if "l" in l: l["l"] = round(float(l["l"]), 3)
 
         return data
 

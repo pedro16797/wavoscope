@@ -12,7 +12,7 @@ async def get_themes():
     themes_dir = root_path / "resources" / "themes"
     raw_themes = {}
     for theme_file in themes_dir.glob("*.json"):
-        with open(theme_file, "r") as f:
+        with open(theme_file, "r", encoding="utf-8") as f:
             raw_themes[theme_file.stem] = json.load(f)
 
     resolved_themes = {}

@@ -63,13 +63,21 @@ class SimpleSynth:
         _status: Any,
     ) -> None:
         """PortAudio callback: fill `outdata` with the summed sine bank."""
-        t = np.arange(frames) / self.sr
+        t = (np.arange(frames, dtype=np.float32) / self.sr)
         out = np.zeros(frames, dtype=np.float32)
 
+        if not self._active:
+            outdata[:] = 0
+            return
+
         for freq, phase in list(self._active.items()):
-            wave = 0.2 * np.sin(2 * np.pi * freq * (t + phase))
-            out += wave.astype(np.float32)
-            self._active[freq] = phase + frames / self.sr
+            # Use float32 for the entire calculation
+            wave = 0.2 * np.sin(2 * np.pi * freq * (t + phase)).astype(np.float32)
+            out += wave
+
+            # Apply modulo to phase to prevent precision loss over time
+            period = 1.0 / freq
+            self._active[freq] = (phase + frames / self.sr) % period
 
         # Normalise when many tones overlap
         out *= 0.8 / max(1, len(self._active))
