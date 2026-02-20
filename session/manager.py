@@ -45,6 +45,7 @@ class ProjectManager:
 
         if "flags" in data:
             for f in data["flags"]:
+                if "t" in f: f["t"] = round(float(f["t"]), 3)
                 f.pop("auto_name", None)
                 if f.get("type") == "rhythm": f.pop("type", None)
                 if f.get("div") == 0: f.pop("div", None)
@@ -54,6 +55,7 @@ class ProjectManager:
 
         if "harmony_flags" in data:
             for f in data["harmony_flags"]:
+                if "t" in f: f["t"] = round(float(f["t"]), 3)
                 chord = f.get("c", {})
                 if chord.get("ca") == "": chord.pop("ca", None)
                 if chord.get("q") in ["", "M"]: chord.pop("q", None)
@@ -62,6 +64,11 @@ class ProjectManager:
                 if chord.get("add") == []: chord.pop("add", None)
                 if chord.get("b") == "": chord.pop("b", None)
                 if chord.get("ba") == "": chord.pop("ba", None)
+
+        if "lyrics" in data:
+            for l in data["lyrics"]:
+                if "t" in l: l["t"] = round(float(l["t"]), 3)
+                if "l" in l: l["l"] = round(float(l["l"]), 3)
 
         return data
 

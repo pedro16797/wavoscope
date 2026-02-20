@@ -29,14 +29,14 @@ class Config:
             cls._instance._defaults = {}
             if _DEFAULT_FILE.exists():
                 try:
-                    cls._instance._defaults = json.loads(_DEFAULT_FILE.read_text())
+                    cls._instance._defaults = json.loads(_DEFAULT_FILE.read_text(encoding="utf-8"))
                 except Exception:
                     pass
 
             cls._instance._data = {}
             if _CONFIG_PATH.exists():
                 try:
-                    cls._instance._data = json.loads(_CONFIG_PATH.read_text())
+                    cls._instance._data = json.loads(_CONFIG_PATH.read_text(encoding="utf-8"))
                 except Exception:
                     pass
         return cls._instance
@@ -70,6 +70,6 @@ class Config:
         """Store `value` under `key` and flush to disk."""
         self._data[key] = value
         try:
-            _CONFIG_PATH.write_text(json.dumps(self._data, indent=2))
+            _CONFIG_PATH.write_text(json.dumps(self._data, indent=2, ensure_ascii=False), encoding="utf-8")
         except Exception:
             pass
