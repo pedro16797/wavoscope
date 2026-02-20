@@ -86,6 +86,8 @@ export interface ProjectSlice {
   addFlag: (t: number) => Promise<void>;
   moveFlag: (idx: number, t: number) => Promise<void>;
   removeFlag: (idx: number) => Promise<void>;
+  updateFlag: (idx: number, flag: Partial<Flag>) => Promise<void>;
+  insertNFlags: (idx: number, count: number) => Promise<void>;
   addHarmonyFlag: (t: number, chord?: Chord) => Promise<HarmonyFlag | null>;
   moveHarmonyFlag: (idx: number, t: number) => Promise<void>;
   removeHarmonyFlag: (idx: number) => Promise<void>;

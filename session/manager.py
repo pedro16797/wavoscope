@@ -14,7 +14,7 @@ class ProjectManager:
     def _load_or_create_sidecar(self) -> Dict[str, Any]:
         if self.sidecar_path.exists():
             try:
-                data = json.loads(self.sidecar_path.read_text())
+                data = json.loads(self.sidecar_path.read_text(encoding="utf-8"))
                 data.setdefault("harmony_flags", [])
                 data.setdefault("time_signature", {"numerator": 4, "denominator": 4})
                 data.setdefault("lyrics", [])
@@ -34,7 +34,7 @@ class ProjectManager:
     def save(self):
         try:
             scrubbed_data = self._scrub_defaults(self.session_data)
-            self.sidecar_path.write_text(json.dumps(scrubbed_data, indent=2, ensure_ascii=False))
+            self.sidecar_path.write_text(json.dumps(scrubbed_data, indent=2, ensure_ascii=False), encoding="utf-8")
             self._dirty = False
         except Exception as e:
             logger.error(f"Error saving sidecar: {e}")

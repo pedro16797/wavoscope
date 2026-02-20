@@ -166,40 +166,62 @@ class LyricSelect(BaseModel):
 async def add_lyric(lyric: LyricData):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    res = state.project.add_lyric(lyric.s, lyric.t, lyric.l)
-    return {"status": "ok", "lyrics": state.project.lyrics, "new_lyric": res["lyric"], "idx": res["idx"]}
+    try:
+        res = state.project.add_lyric(lyric.s, lyric.t, lyric.l)
+        return {"status": "ok", "lyrics": state.project.lyrics, "new_lyric": res["lyric"], "idx": res["idx"]}
+    except Exception as e:
+        logger.exception("Error in add_lyric")
+        raise HTTPException(status_code=500, detail=f"Failed to add lyric: {str(e)}")
 
 @router.delete("/lyrics/{idx}")
 async def remove_lyric(idx: int):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    state.project.remove_lyric(idx)
-    return {"status": "ok", "lyrics": state.project.lyrics}
+    try:
+        state.project.remove_lyric(idx)
+        return {"status": "ok", "lyrics": state.project.lyrics}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to remove lyric: {str(e)}")
 
 @router.patch("/lyrics/{idx}")
 async def update_lyric(idx: int, lyric: LyricUpdate):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    res = state.project.update_lyric(idx, lyric.s, lyric.t, lyric.l)
-    if res is None:
-        raise HTTPException(status_code=404, detail="Lyric not found")
-    return {"status": "ok", "lyrics": state.project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
+    try:
+        res = state.project.update_lyric(idx, lyric.s, lyric.t, lyric.l)
+        if res is None:
+            raise HTTPException(status_code=404, detail="Lyric not found")
+        return {"status": "ok", "lyrics": state.project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Error in update_lyric")
+        raise HTTPException(status_code=500, detail=f"Failed to update lyric: {str(e)}")
 
 @router.post("/lyrics/select")
 async def select_lyric(select: LyricSelect):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    state.project.set_selected_lyric(select.idx)
-    return {"status": "ok"}
+    try:
+        state.project.set_selected_lyric(select.idx)
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to select lyric: {str(e)}")
 
 @router.post("/lyrics/move")
 async def move_lyric(move: LyricMove):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
-    res = state.project.move_lyric(move.idx, move.t)
-    if res is None:
-        raise HTTPException(status_code=404, detail="Lyric not found")
-    return {"status": "ok", "lyrics": state.project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
+    try:
+        res = state.project.move_lyric(move.idx, move.t)
+        if res is None:
+            raise HTTPException(status_code=404, detail="Lyric not found")
+        return {"status": "ok", "lyrics": state.project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Error in move_lyric")
+        raise HTTPException(status_code=500, detail=f"Failed to move lyric: {str(e)}")
 
 @router.post("/harmony_flags/move")
 async def move_harmony_flag(move: HarmonyFlagMove):

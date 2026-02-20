@@ -5,12 +5,17 @@ This document outlines the directory structure and the purpose of each component
 ## Directory Overview
 
 -   **`audio/`**: Contains the core audio engine.
-    -   `audio_backend.py`: The main audio playback engine, handling file I/O, speed control, and real-time streams.
+    -   `audio_backend.py`: The main audio backend facade.
     -   `chord_analyzer.py`: Chroma-based chord detection for harmony flags.
-    -   `ringbuffer.py`: Implementation of a lock-free ring buffer for audio data.
+    -   `ringbuffer.py`: Thread-safe ring buffer for audio streaming.
     -   `spectrum_analyzer.py`: Logic for computing FFTs and spectral data.
-    -   `synth.py`: Simple synthesis for metronome clicks.
+    -   `synth.py`: Real-time synthesis for metronome clicks and chord auditioning.
     -   `waveform_cache.py`: Manages the generation and caching of waveform data for efficient display.
+    -   **`engine/`**: Low-level audio processing components.
+        -   `playback.py`: Core playback logic and stream management.
+        -   `processing.py`: Audio stretching (TSM) and buffer management.
+        -   `metronome.py`: Metronome click timing and generation.
+        -   `filters.py`: Real-time biquad filtering (band-pass).
 -   **`backend/`**: The modern FastAPI-based web backend.
     -   `main.py`: Entry point for the FastAPI server, serving API endpoints and frontend assets.
     -   `state.py`: Shared global state (the active `Project` instance).
@@ -27,6 +32,11 @@ This document outlines the directory structure and the purpose of each component
 -   **`scripts/`**: Automation and utility scripts (e.g., screenshot generation).
 -   **`session/`**: Handles project persistence and high-level state.
     -   `project.py`: The `Project` class which ties audio, metadata (flags), and caching together.
+    -   `manager.py`: Handles `.oscope` sidecar file I/O and scrubbing.
+    -   `flags.py`: Manages rhythm and harmony flag lists.
+    -   `looping.py`: Logic for various loop modes (all, section, marker, lyric).
+    -   `export.py`: MusicXML export generation.
+    -   `chord_utils.py`: Helpers for chord name parsing and validation.
 -   **`utils/`**: General helper functions and shared utilities.
 
 ## Root Files
