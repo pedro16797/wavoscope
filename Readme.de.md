@@ -12,6 +12,13 @@ Wavoscope ist ein leistungsstarkes Echtzeit-Audiovisualisierungs- und Transkript
 
 ## 🚀 Erste Schritte
 
+### Wavoscope starten
+Wavoscope ist so konzipiert, dass es eigenständig funktioniert. Sie müssen Python oder andere Abhängigkeiten nicht manuell installieren.
+- **Windows:** Doppelklicken Sie auf `run.bat`. Dies richtet automatisch die Umgebung ein und erstellt eine `Wavoscope.exe` im Hauptverzeichnis für die zukünftige Verwendung.
+- **Linux/macOS:** Führen Sie `bash run.sh` in Ihrem Terminal aus. Dies erstellt eine `Wavoscope`-Binärdatei im Hauptverzeichnis.
+
+Beim ersten Start lädt Wavoscope automatisch seine eigene Python-Laufzeitumgebung herunter und richtet die erforderliche Umgebung ein. Dies kann je nach Internetverbindung einige Minuten dauern. Nach dem ersten Durchlauf können Sie einfach die generierte `Wavoscope`-Programmdatei (mit dem App-Icon) verwenden.
+
 ### Projektmanagement
 Wavoscope verwendet ein "Sidecar"-Dateisystem. Wenn Sie eine Audiodatei öffnen, erstellt oder lädt Wavoscope eine `.oscope`-Datei im selben Verzeichnis, um Ihre Markierungen, Loops und Einstellungen zu speichern.
 - **Öffnen:** Klicken Sie auf das Ordnersymbol in der Wiedergabeleiste, um ein beliebiges gängiges Audioformat (MP3, WAV, FLAC usw.) zu laden.
@@ -116,25 +123,6 @@ Wavoscope ist vollständig anpassbar. Wählen Sie einen Look, der zu Ihrer Umgeb
 - **Toy:** Kräftige Primärfarben.
 - **Warm:** Erdige, angenehme Töne für lange Sitzungen.
 
----
-
-## 🛠️ Erstellung aus dem Quellcode
-
-Wavoscope kann mit Nuitka in eine eigenständige ausführbare Datei umgewandelt werden.
-
-### Voraussetzungen
-- Python 3.10+
-- Node.js & npm (zum Erstellen des Frontends)
-
-### Bauanleitung
-Führen Sie das Build-Skript für Ihre Plattform aus:
-- **Windows:** Führen Sie `build.bat` aus
-- **Linux/macOS:** Führen Sie `build.sh` aus
-
-Das fertige Paket wird im Verzeichnis `dist/` als `Wavoscope.zip` (oder `Wavoscope-Mac.zip` unter macOS) erstellt.
-
-> [!WARNING]
-> Obwohl wir die Unterstützung für die Erstellung unter **Linux** und **macOS** hinzugefügt haben, wurden diese Plattformen noch nicht vollständig getestet. Wenn Sie auf Probleme stoßen, melden Sie diese bitte!
 
 ---
 

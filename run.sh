@@ -1,20 +1,83 @@
 #!/bin/bash
 # Wavoscope Launcher Script
+# This script always uses a contained Python runtime to ensure consistency.
 
 set -e # Exit on error
 
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+RUNTIME_DIR="$SCRIPT_DIR/.python_runtime"
+
+# Function to download and extract portable Python
+download_python() {
+    ARCH=$(uname -m)
+    OS_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
+
+    case "$OS_NAME" in
+        linux)
+            if [ "$ARCH" == "x86_64" ]; then
+                PY_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20240224/cpython-3.11.8+20240224-x86_64-unknown-linux-gnu-install_only.tar.gz"
+            elif [ "$ARCH" == "aarch64" ]; then
+                PY_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20240224/cpython-3.11.8+20240224-aarch64-unknown-linux-gnu-install_only.tar.gz"
+            else
+                echo "[ERROR] Unsupported architecture: $ARCH"
+                exit 1
+            fi
+            ;;
+        darwin)
+            if [ "$ARCH" == "x86_64" ]; then
+                PY_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20240224/cpython-3.11.8+20240224-x86_64-apple-darwin-install_only.tar.gz"
+            elif [ "$ARCH" == "arm64" ] || [ "$ARCH" == "aarch64" ]; then
+                PY_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20240224/cpython-3.11.8+20240224-aarch64-apple-darwin-install_only.tar.gz"
+            else
+                echo "[ERROR] Unsupported architecture: $ARCH"
+                exit 1
+            fi
+            ;;
+        *)
+            echo "[ERROR] Unsupported OS: $OS_NAME"
+            exit 1
+            ;;
+    esac
+
+    echo "Downloading portable Python for $OS_NAME $ARCH..."
+    PY_TAR="/tmp/python_portable.tar.gz"
+
+    if command -v curl &> /dev/null; then
+        curl -L "$PY_URL" -o "$PY_TAR"
+    elif command -v wget &> /dev/null; then
+        wget "$PY_URL" -O "$PY_TAR"
+    else
+        echo "[ERROR] Neither curl nor wget found. Please install one of them."
+        exit 1
+    fi
+
+    echo "Extracting Python..."
+    mkdir -p "$RUNTIME_DIR"
+    tar -xzf "$PY_TAR" -C "$RUNTIME_DIR" --strip-components=1
+    rm "$PY_TAR"
+
+    if [ ! -f "$RUNTIME_DIR/bin/python3" ]; then
+        echo "[ERROR] Extraction failed. python3 not found in $RUNTIME_DIR/bin/."
+        exit 1
+    fi
+    echo "Portable Python installed in $RUNTIME_DIR."
+}
+
 echo "Starting Wavoscope..."
 
-# Check for Python
-if ! command -v python3 &> /dev/null; then
-    echo "[ERROR] python3 not found. Please install Python."
-    exit 1
+# Ensure local Python runtime exists
+if [ ! -f "$RUNTIME_DIR/bin/python3" ]; then
+    echo "[INFO] Local Python runtime not found. Attempting to download portable Python..."
+    download_python
 fi
+
+PYTHON_EXE="$RUNTIME_DIR/bin/python3"
+echo "[INFO] Using local Python runtime."
 
 # Check for virtual environment
 if [ ! -d ".venv" ]; then
     echo "Creating virtual environment..."
-    python3 -m venv .venv
+    "$PYTHON_EXE" -m venv .venv
 fi
 
 # Activate virtual environment
@@ -25,24 +88,41 @@ else
     exit 1
 fi
 
+# Upgrade pip
+echo "Upgrading pip..."
+python3 -m pip install -q --upgrade pip
+
 # Ensure requirements are installed and up to date
 echo "Checking dependencies..."
 pip install -q -r requirements.txt
 
-# Build frontend
-echo "Building frontend..."
+# Check for npm, if missing use nodeenv
 if ! command -v npm &> /dev/null; then
-    echo "[ERROR] npm not found. Please install Node.js."
-    exit 1
+    echo "[INFO] npm not found. Attempting to install Node.js via nodeenv..."
+    nodeenv -p --node=lts --force
+    # Refresh environment
+    source .venv/bin/activate
 fi
 
-cd frontend
-npm install --no-fund --no-audit
-npm run build
-cd ..
+# Build frontend if missing
+if [ ! -d "frontend/dist" ]; then
+    echo "Building frontend..."
+    cd frontend
+    npm install --no-fund --no-audit
+    npm run build
+    cd ..
+else
+    echo "Frontend already built. Skipping frontend build."
+fi
+
+# Build launcher if missing
+if [ ! -f "Wavoscope" ]; then
+    echo "Building launcher executable..."
+    python3 scripts/create_launcher.py || echo "[WARNING] Failed to build launcher executable. You can still use run.sh."
+fi
 
 # Run the application
 echo "Launching Wavoscope..."
-python main.py
+python3 main.py
 
 echo "Wavoscope closed."

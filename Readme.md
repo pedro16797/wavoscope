@@ -12,6 +12,13 @@ Wavoscope is a powerful, real-time audio visualization and transcription aid des
 
 ## 🚀 Getting Started
 
+### Launching Wavoscope
+Wavoscope is designed to be self-contained. You do not need to install Python or any other dependencies manually.
+- **Windows:** Double-click `run.bat`. This will automatically set up the environment and create a `Wavoscope.exe` in the root folder for future use.
+- **Linux/macOS:** Run `bash run.sh` in your terminal. This will create a `Wavoscope` binary in the root folder.
+
+On the first launch, Wavoscope will automatically download its own Python runtime and set up the necessary environment. This may take a few minutes depending on your internet connection. After the first run, you can simply use the generated `Wavoscope` executable (with the app icon).
+
 ### Project Management
 Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope creates or loads a `.oscope` file in the same directory to store your markers, loops, and settings.
 - **Open:** Click the folder icon in the playback bar to load any common audio format (MP3, WAV, FLAC, etc.).
@@ -115,26 +122,6 @@ Wavoscope is fully themeable. Choose a look that suits your environment:
 - **Retrowave:** 80s synthwave aesthetic.
 - **Toy:** Bold primary colors.
 - **Warm:** Earthy, comfortable tones for long sessions.
-
----
-
-## 🛠️ Building from Source
-
-Wavoscope can be built into a standalone executable using Nuitka.
-
-### Prerequisites
-- Python 3.10+
-- Node.js & npm (for building the frontend)
-
-### Build Instructions
-Run the build script for your platform:
-- **Windows:** Run `build.bat`
-- **Linux/macOS:** Run `build.sh`
-
-The final package will be created in the `dist/` directory as `Wavoscope.zip` (or `Wavoscope-Mac.zip` on macOS).
-
-> [!WARNING]
-> While we have added support for building on **Linux** and **macOS**, these platforms have not yet been fully tested. If you encounter any issues, please report them!
 
 ---
 

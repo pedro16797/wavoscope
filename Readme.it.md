@@ -12,6 +12,13 @@ Wavoscope è un potente strumento di visualizzazione audio in tempo reale e aiut
 
 ## 🚀 Per Iniziare
 
+### Avvio di Wavoscope
+Wavoscope è progettato per essere autonomo. Non è necessario installare Python o altre dipendenze manualmente.
+- **Windows:** Fai doppio clic su `run.bat`. Questo configurerà automaticamente l'ambiente e creerà un file `Wavoscope.exe` nella cartella principale per l'uso futuro.
+- **Linux/macOS:** Esegui `bash run.sh` nel tuo terminale. Questo creerà un binario `Wavoscope` nella cartella principale.
+
+Al primo avvio, Wavoscope scaricherà automaticamente il proprio runtime Python e configurerà l'ambiente necessario. L'operazione potrebbe richiedere alcuni minuti a seconda della connessione Internet. Dopo il primo avvio, potrai semplicemente usare l'eseguibile `Wavoscope` generato (con l'icona dell'applicazione).
+
 ### Gestione del Progetto
 Wavoscope utilizza un sistema di file "sidecar". Quando apri un file audio, Wavoscope crea o carica un file `.oscope` nella stessa cartella per memorizzare marcatori, loop e impostazioni.
 - **Apri:** Clicca sull'icona della cartella nella barra di riproduzione per caricare qualsiasi formato audio comune (MP3, WAV, FLAC, ecc.).
@@ -116,25 +123,6 @@ Wavoscope è completamente personalizzabile tramite i temi. Scegli lo stile che 
 - **Toy:** Colori primari vivaci.
 - **Warm:** Toni caldi e naturali per sessioni prolungate.
 
----
-
-## 🛠️ Compilazione dai sorgenti
-
-Wavoscope può essere compilato in un eseguibile autonomo utilizzando Nuitka.
-
-### Prerequisiti
-- Python 3.10+
-- Node.js e npm (per compilare il frontend)
-
-### Istruzioni per la compilazione
-Esegui lo script di compilazione per la tua piattaforma:
-- **Windows:** Esegui `build.bat`
-- **Linux/macOS:** Esegui `build.sh`
-
-Il pacchetto finale verrà creato nella directory `dist/` come `Wavoscope.zip` (o `Wavoscope-Mac.zip` su macOS).
-
-> [!WARNING]
-> Sebbene abbiamo aggiunto il supporto per la compilazione su **Linux** e **macOS**, queste piattaforme non sono ancora state completamente testate. Se riscontri problemi, ti preghiamo di segnalarli!
 
 ---
 

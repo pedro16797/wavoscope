@@ -12,6 +12,13 @@ Wavoscope é unha potente ferramenta de visualización de audio en tempo real e 
 
 ## 🚀 Primeiros pasos
 
+### Iniciar Wavoscope
+Wavoscope está deseñado para ser autónomo. Non é necesario instalar Python nin ningunha outra dependencia manualmente.
+- **Windows:** Fai dobre clic en `run.bat`. Isto configurará automaticamente o contorno e creará un arquivo `Wavoscope.exe` na carpeta raíz para o seu uso futuro.
+- **Linux/macOS:** Executa `bash run.sh` na túa terminal. Isto creará un binario `Wavoscope` na carpeta raíz.
+
+No primeiro inicio, Wavoscope descargará automaticamente o seu propio contorno de execución de Python e configurará o contorno necesario. Isto pode tardar uns minutos dependendo da túa conexión a Internet. Despois da primeira execución, podes usar simplemente o executable `Wavoscope` xerado (coa icona da aplicación).
+
 ### Xestión de proxectos
 Wavoscope utiliza un sistema de ficheiros "sidecar". Cando abres un ficheiro de audio, Wavoscope crea ou carga un ficheiro `.oscope` no mesmo directorio para gardar as túas marcas, bucles e axustes.
 - **Abrir:** Fai clic na icona do cartafol na barra de reprodución para cargar calquera formato de audio común (MP3, WAV, FLAC, etc.).
@@ -116,25 +123,6 @@ Wavoscope é totalmente personalizable con temas. Escolle o estilo que mellor se
 - **Toy:** Cores primarias rechamantes.
 - **Warm:** Tons terra, cómodos para sesións longas.
 
----
-
-## 🛠️ Compilación desde o código fonte
-
-Wavoscope pódese compilar nun executable independente usando Nuitka.
-
-### Requisitos previos
-- Python 3.10+
-- Node.js e npm (para compilar o frontend)
-
-### Instrucións de compilación
-Execute o script de compilación para a súa plataforma:
-- **Windows:** Execute `build.bat`
-- **Linux/macOS:** Execute `build.sh`
-
-O paquete final crearase no directorio `dist/` como `Wavoscope.zip` (ou `Wavoscope-Mac.zip` en macOS).
-
-> [!WARNING]
-> Aínda que engadimos soporte para a compilación en **Linux** e **macOS**, estas plataformas aínda non foron probadas exhaustivamente. Se atopa algún problema, por favor infórmenos!
 
 ---
 

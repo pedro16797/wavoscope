@@ -32,7 +32,6 @@ Este documento descreve a estrutura de diretórios e o propósito de cada compon
 ## Arquivos na Raiz
 
 -   **`run.sh` / `run.bat`**: Scripts para configurar o ambiente e iniciar o aplicativo.
--   **`build.sh` / `build.bat`**: Scripts para compilar o frontend e empacotar o aplicativo.
 -   **`main.py`**: Ponto de entrada do aplicativo. Inicia o FastAPI + pywebview.
 -   **`AGENTS.md`**: Guia e roteiro para agentes de IA trabalhando no projeto.
 -   **`Readme.md`**: Visão geral do projeto e instruções de configuração.

@@ -12,6 +12,13 @@ Wavoscope est un outil puissant de visualisation audio en temps réel et d'aide 
 
 ## 🚀 Prise en Main
 
+### Lancement de Wavoscope
+Wavoscope est conçu pour être autonome. Vous n'avez pas besoin d'installer Python ou d'autres dépendances manuellement.
+- **Windows :** Double-cliquez sur `run.bat`. Cela configurera automatiquement l'environnement et créera un fichier `Wavoscope.exe` dans le dossier racine pour une utilisation ultérieure.
+- **Linux/macOS :** Exécutez `bash run.sh` dans votre terminal. Cela créera un binaire `Wavoscope` dans le dossier racine.
+
+Lors du premier lancement, Wavoscope téléchargera automatiquement son propre runtime Python et configurera l'environnement nécessaire. Cela peut prendre quelques minutes selon votre connexion Internet. Après le premier lancement, vous pourrez simplement utiliser l'exécutable `Wavoscope` généré (avec l'icône de l'application).
+
 ### Gestion de Projet
 Wavoscope utilise un système de fichiers "sidecar". Lorsque vous ouvrez un fichier audio, Wavoscope crée ou charge un fichier `.oscope` dans le même répertoire pour stocker vos marqueurs, boucles et paramètres.
 - **Ouvrir :** Cliquez sur l'icône de dossier dans la barre de lecture pour charger n'importe quel format audio courant (MP3, WAV, FLAC, etc.).
@@ -116,25 +123,6 @@ Wavoscope est entièrement personnalisable via des thèmes. Choisissez le look q
 - **Toy :** Couleurs primaires vives.
 - **Warm :** Tons terreux et confortables pour les longues sessions.
 
----
-
-## 🛠️ Compilation depuis les sources
-
-Wavoscope peut être compilé en un exécutable autonome à l'aide de Nuitka.
-
-### Prérequis
-- Python 3.10+
-- Node.js & npm (pour compiler le frontend)
-
-### Instructions de compilation
-Exécutez le script de compilation pour votre plateforme :
-- **Windows :** Exécutez `build.bat`
-- **Linux/macOS :** Exécutez `build.sh`
-
-Le package final sera créé dans le répertoire `dist/` sous le nom `Wavoscope.zip` (ou `Wavoscope-Mac.zip` sur macOS).
-
-> [!WARNING]
-> Bien que nous ayons ajouté le support pour la compilation sur **Linux** et **macOS**, ces plateformes n'ont pas encore été pleinement testées. Si vous rencontrez des problèmes, n'hésitez pas à les signaler !
 
 ---
 

@@ -12,6 +12,13 @@ Wavoscope es una potente herramienta de visualización de audio en tiempo real y
 
 ## 🚀 Primeros pasos
 
+### Iniciar Wavoscope
+Wavoscope está diseñado para ser autónomo. No es necesario instalar Python ni ninguna otra dependencia manualmente.
+- **Windows:** Haz doble clic en `run.bat`. Esto configurará automáticamente el entorno y creará un archivo `Wavoscope.exe` en la carpeta raíz para su uso futuro.
+- **Linux/macOS:** Ejecuta `bash run.sh` en tu terminal. Esto creará un binario `Wavoscope` en la carpeta raíz.
+
+En el primer inicio, Wavoscope descargará automáticamente su propio entorno de ejecución de Python y configurará el entorno necesario. Esto puede tardar unos minutos dependiendo de tu conexión a Internet. Después de la primera ejecución, puedes usar simplemente el ejecutable `Wavoscope` generado (con el icono de la aplicación).
+
 ### Gestión de proyectos
 Wavoscope utiliza un sistema de archivos "sidecar". Cuando abres un archivo de audio, Wavoscope crea o carga un archivo `.oscope` en el mismo directorio para guardar tus marcas, bucles y ajustes.
 - **Abrir:** Haz clic en el icono de la carpeta en la barra de reproducción para cargar cualquier formato de audio común (MP3, WAV, FLAC, etc.).
@@ -116,25 +123,6 @@ Wavoscope es totalmente personalizable con temas. Escoge el estilo que mejor se 
 - **Toy:** Colores primarios llamativos.
 - **Warm:** Tonos tierra, cómodos para sesiones largas.
 
----
-
-## 🛠️ Compilación desde el código fuente
-
-Wavoscope se puede compilar en un ejecutable independiente usando Nuitka.
-
-### Requisitos previos
-- Python 3.10+
-- Node.js y npm (para compilar el frontend)
-
-### Instrucciones de compilación
-Ejecute el script de compilación para su plataforma:
-- **Windows:** Ejecute `build.bat`
-- **Linux/macOS:** Ejecute `build.sh`
-
-El paquete final se creará en el directorio `dist/` como `Wavoscope.zip` (o `Wavoscope-Mac.zip` en macOS).
-
-> [!WARNING]
-> Aunque hemos añadido soporte para la compilación en **Linux** y **macOS**, estas plataformas aún no han sido probadas exhaustivamente. Si encuentra algún problema, ¡por favor infórmenos!
 
 ---
 

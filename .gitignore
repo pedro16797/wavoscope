@@ -1,9 +1,13 @@
 .venv/
+.python_runtime/
 **/__pycache__/
 *.pyc
 node_modules/
-/dist-nuitka/
 /dist/
+/build_launcher/
+/Wavoscope
+/Wavoscope.exe
+*.spec
 *.log
 frontend/node_modules/
 frontend/dist/
