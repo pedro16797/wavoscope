@@ -32,3 +32,24 @@ To preserve the convenience of a clickable icon, a lightweight launcher executab
 2.  Delegate the actual environment setup and application launch to `run.bat` or `run.sh`.
 3.  Use the official Wavoscope icon.
 This approach provides the "executable experience" while maintaining the flexibility and robustness of the launcher scripts.
+
+## Contained Python Distribution Investigation
+
+To further improve the user experience and ensure Wavoscope can run on systems without a pre-installed Python, we have investigated bundling a contained Python distribution.
+
+### Findings
+- **Windows**: The official [Python Embeddable Package](https://www.python.org/downloads/windows/) is a minimal, ZIP-based distribution that can be easily downloaded and extracted via PowerShell. It is designed for embedding in applications.
+- **Linux & macOS**: The [python-build-standalone](https://github.com/indygreg/python-build-standalone) project provides high-quality, pre-compiled Python binaries for various architectures and operating systems. These can be downloaded as TAR.GZ archives and extracted via standard shell tools.
+
+### Implementation Details
+The bundling process is now automated within the `run.bat` and `run.sh` scripts:
+
+1.  **Detection**: The scripts check for a local `.python_runtime` directory first. If missing, they check the system path for `python`/`python3` and verify the version is 3.9 or higher.
+2.  **Automated Bundling**: If a suitable Python is not found, the scripts automatically download a pre-compiled, standalone Python 3.11 distribution from the `python-build-standalone` project.
+3.  **Cross-Platform Support**:
+    -   **Windows**: Uses PowerShell to download and the native `tar` command to extract the MSVC-shared build for x86_64.
+    -   **Linux**: Detects `x86_64` or `aarch64` architectures and downloads the appropriate GNU-linked build.
+    -   **macOS**: Supports both Intel (`x86_64`) and Apple Silicon (`arm64`/`aarch64`) by downloading the corresponding Darwin builds.
+4.  **Isolation**: The portable Python is extracted into `.python_runtime/` and used as the "seed" to create the application's virtual environment (`.venv/`), ensuring that all subsequent operations are fully isolated from the host system.
+
+This implementation provides a true "zero-dependency" experience. The user can simply download the source, run the launcher, and Wavoscope will handle the entire environment setup—including the Python runtime itself—automatically.

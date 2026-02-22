@@ -3,24 +3,92 @@
 
 set -e # Exit on error
 
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+RUNTIME_DIR="$SCRIPT_DIR/.python_runtime"
+PYTHON_EXE="python3"
+
+# Function to download and extract portable Python
+download_python() {
+    ARCH=$(uname -m)
+    OS_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
+
+    case "$OS_NAME" in
+        linux)
+            if [ "$ARCH" == "x86_64" ]; then
+                PY_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20240224/cpython-3.11.8+20240224-x86_64-unknown-linux-gnu-install_only.tar.gz"
+            elif [ "$ARCH" == "aarch64" ]; then
+                PY_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20240224/cpython-3.11.8+20240224-aarch64-unknown-linux-gnu-install_only.tar.gz"
+            else
+                echo "[ERROR] Unsupported architecture: $ARCH"
+                exit 1
+            fi
+            ;;
+        darwin)
+            if [ "$ARCH" == "x86_64" ]; then
+                PY_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20240224/cpython-3.11.8+20240224-x86_64-apple-darwin-install_only.tar.gz"
+            elif [ "$ARCH" == "arm64" ] || [ "$ARCH" == "aarch64" ]; then
+                PY_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20240224/cpython-3.11.8+20240224-aarch64-apple-darwin-install_only.tar.gz"
+            else
+                echo "[ERROR] Unsupported architecture: $ARCH"
+                exit 1
+            fi
+            ;;
+        *)
+            echo "[ERROR] Unsupported OS: $OS_NAME"
+            exit 1
+            ;;
+    esac
+
+    echo "Downloading portable Python for $OS_NAME $ARCH..."
+    PY_TAR="/tmp/python_portable.tar.gz"
+
+    if command -v curl &> /dev/null; then
+        curl -L "$PY_URL" -o "$PY_TAR"
+    elif command -v wget &> /dev/null; then
+        wget "$PY_URL" -O "$PY_TAR"
+    else
+        echo "[ERROR] Neither curl nor wget found. Please install one of them."
+        exit 1
+    fi
+
+    echo "Extracting Python..."
+    mkdir -p "$RUNTIME_DIR"
+    tar -xzf "$PY_TAR" -C "$RUNTIME_DIR" --strip-components=2
+    rm "$PY_TAR"
+
+    if [ ! -f "$RUNTIME_DIR/bin/python3" ]; then
+        echo "[ERROR] Extraction failed. python3 not found in $RUNTIME_DIR/bin/."
+        exit 1
+    fi
+    echo "Portable Python installed in $RUNTIME_DIR."
+}
+
 echo "Starting Wavoscope..."
 
-# Check for Python
-if ! command -v python3 &> /dev/null; then
-    echo "[ERROR] python3 not found. Please install Python 3.9 or higher."
-    exit 1
+# Check for local Python runtime
+if [ -f "$RUNTIME_DIR/bin/python3" ]; then
+    PYTHON_EXE="$RUNTIME_DIR/bin/python3"
+    echo "[INFO] Using local Python runtime."
+else
+    # Check for system Python
+    if ! command -v python3 &> /dev/null; then
+        echo "[INFO] python3 not found. Attempting to download portable Python..."
+        download_python
+        PYTHON_EXE="$RUNTIME_DIR/bin/python3"
+    else
+        # Check Python version (3.9+)
+        if ! python3 -c "import sys; exit(0 if sys.version_info >= (3, 9) else 1)" &> /dev/null; then
+            echo "[INFO] System Python 3 version is incompatible. Attempting to download portable Python..."
+            download_python
+            PYTHON_EXE="$RUNTIME_DIR/bin/python3"
+        fi
+    fi
 fi
-
-# Check Python version (3.9+)
-python3 -c "import sys; exit(0 if sys.version_info >= (3, 9) else 1)" || {
-    echo "[ERROR] Python 3.9 or higher is required."
-    exit 1
-}
 
 # Check for virtual environment
 if [ ! -d ".venv" ]; then
     echo "Creating virtual environment..."
-    python3 -m venv .venv
+    "$PYTHON_EXE" -m venv .venv
 fi
 
 # Activate virtual environment
