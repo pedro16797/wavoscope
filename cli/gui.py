@@ -40,6 +40,8 @@ class Api:
             return None
         window = webview.windows[0]
         file_types = ('MusicXML Files (*.musicxml)', 'All files (*.*)')
+        if directory is None:
+            directory = ''
         res = window.create_file_dialog(webview.SAVE_DIALOG, save_filename=default_filename, file_types=file_types, directory=directory)
         return res
 
