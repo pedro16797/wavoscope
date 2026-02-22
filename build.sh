@@ -101,13 +101,14 @@ NUITKA_FLAGS=(
     --output-dir=dist
     --onefile-no-compression
     --assume-yes-for-downloads
+    --enable-plugin=pywebview
 )
 
 if [ "$OS_TYPE" == "windows" ]; then
     NUITKA_FLAGS+=(
         --windows-icon-from-ico=resources/icons/app-icon.ico
         --windows-console-mode=disable
-        --include-windows-runtime-dlls=no
+        --include-windows-runtime-dlls=yes
         --enable-plugin=upx
     )
 elif [ "$OS_TYPE" == "macos" ]; then

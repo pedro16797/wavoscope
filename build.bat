@@ -105,9 +105,10 @@ python -m nuitka --standalone ^
     --file-version="1.0.0" ^
     --output-filename=Wavoscope ^
     --enable-plugin=upx ^
+    --enable-plugin=pywebview ^
     --upx-binary=upx.exe ^
     --output-dir=dist ^
-    --include-windows-runtime-dlls=no ^
+    --include-windows-runtime-dlls=yes ^
     --onefile-no-compression ^
     --assume-yes-for-downloads ^
     main.py
