@@ -101,9 +101,9 @@ NUITKA_FLAGS=(
     --output-dir=dist
     --onefile-no-compression
     --assume-yes-for-downloads
-    --collect-all=pythonnet
-    --collect-all=clr_loader
-    --collect-all=webview
+    --include-package=pythonnet
+    --include-package=clr_loader
+    --include-package=webview
 )
 
 if [ "$OS_TYPE" == "windows" ]; then

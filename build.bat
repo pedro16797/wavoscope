@@ -77,9 +77,9 @@ python -m nuitka --standalone ^
     --noinclude-data-files="**/venv/**" ^
     --noinclude-data-files="**/__pycache__/**" ^
     --windows-icon-from-ico=resources/icons/app-icon.ico ^
-    --collect-all=pythonnet ^
-    --collect-all=clr_loader ^
-    --collect-all=webview ^
+    --include-package=pythonnet ^
+    --include-package=clr_loader ^
+    --include-package=webview ^
     --nofollow-import-to=pytest ^
     --nofollow-import-to=playwright ^
     --nofollow-import-to=matplotlib ^
