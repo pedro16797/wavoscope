@@ -58,7 +58,8 @@ echo Building frontend...
 where npm >nul 2>nul
 if !errorlevel! neq 0 (
     echo [INFO] npm not found. Attempting to install Node.js into virtual environment...
-    nodeenv -p
+    echo [INFO] Note: You may see "Failed to create nodejs.exe link" errors on Windows; these are usually non-fatal.
+    python -m nodeenv -p --node=lts --force
     if !errorlevel! neq 0 (
         echo [ERROR] Failed to install Node.js. Please install it manually.
         pause

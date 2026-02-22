@@ -40,7 +40,7 @@ pip install -q -r requirements.txt
 echo "Building frontend..."
 if ! command -v npm &> /dev/null; then
     echo "[INFO] npm not found. Attempting to install Node.js into virtual environment..."
-    nodeenv -p
+    python3 -m nodeenv -p --node=lts --force
     if ! command -v npm &> /dev/null; then
         echo "[ERROR] npm still not found after nodeenv installation."
         exit 1
