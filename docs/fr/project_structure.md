@@ -32,7 +32,6 @@ Ce document décrit la structure des répertoires et le rôle de chaque composan
 ## Fichiers Racine
 
 -   **`run.sh` / `run.bat`** : Scripts pour configurer l'environnement et lancer l'application.
--   **`build.sh` / `build.bat`** : Scripts pour compiler le frontend et packager l'application.
 -   **`main.py`** : Point d'entrée de l'application. Lance maintenant FastAPI + pywebview.
 -   **`AGENTS.md`** : Guide et feuille de route pour les agents IA travaillant sur le projet.
 -   **`Readme.md`** : Présentation du projet et instructions d'installation.

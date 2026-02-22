@@ -42,7 +42,6 @@ This document outlines the directory structure and the purpose of each component
 ## Root Files
 
 -   **`run.sh` / `run.bat`**: Scripts to set up the environment and launch the application.
--   **`build.sh` / `build.bat`**: Scripts to build the frontend and package the application.
 -   **`main.py`**: The entry point for the application. Now launches FastAPI + pywebview.
 -   **`AGENTS.md`**: Guidance and roadmap for AI agents working on the project.
 -   **`Readme.md`**: General project overview and setup instructions.

@@ -32,7 +32,6 @@ Este documento describe a estrutura de directorios e o propósito de cada compo�
 ## Ficheiros na raíz
 
 -   **`run.sh` / `run.bat`**: Scripts para configurar o contorno e iniciar a aplicación.
--   **`build.sh` / `build.bat`**: Scripts para compilar o frontend e empaquetar a aplicación.
 -   **`main.py`**: O punto de entrada para a aplicación. Agora inicia FastAPI + pywebview.
 -   **`AGENTS.md`**: Guía e plan de traballo para os axentes de IA que traballan no proxecto.
 -   **`Readme.md`**: Descrición xeral do proxecto e instrucións de configuración.

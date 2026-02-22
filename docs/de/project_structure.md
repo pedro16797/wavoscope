@@ -32,7 +32,6 @@ Dieses Dokument beschreibt die Verzeichnisstruktur und den Zweck der einzelnen K
 ## Dateien im Hauptverzeichnis
 
 -   **`run.sh` / `run.bat`**: Skripte zum Einrichten der Umgebung und Starten der Anwendung.
--   **`build.sh` / `build.bat`**: Skripte zum Bauen des Frontends und Paketieren der Anwendung.
 -   **`main.py`**: Der Einstiegspunkt der Anwendung. Startet jetzt FastAPI + pywebview.
 -   **`AGENTS.md`**: Leitfaden und Roadmap für KI-Agenten, die am Projekt arbeiten.
 -   **`Readme.md`**: Projektübersicht und Installationsanweisungen.

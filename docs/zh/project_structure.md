@@ -32,7 +32,6 @@
 ## 根目录文件
 
 -   **`run.sh` / `run.bat`**: 用于配置环境并启动应用程序的脚本。
--   **`build.sh` / `build.bat`**: 用于构建前端并打包应用程序的脚本。
 -   **`main.py`**: 应用程序入口点。现在启动 FastAPI + pywebview。
 -   **`AGENTS.md`**: 针对项目中工作的 AI 代理的指南和路线图。
 -   **`Readme.md`**: 项目概述和设置说明。

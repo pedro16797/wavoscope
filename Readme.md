@@ -118,26 +118,6 @@ Wavoscope is fully themeable. Choose a look that suits your environment:
 
 ---
 
-## 🛠️ Building from Source
-
-Wavoscope can be built into a standalone executable using Nuitka.
-
-### Prerequisites
-- Python 3.10+
-- Node.js & npm (for building the frontend)
-
-### Build Instructions
-Run the build script for your platform:
-- **Windows:** Run `build.bat`
-- **Linux/macOS:** Run `build.sh`
-
-The final package will be created in the `dist/` directory as `Wavoscope.zip` (or `Wavoscope-Mac.zip` on macOS).
-
-> [!WARNING]
-> While we have added support for building on **Linux** and **macOS**, these platforms have not yet been fully tested. If you encounter any issues, please report them!
-
----
-
 ## 🌍 Localization
 
 Wavoscope supports multiple languages. You can change the language in the **Settings > Global** tab.

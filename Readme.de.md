@@ -116,25 +116,6 @@ Wavoscope ist vollständig anpassbar. Wählen Sie einen Look, der zu Ihrer Umgeb
 - **Toy:** Kräftige Primärfarben.
 - **Warm:** Erdige, angenehme Töne für lange Sitzungen.
 
----
-
-## 🛠️ Erstellung aus dem Quellcode
-
-Wavoscope kann mit Nuitka in eine eigenständige ausführbare Datei umgewandelt werden.
-
-### Voraussetzungen
-- Python 3.10+
-- Node.js & npm (zum Erstellen des Frontends)
-
-### Bauanleitung
-Führen Sie das Build-Skript für Ihre Plattform aus:
-- **Windows:** Führen Sie `build.bat` aus
-- **Linux/macOS:** Führen Sie `build.sh` aus
-
-Das fertige Paket wird im Verzeichnis `dist/` als `Wavoscope.zip` (oder `Wavoscope-Mac.zip` unter macOS) erstellt.
-
-> [!WARNING]
-> Obwohl wir die Unterstützung für die Erstellung unter **Linux** und **macOS** hinzugefügt haben, wurden diese Plattformen noch nicht vollständig getestet. Wenn Sie auf Probleme stoßen, melden Sie diese bitte!
 
 ---
 

@@ -116,25 +116,6 @@ Wavoscope è completamente personalizzabile tramite i temi. Scegli lo stile che 
 - **Toy:** Colori primari vivaci.
 - **Warm:** Toni caldi e naturali per sessioni prolungate.
 
----
-
-## 🛠️ Compilazione dai sorgenti
-
-Wavoscope può essere compilato in un eseguibile autonomo utilizzando Nuitka.
-
-### Prerequisiti
-- Python 3.10+
-- Node.js e npm (per compilare il frontend)
-
-### Istruzioni per la compilazione
-Esegui lo script di compilazione per la tua piattaforma:
-- **Windows:** Esegui `build.bat`
-- **Linux/macOS:** Esegui `build.sh`
-
-Il pacchetto finale verrà creato nella directory `dist/` come `Wavoscope.zip` (o `Wavoscope-Mac.zip` su macOS).
-
-> [!WARNING]
-> Sebbene abbiamo aggiunto il supporto per la compilazione su **Linux** e **macOS**, queste piattaforme non sono ancora state completamente testate. Se riscontri problemi, ti preghiamo di segnalarli!
 
 ---
 

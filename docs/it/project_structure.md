@@ -32,7 +32,6 @@ Questo documento descrive la struttura delle cartelle e lo scopo di ogni compone
 ## File nella Root
 
 -   **`run.sh` / `run.bat`**: Script per configurare l'ambiente ed avviare l'applicazione.
--   **`build.sh` / `build.bat`**: Script per compilare il frontend ed impacchettare l'applicazione.
 -   **`main.py`**: Punto di ingresso dell'applicazione. Ora avvia FastAPI + pywebview.
 -   **`AGENTS.md`**: Guida e roadmap per gli agenti IA che lavorano sul progetto.
 -   **`Readme.md`**: Panoramica del progetto ed istruzioni per la configurazione.
