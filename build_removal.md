@@ -42,10 +42,10 @@ To further improve the user experience and ensure Wavoscope can run on systems w
 - **Linux & macOS**: The [python-build-standalone](https://github.com/indygreg/python-build-standalone) project provides high-quality, pre-compiled Python binaries for various architectures and operating systems. These can be downloaded as TAR.GZ archives and extracted via standard shell tools.
 
 ### Implementation Details
-The bundling process is now automated within the `run.bat` and `run.sh` scripts:
+The bundling process is now automated and mandatory within the `run.bat` and `run.sh` scripts:
 
-1.  **Detection**: The scripts check for a local `.python_runtime` directory first. If missing, they check the system path for `python`/`python3` and verify the version is 3.9 or higher.
-2.  **Automated Bundling**: If a suitable Python is not found, the scripts automatically download a pre-compiled, standalone Python 3.11 distribution from the `python-build-standalone` project.
+1.  **Always Contained**: To ensure maximum consistency and eliminate conflicts with system-level Python installations, Wavoscope now **exclusively** uses its own bundled Python runtime. System-wide Python detection has been removed.
+2.  **Automated Bundling**: If the local `.python_runtime` directory is missing, the scripts automatically download a pre-compiled, standalone Python 3.11 distribution from the `python-build-standalone` project.
 3.  **Cross-Platform Support**:
     -   **Windows**: Uses PowerShell to download and the native `tar` command to extract the MSVC-shared build for x86_64.
     -   **Linux**: Detects `x86_64` or `aarch64` architectures and downloads the appropriate GNU-linked build.

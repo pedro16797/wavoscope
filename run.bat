@@ -2,45 +2,41 @@
 setlocal enabledelayedexpansion
 
 REM Wavoscope Launcher Script for Windows
+REM This script always uses a contained Python runtime to ensure consistency.
 
 echo Starting Wavoscope...
 
-set "PYTHON_EXE=python"
 set "RUNTIME_DIR=%~dp0.python_runtime"
 
-REM Check for local Python runtime
-if exist "!RUNTIME_DIR!\python.exe" (
-    set "PYTHON_EXE=!RUNTIME_DIR!\python.exe"
-    echo [INFO] Using local Python runtime.
-) else (
-    REM Check for system Python
-    where python >nul 2>nul
-    if %errorlevel% neq 0 (
-        echo [INFO] System Python not found. Attempting to download portable Python...
-        call :download_python
-        if exist "!RUNTIME_DIR!\python.exe" (
-            set "PYTHON_EXE=!RUNTIME_DIR!\python.exe"
-        ) else (
-            echo [ERROR] Failed to set up local Python runtime.
-            pause
-            exit /b 1
-        )
-    ) else (
-        REM Check Python version (3.9+)
-        python -c "import sys; exit(0 if sys.version_info >= (3, 9) else 1)"
-        if %errorlevel% neq 0 (
-            echo [INFO] System Python version is incompatible. Attempting to download portable Python...
-            call :download_python
-            if exist "!RUNTIME_DIR!\python.exe" (
-                set "PYTHON_EXE=!RUNTIME_DIR!\python.exe"
-            ) else (
-                echo [ERROR] Failed to set up local Python runtime.
-                pause
-                exit /b 1
-            )
-        )
+REM Ensure local Python runtime exists
+if not exist "!RUNTIME_DIR!\python.exe" (
+    echo [INFO] Local Python runtime not found. Downloading portable Python (CPython 3.11)...
+
+    set "PY_URL=https://github.com/astral-sh/python-build-standalone/releases/download/20240224/cpython-3.11.8+20240224-x86_64-pc-windows-msvc-shared-install_only.tar.gz"
+    set "PY_TAR=%TEMP%\python_portable.tar.gz"
+
+    powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%PY_URL%' -OutFile '%PY_TAR%'"
+    if !errorlevel! neq 0 (
+        echo [ERROR] Failed to download Python.
+        pause
+        exit /b 1
     )
+
+    echo Extracting Python...
+    if not exist "!RUNTIME_DIR!" mkdir "!RUNTIME_DIR!"
+    tar -xzf "%PY_TAR%" -C "!RUNTIME_DIR!" --strip-components=2
+    del "%PY_TAR%"
+
+    if not exist "!RUNTIME_DIR!\python.exe" (
+        echo [ERROR] Extraction failed. python.exe not found in !RUNTIME_DIR!.
+        pause
+        exit /b 1
+    )
+    echo Portable Python installed in !RUNTIME_DIR!.
 )
+
+set "PYTHON_EXE=!RUNTIME_DIR!\python.exe"
+echo [INFO] Using local Python runtime.
 
 REM Check for virtual environment
 if not exist ".venv" (
@@ -123,27 +119,4 @@ if %errorlevel% neq 0 (
 
 echo Wavoscope closed.
 pause
-exit /b 0
-
-:download_python
-echo Downloading portable Python (CPython 3.11)...
-set "PY_URL=https://github.com/astral-sh/python-build-standalone/releases/download/20240224/cpython-3.11.8+20240224-x86_64-pc-windows-msvc-shared-install_only.tar.gz"
-set "PY_TAR=%TEMP%\python_portable.tar.gz"
-
-powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%PY_URL%' -OutFile '%PY_TAR%'"
-if %errorlevel% neq 0 (
-    echo [ERROR] Failed to download Python.
-    exit /b 1
-)
-
-echo Extracting Python...
-if not exist "!RUNTIME_DIR!" mkdir "!RUNTIME_DIR!"
-tar -xzf "%PY_TAR%" -C "!RUNTIME_DIR!" --strip-components=2
-del "%PY_TAR%"
-
-if not exist "!RUNTIME_DIR!\python.exe" (
-    echo [ERROR] Extraction failed. python.exe not found in !RUNTIME_DIR!.
-    exit /b 1
-)
-echo Portable Python installed in !RUNTIME_DIR!.
 exit /b 0

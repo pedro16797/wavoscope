@@ -1,11 +1,11 @@
 #!/bin/bash
 # Wavoscope Launcher Script
+# This script always uses a contained Python runtime to ensure consistency.
 
 set -e # Exit on error
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 RUNTIME_DIR="$SCRIPT_DIR/.python_runtime"
-PYTHON_EXE="python3"
 
 # Function to download and extract portable Python
 download_python() {
@@ -65,25 +65,14 @@ download_python() {
 
 echo "Starting Wavoscope..."
 
-# Check for local Python runtime
-if [ -f "$RUNTIME_DIR/bin/python3" ]; then
-    PYTHON_EXE="$RUNTIME_DIR/bin/python3"
-    echo "[INFO] Using local Python runtime."
-else
-    # Check for system Python
-    if ! command -v python3 &> /dev/null; then
-        echo "[INFO] python3 not found. Attempting to download portable Python..."
-        download_python
-        PYTHON_EXE="$RUNTIME_DIR/bin/python3"
-    else
-        # Check Python version (3.9+)
-        if ! python3 -c "import sys; exit(0 if sys.version_info >= (3, 9) else 1)" &> /dev/null; then
-            echo "[INFO] System Python 3 version is incompatible. Attempting to download portable Python..."
-            download_python
-            PYTHON_EXE="$RUNTIME_DIR/bin/python3"
-        fi
-    fi
+# Ensure local Python runtime exists
+if [ ! -f "$RUNTIME_DIR/bin/python3" ]; then
+    echo "[INFO] Local Python runtime not found. Attempting to download portable Python..."
+    download_python
 fi
+
+PYTHON_EXE="$RUNTIME_DIR/bin/python3"
+echo "[INFO] Using local Python runtime."
 
 # Check for virtual environment
 if [ ! -d ".venv" ]; then
