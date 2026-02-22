@@ -57,3 +57,24 @@ Does this prevent issues from happening again?
 3.  **Portability:** The combination of runtime DLL bundling and UPX exclusion makes the bundle significantly more resilient to the variations found in end-user environments (clean installs, different OS builds, etc.).
 
 While no build process is 100% bulletproof (especially with cross-language bridges like Python-to-.NET), this configuration follows the best practices discovered by the `pywebview` and `nuitka` communities for deploying high-stability Windows applications.
+
+## 5. Why Nuitka? (Benefits and Trade-offs)
+
+Given that Nuitka still requires the Python runtime, one might ask what the benefit is over other tools like PyInstaller or simply distributing a virtual environment.
+
+### Performance
+*   **Compilation to Machine Code:** Unlike PyInstaller, which simply bundles the Python interpreter and your `.pyc` (bytecode) files into a zip-like archive, Nuitka translates your Python code into C and compiles it into machine code.
+*   **Execution Speed:** For pure Python logic (loops, math, object manipulation), this can result in a significant performance boost (often 10-30% or more). For apps like Wavoscope that handle real-time audio and complex UI logic, every bit of reduced overhead in the main loop helps.
+*   **Reduced Startup Time:** Because the code is already "compiled" and doesn't need to be unzipped to a temporary directory (as PyInstaller's `--onefile` mode does), startup times are typically faster and more consistent.
+
+### Deliverable Size
+*   **Dependency Tracing:** Nuitka's static analysis is often more aggressive and precise than other tools. It attempts to include only the parts of the standard library and third-party packages that are actually used, which can lead to smaller standalone bundles.
+*   **UPX Integration:** Nuitka has first-class support for UPX, allowing for automated compression of the final binaries and DLLs (with the exception of critical files like `Python.Runtime.dll` that we explicitly excluded to maintain stability).
+
+### Security and Intellectual Property
+*   **Anti-Reverse Engineering:** Because the Python logic is converted to C and then machine code, it is significantly harder to reverse-engineer than standard Python bytecode. While not "impossible" to crack, it provides a much higher level of protection for the application's core logic compared to bytecode-bundling tools.
+
+### Reliability
+*   **Self-Contained Executable:** Nuitka's `--standalone` mode creates a distribution that is independent of the user's system Python. By bundling the Windows Runtime DLLs and the correct versions of all extension modules, we ensure that the app runs identically on a developer's machine and a user's "clean" install.
+
+In summary, Nuitka was chosen for Wavoscope because it provides the best balance of **performance**, **security**, and **distribution reliability** for a cross-platform desktop application.
