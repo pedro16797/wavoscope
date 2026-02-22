@@ -101,7 +101,9 @@ NUITKA_FLAGS=(
     --output-dir=dist
     --onefile-no-compression
     --assume-yes-for-downloads
-    --enable-plugin=pywebview
+    --collect-all=pythonnet
+    --collect-all=clr_loader
+    --collect-all=webview
 )
 
 if [ "$OS_TYPE" == "windows" ]; then
@@ -110,6 +112,7 @@ if [ "$OS_TYPE" == "windows" ]; then
         --windows-console-mode=disable
         --include-windows-runtime-dlls=yes
         --enable-plugin=upx
+        --upx-exclude=Python.Runtime.dll
     )
 elif [ "$OS_TYPE" == "macos" ]; then
     NUITKA_FLAGS+=(

@@ -77,6 +77,9 @@ python -m nuitka --standalone ^
     --noinclude-data-files="**/venv/**" ^
     --noinclude-data-files="**/__pycache__/**" ^
     --windows-icon-from-ico=resources/icons/app-icon.ico ^
+    --collect-all=pythonnet ^
+    --collect-all=clr_loader ^
+    --collect-all=webview ^
     --nofollow-import-to=pytest ^
     --nofollow-import-to=playwright ^
     --nofollow-import-to=matplotlib ^
@@ -105,7 +108,7 @@ python -m nuitka --standalone ^
     --file-version="1.0.0" ^
     --output-filename=Wavoscope ^
     --enable-plugin=upx ^
-    --enable-plugin=pywebview ^
+    --upx-exclude=Python.Runtime.dll ^
     --upx-binary=upx.exe ^
     --output-dir=dist ^
     --include-windows-runtime-dlls=yes ^
