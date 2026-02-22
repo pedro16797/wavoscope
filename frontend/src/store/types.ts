@@ -167,6 +167,7 @@ export interface ConfigSlice {
     musicxml_author?: string,
     language?: string
   }) => Promise<void>;
+  browseFolder: () => Promise<string | null>;
   setShowSettings: (show: boolean) => void;
   setShowSpectrum: (show: boolean) => void;
   setShowLyrics: (show: boolean) => void;

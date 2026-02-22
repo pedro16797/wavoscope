@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, FolderOpen } from 'lucide-react';
 
 interface SettingsDialogProps {
   onClose: () => void;
@@ -12,7 +12,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const {
     themes, currentTheme, locales, fetchLocales, language,
     click_volume, spectrum_keys, default_output_folder,
-    musicxml_author, updateConfig, time_signature, updateTimeSignature
+    musicxml_author, updateConfig, time_signature, updateTimeSignature,
+    browseFolder
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<'global' | 'project' | 'keybinds'>('global');
@@ -170,11 +171,22 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                             <div className="space-y-4 bg-black/20 p-4 rounded-[var(--ui-radius)] border border-grid">
                                 <div className="space-y-1">
                                     <label htmlFor="output-folder" className="text-[9px] opacity-40 uppercase font-bold">{t('settings.output_dir')}</label>
-                                    <input id="output-folder" type="text" value={outputFolder}
-                                           onChange={(e) => setOutputFolder(e.target.value)}
-                                           placeholder="e.g. /Users/Name/Documents"
-                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
-                                           style={{ borderWidth: 'var(--ui-border)' }} />
+                                    <div className="flex gap-2">
+                                        <input id="output-folder" type="text" value={outputFolder}
+                                               onChange={(e) => setOutputFolder(e.target.value)}
+                                               placeholder="e.g. /Users/Name/Documents"
+                                               className="flex-1 bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                               style={{ borderWidth: 'var(--ui-border)' }} />
+                                        <button onClick={async () => {
+                                                    const res = await browseFolder();
+                                                    if (res) setOutputFolder(res);
+                                                }}
+                                                className="bg-background border border-grid rounded-[var(--ui-radius)] px-3 hover:bg-white/5 transition-colors text-accent"
+                                                style={{ borderWidth: 'var(--ui-border)' }}
+                                                title="Browse">
+                                            <FolderOpen size={16} />
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="space-y-1">
                                     <label htmlFor="musicxml-author" className="text-[9px] opacity-40 uppercase font-bold">{t('settings.author')}</label>

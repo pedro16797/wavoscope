@@ -153,6 +153,14 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
     }
   },
 
+  browseFolder: async () => {
+    const pywindow = window as any;
+    if (pywindow.pywebview?.api?.browse_folder) {
+        return await pywindow.pywebview.api.browse_folder();
+    }
+    return null;
+  },
+
   setShowSettings: (show: boolean) => set({ showSettings: show }),
   setShowSpectrum: (show: boolean) => set({ showSpectrum: show }),
   setShowLyrics: (show: boolean) => set({ showLyrics: show }),
