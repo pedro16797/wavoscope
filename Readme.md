@@ -12,6 +12,13 @@ Wavoscope is a powerful, real-time audio visualization and transcription aid des
 
 ## 🚀 Getting Started
 
+### Launching Wavoscope
+Wavoscope is designed to be self-contained. You do not need to install Python or any other dependencies manually.
+- **Windows:** Double-click `run.bat`.
+- **Linux/macOS:** Run `bash run.sh` in your terminal.
+
+On the first launch, Wavoscope will automatically download its own Python runtime and set up the necessary environment. This may take a few minutes depending on your internet connection.
+
 ### Project Management
 Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope creates or loads a `.oscope` file in the same directory to store your markers, loops, and settings.
 - **Open:** Click the folder icon in the playback bar to load any common audio format (MP3, WAV, FLAC, etc.).

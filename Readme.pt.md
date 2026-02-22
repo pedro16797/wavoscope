@@ -12,6 +12,13 @@ Wavoscope é uma ferramenta poderosa de visualização de áudio em tempo real e
 
 ## 🚀 Primeiros Passos
 
+### Iniciando o Wavoscope
+O Wavoscope foi projetado para ser independente. Você não precisa instalar o Python ou qualquer outra dependência manualmente.
+- **Windows:** Clique duas vezes em `run.bat`.
+- **Linux/macOS:** Execute `bash run.sh` no seu terminal.
+
+Na primeira inicialização, o Wavoscope baixará automaticamente seu próprio tempo de execução Python e configurará o ambiente necessário. Isso pode levar alguns minutos, dependendo da sua conexão com a Internet.
+
 ### Gestão de Projetos
 Wavoscope utiliza um sistema de arquivos "sidecar". Quando você abre um arquivo de áudio, o Wavoscope cria ou carrega um arquivo `.oscope` no mesmo diretório para armazenar seus marcadores, loops e configurações.
 - **Abrir:** Clique no ícone de pasta na barra de reprodução para carregar qualquer formato de áudio comum (MP3, WAV, FLAC, etc.).
