@@ -40,8 +40,20 @@ class Api:
             return None
         window = webview.windows[0]
         file_types = ('MusicXML Files (*.musicxml)', 'All files (*.*)')
-        res = window.create_file_dialog(webview.SAVE_DIALOG, save_filename=default_filename, file_types=file_types, directory=directory)
+        if directory is None:
+            directory = ''
+        res = window.create_file_dialog(webview.FileDialog.SAVE, save_filename=default_filename, file_types=file_types, directory=directory)
         return res
+
+    def browse_folder(self):
+        if not webview.windows:
+            logger.error("No windows found")
+            return None
+        window = webview.windows[0]
+        res = window.create_file_dialog(webview.FileDialog.FOLDER)
+        if res:
+            return res[0]
+        return None
 
 def run_gui(url, debug=False):
     api = Api()

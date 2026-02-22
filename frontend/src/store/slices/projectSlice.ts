@@ -226,7 +226,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
 
         const pywindow = window as any;
         if (pywindow.pywebview?.api?.save_dialog) {
-            const res = await pywindow.pywebview.api.save_dialog(defaultFilename, get().default_output_folder || null);
+            const res = await pywindow.pywebview.api.save_dialog(defaultFilename, get().default_output_folder || '');
             if (res) savePath = Array.isArray(res) ? res[0] : res;
         } else {
             set({ export_status: { active: true, progress: 0, message: 'Generating MusicXML...' } });
