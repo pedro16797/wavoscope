@@ -37,9 +37,20 @@ echo Building React frontend...
 
 where npm >nul 2>nul
 if !errorlevel! neq 0 (
-    echo [ERROR] npm not found.
-    pause
-    exit /b 1
+    echo [INFO] npm not found. Attempting to install Node.js into virtual environment...
+    nodeenv -p
+    if !errorlevel! neq 0 (
+        echo [ERROR] Failed to install Node.js. Please install it manually.
+        pause
+        exit /b 1
+    )
+    REM Re-check npm after nodeenv installation
+    where npm >nul 2>nul
+    if !errorlevel! neq 0 (
+        echo [ERROR] npm still not found after nodeenv installation.
+        pause
+        exit /b 1
+    )
 )
 
 cd frontend
