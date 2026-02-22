@@ -35,6 +35,7 @@ if exist ".venv\Scripts\activate.bat" (
 
 REM Ensure requirements are installed and up to date
 echo Checking dependencies...
+python -m pip install -q --upgrade pip
 pip install -q -r requirements.txt
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to install dependencies.

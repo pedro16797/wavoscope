@@ -27,6 +27,7 @@ fi
 
 # Ensure requirements are installed and up to date
 echo "Checking dependencies..."
+python3 -m pip install -q --upgrade pip
 pip install -q -r requirements.txt
 
 # Build frontend
