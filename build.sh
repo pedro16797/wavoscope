@@ -5,10 +5,22 @@ set -e
 
 echo "Starting Wavoscope build..."
 
+# Check for Python
+if ! command -v python3 &> /dev/null; then
+    echo "[ERROR] python3 not found. Please install Python."
+    exit 1
+fi
+
+# Check Python version
+if ! python3 -c "import sys; exit(0 if sys.version_info >= (3, 9) else 1)" &> /dev/null; then
+    echo "[ERROR] Python 3.9 or higher is required."
+    exit 1
+fi
+
 # Check for virtual environment
 if [ ! -d ".venv" ]; then
     echo "Creating virtual environment..."
-    python3 -m venv .venv
+    python3 -m venv --copies .venv
 fi
 
 # Activate virtual environment

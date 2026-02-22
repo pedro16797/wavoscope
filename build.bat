@@ -13,10 +13,18 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+REM Check Python version
+python -c "import sys; exit(0 if sys.version_info >= (3, 9) else 1)" >nul 2>nul
+if %errorlevel% neq 0 (
+    echo [ERROR] Python 3.9 or higher is required.
+    pause
+    exit /b 1
+)
+
 REM Check for virtual environment
 if not exist ".venv" (
     echo Creating virtual environment...
-    python -m venv .venv
+    python -m venv --copies .venv
 )
 
 REM Activate virtual environment
