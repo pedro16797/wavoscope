@@ -53,7 +53,7 @@ download_python() {
 
     echo "Extracting Python..."
     mkdir -p "$RUNTIME_DIR"
-    tar -xzf "$PY_TAR" -C "$RUNTIME_DIR" --strip-components=2
+    tar -xzf "$PY_TAR" -C "$RUNTIME_DIR" --strip-components=1
     rm "$PY_TAR"
 
     if [ ! -f "$RUNTIME_DIR/bin/python3" ]; then

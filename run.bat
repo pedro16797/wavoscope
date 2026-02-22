@@ -26,7 +26,7 @@ if errorlevel 1 (
 
 echo Extracting Python...
 if not exist "!RUNTIME_DIR!" mkdir "!RUNTIME_DIR!"
-tar -xzf "!PY_TAR!" -C "!RUNTIME_DIR!" --strip-components=2
+tar -xzf "!PY_TAR!" -C "!RUNTIME_DIR!" --strip-components=1
 if errorlevel 1 (
     echo [ERROR] Extraction failed.
     pause
