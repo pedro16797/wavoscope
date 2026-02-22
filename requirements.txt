@@ -8,3 +8,4 @@ pywebview
 python-stretch
 tinytag
 nodeenv
+pyinstaller

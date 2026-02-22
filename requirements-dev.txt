@@ -2,4 +2,3 @@ pytest>=8.0
 playwright
 httpx
 Pillow
-pyinstaller

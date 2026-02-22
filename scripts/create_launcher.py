@@ -36,7 +36,19 @@ def create_launcher():
             args.append(f'--icon={icns_path}')
 
     PyInstaller.__main__.run(args)
-    print("\nLauncher created in the 'dist' directory.")
+
+    # Move to root
+    exe_name = "Wavoscope.exe" if sys.platform == "win32" else "Wavoscope"
+    src = root_dir / "dist" / exe_name
+    dst = root_dir / exe_name
+
+    if src.exists():
+        if dst.exists():
+            os.remove(dst)
+        os.rename(src, dst)
+        print(f"\nLauncher created: {dst}")
+    else:
+        print("\n[ERROR] Launcher build failed.")
 
 if __name__ == "__main__":
     create_launcher()

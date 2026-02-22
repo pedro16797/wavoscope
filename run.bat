@@ -115,6 +115,15 @@ cd ..
 :frontend_ready
 echo [INFO] Frontend ready.
 
+REM Build launcher if missing
+if exist "Wavoscope.exe" goto :launcher_ready
+echo Building launcher executable...
+python scripts/create_launcher.py
+if errorlevel 1 (
+    echo [WARNING] Failed to build launcher executable. You can still use run.bat.
+)
+
+:launcher_ready
 REM Run the application
 echo Launching Wavoscope...
 python main.py

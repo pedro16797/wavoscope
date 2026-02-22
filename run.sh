@@ -115,6 +115,12 @@ else
     echo "Frontend already built. Skipping frontend build."
 fi
 
+# Build launcher if missing
+if [ ! -f "Wavoscope" ]; then
+    echo "Building launcher executable..."
+    python3 scripts/create_launcher.py || echo "[WARNING] Failed to build launcher executable. You can still use run.sh."
+fi
+
 # Run the application
 echo "Launching Wavoscope..."
 python3 main.py
