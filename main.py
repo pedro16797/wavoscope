@@ -9,6 +9,7 @@ sys.path.append(str(root_path))
 from cli.launcher import start_backend_thread, wait_for_backend
 from cli.gui import run_gui
 from utils.logging import logger
+from backend import state
 
 def main():
     parser = argparse.ArgumentParser()
@@ -27,6 +28,14 @@ def main():
 
     # Run GUI
     run_gui(url, debug=cli_args.debug)
+
+    # Cleanup
+    if state.project:
+        logger.info("Closing project and cleaning up resources...")
+        try:
+            state.project.close()
+        except Exception as e:
+            logger.error(f"Error during cleanup: {e}")
 
 if __name__ == "__main__":
     main()
