@@ -104,15 +104,15 @@ if ! command -v npm &> /dev/null; then
     source .venv/bin/activate
 fi
 
-# Build frontend if missing
-if [ ! -d "frontend/dist" ]; then
+# Build frontend
+if [ "$WAVOSCOPE_LAUNCHER" == "1" ] && [ -d "frontend/dist" ]; then
+    echo "Frontend already built. Skipping frontend build."
+else
     echo "Building frontend..."
     cd frontend
     npm install --no-fund --no-audit
     npm run build
     cd ..
-else
-    echo "Frontend already built. Skipping frontend build."
 fi
 
 # Build launcher if missing

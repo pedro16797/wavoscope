@@ -91,8 +91,8 @@ if errorlevel 1 (
     call .venv\Scripts\activate.bat
 )
 
-REM Build frontend if missing
-if exist "frontend\dist\" goto :frontend_ready
+REM Build frontend
+if "%WAVOSCOPE_LAUNCHER%"=="1" if exist "frontend\dist\" goto :frontend_ready
 
 echo Building frontend...
 cd frontend
@@ -134,5 +134,5 @@ if errorlevel 1 (
 )
 
 echo Wavoscope closed.
-pause
+if not "%WAVOSCOPE_LAUNCHER%"=="1" pause
 exit /b 0

@@ -51,7 +51,11 @@ def main():
             # Change directory to where the script is
             os.chdir(script.parent)
 
-            kwargs = {"shell": True}
+            # Mark that we are running from the launcher
+            env = os.environ.copy()
+            env["WAVOSCOPE_LAUNCHER"] = "1"
+
+            kwargs = {"shell": True, "env": env}
             # Use CREATE_NEW_CONSOLE (0x10) to ensure the batch script is visible
             # since the launcher itself is often run in windowed mode (no console).
             try:
@@ -76,7 +80,12 @@ def main():
             os.chmod(script, 0o755)
             # Change directory to where the script is
             os.chdir(script.parent)
-            subprocess.call(["/bin/bash", str(script)])
+
+            # Mark that we are running from the launcher
+            env = os.environ.copy()
+            env["WAVOSCOPE_LAUNCHER"] = "1"
+
+            subprocess.call(["/bin/bash", str(script)], env=env)
         else:
             show_error(f"[ERROR] {script_name} not found in {base_dir} or {parent_dir}.")
             sys.exit(1)
