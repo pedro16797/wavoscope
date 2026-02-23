@@ -18,6 +18,7 @@ class PlaybackEngine:
         self._playing: bool = False
         self._lock = threading.RLock()
         self._stream: sd.OutputStream | None = None
+        self._device: int | str | None = None
         self._callbacks: Dict[str, List[Callable]] = {"finished": []}
 
     def set_data(self, data: np.ndarray, sr: int):
@@ -53,17 +54,26 @@ class PlaybackEngine:
             logger.warning("sounddevice not available.")
             return
 
-        if self._stream is not None:
-            self._stream.stop()
-            self._stream.close()
+        with self._lock:
+            if self._stream is not None:
+                try:
+                    self._stream.stop()
+                    self._stream.close()
+                except Exception:
+                    pass
 
-        self._stream = sd.OutputStream(
-            samplerate=self._sr,
-            channels=1,
-            callback=callback,
-            finished_callback=self._on_finished,
-        )
-        self._stream.start()
+            try:
+                self._stream = sd.OutputStream(
+                    samplerate=self._sr,
+                    channels=1,
+                    callback=callback,
+                    finished_callback=self._on_finished,
+                    device=self._device,
+                )
+                self._stream.start()
+            except Exception as e:
+                logger.error(f"Failed to start audio stream on device {self._device}: {e}")
+                self._stream = None
 
     def stop_stream(self):
         with self._lock:

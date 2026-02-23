@@ -11,6 +11,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const {
     themes, currentTheme, locales, fetchLocales, language,
+    audioDevices, fetchAudioDevices, audio_device,
     click_volume, spectrum_keys, default_output_folder,
     musicxml_author, updateConfig, time_signature, updateTimeSignature,
     browseFolder
@@ -20,6 +21,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
 
   const [theme, setTheme] = useState(currentTheme);
   const [lang, setLang] = useState(language);
+  const [audioDev, setAudioDev] = useState(audio_device);
   const [clickVol, setClickVol] = useState(click_volume * 100);
   const [keys, setKeys] = useState(spectrum_keys);
   const [outputFolder, setOutputFolder] = useState(default_output_folder);
@@ -30,12 +32,14 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
 
   useEffect(() => {
     fetchLocales();
-  }, [fetchLocales]);
+    fetchAudioDevices();
+  }, [fetchLocales, fetchAudioDevices]);
 
   const handleSave = async () => {
     updateConfig({
         theme,
         language: lang,
+        audio_device: audioDev,
         click_volume: clickVol / 100,
         spectrum_keys: keys,
         default_output_folder: outputFolder,
@@ -113,6 +117,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                 style={{ borderWidth: 'var(--ui-border)' }}>
                             {locales.map(l => (
                                 <option key={l.code} value={l.code}>{l.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="space-y-2">
+                        <label htmlFor="audio-device-select" className="text-[10px] uppercase font-bold opacity-50">{t('settings.audio_device')}</label>
+                        <select id="audio-device-select" value={audioDev} onChange={(e) => setAudioDev(e.target.value)}
+                                className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm text-text outline-none focus:border-accent"
+                                style={{ borderWidth: 'var(--ui-border)' }}>
+                            <option value="">{t('settings.default_device')}</option>
+                            {audioDevices.map(d => (
+                                <option key={`${d.index}-${d.name}`} value={d.name}>{d.name}</option>
                             ))}
                         </select>
                     </div>

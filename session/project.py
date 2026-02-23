@@ -37,6 +37,10 @@ class Project:
 
         from utils.config import Config
         cfg = Config()
+        device_name = cfg.get("ui.audio_device", "")
+        if device_name:
+            self.backend.set_device(device_name)
+
         self.backend.set_click_volume(cfg.get("ui.click_volume", 0.3))
         self.backend.set_loop_provider(self.get_loop_range)
 

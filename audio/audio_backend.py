@@ -34,6 +34,12 @@ class AudioBackend:
         self._read_sample_idx: int = 0
         self._stop_event = threading.Event()
 
+        # Device management
+        self._selected_device_name: str | None = None  # None means "System Default"
+        self._last_default_name: str | None = None
+        self._watcher_thread: threading.Thread | None = None
+        self._start_watcher()
+
         # Looping state
         self._loop_enabled: bool = False
         self._loop_provider: Callable[[float], Tuple[float, float]] | None = None
@@ -63,8 +69,77 @@ class AudioBackend:
     def close(self) -> None:
         """Stop stream and release resources."""
         self._stop_event.set()
+        if self._watcher_thread:
+            self._watcher_thread.join(timeout=1.0)
         self._playback.stop_stream()
         self._synth.close()
+
+    # ---------- hardware management ----------
+    @staticmethod
+    def list_devices() -> List[Dict[str, Any]]:
+        """List available output devices."""
+        try:
+            import sounddevice as sd
+            devices = sd.query_devices()
+            output_devices = []
+            for i, d in enumerate(devices):
+                if d['max_output_channels'] > 0:
+                    output_devices.append({
+                        "index": i,
+                        "name": d['name'],
+                        "hostapi": d['hostapi'],
+                        "is_default": i == sd.default.device[1]
+                    })
+            return output_devices
+        except Exception:
+            return []
+
+    def set_device(self, device_name: str | None) -> None:
+        """Set the active output device by name. None means 'System Default'."""
+        self._selected_device_name = device_name
+        self._update_hardware_device()
+
+    def _update_hardware_device(self) -> None:
+        try:
+            import sounddevice as sd
+            device_idx = None
+            if self._selected_device_name:
+                devices = sd.query_devices()
+                for i, d in enumerate(devices):
+                    if d['name'] == self._selected_device_name and d['max_output_channels'] > 0:
+                        device_idx = i
+                        break
+
+            self._playback._device = device_idx
+            self._synth.set_device(device_idx)
+
+            # If we're already playing or a file is open, we should restart the playback stream
+            if self._playback._data is not None:
+                self._playback.start_stream(self._audio_callback)
+        except Exception as e:
+            logger.error(f"Error updating audio device: {e}")
+
+    def _start_watcher(self) -> None:
+        self._watcher_thread = threading.Thread(target=self._watch_devices, daemon=True)
+        self._watcher_thread.start()
+
+    def _watch_devices(self) -> None:
+        import time
+        while not self._stop_event.is_set():
+            if self._selected_device_name is None:
+                try:
+                    import sounddevice as sd
+                    devices = sd.query_devices()
+                    def_idx = sd.default.device[1]
+                    if def_idx >= 0:
+                        curr_name = devices[def_idx]['name']
+                        if self._last_default_name is not None and curr_name != self._last_default_name:
+                            logger.info(f"Default audio device changed to {curr_name}. Updating streams.")
+                            self._update_hardware_device()
+                        self._last_default_name = curr_name
+                except Exception:
+                    pass
+            time.sleep(2.0)
 
     # ---------- playback control ----------
     def seek(self, sec: float) -> None:
