@@ -16,6 +16,8 @@
     "keybinds": "Atajos",
     "theme": "Tema de la UI",
     "language": "Idioma",
+    "audio_device": "Salida de Audio",
+    "default_device": "Predeterminado del Sistema",
     "volume": "Volumen del clic",
     "keys": "Teclas de piano visibles",
     "measure_calc": "Cálculo de compás",

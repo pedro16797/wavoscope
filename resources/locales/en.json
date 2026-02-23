@@ -16,6 +16,8 @@
     "keybinds": "Keybinds",
     "theme": "UI Theme",
     "language": "Language",
+    "audio_device": "Audio Output",
+    "default_device": "System Default",
     "volume": "Click Volume",
     "keys": "Visible Piano Keys",
     "measure_calc": "Measure Calculation",

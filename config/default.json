@@ -15,6 +15,7 @@
         "click_volume": 0.3,
         "default_output_folder": "",
         "musicxml_author": "",
+        "audio_device": "",
         "keybinds": {
             "play_pause": "Space",
             "seek_left": "Left",

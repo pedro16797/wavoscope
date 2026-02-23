@@ -11,12 +11,14 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   themes: {},
   currentTheme: 'dark',
   locales: [],
+  audioDevices: [],
   language: 'en',
   metronome_enabled: true,
   click_volume: 0.3,
   spectrum_keys: 37,
   default_output_folder: '',
   musicxml_author: '',
+  audio_device: '',
   showSettings: false,
   showSpectrum: true,
   showLyrics: false,
@@ -41,6 +43,15 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
     }
   },
 
+  fetchAudioDevices: async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/config/audio-devices`);
+      set({ audioDevices: res.data });
+    } catch (e) {
+      console.error("[Store] Failed to fetch audio devices:", e);
+    }
+  },
+
   fetchConfig: async () => {
     try {
       const res = await axios.get(`${API_BASE}/config`);
@@ -53,7 +64,8 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         click_volume: res.data.click_volume,
         spectrum_keys: newKeys,
         default_output_folder: res.data.default_output_folder,
-        musicxml_author: res.data.musicxml_author
+        musicxml_author: res.data.musicxml_author,
+        audio_device: res.data.audio_device
       };
 
       const maxShift = 6 - Math.floor(newKeys / 12);
@@ -114,6 +126,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         if (cfg.click_volume !== undefined) set({ click_volume: cfg.click_volume });
         if (cfg.default_output_folder !== undefined) set({ default_output_folder: cfg.default_output_folder });
         if (cfg.musicxml_author !== undefined) set({ musicxml_author: cfg.musicxml_author });
+        if (cfg.audio_device !== undefined) set({ audio_device: cfg.audio_device });
 
         if (cfg.spectrum_keys !== undefined && cfg.spectrum_keys !== oldState.spectrum_keys) {
             const newKeys = cfg.spectrum_keys;

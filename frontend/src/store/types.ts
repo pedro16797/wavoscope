@@ -138,15 +138,24 @@ export interface Locale {
   name: string;
 }
 
+export interface AudioDevice {
+  index: number;
+  name: string;
+  hostapi: number;
+  is_default: boolean;
+}
+
 export interface ConfigSlice {
   themes: Record<string, Theme>;
   currentTheme: ThemeName;
   locales: Locale[];
+  audioDevices: AudioDevice[];
   metronome_enabled: boolean;
   click_volume: number;
   spectrum_keys: number;
   default_output_folder: string;
   musicxml_author: string;
+  audio_device: string;
   language: string;
   showSettings: boolean;
   showSpectrum: boolean;
@@ -156,6 +165,7 @@ export interface ConfigSlice {
 
   fetchThemes: () => Promise<void>;
   fetchLocales: () => Promise<void>;
+  fetchAudioDevices: () => Promise<void>;
   fetchConfig: () => Promise<void>;
   setTheme: (name: ThemeName) => Promise<void>;
   updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
@@ -165,6 +175,7 @@ export interface ConfigSlice {
     spectrum_keys?: number,
     default_output_folder?: string,
     musicxml_author?: string,
+    audio_device?: string,
     language?: string
   }) => Promise<void>;
   browseFolder: () => Promise<string | null>;

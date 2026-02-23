@@ -11,6 +11,7 @@ class AppConfig(BaseModel):
     spectrum_keys: Optional[int] = None
     default_output_folder: Optional[str] = None
     musicxml_author: Optional[str] = None
+    audio_device: Optional[str] = None
 
 @router.get("")
 async def get_config():
@@ -21,7 +22,8 @@ async def get_config():
         "click_volume": cfg.get("ui.click_volume", 0.3),
         "spectrum_keys": cfg.get("ui.spectrum_keys", 37),
         "default_output_folder": cfg.get("ui.default_output_folder", ""),
-        "musicxml_author": cfg.get("ui.musicxml_author", "")
+        "musicxml_author": cfg.get("ui.musicxml_author", ""),
+        "audio_device": cfg.get("ui.audio_device", "")
     }
 
 @router.post("")
@@ -40,4 +42,13 @@ async def update_config(new_cfg: AppConfig):
         cfg.set("ui.default_output_folder", new_cfg.default_output_folder)
     if new_cfg.musicxml_author is not None:
         cfg.set("ui.musicxml_author", new_cfg.musicxml_author)
+    if new_cfg.audio_device is not None:
+        cfg.set("ui.audio_device", new_cfg.audio_device)
+        if state.project:
+            state.project.backend.set_device(new_cfg.audio_device if new_cfg.audio_device else None)
     return {"status": "ok"}
+
+@router.get("/audio-devices")
+async def list_audio_devices():
+    from audio.audio_backend import AudioBackend
+    return AudioBackend.list_devices()
