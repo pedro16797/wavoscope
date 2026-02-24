@@ -598,6 +598,10 @@ export const LyricsTimeline: React.FC = () => {
         }
     };
 
+    const activeCursor = draggingLyric
+        ? (draggingLyric.mode === 'move' ? 'grabbing' : 'ew-resize')
+        : hoverCursor;
+
     return (
         <div ref={containerRef} className="relative w-full h-8 select-none bg-surface border-b overflow-hidden" style={{ borderBottomColor: 'var(--color-grid)' }}>
             <canvas
@@ -607,7 +611,7 @@ export const LyricsTimeline: React.FC = () => {
                 onDoubleClick={handleDoubleClick}
                 onContextMenu={(e) => e.preventDefault()}
                 className="w-full h-full block"
-                style={{ cursor: hoverCursor }}
+                style={{ cursor: activeCursor }}
             />
             {editingIdx !== null && lyrics[editingIdx] && (
                 <div

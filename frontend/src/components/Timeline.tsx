@@ -354,13 +354,15 @@ export const Timeline: React.FC = () => {
     }
   };
 
+  const activeCursor = (dragIdx !== null || dragHarmonyIdx !== null) ? 'ew-resize' : hoverCursor;
+
   return (
     <div ref={containerRef} className="h-10 w-full border-b select-none"
         style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
         onMouseDown={handleMouseDown}
         onContextMenu={handleContextMenu}
         onWheel={handleWheel}>
-        <canvas ref={canvasRef} className="w-full h-full block" style={{ cursor: hoverCursor }} onMouseMove={handleMouseMove} />
+        <canvas ref={canvasRef} className="w-full h-full block" style={{ cursor: activeCursor }} onMouseMove={handleMouseMove} />
     </div>
   );
 };

@@ -19,6 +19,7 @@ export const Spectrum: React.FC = () => {
   } = useStore();
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
   const [size, setSize] = useState({ width: 0, height: 0 });
+  const [draggingMode, setDraggingMode] = useState<'low' | 'high' | 'tone' | null>(null);
   const inFlightRef = useRef(false);
   const pendingRef = useRef<{ position: number, window: number, low: number, high: number, width: number } | null>(null);
 
@@ -222,6 +223,8 @@ export const Spectrum: React.FC = () => {
     if (Math.abs(x - xLow) < 20) dragging = 'low';
     else if (Math.abs(x - xHigh) < 20) dragging = 'high';
 
+    setDraggingMode(dragging);
+
     if (dragging === 'low' || dragging === 'high') {
         document.body.style.cursor = 'ew-resize';
     } else {
@@ -270,6 +273,7 @@ export const Spectrum: React.FC = () => {
     const onMouseUp = () => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
+        setDraggingMode(null);
         document.body.style.cursor = '';
         if (dragging === 'tone') {
             stopAllTones();
@@ -317,11 +321,15 @@ export const Spectrum: React.FC = () => {
   const xLow = Math.log2(filter_low_hz / range.low) * xScale;
   const xHigh = Math.log2(filter_high_hz / range.low) * xScale;
 
+  const activeCursor = draggingMode === 'tone' ? 'pointer' :
+                       (draggingMode === 'low' || draggingMode === 'high') ? 'ew-resize' :
+                       'default';
+
   return (
     <div ref={containerRef} className="w-full h-full relative overflow-hidden select-none"
          onMouseDown={handleMouseDown}
          onContextMenu={handleContextMenu}>
-        <canvas ref={canvasRef} className="w-full h-full block cursor-default" />
+        <canvas ref={canvasRef} className="w-full h-full block" style={{ cursor: activeCursor }} />
 
         {/* Hitbox for Low Handle */}
         {xLow >= 0 && xLow <= size.width && (

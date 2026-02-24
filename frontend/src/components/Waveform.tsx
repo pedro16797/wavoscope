@@ -12,6 +12,7 @@ export const Waveform: React.FC = () => {
   } = useStore();
   const [bars, setBars] = React.useState<number[][]>([]);
   const [size, setSize] = React.useState({ width: 0, height: 0 });
+  const [isDragging, setIsDragging] = React.useState(false);
   const inFlightRef = useRef(false);
   const pendingRef = useRef<{ offset: number, zoom: number, width: number } | null>(null);
 
@@ -161,6 +162,7 @@ export const Waveform: React.FC = () => {
     const startX = e.clientX;
     const startOffset = offset;
     let dragged = false;
+    setIsDragging(true);
     document.body.style.cursor = 'grabbing';
 
     const onMouseMove = (moveEvent: MouseEvent) => {
@@ -174,6 +176,7 @@ export const Waveform: React.FC = () => {
     const onMouseUp = (upEvent: MouseEvent) => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
+        setIsDragging(false);
         document.body.style.cursor = '';
         if (!dragged && canvasRef.current) {
             const rect = canvasRef.current.getBoundingClientRect();
@@ -188,10 +191,10 @@ export const Waveform: React.FC = () => {
   };
 
   return (
-    <div ref={containerRef} className="w-full h-full relative overflow-hidden cursor-grab"
+    <div ref={containerRef} className="w-full h-full relative overflow-hidden"
          onWheel={handleWheel}
          onMouseDown={handleMouseDown}>
-        <canvas ref={canvasRef} className="w-full h-full block" />
+        <canvas ref={canvasRef} className="w-full h-full block" style={{ cursor: isDragging ? 'grabbing' : 'grab' }} />
     </div>
   );
 };
