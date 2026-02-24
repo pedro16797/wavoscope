@@ -16,6 +16,10 @@
   --color-text: var(--color-text);
 }
 
+button:not(:disabled) {
+  cursor: pointer;
+}
+
 body {
   margin: 0;
   padding: 0;

@@ -16,6 +16,7 @@ export const Timeline: React.FC = () => {
   const [dragHarmonyIdx, setDragHarmonyIdx] = useState<number | null>(null);
   const [dragT, setDragT] = useState<number | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
+  const [hoverCursor, setHoverCursor] = useState<string>('crosshair');
 
   useEffect(() => {
     const updateSize = () => {
@@ -186,6 +187,22 @@ export const Timeline: React.FC = () => {
     });
   }, [offset, zoom, themes, currentTheme, duration, flags, harmony_flags, dragIdx, dragHarmonyIdx, dragT, size, loop_mode, loop_range]);
 
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!canvasRef.current || !loaded) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const clickT = offset + x / zoom;
+    const threshold = 10 / zoom;
+
+    const isOverFlag = flags.some(f => Math.abs(f.t - clickT) < threshold);
+    const isOverHarmony = harmony_flags.some(f => Math.abs(f.t - clickT) < threshold);
+
+    const newCursor = (isOverFlag || isOverHarmony) ? 'pointer' : 'crosshair';
+    if (newCursor !== hoverCursor) {
+      setHoverCursor(newCursor);
+    }
+  };
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!loaded) return;
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -225,6 +242,7 @@ export const Timeline: React.FC = () => {
             });
 
             setDragHarmonyIdx(foundHarmonyIdx);
+            document.body.style.cursor = 'ew-resize';
             let latestT = harmony_flags[foundHarmonyIdx].t;
             const onMouseMove = (moveEvent: MouseEvent) => {
                 const newX = moveEvent.clientX - rect.left;
@@ -236,6 +254,7 @@ export const Timeline: React.FC = () => {
             const onMouseUp = () => {
                 window.removeEventListener('mousemove', onMouseMove);
                 window.removeEventListener('mouseup', onMouseUp);
+                document.body.style.cursor = '';
                 moveHarmonyFlag(foundHarmonyIdx, latestT).finally(() => {
                     setDragHarmonyIdx(null);
                     setDragT(null);
@@ -256,6 +275,7 @@ export const Timeline: React.FC = () => {
                 return;
             }
             setDragIdx(foundIdx);
+            document.body.style.cursor = 'ew-resize';
             let latestT = flags[foundIdx].t;
             const onMouseMove = (moveEvent: MouseEvent) => {
                 const newX = moveEvent.clientX - rect.left;
@@ -267,6 +287,7 @@ export const Timeline: React.FC = () => {
             const onMouseUp = () => {
                 window.removeEventListener('mousemove', onMouseMove);
                 window.removeEventListener('mouseup', onMouseUp);
+                document.body.style.cursor = '';
                 moveFlag(foundIdx, latestT).finally(() => {
                     setDragIdx(null);
                     setDragT(null);
@@ -334,12 +355,12 @@ export const Timeline: React.FC = () => {
   };
 
   return (
-    <div ref={containerRef} className="h-10 w-full border-b select-none cursor-crosshair"
+    <div ref={containerRef} className="h-10 w-full border-b select-none"
         style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
         onMouseDown={handleMouseDown}
         onContextMenu={handleContextMenu}
         onWheel={handleWheel}>
-        <canvas ref={canvasRef} className="w-full h-full block" />
+        <canvas ref={canvasRef} className="w-full h-full block" style={{ cursor: hoverCursor }} onMouseMove={handleMouseMove} />
     </div>
   );
 };

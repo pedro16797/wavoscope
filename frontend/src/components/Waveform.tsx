@@ -161,6 +161,7 @@ export const Waveform: React.FC = () => {
     const startX = e.clientX;
     const startOffset = offset;
     let dragged = false;
+    document.body.style.cursor = 'grabbing';
 
     const onMouseMove = (moveEvent: MouseEvent) => {
         const dx = moveEvent.clientX - startX;
@@ -173,6 +174,7 @@ export const Waveform: React.FC = () => {
     const onMouseUp = (upEvent: MouseEvent) => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
+        document.body.style.cursor = '';
         if (!dragged && canvasRef.current) {
             const rect = canvasRef.current.getBoundingClientRect();
             const x = upEvent.clientX - rect.left;
@@ -186,7 +188,7 @@ export const Waveform: React.FC = () => {
   };
 
   return (
-    <div ref={containerRef} className="w-full h-full relative overflow-hidden"
+    <div ref={containerRef} className="w-full h-full relative overflow-hidden cursor-grab"
          onWheel={handleWheel}
          onMouseDown={handleMouseDown}>
         <canvas ref={canvasRef} className="w-full h-full block" />

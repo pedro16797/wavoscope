@@ -222,6 +222,12 @@ export const Spectrum: React.FC = () => {
     if (Math.abs(x - xLow) < 20) dragging = 'low';
     else if (Math.abs(x - xHigh) < 20) dragging = 'high';
 
+    if (dragging === 'low' || dragging === 'high') {
+        document.body.style.cursor = 'ew-resize';
+    } else {
+        document.body.style.cursor = 'grabbing';
+    }
+
     const onMouseMove = (moveEvent: MouseEvent) => {
         const mx = moveEvent.clientX - rect.left;
         const hz = range.low * Math.pow(2, (mx * spanLog / rect.width));
@@ -264,6 +270,7 @@ export const Spectrum: React.FC = () => {
     const onMouseUp = () => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
+        document.body.style.cursor = '';
         if (dragging === 'tone') {
             stopAllTones();
             currentHzRef.current = 0;
