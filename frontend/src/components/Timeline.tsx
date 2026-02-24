@@ -366,7 +366,7 @@ export const Timeline: React.FC = () => {
         onMouseDown={handleMouseDown}
         onContextMenu={handleContextMenu}
         onWheel={handleWheel}>
-        <canvas ref={canvasRef} className="w-full h-full block" />
+        <canvas ref={canvasRef} className="w-full h-full block" style={{ cursor: activeCursor }} onMouseMove={handleMouseMove} />
 
         {/* Chord Flag Tooltips */}
         {harmony_flags.map((f, idx) => {
@@ -412,7 +412,6 @@ export const Timeline: React.FC = () => {
                 </div>
             );
         })}
-        <canvas ref={canvasRef} className="w-full h-full block" style={{ cursor: activeCursor }} onMouseMove={handleMouseMove} />
     </div>
   );
 };
