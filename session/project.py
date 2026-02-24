@@ -125,9 +125,9 @@ class Project:
         with self._lock:
             return list(self.session_data.get("lyrics", []))
 
-    def add_flag(self, t: float, type: str = "rhythm", div: int = 0, n: str = "", s: bool = False, divshade: bool = False) -> int:
+    def add_flag(self, t: float, kind: str = "rhythm", div: int = 0, n: str = "", s: bool = False, divshade: bool = False) -> int:
         with self._lock:
-            idx = self._flags.add_flag(t, type, div, n, s, divshade)
+            idx = self._flags.add_flag(t, kind, div, n, s, divshade)
             if idx != -1:
                 self._clear_backend_cache()
                 self.mark_dirty()
@@ -242,11 +242,11 @@ class Project:
                 return {"idx": new_idx, "flag": flag}
             return None
 
-    def update_flag(self, idx: int, t: float, type: str = "rhythm", div: int = 0, n: str = "", s: bool = False, divshade: bool = False) -> None:
+    def update_flag(self, idx: int, t: float, kind: str = "rhythm", div: int = 0, n: str = "", s: bool = False, divshade: bool = False) -> None:
         with self._lock:
             flags = self._flags.flags
             if 0 <= idx < len(flags):
-                flags[idx] = {"t": t, "type": type, "div": div, "n": n, "s": s, "divshade": divshade}
+                flags[idx] = {"t": t, "type": kind, "div": div, "n": n, "s": s, "divshade": divshade}
                 flags.sort(key=lambda f: f["t"])
                 self._flags._recompute_auto_names()
                 self._clear_backend_cache()

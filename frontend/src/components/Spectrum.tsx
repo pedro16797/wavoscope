@@ -192,7 +192,8 @@ export const Spectrum: React.FC = () => {
 
         ctx.beginPath();
         data.freqs.forEach((f, i) => {
-            const px = Math.log2(f / range.low) * xScale;
+            // Clamping f to a very small positive value to avoid Math.log2(0) = -Infinity
+            const px = Math.log2(Math.max(f, 1e-10) / range.low) * xScale;
             // Draw with a small vertical margin to avoid clipping at the edges
             const py = (h * 0.95) - ((data.db[i] - minDb) / spanDb) * (h * 0.9);
             if (i === 0) ctx.moveTo(px, py);

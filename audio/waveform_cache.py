@@ -42,23 +42,28 @@ class WaveformCache:
         if start_idx >= end_idx:
             return []
 
+        # Slice to the requested range to avoid reduceat going to the end of the file
+        slice_y = self.y[start_idx:end_idx]
+        if len(slice_y) == 0:
+            return []
+
         # Vectorized bucket calculation
-        step = max(1, (end_idx - start_idx) // n_bars)
-        indices = np.arange(start_idx, end_idx, step, dtype=np.int64)
+        step = max(1, len(slice_y) // n_bars)
+        indices = np.arange(0, len(slice_y), step, dtype=np.int64)
         if len(indices) > n_bars:
             indices = indices[:n_bars]
 
-        # Use reduceat for fast min/max/mean
-        mins = np.minimum.reduceat(self.y, indices)
-        maxs = np.maximum.reduceat(self.y, indices)
+        # Use reduceat for fast min/max/mean on the slice
+        mins = np.minimum.reduceat(slice_y, indices)
+        maxs = np.maximum.reduceat(slice_y, indices)
 
-        # For mean of absolute values, we use add.reduceat on abs(y)
-        abs_y = np.abs(self.y)
+        # For mean of absolute values, we use add.reduceat on abs(slice_y)
+        abs_y = np.abs(slice_y)
         sums_abs = np.add.reduceat(abs_y, indices)
-        sums_raw = np.add.reduceat(self.y, indices)
+        sums_raw = np.add.reduceat(slice_y, indices)
 
-        # Calculate actual bucket sizes for the means
-        bucket_sizes = np.diff(np.append(indices, end_idx))
+        # Calculate actual bucket sizes for the means within the slice
+        bucket_sizes = np.diff(np.append(indices, len(slice_y)))
         avgs_abs = sums_abs / bucket_sizes
         avgs_raw = sums_raw / bucket_sizes
 
