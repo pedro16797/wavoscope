@@ -23,7 +23,7 @@ En el primer inicio, Wavoscope descargará automáticamente su propio entorno de
 Wavoscope utiliza un sistema de archivos "sidecar". Cuando abres un archivo de audio, Wavoscope crea o carga un archivo `.oscope` en el mismo directorio para guardar tus marcas, bucles y ajustes.
 - **Abrir:** Haz clic en el icono de la carpeta en la barra de reproducción para cargar cualquier formato de audio común (MP3, WAV, FLAC, etc.).
 - **Guardar:** Haz clic en el icono del disquete. El icono brillará con el color de acento de tu tema cuando haya cambios sin guardar.
-- **Autoguardado:** Wavoscope crea automáticamente capturas de tu trabajo a intervalos regulares. Puedes configurar la frecuencia del autoguardado, el número máximo de capturas a conservar y la ubicación de almacenamiento en la pestaña **Ajustes > Global**. Por defecto, los autoguardados solo ocurren si hay cambios sin guardar. Puedes activar el **Autoguardado forzado** para crear siempre capturas independientemente de los cambios. Por defecto, los autoguardados se almacenan en la carpeta temporal de tu sistema.
+- **Autoguardado:** Wavoscope crea automáticamente capturas de tu trabajo a intervalos regulares. Puedes configurar la frecuencia del autoguardado, el número máximo de capturas a conservar y la ubicación de almacenamiento en la pestaña **Ajustes > Autoguardado**. Por defecto, los autoguardados solo ocurren si hay cambios sin guardar. Puedes activar el **Autoguardado forzado** para crear siempre capturas independientemente de los cambios. Por defecto, los autoguardados se almacenan en la carpeta temporal de tu sistema.
 
 ---
 

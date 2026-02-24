@@ -18,7 +18,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
     autosave_max_snapshots, autosave_path
   } = useStore();
 
-  const [activeTab, setActiveTab] = useState<'global' | 'project' | 'keybinds'>('global');
+  const [activeTab, setActiveTab] = useState<'global' | 'project' | 'autosave' | 'keybinds'>('global');
 
   const [theme, setTheme] = useState(currentTheme);
   const [lang, setLang] = useState(language);
@@ -77,6 +77,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
             <button onClick={() => setActiveTab('project')}
                     className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'project' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
                 {t('settings.project')}
+            </button>
+            <button onClick={() => setActiveTab('autosave')}
+                    className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'autosave' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
+                {t('settings.autosave')}
             </button>
             <button onClick={() => setActiveTab('keybinds')}
                     className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'keybinds' ? 'bg-white/5 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
@@ -149,7 +153,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                style={{ borderWidth: 'var(--ui-border)' }} />
                     </div>
 
-                    <div className="space-y-4 pt-4 border-t border-grid/50">
+                </>
+            ) : activeTab === 'autosave' ? (
+                <div className="space-y-6">
+                    <div className="space-y-4">
                         <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.autosave')}</label>
 
                         <div className="flex items-center justify-between">
@@ -204,7 +211,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                             </div>
                         )}
                     </div>
-                </>
+                </div>
             ) : activeTab === 'project' ? (
                 <>
                     <div className="space-y-6">

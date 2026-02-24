@@ -23,7 +23,7 @@ No primeiro inicio, Wavoscope descargará automaticamente o seu propio contorno 
 Wavoscope utiliza un sistema de ficheiros "sidecar". Cando abres un ficheiro de audio, Wavoscope crea ou carga un ficheiro `.oscope` no mesmo directorio para gardar as túas marcas, bucles e axustes.
 - **Abrir:** Fai clic na icona do cartafol na barra de reprodución para cargar calquera formato de audio común (MP3, WAV, FLAC, etc.).
 - **Gardar:** Fai clic na icona do disquete. A icona brillará coa cor de acento do teu tema cando haxa cambios sen gardar.
-- **Autogardado:** Wavoscope crea automaticamente capturas do teu traballo a intervalos regulares. Podes configurar a frecuencia do autogardado, o número máximo de capturas a conservar e a localización de almacenamento na pestana **Axustes > Global**. Por defecto, os autogardados só ocorren se hai cambios sen gardar. Podes activar o **Autogardado forzado** para crear sempre capturas independentemente dos cambios. Por defecto, os autogardados almacénanse no cartafol temporal do teu sistema.
+- **Autogardado:** Wavoscope crea automaticamente capturas do teu traballo a intervalos regulares. Podes configurar a frecuencia do autogardado, o número máximo de capturas a conservar e a localización de almacenamento na pestana **Axustes > Autogardado**. Por defecto, os autogardados só ocorren se hai cambios sen gardar. Podes activar o **Autogardado forzado** para crear sempre capturas independentemente dos cambios. Por defecto, os autogardados almacénanse no cartafol temporal do teu sistema.
 
 ---
 

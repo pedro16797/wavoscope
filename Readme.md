@@ -23,7 +23,7 @@ On the first launch, Wavoscope will automatically download its own Python runtim
 Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope creates or loads a `.oscope` file in the same directory to store your markers, loops, and settings.
 - **Open:** Click the folder icon in the playback bar to load any common audio format (MP3, WAV, FLAC, etc.).
 - **Save:** Click the floppy disk icon. The icon will glow with your theme's accent color when there are unsaved changes.
-- **Autosave:** Wavoscope automatically creates snapshots of your work at regular intervals. You can configure the autosave frequency, the maximum number of snapshots to keep, and the storage location in the **Settings > Global** tab. By default, autosaves only occur if there are unsaved changes. You can enable **Forced Autosave** to always create snapshots regardless of changes. By default, autosaves are stored in your system's temporary folder.
+- **Autosave:** Wavoscope automatically creates snapshots of your work at regular intervals. You can configure the autosave frequency, the maximum number of snapshots to keep, and the storage location in the **Settings > Autosave** tab. By default, autosaves only occur if there are unsaved changes. You can enable **Forced Autosave** to always create snapshots regardless of changes. By default, autosaves are stored in your system's temporary folder.
 
 ---
 
