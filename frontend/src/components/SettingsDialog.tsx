@@ -350,9 +350,9 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <span className="opacity-60">{t('settings.kb_add_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.space')}</span>
                         <span className="opacity-60">{t('settings.kb_add_syllable')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">-</span>
                         <span className="opacity-60">{t('settings.kb_finish_edit')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.enter')}</span>
-                        <span className="opacity-60">{t('settings.kb_move_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_right')} / A / D</span>
-                        <span className="opacity-60">{t('settings.kb_resize_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.up_down')} / W / S</span>
-                        <span className="opacity-60">{t('settings.kb_jump_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift_arrows')} / Shift + A / D</span>
+                        <span className="opacity-60">{t('settings.kb_move_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_right')}</span>
+                        <span className="opacity-60">{t('settings.kb_resize_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.up_down')}</span>
+                        <span className="opacity-60">{t('settings.kb_jump_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift_arrows')}</span>
                     </div>
 
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.interactions')}</div>
