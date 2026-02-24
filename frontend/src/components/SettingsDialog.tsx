@@ -343,7 +343,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     <div className="font-bold border-b border-grid pb-1 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.keybinds')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                         <span className="opacity-60">{t('settings.kb_play_pause')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.space')}</span>
-                        <span className="opacity-60">{t('settings.kb_stop')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift')}+{t('keys.space')}</span>
+                        <span className="opacity-60">{t('settings.kb_stop')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift')} + {t('keys.space')}</span>
                         <span className="opacity-60">{t('settings.kb_seek')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_right')}</span>
                         <span className="opacity-60">{t('settings.kb_speed')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.up_down')}</span>
                         <span className="opacity-60">{t('settings.kb_metronome')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">M</span>
@@ -352,9 +352,9 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <span className="opacity-60">{t('settings.kb_harmony')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">H</span>
                         <span className="opacity-60">{t('settings.kb_lyrics')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">L</span>
                         <span className="opacity-60">{t('settings.kb_delete')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.delete')}</span>
-                        <span className="opacity-60">{t('settings.kb_open')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')}+O</span>
-                        <span className="opacity-60">{t('settings.kb_save')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')}+S</span>
-                        <span className="opacity-60">{t('settings.kb_export')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')}+E</span>
+                        <span className="opacity-60">{t('settings.kb_open')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')} + O</span>
+                        <span className="opacity-60">{t('settings.kb_save')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')} + S</span>
+                        <span className="opacity-60">{t('settings.kb_export')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')} + E</span>
                     </div>
 
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.transcription')}</div>

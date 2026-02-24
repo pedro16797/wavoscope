@@ -21,7 +21,7 @@ export const SpectrumView: React.FC = () => {
             {/* FFT Window */}
             <div className="flex items-center gap-2 h-full border-l border-white/10 pl-4">
                 <span className="text-[9px] opacity-60 font-bold">FFT</span>
-                <Tooltip content={t('views.fft_window', { val: fft_window.toFixed(2) })} shortcut={`${t('keys.shift')}+${t('keys.up_down')}`}>
+                <Tooltip content={t('views.fft_window', { val: fft_window.toFixed(2) })} shortcut={`${t('keys.shift')} + ${t('keys.up_down')}`}>
                     <input type="range" min="0.05" max="1.0" step="0.05" value={fft_window}
                         onChange={(e) => setFFTWindow(parseFloat(e.target.value))}
                         className="w-32 accent-current" />
@@ -32,11 +32,11 @@ export const SpectrumView: React.FC = () => {
             {/* Octave Shift */}
             <div className="flex items-center gap-1 h-full border-l-[width:var(--ui-border)] border-white/10 pl-4">
                 <span className="text-[9px] opacity-60 font-bold mr-1">OCT</span>
-                <Tooltip content={t('views.octave_down')} shortcut={`${t('keys.shift')}+←`}>
+                <Tooltip content={t('views.octave_down')} shortcut={`${t('keys.shift')} + ←`}>
                     <button onClick={() => setOctaveShift(octave_shift - 1)} className="p-0.5 hover:bg-white/10 rounded-[var(--ui-radius)]"><ChevronDown size={12}/></button>
                 </Tooltip>
                 <span className="text-[10px] font-mono w-4 text-center">{octave_shift > 0 ? `+${octave_shift}` : octave_shift}</span>
-                <Tooltip content={t('views.octave_up')} shortcut={`${t('keys.shift')}+→`}>
+                <Tooltip content={t('views.octave_up')} shortcut={`${t('keys.shift')} + →`}>
                     <button onClick={() => setOctaveShift(octave_shift + 1)} className="p-0.5 hover:bg-white/10 rounded-[var(--ui-radius)]"><ChevronUp size={12}/></button>
                 </Tooltip>
             </div>
