@@ -95,8 +95,10 @@ export const Waveform: React.FC = () => {
         // Use - for Y because positive samples should go UP (smaller Y)
         const y1 = midY - min * scaleY;
         const y2 = midY - max * scaleY;
-        ctx.moveTo(i * barWidth, y1);
-        ctx.lineTo(i * barWidth, Math.abs(y2 - y1) < 1 ? y1 - 1 : y2);
+        // Shift by barWidth/2 to center the bar in its allocated width
+        const x = i * barWidth + barWidth / 2;
+        ctx.moveTo(x, y1);
+        ctx.lineTo(x, Math.abs(y2 - y1) < 1 ? y1 - 1 : y2);
         ctx.stroke();
     });
 
@@ -110,8 +112,9 @@ export const Waveform: React.FC = () => {
         // RMS is centered around the mean and respects offset
         const y1 = midY - (mean - rms) * scaleY;
         const y2 = midY - (mean + rms) * scaleY;
-        ctx.moveTo(i * barWidth, y1);
-        ctx.lineTo(i * barWidth, y2);
+        const x = i * barWidth + barWidth / 2;
+        ctx.moveTo(x, y1);
+        ctx.lineTo(x, y2);
         ctx.stroke();
     });
 
