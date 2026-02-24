@@ -1,5 +1,7 @@
 {
-  "meta": { "name": "English" },
+  "meta": {
+    "name": "English"
+  },
   "common": {
     "cancel": "Cancel",
     "save": "Save",
@@ -35,21 +37,10 @@
     "autosave_snapshots": "Max Snapshots",
     "autosave_path": "Autosave Path",
     "autosave_path_hint": "Leave empty for default Temp folder.",
-    "kb_play_pause": "Play / Pause",
-    "kb_stop": "Stop Playback",
-    "kb_seek": "Seek Forward/Back",
     "kb_speed": "Adjust Speed",
-    "kb_export": "Export MusicXML",
-    "kb_metronome": "Toggle Metronome",
-    "kb_settings": "Toggle Settings",
-    "kb_low_cutoff": "Toggle Low Cutoff",
-    "kb_high_cutoff": "Toggle High Cutoff",
     "kb_rhythm": "Add Rhythm Flag",
     "kb_harmony": "Add Chord Flag",
     "kb_lyrics": "Add Lyrics Flag",
-    "kb_delete": "Delete Selected",
-    "kb_open": "Open File",
-    "kb_save": "Save Project",
     "transcription": "Lyrics Transcription",
     "kb_add_word": "Add Word (Editing)",
     "kb_add_syllable": "Add Syllable (Editing)",
@@ -68,7 +59,6 @@
     "kb_pan": "Pan View",
     "kb_zoom": "Zoom View",
     "kb_play_note": "Play Note",
-    "kb_toggle_cutoff": "Toggle Cutoff",
     "kb_place_cutoff": "Place Cutoff",
     "kb_adjust_cutoff": "Adjust Cutoff",
     "global_desc": "Global application settings like theme, language, and audio output.",
@@ -90,7 +80,8 @@
     "output_dir_desc": "Default folder for MusicXML exports.",
     "author_desc": "Default author name for MusicXML metadata.",
     "low_cutoff_desc": "Filter out frequencies below this point.",
-    "high_cutoff_desc": "Filter out frequencies above this point."
+    "high_cutoff_desc": "Filter out frequencies above this point.",
+    "kb_no_ui_desc": "The following keybinds do not correspond to any graphical interface element."
   },
   "keys": {
     "space": "Space",
@@ -110,7 +101,6 @@
     "waveform_click": "Waveform Click",
     "waveform_drag": "Waveform Drag",
     "spectrum_click": "Spectrum Click",
-    "right_click_handle": "Right Click handle",
     "handle_drag": "Handle Drag"
   },
   "playback": {

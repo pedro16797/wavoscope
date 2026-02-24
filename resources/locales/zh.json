@@ -1,5 +1,7 @@
 {
-  "meta": { "name": "简体中文" },
+  "meta": {
+    "name": "简体中文"
+  },
   "common": {
     "cancel": "取消",
     "save": "保存",
@@ -33,21 +35,10 @@
     "autosave_snapshots": "最大快照数",
     "autosave_path": "自动保存路径",
     "autosave_path_hint": "留空则使用系统默认临时文件夹。",
-    "kb_play_pause": "播放 / 暂停",
-    "kb_stop": "停止播放",
-    "kb_export": "导出 MusicXML",
-    "kb_metronome": "切换节拍器",
-    "kb_settings": "切换设置",
-    "kb_low_cutoff": "切换低通滤波器",
-    "kb_high_cutoff": "切换高通滤波器",
-    "kb_seek": "前进/后退",
     "kb_speed": "调节速度",
     "kb_rhythm": "添加节奏标记",
     "kb_harmony": "添加和声标记",
     "kb_lyrics": "添加歌词标记",
-    "kb_delete": "删除选中项",
-    "kb_open": "打开文件",
-    "kb_save": "保存项目",
     "transcription": "歌词转录",
     "kb_add_word": "添加词 (编辑中)",
     "kb_add_syllable": "添加音节 (编辑中)",
@@ -66,7 +57,6 @@
     "kb_pan": "平移视图",
     "kb_zoom": "缩放视图",
     "kb_play_note": "演奏音符",
-    "kb_toggle_cutoff": "切换截止频率",
     "kb_place_cutoff": "放置截止频率",
     "kb_adjust_cutoff": "调节切除",
     "global_desc": "全局应用程序设置，如主题、语言和音频输出。",
@@ -88,7 +78,8 @@
     "output_dir_desc": "MusicXML 导出的默认文件夹。",
     "author_desc": "MusicXML 元数据的默认作者姓名。",
     "low_cutoff_desc": "过滤掉低于此点的频率。",
-    "high_cutoff_desc": "过滤掉高于此点的频率。"
+    "high_cutoff_desc": "过滤掉高于此点的频率。",
+    "kb_no_ui_desc": "以下快捷键不对应任何图形界面元素。"
   },
   "keys": {
     "space": "空格",
@@ -108,7 +99,6 @@
     "waveform_click": "波形单击",
     "waveform_drag": "波形拖动",
     "spectrum_click": "频谱单击",
-    "right_click_handle": "右键单击手柄",
     "handle_drag": "手柄拖动"
   },
   "playback": {

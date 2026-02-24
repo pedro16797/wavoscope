@@ -1,5 +1,7 @@
 {
-  "meta": { "name": "Español" },
+  "meta": {
+    "name": "Español"
+  },
   "common": {
     "cancel": "Cancelar",
     "save": "Guardar",
@@ -35,21 +37,10 @@
     "autosave_snapshots": "Máximo de capturas",
     "autosave_path": "Ruta de autoguardado",
     "autosave_path_hint": "Dejar vacío para la carpeta temporal por defecto.",
-    "kb_play_pause": "Reproducir / Pausa",
-    "kb_stop": "Detener reproducción",
-    "kb_seek": "Salto adelante/atrás",
     "kb_speed": "Ajustar velocidad",
-    "kb_export": "Exportar MusicXML",
-    "kb_metronome": "Alternar metrónomo",
-    "kb_settings": "Alternar ajustes",
-    "kb_low_cutoff": "Alternar corte de bajos",
-    "kb_high_cutoff": "Alternar corte de agudos",
     "kb_rhythm": "Añadir marca de ritmo",
     "kb_harmony": "Añadir marca de armonía",
     "kb_lyrics": "Añadir marca de letra",
-    "kb_delete": "Eliminar selección",
-    "kb_open": "Abrir archivo",
-    "kb_save": "Guardar proyecto",
     "transcription": "Transcripción de letras",
     "kb_add_word": "Añadir palabra (Editando)",
     "kb_add_syllable": "Añadir sílaba (Editando)",
@@ -68,7 +59,6 @@
     "kb_pan": "Mover vista",
     "kb_zoom": "Zoom",
     "kb_play_note": "Tocar nota",
-    "kb_toggle_cutoff": "Alternar corte",
     "kb_place_cutoff": "Colocar corte",
     "kb_adjust_cutoff": "Ajustar corte",
     "global_desc": "Ajustes globales de la aplicación como el tema, idioma y salida de audio.",
@@ -90,7 +80,8 @@
     "output_dir_desc": "Carpeta predeterminada para las exportaciones MusicXML.",
     "author_desc": "Nombre del autor por defecto para los metadatos MusicXML.",
     "low_cutoff_desc": "Filtra las frecuencias por debajo de este punto.",
-    "high_cutoff_desc": "Filtra las frecuencias por encima de este punto."
+    "high_cutoff_desc": "Filtra las frecuencias por encima de este punto.",
+    "kb_no_ui_desc": "Los siguientes atajos de teclado no corresponden a ningún elemento de la interfaz gráfica."
   },
   "keys": {
     "space": "Espacio",
@@ -110,7 +101,6 @@
     "waveform_click": "Clic en forma de onda",
     "waveform_drag": "Arrastrar forma de onda",
     "spectrum_click": "Clic en espectro",
-    "right_click_handle": "Clic derecho en controlador",
     "handle_drag": "Arrastrar controlador"
   },
   "playback": {
