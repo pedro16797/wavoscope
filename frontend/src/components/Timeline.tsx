@@ -14,6 +14,7 @@ export const Timeline: React.FC = () => {
   } = useStore();
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dragHarmonyIdx, setDragHarmonyIdx] = useState<number | null>(null);
+  const [dragT, setDragT] = useState<number | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -98,9 +99,10 @@ export const Timeline: React.FC = () => {
 
     // Draw Harmony Flags
     harmony_flags.forEach((f, idx) => {
-        const x = (f.t - offset) * zoom;
+        const t = (dragHarmonyIdx === idx && dragT !== null) ? dragT : f.t;
+        const x = (t - offset) * zoom;
         if (x >= 0 && x <= size.width) {
-            const hasOverlap = flags.some(rf => Math.abs(rf.t - f.t) < overlapThreshold);
+            const hasOverlap = flags.some(rf => Math.abs(rf.t - t) < overlapThreshold);
             const yStart = 0;
             const yEnd = hasOverlap ? size.height / 2 : size.height;
 
@@ -123,9 +125,10 @@ export const Timeline: React.FC = () => {
 
     // Draw Rhythm Flags
     flags.forEach((f, idx) => {
-        const x = (f.t - offset) * zoom;
+        const t = (dragIdx === idx && dragT !== null) ? dragT : f.t;
+        const x = (t - offset) * zoom;
         if (x >= 0 && x <= size.width) {
-            const hasOverlap = harmony_flags.some(hf => Math.abs(hf.t - f.t) < overlapThreshold);
+            const hasOverlap = harmony_flags.some(hf => Math.abs(hf.t - t) < overlapThreshold);
             const yStart = hasOverlap ? size.height / 2 : 0;
             const yEnd = size.height;
 
@@ -181,7 +184,7 @@ export const Timeline: React.FC = () => {
             }
         }
     });
-  }, [offset, zoom, themes, currentTheme, duration, flags, harmony_flags, dragIdx, dragHarmonyIdx, size, loop_mode, loop_range]);
+  }, [offset, zoom, themes, currentTheme, duration, flags, harmony_flags, dragIdx, dragHarmonyIdx, dragT, size, loop_mode, loop_range]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!loaded) return;
@@ -222,16 +225,20 @@ export const Timeline: React.FC = () => {
             });
 
             setDragHarmonyIdx(foundHarmonyIdx);
+            let latestT = harmony_flags[foundHarmonyIdx].t;
             const onMouseMove = (moveEvent: MouseEvent) => {
                 const newX = moveEvent.clientX - rect.left;
                 const newT = Math.max(0, Math.min(duration, offset + newX / zoom));
                 const snappedT = Math.round(newT * 100) / 100;
-                moveHarmonyFlag(foundHarmonyIdx, snappedT);
+                latestT = snappedT;
+                setDragT(snappedT);
             };
             const onMouseUp = () => {
                 window.removeEventListener('mousemove', onMouseMove);
                 window.removeEventListener('mouseup', onMouseUp);
+                moveHarmonyFlag(foundHarmonyIdx, latestT);
                 setDragHarmonyIdx(null);
+                setDragT(null);
                 stopAllTones();
             };
             window.addEventListener('mousemove', onMouseMove);
@@ -248,16 +255,20 @@ export const Timeline: React.FC = () => {
                 return;
             }
             setDragIdx(foundIdx);
+            let latestT = flags[foundIdx].t;
             const onMouseMove = (moveEvent: MouseEvent) => {
                 const newX = moveEvent.clientX - rect.left;
                 const newT = Math.max(0, Math.min(duration, offset + newX / zoom));
                 const snappedT = Math.round(newT * 100) / 100;
-                moveFlag(foundIdx, snappedT);
+                latestT = snappedT;
+                setDragT(snappedT);
             };
             const onMouseUp = () => {
                 window.removeEventListener('mousemove', onMouseMove);
                 window.removeEventListener('mouseup', onMouseUp);
+                moveFlag(foundIdx, latestT);
                 setDragIdx(null);
+                setDragT(null);
             };
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mouseup', onMouseUp);

@@ -2,16 +2,18 @@ import { useEffect } from 'react';
 import { useStore } from './useStore';
 
 export const useKeyboardShortcuts = () => {
-  const {
-    loaded, playing, controlPlayback, position, duration, speed, browseFile, cycleLoopMode,
-    setSelectedLyricIdx, showSettings, setShowSettings, saveProject, exportMusicXML,
-    octave_shift, setOctaveShift, fft_window, setFFTWindow, metronome_enabled, updateMetronome,
-    editingFlagIdx, editingHarmonyFlagIdx, setEditingFlagIdx, setEditingHarmonyFlagIdx,
-    updateFilter
-  } = useStore();
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const state = useStore.getState();
+      const {
+        loaded, playing, controlPlayback, position, duration, speed, browseFile, cycleLoopMode,
+        selectedLyricIdx, setSelectedLyricIdx, showSettings, setShowSettings, saveProject, exportMusicXML,
+        octave_shift, setOctaveShift, fft_window, setFFTWindow, metronome_enabled, updateMetronome,
+        editingFlagIdx, editingHarmonyFlagIdx, setEditingFlagIdx, setEditingHarmonyFlagIdx,
+        addFlag, addHarmonyFlag, removeFlag, removeHarmonyFlag, removeLyric,
+        updateFilter
+      } = state;
+
       const isInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || (e.target as HTMLElement).isContentEditable;
       if (isInput) return;
 
@@ -36,6 +38,46 @@ export const useKeyboardShortcuts = () => {
         e.preventDefault();
         setSelectedLyricIdx(null);
         return;
+      }
+
+      // Handle Delete / Backspace
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+          if (editingFlagIdx !== null) {
+              e.preventDefault();
+              removeFlag(editingFlagIdx);
+              setEditingFlagIdx(null);
+              return;
+          }
+          if (editingHarmonyFlagIdx !== null) {
+              e.preventDefault();
+              removeHarmonyFlag(editingHarmonyFlagIdx);
+              setEditingHarmonyFlagIdx(null);
+              return;
+          }
+          if (selectedLyricIdx !== null) {
+              e.preventDefault();
+              removeLyric(selectedLyricIdx);
+              setSelectedLyricIdx(null);
+              return;
+          }
+      }
+
+      // Add Rhythm Flag: B
+      if (e.key.toLowerCase() === 'b' && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          addFlag(position).then(res => {
+              if (res && res.idx !== -1) setEditingFlagIdx(res.idx);
+          });
+          return;
+      }
+
+      // Add Harmony Flag: H
+      if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          addHarmonyFlag(position).then(res => {
+              if (res && res.idx !== -1) setEditingHarmonyFlagIdx(res.idx);
+          });
+          return;
       }
 
       // Stop: Shift + Space
@@ -123,12 +165,6 @@ export const useKeyboardShortcuts = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [
-      loaded, playing, controlPlayback, position, duration, speed, browseFile,
-      showSettings, setShowSettings, saveProject, exportMusicXML,
-      octave_shift, setOctaveShift, fft_window, setFFTWindow, metronome_enabled, updateMetronome,
-      editingFlagIdx, editingHarmonyFlagIdx, setEditingFlagIdx, setEditingHarmonyFlagIdx,
-      setSelectedLyricIdx, cycleLoopMode
-  ]);
+  }, []);
 };
 

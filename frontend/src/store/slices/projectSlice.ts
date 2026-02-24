@@ -67,8 +67,10 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     try {
         const res = await axios.post(`${API_BASE}/project/flags/move`, { idx, t });
         set({ flags: res.data.flags });
+        return { idx: res.data.new_idx, flag: res.data.updated_flag };
     } catch (e) {
         console.error("[Store] Failed to move flag:", e);
+        return null;
     }
   },
 
@@ -117,8 +119,10 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     try {
         const res = await axios.post(`${API_BASE}/project/harmony_flags/move`, { idx, t });
         set({ harmony_flags: res.data.harmony_flags });
+        return { idx: res.data.new_idx, t: res.data.updated_flag.t, c: res.data.updated_flag.c };
     } catch (e) {
         console.error("[Store] Failed to move harmony flag:", e);
+        return null;
     }
   },
 

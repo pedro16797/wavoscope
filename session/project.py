@@ -125,12 +125,14 @@ class Project:
         with self._lock:
             return list(self.session_data.get("lyrics", []))
 
-    def add_flag(self, time: float, kind: str = "rhythm", div: int = 0, n: str = "", s: bool = False, divshade: bool = False) -> None:
+    def add_flag(self, t: float, type: str = "rhythm", div: int = 0, n: str = "", s: bool = False, divshade: bool = False) -> int:
         with self._lock:
-            if self._flags.add_flag(time, kind, div, n, s, divshade):
+            idx = self._flags.add_flag(t, type, div, n, s, divshade)
+            if idx != -1:
                 self._clear_backend_cache()
                 self.mark_dirty()
-                self._emit("flag_added", time)
+                self._emit("flag_added", t)
+            return idx
 
     def remove_flag(self, idx: int) -> None:
         with self._lock:
@@ -139,13 +141,15 @@ class Project:
                 self.mark_dirty()
                 self._emit("flag_removed", idx)
 
-    def add_harmony_flag(self, time: float, chord: Dict[str, Any] | None = None) -> None:
+    def add_harmony_flag(self, t: float, chord: Dict[str, Any] | None = None) -> int:
         with self._lock:
             if chord is None:
                 chord = {"r": "C", "ca": "", "q": "", "ext": "", "alt": [], "add": [], "b": "", "ba": ""}
-            if self._flags.add_harmony_flag(time, chord):
+            idx = self._flags.add_harmony_flag(t, chord)
+            if idx != -1:
                 self.mark_dirty()
-                self._emit("flag_added", time)
+                self._emit("flag_added", t)
+            return idx
 
     def remove_harmony_flag(self, idx: int) -> None:
         with self._lock:
@@ -153,12 +157,12 @@ class Project:
                 self.mark_dirty()
                 self._emit("flag_removed", idx)
 
-    def add_lyric(self, text: str, time: float, duration: float) -> dict:
+    def add_lyric(self, s: str, t: float, l: float) -> dict:
         with self._lock:
             lyrics = self.session_data.get("lyrics", [])
-            new_lyric = {"s": text, "t": time, "l": duration}
+            new_lyric = {"s": s, "t": t, "l": l}
             lyrics.append(new_lyric)
-            lyrics.sort(key=lambda l: l["t"])
+            lyrics.sort(key=lambda item: item["t"])
             self.session_data["lyrics"] = lyrics
             self.mark_dirty()
             idx = lyrics.index(new_lyric)
@@ -171,15 +175,15 @@ class Project:
                 lyrics.pop(idx)
                 self.mark_dirty()
 
-    def update_lyric(self, idx: int, text: str | None = None, time: float | None = None, duration: float | None = None) -> dict | None:
+    def update_lyric(self, idx: int, s: str | None = None, t: float | None = None, l: float | None = None) -> dict | None:
         with self._lock:
             lyrics = self.session_data.get("lyrics", [])
             if 0 <= idx < len(lyrics):
                 lyric = lyrics[idx]
-                if text is not None: lyric["s"] = text
-                if time is not None: lyric["t"] = time
-                if duration is not None: lyric["l"] = duration
-                lyrics.sort(key=lambda l: l["t"])
+                if s is not None: lyric["s"] = s
+                if t is not None: lyric["t"] = t
+                if l is not None: lyric["l"] = l
+                lyrics.sort(key=lambda item: item["t"])
                 self.mark_dirty()
                 self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
@@ -191,50 +195,58 @@ class Project:
             self.selected_lyric_idx = idx
             self.backend.reset_loop_range()
 
-    def move_lyric(self, idx: int, new_time: float) -> dict | None:
+    def move_lyric(self, idx: int, t: float) -> dict | None:
         with self._lock:
             lyrics = self.session_data.get("lyrics", [])
             if 0 <= idx < len(lyrics):
                 lyric = lyrics[idx]
-                lyric["t"] = new_time
-                lyrics.sort(key=lambda l: l["t"])
+                lyric["t"] = t
+                lyrics.sort(key=lambda item: item["t"])
                 self.mark_dirty()
                 self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
                 return {"idx": new_idx, "lyric": lyric}
             return None
 
-    def move_harmony_flag(self, idx: int, new_time: float) -> None:
+    def move_harmony_flag(self, idx: int, t: float) -> dict | None:
         with self._lock:
             flags = self._flags.harmony_flags
             if 0 <= idx < len(flags):
-                flags[idx]["t"] = new_time
+                flag = flags[idx]
+                flag["t"] = t
                 flags.sort(key=lambda f: f["t"])
                 self.mark_dirty()
+                new_idx = flags.index(flag)
+                return {"idx": new_idx, "flag": flag}
+            return None
 
-    def update_harmony_flag(self, idx: int, time: float, chord: Dict[str, Any]) -> None:
+    def update_harmony_flag(self, idx: int, t: float, chord: Dict[str, Any]) -> None:
         with self._lock:
             flags = self._flags.harmony_flags
             if 0 <= idx < len(flags):
-                flags[idx] = {"t": time, "c": chord}
+                flags[idx] = {"t": t, "c": chord}
                 flags.sort(key=lambda f: f["t"])
                 self.mark_dirty()
 
-    def move_flag(self, idx: int, new_time: float) -> None:
+    def move_flag(self, idx: int, t: float) -> dict | None:
         with self._lock:
             flags = self._flags.flags
             if 0 <= idx < len(flags):
-                flags[idx]["t"] = new_time
+                flag = flags[idx]
+                flag["t"] = t
                 flags.sort(key=lambda f: f["t"])
                 self._flags._recompute_auto_names()
                 self._clear_backend_cache()
                 self.mark_dirty()
+                new_idx = flags.index(flag)
+                return {"idx": new_idx, "flag": flag}
+            return None
 
-    def update_flag(self, idx: int, time: float, kind: str = "rhythm", div: int = 0, n: str = "", s: bool = False, divshade: bool = False) -> None:
+    def update_flag(self, idx: int, t: float, type: str = "rhythm", div: int = 0, n: str = "", s: bool = False, divshade: bool = False) -> None:
         with self._lock:
             flags = self._flags.flags
             if 0 <= idx < len(flags):
-                flags[idx] = {"t": time, "type": kind, "div": div, "n": n, "s": s, "divshade": divshade}
+                flags[idx] = {"t": t, "type": type, "div": div, "n": n, "s": s, "divshade": divshade}
                 flags.sort(key=lambda f: f["t"])
                 self._flags._recompute_auto_names()
                 self._clear_backend_cache()
@@ -244,8 +256,6 @@ class Project:
     def seek(self, time: float) -> None: self.backend.seek(time)
     def pause(self) -> None: self.backend.pause()
     def play(self) -> None:
-        if not self.backend._playing:
-            self._last_play_start = self.backend.position
         self.backend.play()
 
     def set_speed(self, speed: float) -> None: self.backend.set_speed(speed)
@@ -283,7 +293,9 @@ class Project:
     def subdivision_ticks_between(self, start: float, end: float) -> list[tuple[float, bool]]:
         import bisect
         ticks: list[tuple[float, bool]] = []
-        flags = self._flags.flags
+        with self._lock:
+            flags = list(self._flags.flags)
+
         for i, prev in enumerate(flags):
             if prev.get("type", "rhythm") != "rhythm": continue
             if start <= prev["t"] < end: ticks.append((prev["t"], True))
@@ -326,8 +338,8 @@ class Project:
 
             added = False
             for i in range(1, count + 1):
-                t = left["t"] + i * step
-                if self._flags.add_flag(t, kind="rhythm", div=subdiv, n="", s=False, divshade=False):
+                t_new = left["t"] + i * step
+                if self._flags.add_flag(t_new, type="rhythm", div=subdiv, n="", s=False, divshade=False) != -1:
                     added = True
 
             if added:

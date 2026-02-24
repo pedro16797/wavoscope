@@ -39,15 +39,15 @@ async def add_flag(flag: FlagData):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
     try:
-        state.project.add_flag(
-            flag.t,
-            flag.type,
-            flag.div,
-            flag.n,
-            flag.s,
-            flag.divshade
+        idx = state.project.add_flag(
+            t=flag.t,
+            type=flag.type,
+            div=flag.div,
+            n=flag.n,
+            s=flag.s,
+            divshade=flag.divshade
         )
-        return {"status": "ok", "flags": state.project.flags}
+        return {"status": "ok", "flags": state.project.flags, "idx": idx}
     except Exception as e:
         logger.exception("Error in add_flag")
         raise HTTPException(status_code=500, detail=f"Failed to add flag: {str(e)}")
@@ -71,8 +71,12 @@ async def move_flag(move: FlagMove):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
     try:
-        state.project.move_flag(move.idx, move.t)
-        return {"status": "ok", "flags": state.project.flags}
+        res = state.project.move_flag(move.idx, move.t)
+        if res is None:
+            raise HTTPException(status_code=404, detail="Flag not found")
+        return {"status": "ok", "flags": state.project.flags, "updated_flag": res["flag"], "new_idx": res["idx"]}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to move flag: {str(e)}")
 
@@ -82,13 +86,13 @@ async def update_flag(idx: int, flag: FlagData):
         raise HTTPException(status_code=400, detail="No project loaded")
     try:
         state.project.update_flag(
-            idx,
-            flag.t,
-            flag.type,
-            flag.div,
-            flag.n,
-            flag.s,
-            flag.divshade
+            idx=idx,
+            t=flag.t,
+            type=flag.type,
+            div=flag.div,
+            n=flag.n,
+            s=flag.s,
+            divshade=flag.divshade
         )
         return {"status": "ok", "flags": state.project.flags}
     except Exception as e:
@@ -125,8 +129,8 @@ async def add_harmony_flag(flag: HarmonyFlagData):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
     try:
-        state.project.add_harmony_flag(flag.t, flag.c.model_dump())
-        return {"status": "ok", "harmony_flags": state.project.harmony_flags}
+        idx = state.project.add_harmony_flag(t=flag.t, chord=flag.c.model_dump())
+        return {"status": "ok", "harmony_flags": state.project.harmony_flags, "idx": idx}
     except Exception as e:
         logger.exception("Error in add_harmony_flag")
         raise HTTPException(status_code=500, detail=f"Failed to add harmony flag: {str(e)}")
@@ -228,8 +232,12 @@ async def move_harmony_flag(move: HarmonyFlagMove):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
     try:
-        state.project.move_harmony_flag(move.idx, move.t)
-        return {"status": "ok", "harmony_flags": state.project.harmony_flags}
+        res = state.project.move_harmony_flag(move.idx, move.t)
+        if res is None:
+            raise HTTPException(status_code=404, detail="Harmony flag not found")
+        return {"status": "ok", "harmony_flags": state.project.harmony_flags, "updated_flag": res["flag"], "new_idx": res["idx"]}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to move harmony flag: {str(e)}")
 
@@ -238,7 +246,7 @@ async def update_harmony_flag(idx: int, flag: HarmonyFlagData):
     if not state.project:
         raise HTTPException(status_code=400, detail="No project loaded")
     try:
-        state.project.update_harmony_flag(idx, flag.t, flag.c.model_dump())
+        state.project.update_harmony_flag(idx=idx, t=flag.t, chord=flag.c.model_dump())
         return {"status": "ok", "harmony_flags": state.project.harmony_flags}
     except Exception as e:
         logger.exception("Error in update_harmony_flag")
