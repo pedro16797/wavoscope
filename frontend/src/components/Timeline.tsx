@@ -274,7 +274,9 @@ export const Timeline: React.FC = () => {
             window.addEventListener('mouseup', onMouseUp);
         } else {
             const snappedT = Math.round(clickT * 100) / 100;
-            addFlag(snappedT);
+            addFlag(snappedT).then(res => {
+                if (res && res.idx !== -1) setEditingFlagIdx(res.idx);
+            });
         }
     }
   };
@@ -321,25 +323,9 @@ export const Timeline: React.FC = () => {
         setEditingFlagIdx(foundIdx);
     } else {
         const snappedT = Math.round(clickT * 100) / 100;
-        addHarmonyFlag(snappedT).then((newFlag) => {
-            if (newFlag) {
-                // Wait a tiny bit for the store to settle if needed,
-                // though addHarmonyFlag awaits fetchStatus.
-                setTimeout(() => {
-                    const updatedFlags = useStore.getState().harmony_flags;
-                    let bestIdx = -1;
-                    let minDiff = Infinity;
-                    updatedFlags.forEach((f, i) => {
-                        const diff = Math.abs(f.t - snappedT);
-                        if (diff < minDiff) {
-                            minDiff = diff;
-                            bestIdx = i;
-                        }
-                    });
-                    if (bestIdx !== -1) {
-                        setEditingHarmonyFlagIdx(bestIdx);
-                    }
-                }, 100);
+        addHarmonyFlag(snappedT).then((res) => {
+            if (res && res.idx !== -1) {
+                setEditingHarmonyFlagIdx(res.idx);
             }
         });
     }

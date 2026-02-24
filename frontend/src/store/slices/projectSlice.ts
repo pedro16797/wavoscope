@@ -58,8 +58,10 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     try {
         const res = await axios.post(`${API_BASE}/project/flags`, { t });
         set({ flags: res.data.flags });
+        return { idx: res.data.idx };
     } catch (e) {
         console.error("[Store] Failed to add flag:", e);
+        return null;
     }
   },
 
@@ -108,7 +110,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
         }
         const res = await axios.post(`${API_BASE}/project/harmony_flags`, { t, c: chord });
         set({ harmony_flags: res.data.harmony_flags });
-        return { t, c: chord };
+        return { idx: res.data.idx, t, c: chord };
     } catch (e) {
         console.error("[Store] Failed to add harmony flag:", e);
         return null;

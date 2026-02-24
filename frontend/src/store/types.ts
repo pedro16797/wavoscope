@@ -83,12 +83,12 @@ export interface ProjectSlice {
 
   fetchStatus: () => Promise<void>;
   browseFile: () => Promise<void>;
-  addFlag: (t: number) => Promise<void>;
+  addFlag: (t: number) => Promise<{ idx: number } | null>;
   moveFlag: (idx: number, t: number) => Promise<{ idx: number, flag: Flag } | null>;
   removeFlag: (idx: number) => Promise<void>;
   updateFlag: (idx: number, flag: Partial<Flag>) => Promise<void>;
   insertNFlags: (idx: number, count: number) => Promise<void>;
-  addHarmonyFlag: (t: number, chord?: Chord) => Promise<HarmonyFlag | null>;
+  addHarmonyFlag: (t: number, chord?: Chord) => Promise<{ idx: number, t: number, c: Chord } | null>;
   moveHarmonyFlag: (idx: number, t: number) => Promise<{ idx: number, t: number, c: Chord } | null>;
   removeHarmonyFlag: (idx: number) => Promise<void>;
   updateHarmonyFlag: (idx: number, t: number, chord: Chord) => Promise<void>;
