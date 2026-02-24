@@ -128,6 +128,8 @@
     "play": "Play",
     "pause": "Pause",
     "stop": "Stop",
+    "volume": "Playback Volume",
+    "volume_desc": "Adjust the overall loudness of the audio playback.",
     "settings": "Settings"
   },
   "chord": {

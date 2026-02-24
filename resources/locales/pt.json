@@ -126,6 +126,8 @@
     "play": "Reproduzir",
     "pause": "Pausa",
     "stop": "Parar",
+    "volume": "Volume de reprodução",
+    "volume_desc": "Ajustar o volume geral da reprodução de áudio.",
     "settings": "Configurações"
   },
   "chord": {

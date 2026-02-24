@@ -143,10 +143,10 @@ export const PlaybackBar: React.FC = () => {
             <span className="text-[10px] font-mono w-8">{speed.toFixed(1)}x</span>
         </div>
         <div className="flex items-center gap-2">
-            <Tooltip content={t('settings.volume')}>
+            <Tooltip content={t('playback.volume_desc')}>
                 <Volume2 size={16} className="opacity-60" />
             </Tooltip>
-            <Tooltip content={t('settings.volume')}>
+            <Tooltip content={t('playback.volume_desc')}>
                 <input type="range" min="0" max="1" step="0.05" value={volume}
                     onChange={(e) => controlPlayback('set_volume', parseFloat(e.target.value))}
                     className="w-16 accent-current" />

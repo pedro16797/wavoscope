@@ -320,7 +320,7 @@ export const Spectrum: React.FC = () => {
         {xLow >= 0 && xLow <= size.width && (
             <div className="absolute top-0 bottom-0 w-8 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
                  style={{ left: xLow }}>
-                <Tooltip content={t('settings.low_cutoff_desc')} shortcut="F" className="w-full h-full">
+                <Tooltip content={t('settings.low_cutoff_desc')} shortcut={`F / ${t('keys.right_click')}`} className="absolute bottom-0 w-full h-8">
                     <div className="w-full h-full" />
                 </Tooltip>
             </div>
@@ -330,7 +330,7 @@ export const Spectrum: React.FC = () => {
         {xHigh >= 0 && xHigh <= size.width && (
             <div className="absolute top-0 bottom-0 w-8 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
                  style={{ left: xHigh }}>
-                <Tooltip content={t('settings.high_cutoff_desc')} shortcut="Shift+F" className="w-full h-full">
+                <Tooltip content={t('settings.high_cutoff_desc')} shortcut={`Shift+F / ${t('keys.right_click')}`} className="absolute bottom-0 w-full h-8">
                     <div className="w-full h-full" />
                 </Tooltip>
             </div>

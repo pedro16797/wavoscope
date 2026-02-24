@@ -126,6 +126,8 @@
     "play": "Wiedergabe",
     "pause": "Pause",
     "stop": "Stopp",
+    "volume": "Wiedergabelautstärke",
+    "volume_desc": "Die Gesamtlautstärke der Audiowiedergabe anpassen.",
     "settings": "Einstellungen"
   },
   "chord": {
