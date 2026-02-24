@@ -81,7 +81,8 @@
     "author_desc": "Default author name for MusicXML metadata.",
     "low_cutoff_desc": "Filter out frequencies below this point.",
     "high_cutoff_desc": "Filter out frequencies above this point.",
-    "kb_no_ui_desc": "The following keybinds do not correspond to any graphical interface element."
+    "kb_no_ui_desc": "The following keybinds do not correspond to any graphical interface element.",
+    "kb_lyrics_mouse": "Add Lyrics Flag (Mouse)"
   },
   "keys": {
     "space": "Space",
@@ -101,7 +102,8 @@
     "waveform_click": "Waveform Click",
     "waveform_drag": "Waveform Drag",
     "spectrum_click": "Spectrum Click",
-    "handle_drag": "Handle Drag"
+    "handle_drag": "Handle Drag",
+    "left_click_play": "Left Click to Play"
   },
   "playback": {
     "open": "Open Audio File",

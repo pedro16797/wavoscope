@@ -79,7 +79,8 @@
     "author_desc": "MusicXML 元数据的默认作者姓名。",
     "low_cutoff_desc": "过滤掉低于此点的频率。",
     "high_cutoff_desc": "过滤掉高于此点的频率。",
-    "kb_no_ui_desc": "以下快捷键不对应任何图形界面元素。"
+    "kb_no_ui_desc": "以下快捷键不对应任何图形界面元素。",
+    "kb_lyrics_mouse": "添加歌词标记 (鼠标)"
   },
   "keys": {
     "space": "空格",
@@ -99,7 +100,8 @@
     "waveform_click": "波形单击",
     "waveform_drag": "波形拖动",
     "spectrum_click": "频谱单击",
-    "handle_drag": "手柄拖动"
+    "handle_drag": "手柄拖动",
+    "left_click_play": "左键单击播放"
   },
   "playback": {
     "open": "打开音频文件",

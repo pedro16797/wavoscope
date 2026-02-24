@@ -1,8 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
 import { formatChord, getChordMidiNotes, midiToFreq, getTimelineStep, formatTimelineLabel } from '../store/utils';
+import { Tooltip } from './Tooltip';
+import { useTranslation } from 'react-i18next';
 
 export const Timeline: React.FC = () => {
+    const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const {
@@ -334,12 +337,53 @@ export const Timeline: React.FC = () => {
   };
 
   return (
-    <div ref={containerRef} className="h-10 w-full border-b select-none cursor-crosshair"
+    <div ref={containerRef} className="h-10 w-full border-b select-none cursor-crosshair relative"
         style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
         onMouseDown={handleMouseDown}
         onContextMenu={handleContextMenu}
         onWheel={handleWheel}>
         <canvas ref={canvasRef} className="w-full h-full block" />
+
+        {/* Chord Flag Tooltips */}
+        {harmony_flags.map((f, idx) => {
+            const x = (f.t - offset) * zoom;
+            if (x < 0 || x > size.width) return null;
+            return (
+                <div key={`chord-tip-${idx}`} className="absolute top-0 bottom-1/2 w-4 -translate-x-1/2 pointer-events-auto"
+                     style={{ left: x }}>
+                    <Tooltip content={formatChord(f.c)} shortcut={t('keys.left_click_play')} className="w-full h-full" />
+                </div>
+            );
+        })}
+
+        {/* Rhythm Flag Tooltips */}
+        {flags.map((f, idx) => {
+            const x = (f.t - offset) * zoom;
+            if (x < 0 || x > size.width) return null;
+
+            let subdiv = f.div || 0;
+            let isInherited = false;
+            if (subdiv === 0) {
+                isInherited = true;
+                for (let i = idx; i >= 0; i--) {
+                    if (flags[i].type === 'rhythm' && flags[i].div !== 0) {
+                        subdiv = flags[i].div;
+                        break;
+                    }
+                }
+                if (subdiv === 0) subdiv = 1;
+            }
+
+            const name = f.n || f.auto_name || '';
+            const tipContent = `${name} #${idx + 1} (Subdiv: ${subdiv}${isInherited ? '*' : ''})`;
+
+            return (
+                <div key={`rhythm-tip-${idx}`} className="absolute top-1/2 bottom-0 w-4 -translate-x-1/2 pointer-events-auto"
+                     style={{ left: x }}>
+                    <Tooltip content={tipContent} className="w-full h-full" />
+                </div>
+            );
+        })}
     </div>
   );
 };

@@ -79,7 +79,8 @@
     "author_desc": "Standard-Autorenname für MusicXML-Metadaten.",
     "low_cutoff_desc": "Frequenzen unterhalb dieses Punktes herausfiltern.",
     "high_cutoff_desc": "Frequenzen oberhalb dieses Punktes herausfiltern.",
-    "kb_no_ui_desc": "Die folgenden Tastenkombinationen entsprechen keinem grafischen Interface-Element."
+    "kb_no_ui_desc": "Die folgenden Tastenkombinationen entsprechen keinem grafischen Interface-Element.",
+    "kb_lyrics_mouse": "Songtext-Markierung hinzufügen (Maus)"
   },
   "keys": {
     "space": "Leertaste",
@@ -99,7 +100,8 @@
     "waveform_click": "Wellenform-Klick",
     "waveform_drag": "Wellenform ziehen",
     "spectrum_click": "Spektrum-Klick",
-    "handle_drag": "Griff ziehen"
+    "handle_drag": "Griff ziehen",
+    "left_click_play": "Linksklick zum Spielen"
   },
   "playback": {
     "open": "Audiodatei öffnen",

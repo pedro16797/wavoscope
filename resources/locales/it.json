@@ -79,7 +79,8 @@
     "author_desc": "Nome autore predefinito per i metadati MusicXML.",
     "low_cutoff_desc": "Filtra le frequenze al di sotto di questo punto.",
     "high_cutoff_desc": "Filtra le frequenze al di sopra di questo punto.",
-    "kb_no_ui_desc": "Le seguenti scorciatoie da tastiera non corrispondono a nessun elemento dell'interfaccia grafica."
+    "kb_no_ui_desc": "Le seguenti scorciatoie da tastiera non corrispondono a nessun elemento dell'interfaccia grafica.",
+    "kb_lyrics_mouse": "Aggiungi marcatore testo (Mouse)"
   },
   "keys": {
     "space": "Spazio",
@@ -99,7 +100,8 @@
     "waveform_click": "Clic Forma d'Onda",
     "waveform_drag": "Trascina Forma d'Onda",
     "spectrum_click": "Clic Spettro",
-    "handle_drag": "Trascina Maniglia"
+    "handle_drag": "Trascina Maniglia",
+    "left_click_play": "Clic sinistro per suonare"
   },
   "playback": {
     "open": "Apri File Audio",

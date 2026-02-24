@@ -81,7 +81,8 @@
     "author_desc": "Nombre del autor por defecto para los metadatos MusicXML.",
     "low_cutoff_desc": "Filtra las frecuencias por debajo de este punto.",
     "high_cutoff_desc": "Filtra las frecuencias por encima de este punto.",
-    "kb_no_ui_desc": "Los siguientes atajos de teclado no corresponden a ningún elemento de la interfaz gráfica."
+    "kb_no_ui_desc": "Los siguientes atajos de teclado no corresponden a ningún elemento de la interfaz gráfica.",
+    "kb_lyrics_mouse": "Añadir marca de letra (Ratón)"
   },
   "keys": {
     "space": "Espacio",
@@ -101,7 +102,8 @@
     "waveform_click": "Clic en forma de onda",
     "waveform_drag": "Arrastrar forma de onda",
     "spectrum_click": "Clic en espectro",
-    "handle_drag": "Arrastrar controlador"
+    "handle_drag": "Arrastrar controlador",
+    "left_click_play": "Clic izquierdo para tocar"
   },
   "playback": {
     "open": "Abrir archivo de audio",
