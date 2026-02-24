@@ -321,7 +321,7 @@ export const Spectrum: React.FC = () => {
     <div ref={containerRef} className="w-full h-full relative overflow-hidden select-none"
          onMouseDown={handleMouseDown}
          onContextMenu={handleContextMenu}>
-        <canvas ref={canvasRef} className="w-full h-full block cursor-crosshair" />
+        <canvas ref={canvasRef} className="w-full h-full block cursor-default" />
 
         {/* Hitbox for Low Handle */}
         {xLow >= 0 && xLow <= size.width && (
