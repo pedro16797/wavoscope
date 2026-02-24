@@ -45,12 +45,14 @@ class Api:
         res = window.create_file_dialog(webview.FileDialog.SAVE, save_filename=default_filename, file_types=file_types, directory=directory)
         return res
 
-    def browse_folder(self):
+    def browse_folder(self, directory=None):
         if not webview.windows:
             logger.error("No windows found")
             return None
         window = webview.windows[0]
-        res = window.create_file_dialog(webview.FileDialog.FOLDER)
+        if directory is None:
+            directory = ''
+        res = window.create_file_dialog(webview.FileDialog.FOLDER, directory=directory)
         if res:
             return res[0]
         return None

@@ -188,7 +188,7 @@ export interface ConfigSlice {
     autosave_path?: string,
     language?: string
   }) => Promise<void>;
-  browseFolder: () => Promise<string | null>;
+  browseFolder: (initialDir?: string) => Promise<string | null>;
   setShowSettings: (show: boolean) => void;
   setShowSpectrum: (show: boolean) => void;
   setShowLyrics: (show: boolean) => void;

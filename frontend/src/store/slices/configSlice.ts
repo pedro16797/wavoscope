@@ -181,10 +181,10 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
     }
   },
 
-  browseFolder: async () => {
+  browseFolder: async (initialDir?: string) => {
     const pywindow = window as any;
     if (pywindow.pywebview?.api?.browse_folder) {
-        return await pywindow.pywebview.api.browse_folder();
+        return await pywindow.pywebview.api.browse_folder(initialDir || '');
     }
     return null;
   },

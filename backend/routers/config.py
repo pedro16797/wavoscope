@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Optional
+import tempfile
 from backend import state
 
 router = APIRouter(prefix="/config", tags=["config"])
@@ -72,3 +73,7 @@ async def update_config(new_cfg: AppConfig):
 async def list_audio_devices():
     from audio.audio_backend import AudioBackend
     return AudioBackend.list_devices()
+
+@router.get("/temp-dir")
+async def get_temp_dir():
+    return {"temp_dir": tempfile.gettempdir()}

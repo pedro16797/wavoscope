@@ -197,7 +197,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                                className="flex-1 bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-xs font-mono text-text outline-none focus:border-accent"
                                                style={{ borderWidth: 'var(--ui-border)' }} />
                                         <button onClick={async () => {
-                                                    const res = await browseFolder();
+                                                    let initial = asPath;
+                                                    if (!initial) {
+                                                        try {
+                                                            const resp = await fetch(`${window.location.origin}/config/temp-dir`);
+                                                            const data = await resp.json();
+                                                            initial = data.temp_dir;
+                                                        } catch (e) {
+                                                            console.error("Failed to fetch temp dir", e);
+                                                        }
+                                                    }
+                                                    const res = await browseFolder(initial);
                                                     if (res) setAsPath(res);
                                                 }}
                                                 className="bg-background border border-grid rounded-[var(--ui-radius)] px-3 hover:bg-white/5 transition-colors text-accent"
