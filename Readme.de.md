@@ -144,10 +144,17 @@ Wavoscope ist so konzipiert, dass es von der Community getragen wird. Sie könne
 | Aktion | Taste |
 | :--- | :--- |
 | **Wiedergabe / Pause** | `Leertaste` |
+| **Wiedergabe stoppen** | `Umschalt + Leertaste` |
+| **Metronom umschalten** | `M` |
+| **Einstellungen umschalten** | `Esc` |
 | **Vorwärts/Rückwärts springen** | `Links` / `Rechts` |
 | **Geschwindigkeit +/-** | `Oben` / `Unten` |
+| **Oktave höher/tiefer** | `Umschalt + Links/Rechts` |
+| **FFT-Fenstergröße** | `Umschalt + Oben/Unten` |
 | **Rhythmus-Markierung** | `B` |
 | **Harmonie-Markierung** | `H` |
+| **Tiefpass umschalten** | `F` |
+| **Hochpass umschalten** | `Umschalt + F` |
 | **Songtext hinzufügen/bestätigen** | `L` |
 | **Teilen & Weiter (Lyrics)**| `Leertaste` / `-` (Im Eingabefeld) |
 | **Loop-Modi durchlaufen** | `Tab` |
@@ -156,6 +163,7 @@ Wavoscope ist so konzipiert, dass es von der Community getragen wird. Sie könne
 | **Element löschen** | `Entf` / `Rücktaste` |
 | **Datei öffnen** | `Strg + O` |
 | **Projekt speichern** | `Strg + S` |
+| **MusicXML exportieren** | `Strg + E` |
 
 ### Maus-Interaktionen
 | Bereich | Aktion | Interaktion |

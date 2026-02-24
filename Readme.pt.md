@@ -144,10 +144,17 @@ Wavoscope foi projetado para ser impulsionado pela comunidade. Você pode adicio
 | Ação | Tecla |
 | :--- | :--- |
 | **Reproduzir / Pausar** | `Espaço` |
+| **Parar reprodução** | `Shift + Espaço` |
+| **Alternar Metrônomo** | `M` |
+| **Alternar Configurações** | `Esc` |
 | **Pular para Frente/Trás** | `Esquerda` / `Direita` |
 | **Aumentar/Diminuir Velocidade** | `Cima` / `Baixo` |
+| **Subir/Baixar oitava** | `Shift + Esquerda/Direita` |
+| **Tamanho da janela FFT** | `Shift + Cima/Baixo` |
 | **Adicionar Marcador Ritmo** | `B` |
 | **Adicionar Marcador Harmonia** | `H` |
+| **Alternar passa-baixas** | `F` |
+| **Alternar passa-altas** | `Shift + F` |
 | **Adicionar/Confirmar Letra** | `L` |
 | **Dividir e Avançar Letra**| `Espaço` / `-` (Dentro da entrada) |
 | **Ciclar Modos de Loop** | `Tab` |
@@ -156,6 +163,7 @@ Wavoscope foi projetado para ser impulsionado pela comunidade. Você pode adicio
 | **Excluir Item Selecionado** | `Delete` / `Backspace` |
 | **Abrir Arquivo** | `Ctrl + O` |
 | **Salvar Projeto** | `Ctrl + S` |
+| **Exportar MusicXML** | `Ctrl + E` |
 
 ### Interações com o Mouse
 | Área | Ação | Interação |
