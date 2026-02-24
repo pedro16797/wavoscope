@@ -12,6 +12,11 @@ class AppConfig(BaseModel):
     default_output_folder: Optional[str] = None
     musicxml_author: Optional[str] = None
     audio_device: Optional[str] = None
+    autosave_enabled: Optional[bool] = None
+    autosave_forced: Optional[bool] = None
+    autosave_interval: Optional[int] = None
+    autosave_max_snapshots: Optional[int] = None
+    autosave_path: Optional[str] = None
 
 @router.get("")
 async def get_config():
@@ -23,7 +28,12 @@ async def get_config():
         "spectrum_keys": cfg.get("ui.spectrum_keys", 37),
         "default_output_folder": cfg.get("ui.default_output_folder", ""),
         "musicxml_author": cfg.get("ui.musicxml_author", ""),
-        "audio_device": cfg.get("ui.audio_device", "")
+        "audio_device": cfg.get("ui.audio_device", ""),
+        "autosave_enabled": cfg.get("autosave.enabled", True),
+        "autosave_forced": cfg.get("autosave.forced", False),
+        "autosave_interval": cfg.get("autosave.interval_minutes", 5),
+        "autosave_max_snapshots": cfg.get("autosave.max_snapshots", 5),
+        "autosave_path": cfg.get("autosave.path", "")
     }
 
 @router.post("")
@@ -46,6 +56,16 @@ async def update_config(new_cfg: AppConfig):
         cfg.set("ui.audio_device", new_cfg.audio_device)
         if state.project:
             state.project.backend.set_device(new_cfg.audio_device if new_cfg.audio_device else None)
+    if new_cfg.autosave_enabled is not None:
+        cfg.set("autosave.enabled", new_cfg.autosave_enabled)
+    if new_cfg.autosave_forced is not None:
+        cfg.set("autosave.forced", new_cfg.autosave_forced)
+    if new_cfg.autosave_interval is not None:
+        cfg.set("autosave.interval_minutes", new_cfg.autosave_interval)
+    if new_cfg.autosave_max_snapshots is not None:
+        cfg.set("autosave.max_snapshots", new_cfg.autosave_max_snapshots)
+    if new_cfg.autosave_path is not None:
+        cfg.set("autosave.path", new_cfg.autosave_path)
     return {"status": "ok"}
 
 @router.get("/audio-devices")

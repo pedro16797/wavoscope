@@ -37,5 +37,27 @@
     "playback": {
         "speed_min": 0.1,
         "speed_max": 4.0
+    },
+    "autosave": {
+        "enabled": {
+            "type": "boolean",
+            "default": true
+        },
+        "forced": {
+            "type": "boolean",
+            "default": false
+        },
+        "interval_minutes": {
+            "type": "number",
+            "default": 5
+        },
+        "max_snapshots": {
+            "type": "number",
+            "default": 5
+        },
+        "path": {
+            "type": "string",
+            "default": ""
+        }
     }
 }

@@ -19,10 +19,11 @@ Wavoscope è progettato per essere autonomo. Non è necessario installare Python
 
 Al primo avvio, Wavoscope scaricherà automaticamente il proprio runtime Python e configurerà l'ambiente necessario. L'operazione potrebbe richiedere alcuni minuti a seconda della connessione Internet. Dopo il primo avvio, potrai semplicemente usare l'eseguibile `Wavoscope` generato (con l'icona dell'applicazione).
 
-### Gestione del Progetto
-Wavoscope utilizza un sistema di file "sidecar". Quando apri un file audio, Wavoscope crea o carica un file `.oscope` nella stessa cartella per memorizzare marcatori, loop e impostazioni.
+### Gestione Progetto & Salvataggi Automatici
+Wavoscope utilizza un sistema di file "sidecar". Quando apri un file audio, Wavoscope crea o carica un file `.oscope` nella stessa directory per memorizzare i tuoi marcatori, loop e impostazioni.
 - **Apri:** Clicca sull'icona della cartella nella barra di riproduzione per caricare qualsiasi formato audio comune (MP3, WAV, FLAC, ecc.).
 - **Salva:** Clicca sull'icona del floppy disk. L'icona si illuminerà con il colore di accento del tuo tema quando ci sono modifiche non salvate.
+- **Salvataggio automatico:** Wavoscope crea automaticamente istantanee del tuo lavoro a intervalli regolari. Puoi configurare la frequenza del salvataggio automatico, il numero massimo di istantanee da conservare e la posizione di archiviazione nella scheda **Impostazioni > Global**. Per impostazione predefinita, i salvataggi avvengono solo se ci sono modifiche non salvate. Puoi abilitare il **Salvataggio forzato** per creare sempre istantanee indipendentemente dalle modifiche. Per impostazione predefinita, i salvataggi automatici sono memorizzati nella cartella temporanea del tuo sistema.
 
 ---
 

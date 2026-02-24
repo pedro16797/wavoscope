@@ -19,6 +19,11 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   default_output_folder: '',
   musicxml_author: '',
   audio_device: '',
+  autosave_enabled: true,
+  autosave_forced: false,
+  autosave_interval: 5,
+  autosave_max_snapshots: 5,
+  autosave_path: '',
   showSettings: false,
   showSpectrum: true,
   showLyrics: false,
@@ -65,7 +70,12 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         spectrum_keys: newKeys,
         default_output_folder: res.data.default_output_folder,
         musicxml_author: res.data.musicxml_author,
-        audio_device: res.data.audio_device
+        audio_device: res.data.audio_device,
+        autosave_enabled: res.data.autosave_enabled,
+        autosave_forced: res.data.autosave_forced,
+        autosave_interval: res.data.autosave_interval,
+        autosave_max_snapshots: res.data.autosave_max_snapshots,
+        autosave_path: res.data.autosave_path
       };
 
       const maxShift = 6 - Math.floor(newKeys / 12);
@@ -127,6 +137,11 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         if (cfg.default_output_folder !== undefined) set({ default_output_folder: cfg.default_output_folder });
         if (cfg.musicxml_author !== undefined) set({ musicxml_author: cfg.musicxml_author });
         if (cfg.audio_device !== undefined) set({ audio_device: cfg.audio_device });
+        if (cfg.autosave_enabled !== undefined) set({ autosave_enabled: cfg.autosave_enabled });
+        if (cfg.autosave_forced !== undefined) set({ autosave_forced: cfg.autosave_forced });
+        if (cfg.autosave_interval !== undefined) set({ autosave_interval: cfg.autosave_interval });
+        if (cfg.autosave_max_snapshots !== undefined) set({ autosave_max_snapshots: cfg.autosave_max_snapshots });
+        if (cfg.autosave_path !== undefined) set({ autosave_path: cfg.autosave_path });
 
         if (cfg.spectrum_keys !== undefined && cfg.spectrum_keys !== oldState.spectrum_keys) {
             const newKeys = cfg.spectrum_keys;

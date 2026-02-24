@@ -12,9 +12,18 @@ from fastapi.responses import FileResponse  # noqa: E402
 
 from backend import state  # noqa: E402
 from backend.routers import playback, audio, project, config, themes, ws, locales  # noqa: E402
+from backend import autosave  # noqa: E402
 from utils.logging import logger # noqa: E402
 
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_event():
+    autosave.start()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    autosave.stop()
 
 # Enable CORS for development
 app.add_middleware(
