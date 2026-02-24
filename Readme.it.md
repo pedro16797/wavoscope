@@ -66,7 +66,7 @@ Wavoscope utilizza un sistema a doppio marcatore per aiutarti a mappare la strut
 ![Dialogo Marcatore Ritmo](docs/images/rhythm_dialog.png)
 
 ### Marcatori di Armonia (Accordi)
-- **Posizionamento:** Premi `H` (predefinito) o fai **clic destro** sulla timeline per inserire un marcatore di armonia.
+- **Posizionamento:** Premi `C` (predefinito) o fai **clic destro** sulla timeline per inserire un marcatore di armonia.
 - **Editor Accordi:** **Clic destro** su un marcatore esistente per aprire il dialogo degli accordi. Puoi digitare i nomi degli accordi (es. "Am7", "C/G") o usare i selettori.
 - **Analisi Automatica:** Usa il pulsante **Suggerisci** per lasciare che Wavoscope analizzi l'audio in quella posizione e raccomandi l'accordo più probabile.
 - **Ascolto:** **Tieni premuto il clic sinistro** sulla maniglia di un marcatore di armonia o clicca sul pulsante "Play" nel dialogo per ascoltare l'accordo tramite il sintetizzatore interno.
@@ -88,7 +88,7 @@ Wavoscope include una traccia interattiva per i testi che permette una trascrizi
 
 ### Flusso di Lavoro per la Trascrizione
 1. **Attiva Traccia:** Clicca sul pulsante "Testo" nell'intestazione della forma d'onda per mostrare la traccia di trascrizione.
-2. **Aggiungi e Digita:** Premi `L` o fai un **singolo clic** in uno spazio vuoto della traccia per aggiungere una parola.
+2. **Aggiungi e Digita:** Premi `V` o fai un **singolo clic** in uno spazio vuoto della traccia per aggiungere una parola.
 3. **Inserimento Rapido:** Mentre digiti in una casella di testo, premi **Spazio** o **Trattino (`-`)**. Questo avverrà automaticamente:
     - Conferma la parola corrente.
     - Crea una nuova casella di testo immediatamente dopo (alla posizione attuale o alla fine della precedente).
@@ -152,13 +152,13 @@ Wavoscope è progettato per essere guidato dalla comunità. Puoi aggiungere o mo
 | **Alza/Abbassa Ottava** | `Maiusc + Sinistra/Destra` |
 | **Dimensione finestra FFT** | `Maiusc + Su/Giù` |
 | **Aggiungi Marcatore Ritmo** | `B` |
-| **Aggiungi Marcatore Armonia** | `H` |
+| **Aggiungi Marcatore Armonia** | `C` |
 | **Attiva passa-basso** | `F` |
 | **Attiva passa-alto** | `Maiusc + F` |
-| **Aggiungi/Conferma Testo** | `L` |
+| **Aggiungi/Conferma Testo** | `V` |
 | **Dividi e Avanza Testo**| `Spazio` / `-` (Dentro l'input) |
 | **Cicla Modalità Loop** | `Tab` |
-| **Deseleziona Tutto** | `Maiusc + L` |
+| **Deseleziona Tutto** | `Maiusc + V` |
 | **Salta tra i Testi** | `Maiusc + Sinistra/Destra` |
 | **Elimina Elemento** | `Canc` / `Backspace` |
 | **Apri File** | `Ctrl + O` |

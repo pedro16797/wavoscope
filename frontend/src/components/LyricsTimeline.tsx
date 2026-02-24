@@ -387,8 +387,8 @@ export const LyricsTimeline: React.FC = () => {
             const { loaded, lyrics, position, selectedIdx, editingIdx, editValue } = stateRef.current;
             if (!loaded) return;
 
-            // Global transcription key: 'L'
-            if (e.key.toLowerCase() === 'l' && !e.shiftKey) {
+            // Global transcription key: 'V'
+            if (e.key.toLowerCase() === 'v' && !e.shiftKey) {
                 if ((e.target as HTMLElement).tagName !== 'INPUT') {
                     e.preventDefault();
                     e.stopImmediatePropagation();

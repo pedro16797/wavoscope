@@ -65,17 +65,17 @@ Wavoscope uses a dual-flag system to help you map out the structure and harmony 
 
 ![Rhythm Flag Dialog](docs/images/rhythm_dialog.png)
 
-### Harmony Flags (Chord Markers)
-- **Placement:** Press `H` (default) or **Right Click** on the timeline to drop a harmony flag.
+### Chord Flags (Chord Markers)
+- **Placement:** Press `C` (default) or **Right Click** on the timeline to drop a chord flag.
 - **Chord Editor:** **Right Click** an existing flag to open the Chord Dialog. You can type chord names (e.g., "Am7", "C/G") or use the selectors.
 - **Automatic Analysis:** Use the **Suggest** button to let Wavoscope analyze the audio at that position and recommend the most likely chord.
-- **Auditioning:** **Hold Left Click** on a harmony flag handle or click the "Play" button in the dialog to hear the chord played via the internal synthesizer.
+- **Auditioning:** **Hold Left Click** on a chord flag handle or click the "Play" button in the dialog to hear the chord played via the internal synthesizer.
 
-![Harmony Flag Dialog](docs/images/harmony_dialog.png)
+![Chord Flag Dialog](docs/images/harmony_dialog.png)
 
 ### Managing Flags
 - **Dragging:** You can **Click and Drag** any flag handle on the timeline to fine-tune its position.
-- **Overlaps:** When a Rhythm and Harmony flag occupy the same space, they are displayed at half-height (Harmony on top, Rhythm on bottom) so you can still interact with both.
+- **Overlaps:** When a Rhythm and Chord flag occupy the same space, they are displayed at half-height (Chord on top, Rhythm on bottom) so you can still interact with both.
 - **Looping:** Use the Loop button in the playback bar to cycle between markers or the entire track.
 
 ---
@@ -88,7 +88,7 @@ Wavoscope features an interactive lyrics track that allows for high-speed transc
 
 ### Transcription Workflow
 1. **Toggle Track:** Click the "Lyrics" button in the waveform header to show the transcription track.
-2. **Add & Type:** Press `L` or **Single Click** an empty spot on the lyrics track to add a word.
+2. **Add & Type:** Press `V` or **Single Click** an empty spot on the lyrics track to add a word.
 3. **High-Speed Entry:** While typing in a lyric box, press **Space** or **Dash (`-`)**. This will automatically:
     - Commit the current word.
     - Create a new lyric box immediately following it (at the current playhead or previous end).
@@ -151,13 +151,13 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | **Octave Up/Down** | `Shift + Left/Right` |
 | **FFT Window Size** | `Shift + Up/Down` |
 | **Add Rhythm Flag** | `B` |
-| **Add Harmony Flag** | `H` |
+| **Add Chord Flag** | `C` |
 | **Toggle Low Cutoff** | `F` |
 | **Toggle High Cutoff** | `Shift + F` |
-| **Add/Commit Lyric** | `L` |
+| **Add Lyrics Flag** | `V` |
 | **Split & Advance Lyric**| `Space` / `-` (Inside Input) |
 | **Cycle Loop Modes** | `Tab` |
-| **Deselect Selection** | `Shift + L` |
+| **Deselect Selection** | `Shift + V` |
 | **Seek between Lyrics** | `Shift + Left/Right` |
 | **Delete Selected Item** | `Delete` / `Backspace` |
 | **Open File** | `Ctrl + O` |
@@ -169,9 +169,9 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | :--- | :--- | :--- |
 | **Timeline** | Add Rhythm Flag | `Left Click` |
 | **Timeline** | Auto-place Rhythm Flag | `Shift + Left Click` |
-| **Timeline** | Add Harmony Flag | `Right Click` |
+| **Timeline** | Add Chord Flag | `Right Click` |
 | **Timeline** | Move Flag | `Left Drag` |
-| **Timeline** | Audition Chord | `Hold Left Click` on Harmony Flag |
+| **Timeline** | Audition Chord | `Hold Left Click` on Chord Flag |
 | **Timeline** | Scroll View | `Mouse Wheel` |
 | **Waveform** | Move Playhead | `Left Click` |
 | **Waveform** | Pan View | `Left Drag` |

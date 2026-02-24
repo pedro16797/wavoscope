@@ -349,8 +349,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <span className="opacity-60">{t('settings.kb_metronome')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">M</span>
                         <span className="opacity-60">{t('settings.kb_settings')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Esc</span>
                         <span className="opacity-60">{t('settings.kb_rhythm')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">B</span>
-                        <span className="opacity-60">{t('settings.kb_harmony')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">H</span>
-                        <span className="opacity-60">{t('settings.kb_lyrics')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">L</span>
+                        <span className="opacity-60">{t('settings.kb_harmony')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">C</span>
+                        <span className="opacity-60">{t('settings.kb_lyrics')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">V</span>
                         <span className="opacity-60">{t('settings.kb_delete')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.delete')}</span>
                         <span className="opacity-60">{t('settings.kb_open')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')} + O</span>
                         <span className="opacity-60">{t('settings.kb_save')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')} + S</span>

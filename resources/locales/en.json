@@ -45,8 +45,8 @@
     "kb_low_cutoff": "Toggle Low Cutoff",
     "kb_high_cutoff": "Toggle High Cutoff",
     "kb_rhythm": "Add Rhythm Flag",
-    "kb_harmony": "Add Harmony Flag",
-    "kb_lyrics": "Toggle Lyrics",
+    "kb_harmony": "Add Chord Flag",
+    "kb_lyrics": "Add Lyrics Flag",
     "kb_delete": "Delete Selected",
     "kb_open": "Open File",
     "kb_save": "Save Project",
@@ -60,7 +60,7 @@
     "interactions": "Timeline Interactions",
     "kb_move_flag": "Move Flag",
     "kb_rhythm_auto": "Auto-place Rhythm Flag",
-    "kb_audition": "Audition Harmony",
+    "kb_audition": "Audition Chord",
     "kb_scroll": "Scroll View",
     "waveform": "Waveform",
     "spectrum": "Spectrum",
@@ -133,7 +133,7 @@
     "settings": "Settings"
   },
   "chord": {
-    "edit_title": "Edit Harmony Flag",
+    "edit_title": "Edit Chord Flag",
     "notation": "Chord Notation",
     "audition": "Audition chord",
     "root": "Root",

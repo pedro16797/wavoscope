@@ -12,7 +12,7 @@ The lyrics track is a specialized canvas-based track located above the main wave
 
 ### Transcription Workflow: "Type-Split-Advance"
 The most efficient way to transcribe a song is using the following workflow:
-1.  **Start:** Press `L` or click an empty spot to create the first lyric at the current playhead.
+1.  **Start:** Press `V` or click an empty spot to create the first lyric at the current playhead.
 2.  **Type:** Enter the first word.
 3.  **Split:** Press `Space` (for new words) or `-` (for syllables within a word). This commits the current text and immediately spawns a new lyric box.
     - **Visual Differentiation:** Words split by hyphens (syllables) are visually connected by a horizontal line in the timeline. The hyphen itself is stored in the data but hidden in the UI when not editing, providing a clean look.
@@ -34,8 +34,8 @@ The most efficient way to transcribe a song is using the following workflow:
 
 | Key | Action | Context |
 |-----|--------|---------|
-| `L` | Add / Commit & Advance | Global |
-| `Shift + L` | Deselect All | Global |
+| `V` | Add / Commit & Advance | Global |
+| `Shift + V` | Deselect All | Global |
 | `Tab` | Cycle Loop Modes | Global |
 | `Enter` | Start/Finish Editing | Selected |
 | `Escape` | Cancel Editing / Deselect | Selected |
@@ -54,7 +54,7 @@ The most efficient way to transcribe a song is using the following workflow:
 ### Backend
 - **Data Structure**: Lyrics are stored as a sorted list of objects `{text, timestamp, duration}` in the `.oscope` sidecar file.
 - **Looping Engine**: The `LoopingEngine` supports a `lyric` mode, which automatically sets the loop range to the currently selected lyric.
-- **MusicXML Export**: `session/export.py` splits measures into segments at every lyric and harmony boundary. This ensures that `<lyric>` tags are perfectly aligned with the rhythmic structure in the exported score.
+- **MusicXML Export**: `session/export.py` splits measures into segments at every lyric and chord boundary. This ensures that `<lyric>` tags are perfectly aligned with the rhythmic structure in the exported score.
 
 ## Alignment Tips
 - **High Zoom:** For word-level alignment, zoom in until you can clearly see the transients in the waveform.

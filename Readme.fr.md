@@ -66,7 +66,7 @@ Wavoscope utilise un système à double marqueur pour vous aider à cartographie
 ![Dialogue Marqueur de Rythme](docs/images/rhythm_dialog.png)
 
 ### Marqueurs d'Harmonie (Accords)
-- **Placement :** Appuyez sur `H` (par défaut) ou faites un **clic droit** sur la timeline pour placer un marqueur d'harmonie.
+- **Placement :** Appuyez sur `C` (par défaut) ou faites un **clic droit** sur la timeline pour placer un marqueur d'harmonie.
 - **Éditeur d'Accords :** **Clic droit** sur un marqueur existant pour ouvrir le dialogue d'accord. Vous pouvez taper les noms d'accords (ex: "Am7", "C/G") ou utiliser les sélecteurs.
 - **Analyse Automatique :** Utilisez le bouton **Suggérer** pour laisser Wavoscope analyser l'audio à cette position et recommander l'accord le plus probable.
 - **Écoute :** **Maintenez le clic gauche** sur une poignée de marqueur d'harmonie ou cliquez sur le bouton "Lecture" dans le dialogue pour entendre l'accord joué via le synthétiseur interne.
@@ -88,7 +88,7 @@ Wavoscope dispose d'une piste de paroles interactive qui permet une transcriptio
 
 ### Flux de Travail de Transcription
 1. **Afficher la Piste :** Cliquez sur le bouton "Paroles" dans l'en-tête de la forme d'onde pour afficher la piste de transcription.
-2. **Ajouter & Taper :** Appuyez sur `L` ou faites un **clic simple** sur un espace vide de la piste de paroles pour ajouter un mot.
+2. **Ajouter & Taper :** Appuyez sur `V` ou faites un **clic simple** sur un espace vide de la piste de paroles pour ajouter un mot.
 3. **Saisie Rapide :** Pendant que vous tapez dans une boîte de paroles, appuyez sur **Espace** ou **Tiret (`-`)**. Cela va automatiquement :
     - Valider le mot actuel.
     - Créer une nouvelle boîte de paroles immédiatement après (à la position actuelle de lecture ou à la fin de la précédente).
@@ -152,13 +152,13 @@ Wavoscope est conçu pour être géré par la communauté. Vous pouvez ajouter o
 | **Monter/Baisser l'octave** | `Maj + Gauche/Droite` |
 | **Taille fenêtre FFT** | `Maj + Haut/Bas` |
 | **Ajouter Marqueur Rythme** | `B` |
-| **Ajouter Marqueur Harmonie** | `H` |
+| **Ajouter Marqueur Harmonie** | `C` |
 | **Basculer coupe-bas** | `F` |
 | **Basculer coupe-haut** | `Maj + F` |
-| **Ajouter/Valider Paroles** | `L` |
+| **Ajouter/Valider Paroles** | `V` |
 | **Diviser & Avancer Paroles**| `Espace` / `-` (Dans l'entrée) |
 | **Changer Mode de Boucle** | `Tab` |
-| **Désélectionner Tout** | `Maj + L` |
+| **Désélectionner Tout** | `Maj + V` |
 | **Naviguer entre Paroles** | `Maj + Gauche/Droite` |
 | **Supprimer l'Élément** | `Suppr` / `Retour Arrière` |
 | **Ouvrir un Fichier** | `Ctrl + O` |

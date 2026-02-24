@@ -34,7 +34,7 @@ export const useKeyboardShortcuts = () => {
           return;
       }
 
-      if (e.key === 'L' && e.shiftKey) {
+      if (e.key === 'V' && e.shiftKey) {
         e.preventDefault();
         setSelectedLyricIdx(null);
         return;
@@ -71,8 +71,8 @@ export const useKeyboardShortcuts = () => {
           return;
       }
 
-      // Add Harmony Flag: H
-      if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.metaKey) {
+      // Add Harmony Flag: C
+      if (e.key.toLowerCase() === 'c' && !e.ctrlKey && !e.metaKey) {
           e.preventDefault();
           addHarmonyFlag(position).then((res: any) => {
               if (res && res.idx !== undefined && res.idx !== -1) setEditingHarmonyFlagIdx(res.idx);

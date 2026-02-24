@@ -66,7 +66,7 @@ Wavoscope utiliza un sistema de dobre marca para axudarche a mapear a estrutura 
 ![Diálogo de marca de ritmo](docs/images/rhythm_dialog.png)
 
 ### Marcas de harmonía (Marcadores de acordes)
-- **Colocación:** Preme `H` (por defecto) ou fai **clic dereito** na liña de tempo para colocar unha marca de harmonía.
+- **Colocación:** Preme `C` (por defecto) ou fai **clic dereito** na liña de tempo para colocar unha marca de harmonía.
 - **Editor de acordes:** **Clic dereito** nunha marca existente para abrir o diálogo de acordes. Podes escribir nomes de acordes (p. ex., "Am7", "C/G") ou usar os selectores.
 - **Análise automática:** Usa o botón **Suxerir** para que Wavoscope analice o audio nesa posición e recomende o acorde máis probable.
 - **Escoita:** **Mantén o clic esquerdo** nun controlador de marca de harmonía ou fai clic no botón "Reproducir" no diálogo para escoitar o acorde a través do sintetizador interno.
@@ -88,7 +88,7 @@ Wavoscope inclúe unha pista de letras interactiva que permite unha transcrició
 
 ### Fluxo de traballo de transcrición
 1. **Alternar pista:** Fai clic no botón "Letras" na cabeceira da forma de onda para mostrar a pista de transcrición.
-2. **Engadir e escribir:** Preme `L` ou fai un **só clic** nun espazo baleiro na pista de letras para engadir unha palabra.
+2. **Engadir e escribir:** Preme `V` ou fai un **só clic** nun espazo baleiro na pista de letras para engadir unha palabra.
 3. **Entrada de alta velocidade:** Mentres escribes nunha caixa de letra, preme **Espazo** ou **Guión (`-`)**. Isto fará automaticamente o seguinte:
     - Confirma a palabra actual.
     - Crea unha nova caixa de letra inmediatamente despois (na posición actual do cursor ou onde rematou a anterior).
@@ -152,13 +152,13 @@ Wavoscope está deseñado para ser impulsado pola comunidade. Podes engadir ou m
 | **Subir/Baixar oitava** | `Maiús + Esquerda/Dereita` |
 | **Tamaño de ventá FFT** | `Maiús + Arriba/Abaixo` |
 | **Engadir marca de ritmo** | `B` |
-| **Engadir marca de harmonía** | `H` |
+| **Engadir marca de harmonía** | `C` |
 | **Alternar corte de baixos** | `F` |
 | **Alternar corte de agudos** | `Maiús + F` |
-| **Engadir/Confirmar letra** | `L` |
+| **Engadir/Confirmar letra** | `V` |
 | **Dividir e avanzar letra**| `Espazo` / `-` (Dentro da entrada) |
 | **Alternar modos de bucle** | `Tab` |
-| **Deseleccionar selección** | `Shift + L` |
+| **Deseleccionar selección** | `Shift + V` |
 | **Saltar entre letras** | `Shift + Esquerda/Dereita` |
 | **Eliminar elemento seleccionado** | `Suprimir` / `Retroceso` |
 | **Abrir ficheiro** | `Ctrl + O` |

@@ -12,7 +12,7 @@ La piste de paroles est une piste spécialisée basée sur canvas située au-des
 
 ### Flux de Travail : "Taper-Diviser-Avancer"
 La méthode la plus efficace pour transcrire une chanson est de suivre ce flux de travail :
-1.  **Démarrage :** Appuyez sur `L` ou cliquez sur un espace vide pour créer la première parole à la position actuelle de lecture.
+1.  **Démarrage :** Appuyez sur `V` ou cliquez sur un espace vide pour créer la première parole à la position actuelle de lecture.
 2.  **Saisie :** Tapez le premier mot.
 3.  **Division :** Appuyez sur `Espace` (pour les nouveaux mots) ou `-` (pour les syllabes au sein d'un mot). Cela valide le texte actuel et crée immédiatement une nouvelle boîte de paroles.
     - **Différenciation visuelle :** Les mots divisés par des traits d'union (syllabes) sont visuellement reliés par une ligne horizontale dans la timeline. Le trait d'union lui-même est stocké dans les données mais masqué dans l'interface utilisateur lorsqu'il n'est pas en cours d'édition, offrant un aspect épuré.
@@ -34,8 +34,8 @@ La méthode la plus efficace pour transcrire une chanson est de suivre ce flux d
 
 | Touche | Action | Contexte |
 |-------|--------|----------|
-| `L` | Ajouter / Valider et Avancer | Global |
-| `Maj + L` | Tout désélectionner | Global |
+| `V` | Ajouter / Valider et Avancer | Global |
+| `Maj + V` | Tout désélectionner | Global |
 | `Tab` | Changer mode de boucle | Global |
 | `Entrée` | Démarrer/Terminer édition | Sélectionné |
 | `Échap` | Annuler édition / Désélectionner | Sélectionné |

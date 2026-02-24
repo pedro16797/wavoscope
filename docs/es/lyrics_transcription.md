@@ -12,7 +12,7 @@ La pista de letras es una pista especializada basada en canvas situada sobre la 
 
 ### Flujo de trabajo de transcripción: "Escribir-Dividir-Avanzar"
 La forma más eficiente de transcribir una canción es siguiendo este flujo de trabajo:
-1.  **Inicio:** Presiona `L` o haz clic en un espacio vacío para crear la primera letra en la posición actual del cursor.
+1.  **Inicio:** Presiona `V` o haz clic en un espacio vacío para crear la primera letra en la posición actual del cursor.
 2.  **Escribir:** Introduce la primera palabra.
 3.  **Dividir:** Presiona `Espacio` (para nuevas palabras) o `-` (para sílabas dentro de una palabra). Esto confirma el texto actual y crea inmediatamente una nueva caja de letra.
     - **Diferenciación visual:** Las palabras divididas por guiones (sílabas) se conectan visualmente mediante una línea horizontal en la línea de tiempo. El guion en sí se almacena en los datos pero se oculta en la interfaz de usuario cuando no se está editando, proporcionando un aspecto limpio.
@@ -34,8 +34,8 @@ La forma más eficiente de transcribir una canción es siguiendo este flujo de t
 
 | Tecla | Acción | Contexto |
 |-------|--------|----------|
-| `L` | Añadir / Confirmar y Avanzar | Global |
-| `Shift + L` | Deseleccionar todo | Global |
+| `V` | Añadir / Confirmar y Avanzar | Global |
+| `Shift + V` | Deseleccionar todo | Global |
 | `Tab` | Alternar modos de bucle | Global |
 | `Enter` | Iniciar/Finalizar edición | Seleccionado |
 | `Escape` | Cancelar edición / Deseleccionar | Seleccionado |

@@ -66,7 +66,7 @@ Wavoscope utiliza um sistema de marcadores duplos para ajudar você a mapear a e
 ![Diálogo de Marcador de Ritmo](docs/images/rhythm_dialog.png)
 
 ### Marcadores de Harmonia (Acordes)
-- **Posicionamento:** Pressione `H` (padrão) ou **clique direito** na linha do tempo para inserir um marcador de harmonia.
+- **Posicionamento:** Pressione `C` (padrão) ou **clique direito** na linha do tempo para inserir um marcador de harmonia.
 - **Editor de Acordes:** **Clique direito** em um marcador existente para abrir o diálogo de acordes. Você pode digitar nomes de acordes (ex: "Am7", "C/G") ou usar os seletores.
 - **Análise Automática:** Use o botão **Sugerir** para deixar o Wavoscope analisar o áudio naquela posição e recomendar o acorde mais provável.
 - **Audição:** **Mantenha o clique esquerdo** pressionado em uma alça de marcador de harmonia ou clique no botão "Play" no diálogo para ouvir o acorde através do sintetizador interno.
@@ -88,7 +88,7 @@ Wavoscope possui uma trilha de letras interativa que permite transcrição e ali
 
 ### Fluxo de Trabalho de Transcrição
 1. **Alternar Trilha:** Clique no botão "Letras" no cabeçalho da forma de onda para exibir a trilha de transcrição.
-2. **Adicionar e Digitar:** Pressione `L` ou dê um **clique único** em um espaço vazio na trilha para adicionar uma palavra.
+2. **Adicionar e Digitar:** Pressione `V` ou dê um **clique único** em um espaço vazio na trilha para adicionar uma palavra.
 3. **Entrada de Alta Velocidade:** Ao digitar em uma caixa de letra, pressione **Espaço** ou **Hífen (`-`)**. Isso irá automaticamente:
     - Confirmar a palavra atual.
     - Criar uma nova caixa de letra imediatamente após (na posição atual do cursor ou fim da anterior).
@@ -152,13 +152,13 @@ Wavoscope foi projetado para ser impulsionado pela comunidade. Você pode adicio
 | **Subir/Baixar oitava** | `Shift + Esquerda/Direita` |
 | **Tamanho da janela FFT** | `Shift + Cima/Baixo` |
 | **Adicionar Marcador Ritmo** | `B` |
-| **Adicionar Marcador Harmonia** | `H` |
+| **Adicionar Marcador Harmonia** | `C` |
 | **Alternar passa-baixas** | `F` |
 | **Alternar passa-altas** | `Shift + F` |
-| **Adicionar/Confirmar Letra** | `L` |
+| **Adicionar/Confirmar Letra** | `V` |
 | **Dividir e Avançar Letra**| `Espaço` / `-` (Dentro da entrada) |
 | **Ciclar Modos de Loop** | `Tab` |
-| **Desmarcar Seleção** | `Shift + L` |
+| **Desmarcar Seleção** | `Shift + V` |
 | **Pular entre Letras** | `Shift + Esquerda/Direita` |
 | **Excluir Item Selecionado** | `Delete` / `Backspace` |
 | **Abrir Arquivo** | `Ctrl + O` |
