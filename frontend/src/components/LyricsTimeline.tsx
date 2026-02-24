@@ -72,6 +72,7 @@ export const LyricsTimeline: React.FC = () => {
         ctx.fillStyle = theme.surface || '#1a1a1a';
         ctx.fillRect(0, 0, width, height);
         ctx.strokeStyle = theme.grid || '#333';
+        ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(0, height - 0.5);
         ctx.lineTo(width, height - 0.5);
