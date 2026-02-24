@@ -1,9 +1,7 @@
 import type { StateCreator } from 'zustand';
 import axios from 'axios';
-import type { AppState, Chord, Lyric, Flag } from '../types';
+import type { AppState, Chord, Lyric, Flag, ProjectSlice } from '../types';
 import { API_BASE } from '../useStore';
-
-import type { ProjectSlice } from '../types';
 
 export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = (set, get) => ({
   loaded: false,
@@ -58,8 +56,10 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     try {
         const res = await axios.post(`${API_BASE}/project/flags`, { t });
         set({ flags: res.data.flags });
+        return { idx: res.data.idx };
     } catch (e) {
         console.error("[Store] Failed to add flag:", e);
+        return null;
     }
   },
 
@@ -67,8 +67,10 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     try {
         const res = await axios.post(`${API_BASE}/project/flags/move`, { idx, t });
         set({ flags: res.data.flags });
+        return { idx: res.data.new_idx, flag: res.data.updated_flag };
     } catch (e) {
         console.error("[Store] Failed to move flag:", e);
+        return null;
     }
   },
 
@@ -106,7 +108,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
         }
         const res = await axios.post(`${API_BASE}/project/harmony_flags`, { t, c: chord });
         set({ harmony_flags: res.data.harmony_flags });
-        return { t, c: chord };
+        return { idx: res.data.idx, t, c: chord };
     } catch (e) {
         console.error("[Store] Failed to add harmony flag:", e);
         return null;
@@ -117,8 +119,10 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     try {
         const res = await axios.post(`${API_BASE}/project/harmony_flags/move`, { idx, t });
         set({ harmony_flags: res.data.harmony_flags });
+        return { idx: res.data.new_idx, t: res.data.updated_flag.t, c: res.data.updated_flag.c };
     } catch (e) {
         console.error("[Store] Failed to move harmony flag:", e);
+        return null;
     }
   },
 

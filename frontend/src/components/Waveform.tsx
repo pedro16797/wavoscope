@@ -150,24 +150,9 @@ export const Waveform: React.FC = () => {
             const x = e.clientX - rect.left;
             const sec = offset + x / zoom;
             const snappedT = Math.round(sec * 100) / 100;
-            addHarmonyFlag(snappedT).then((newFlag) => {
-                if (newFlag) {
-                    // Small delay to ensure store update has propagated to all components if needed
-                    setTimeout(() => {
-                        const updatedFlags = useStore.getState().harmony_flags;
-                        let bestIdx = -1;
-                        let minDiff = Infinity;
-                        updatedFlags.forEach((f, i) => {
-                            const diff = Math.abs(f.t - snappedT);
-                            if (diff < minDiff) {
-                                minDiff = diff;
-                                bestIdx = i;
-                            }
-                        });
-                        if (bestIdx !== -1) {
-                            setEditingHarmonyFlagIdx(bestIdx);
-                        }
-                    }, 100);
+            addHarmonyFlag(snappedT).then((res) => {
+                if (res && res.idx !== -1) {
+                    setEditingHarmonyFlagIdx(res.idx);
                 }
             });
         }

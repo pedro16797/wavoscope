@@ -22,9 +22,15 @@ const ADDITIONS = ['add9', 'add11', 'add13'];
 export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) => {
   const { t } = useTranslation();
   const { updateHarmonyFlag, removeHarmonyFlag, duration, playTone, stopAllTones } = useStore();
-  const [chord, setChord] = useState<Chord>(flag.c);
-  const [time, setTime] = useState(flag.t);
-  const [chordText, setChordText] = useState(formatChord(flag.c));
+
+  const [chord, setChord] = useState<Chord>(flag?.c || { r: 'C', ca: '', q: '', ext: '', alt: [], add: [], b: '', ba: '' });
+  const [time, setTime] = useState(flag?.t || 0);
+  const [chordText, setChordText] = useState(flag ? formatChord(flag.c) : '');
+
+  if (!flag) {
+    onClose();
+    return null;
+  }
 
   const handleTextChange = (text: string) => {
     setChordText(text);
@@ -259,7 +265,7 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
                 <button onClick={handleDelete} className="px-4 py-2 rounded-[var(--ui-radius)] bg-red-600/20 hover:bg-red-600/40 text-red-500 text-xs font-bold transition-colors">{t('common.delete')}</button>
             </Tooltip>
             <div className="flex items-center gap-2">
-                <Tooltip content={t('common.cancel')}>
+                <Tooltip content={t('common.cancel')} shortcut="Esc">
                     <button onClick={onClose} className="px-4 py-2 rounded-[var(--ui-radius)] hover:bg-white/5 text-xs transition-colors font-bold">{t('common.cancel')}</button>
                 </Tooltip>
                 <Tooltip content={t('common.save')} shortcut={t('keys.enter')}>

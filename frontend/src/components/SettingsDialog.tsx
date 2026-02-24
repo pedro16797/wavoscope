@@ -401,7 +401,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
 
         <div className="p-4 border-t-[var(--ui-border)] border-grid flex items-center justify-end gap-2 bg-surface"
              style={{ backgroundColor: 'var(--color-surface)', borderTopWidth: 'var(--ui-border)' }}>
-            <Tooltip content={t('common.cancel')}>
+            <Tooltip content={t('common.cancel')} shortcut="Esc">
                 <button onClick={onClose} className="px-4 py-2 rounded-[var(--ui-radius)] hover:bg-white/10 text-xs transition-colors font-bold">{t('common.cancel')}</button>
             </Tooltip>
             <Tooltip content={t('common.apply')} shortcut={t('keys.enter')}>

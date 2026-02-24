@@ -57,7 +57,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ children, content, shortcut, c
   return (
     <div
       ref={triggerRef}
-      className={`inline-block ${className || ''}`}
+      className={className || 'inline-block'}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setVisible(false)}
     >
