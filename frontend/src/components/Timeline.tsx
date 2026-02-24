@@ -50,6 +50,7 @@ export const Timeline: React.FC = () => {
     const end = offset + span;
 
     ctx.strokeStyle = theme.grid || '#404040';
+    ctx.lineWidth = 1;
     ctx.fillStyle = theme.text || '#e0e0e0';
     ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 
