@@ -107,7 +107,7 @@ export const FlagDialog: React.FC<{ idx: number; flag: Flag; onClose: () => void
                 <button onClick={handleDelete} className="px-4 py-2 rounded-[var(--ui-radius)] bg-red-600/20 hover:bg-red-600/40 text-red-500 text-xs font-bold transition-colors">{t('common.delete')}</button>
             </Tooltip>
             <div className="flex items-center gap-2">
-                <Tooltip content={t('common.cancel')}>
+                <Tooltip content={t('common.cancel')} shortcut="Esc">
                     <button onClick={onClose} className="px-4 py-2 rounded-[var(--ui-radius)] hover:bg-white/5 text-xs transition-colors font-bold">{t('common.cancel')}</button>
                 </Tooltip>
                 <Tooltip content={t('common.save')} shortcut={t('keys.enter')}>

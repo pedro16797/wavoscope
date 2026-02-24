@@ -113,7 +113,7 @@ export const PlaybackBar: React.FC = () => {
         </Tooltip>
         <div className="flex items-center gap-3 text-[11px] font-mono">
             <span className="w-12 text-right">{formatTime(position)}</span>
-            <Tooltip content={t('settings.kb_seek_playhead')} shortcut={t('keys.left_right')}>
+            <Tooltip content={t('settings.kb_seek_playhead')} shortcut={t('keys.left_right')} className="flex-1 flex items-center">
                 <div className="flex-1 h-3 bg-white/5 rounded-full relative overflow-hidden cursor-pointer hover:bg-white/10 transition-colors shadow-inner border border-white/5"
                     onClick={(e) => {
                         if (!loaded || !duration) return;
