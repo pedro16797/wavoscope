@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
 import { ChevronDown, FolderOpen } from 'lucide-react';
+import { Tooltip } from './Tooltip';
 
 interface SettingsDialogProps {
   onClose: () => void;
@@ -196,25 +197,26 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                                placeholder={t('settings.autosave_path_hint')}
                                                className="flex-1 bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-xs font-mono text-text outline-none focus:border-accent"
                                                style={{ borderWidth: 'var(--ui-border)' }} />
-                                        <button onClick={async () => {
-                                                    let initial = asPath;
-                                                    if (!initial) {
-                                                        try {
-                                                            const resp = await fetch(`${window.location.origin}/config/temp-dir`);
-                                                            const data = await resp.json();
-                                                            initial = data.temp_dir;
-                                                        } catch (e) {
-                                                            console.error("Failed to fetch temp dir", e);
+                                        <Tooltip content={t('settings.browse')}>
+                                            <button onClick={async () => {
+                                                        let initial = asPath;
+                                                        if (!initial) {
+                                                            try {
+                                                                const resp = await fetch(`${window.location.origin}/config/temp-dir`);
+                                                                const data = await resp.json();
+                                                                initial = data.temp_dir;
+                                                            } catch (e) {
+                                                                console.error("Failed to fetch temp dir", e);
+                                                            }
                                                         }
-                                                    }
-                                                    const res = await browseFolder(initial);
-                                                    if (res) setAsPath(res);
-                                                }}
-                                                className="bg-background border border-grid rounded-[var(--ui-radius)] px-3 hover:bg-white/5 transition-colors text-accent"
-                                                style={{ borderWidth: 'var(--ui-border)' }}
-                                                title="Browse">
-                                            <FolderOpen size={16} />
-                                        </button>
+                                                        const res = await browseFolder(initial);
+                                                        if (res) setAsPath(res);
+                                                    }}
+                                                    className="bg-background border border-grid rounded-[var(--ui-radius)] px-3 py-2 hover:bg-white/5 transition-colors text-accent"
+                                                    style={{ borderWidth: 'var(--ui-border)' }}>
+                                                <FolderOpen size={16} />
+                                            </button>
+                                        </Tooltip>
                                     </div>
                                     <p className="text-[9px] opacity-40">{t('settings.autosave_path_hint')}</p>
                                 </div>
@@ -276,15 +278,16 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                                placeholder="e.g. /Users/Name/Documents"
                                                className="flex-1 bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
                                                style={{ borderWidth: 'var(--ui-border)' }} />
-                                        <button onClick={async () => {
-                                                    const res = await browseFolder();
-                                                    if (res) setOutputFolder(res);
-                                                }}
-                                                className="bg-background border border-grid rounded-[var(--ui-radius)] px-3 hover:bg-white/5 transition-colors text-accent"
-                                                style={{ borderWidth: 'var(--ui-border)' }}
-                                                title="Browse">
-                                            <FolderOpen size={16} />
-                                        </button>
+                                        <Tooltip content={t('settings.browse')}>
+                                            <button onClick={async () => {
+                                                        const res = await browseFolder();
+                                                        if (res) setOutputFolder(res);
+                                                    }}
+                                                    className="bg-background border border-grid rounded-[var(--ui-radius)] px-3 py-2 hover:bg-white/5 transition-colors text-accent"
+                                                    style={{ borderWidth: 'var(--ui-border)' }}>
+                                                <FolderOpen size={16} />
+                                            </button>
+                                        </Tooltip>
                                     </div>
                                 </div>
                                 <div className="space-y-1">

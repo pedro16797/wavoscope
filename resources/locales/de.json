@@ -24,6 +24,7 @@
     "measure_hint": "Wird beim MusicXML-Export verwendet, um Taktstrukturen und Tempo zu berechnen.",
     "export_defaults": "Export-Standardwerte",
     "output_dir": "Standard-Ausgabeverzeichnis",
+    "browse": "Ordner durchsuchen",
     "author": "MusicXML-Autor (Komponist)",
     "autosave": "Automatische Speicherung",
     "autosave_enabled": "Automatische Speicherung aktivieren",
@@ -65,6 +66,7 @@
   },
   "keys": {
     "space": "Leertaste",
+    "tab": "Tab",
     "enter": "Enter",
     "delete": "Entf / Rücktaste",
     "ctrl": "Strg",
@@ -95,6 +97,9 @@
     "loop_off": "Loop: Aus",
     "metronome": "Metronom umschalten",
     "speed": "GESCHWINDIGKEIT",
+    "play": "Wiedergabe",
+    "pause": "Pause",
+    "stop": "Stopp",
     "settings": "Einstellungen"
   },
   "chord": {
@@ -135,6 +140,8 @@
     "lyrics_toggle": "Songtext-Spur umschalten",
     "lyrics_label": "Songtext",
     "spectrum_analyzer": "Spektrum-Analysator",
-    "fft_window": "FFT-Fenster: {{val}}s"
+    "fft_window": "FFT-Fenster: {{val}}s",
+    "octave_down": "Oktave tiefer",
+    "octave_up": "Oktave höher"
   }
 }

@@ -24,6 +24,7 @@
     "measure_hint": "Úsase na exportación MusicXML para estruturar os compases e calcular o tempo.",
     "export_defaults": "Valores predeterminados de exportación",
     "output_dir": "Directorio de saída predeterminado",
+    "browse": "Explorar cartafol",
     "author": "Autor do MusicXML (Compositor)",
     "autosave": "Autogardado",
     "autosave_enabled": "Activar autogardado",
@@ -65,6 +66,7 @@
   },
   "keys": {
     "space": "Espazo",
+    "tab": "Tab",
     "enter": "Intro",
     "delete": "Supr / Retroceso",
     "ctrl": "Ctrl",
@@ -95,6 +97,9 @@
     "loop_off": "Bucle: Desactivado",
     "metronome": "Alternar metrónomo",
     "speed": "VELOCIDADE",
+    "play": "Reproducir",
+    "pause": "Pausa",
+    "stop": "Deter",
     "settings": "Axustes"
   },
   "chord": {
@@ -135,6 +140,8 @@
     "lyrics_toggle": "Alternar pista de letras",
     "lyrics_label": "Letras",
     "spectrum_analyzer": "Analizador de espectro",
-    "fft_window": "Ventá FFT: {{val}}s"
+    "fft_window": "Ventá FFT: {{val}}s",
+    "octave_down": "Baixar oitava",
+    "octave_up": "Subir oitava"
   }
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
 import type { Flag } from '../store/types';
+import { Tooltip } from './Tooltip';
 
 export const FlagDialog: React.FC<{ idx: number; flag: Flag; onClose: () => void }> = ({ idx, flag, onClose }) => {
   const { t } = useTranslation();
@@ -96,10 +97,16 @@ export const FlagDialog: React.FC<{ idx: number; flag: Flag; onClose: () => void
         </div>
         <div className="p-4 border-t-[var(--ui-border)] border-grid flex items-center justify-between gap-2 bg-surface"
              style={{ backgroundColor: 'var(--color-surface)', borderTopWidth: 'var(--ui-border)' }}>
-            <button onClick={handleDelete} className="px-4 py-2 rounded-[var(--ui-radius)] bg-red-600/20 hover:bg-red-600/40 text-red-500 text-xs font-bold transition-colors">{t('common.delete')}</button>
+            <Tooltip content={t('common.delete')} shortcut={t('keys.delete')}>
+                <button onClick={handleDelete} className="px-4 py-2 rounded-[var(--ui-radius)] bg-red-600/20 hover:bg-red-600/40 text-red-500 text-xs font-bold transition-colors">{t('common.delete')}</button>
+            </Tooltip>
             <div className="flex items-center gap-2">
-                <button onClick={onClose} className="px-4 py-2 rounded-[var(--ui-radius)] hover:bg-white/5 text-xs transition-colors font-bold">{t('common.cancel')}</button>
-                <button onClick={handleSave} className="px-4 py-2 rounded-[var(--ui-radius)] bg-accent text-background text-xs font-bold transition-colors shadow-lg active:scale-95">{t('common.save')}</button>
+                <Tooltip content={t('common.cancel')}>
+                    <button onClick={onClose} className="px-4 py-2 rounded-[var(--ui-radius)] hover:bg-white/5 text-xs transition-colors font-bold">{t('common.cancel')}</button>
+                </Tooltip>
+                <Tooltip content={t('common.save')} shortcut={t('keys.enter')}>
+                    <button onClick={handleSave} className="px-4 py-2 rounded-[var(--ui-radius)] bg-accent text-background text-xs font-bold transition-colors shadow-lg active:scale-95">{t('common.save')}</button>
+                </Tooltip>
             </div>
         </div>
       </div>

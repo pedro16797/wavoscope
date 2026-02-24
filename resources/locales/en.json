@@ -26,6 +26,7 @@
     "measure_hint": "Used by MusicXML export to structure measures and calculate tempo.",
     "export_defaults": "Export Defaults",
     "output_dir": "Default Output Directory",
+    "browse": "Browse Folder",
     "author": "MusicXML Author (Composer)",
     "autosave": "Autosave",
     "autosave_enabled": "Enable Autosave",
@@ -68,6 +69,7 @@
   "keys": {
     "space": "Space",
     "enter": "Enter",
+    "tab": "Tab",
     "delete": "Del / Bksp",
     "ctrl": "Ctrl",
     "shift": "Shift",
@@ -97,6 +99,9 @@
     "loop_off": "Loop: Off",
     "metronome": "Toggle Metronome",
     "speed": "SPEED",
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
     "settings": "Settings"
   },
   "chord": {
@@ -137,6 +142,8 @@
     "lyrics_toggle": "Toggle Lyrics Track",
     "lyrics_label": "Lyrics",
     "spectrum_analyzer": "Spectrum Analyzer",
-    "fft_window": "FFT Window: {{val}}s"
+    "fft_window": "FFT Window: {{val}}s",
+    "octave_down": "Lower Octave",
+    "octave_up": "Raise Octave"
   }
 }
