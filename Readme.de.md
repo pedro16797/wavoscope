@@ -19,10 +19,11 @@ Wavoscope ist so konzipiert, dass es eigenständig funktioniert. Sie müssen Pyt
 
 Beim ersten Start lädt Wavoscope automatisch seine eigene Python-Laufzeitumgebung herunter und richtet die erforderliche Umgebung ein. Dies kann je nach Internetverbindung einige Minuten dauern. Nach dem ersten Durchlauf können Sie einfach die generierte `Wavoscope`-Programmdatei (mit dem App-Icon) verwenden.
 
-### Projektmanagement
+### Projektverwaltung & automatische Speicherung
 Wavoscope verwendet ein "Sidecar"-Dateisystem. Wenn Sie eine Audiodatei öffnen, erstellt oder lädt Wavoscope eine `.oscope`-Datei im selben Verzeichnis, um Ihre Markierungen, Loops und Einstellungen zu speichern.
 - **Öffnen:** Klicken Sie auf das Ordnersymbol in der Wiedergabeleiste, um ein beliebiges gängiges Audioformat (MP3, WAV, FLAC usw.) zu laden.
 - **Speichern:** Klicken Sie auf das Disketten-Symbol. Das Symbol leuchtet in der Akzentfarbe Ihres Designs, wenn ungespeicherte Änderungen vorliegen.
+- **Automatische Speicherung:** Wavoscope erstellt automatisch in regelmäßigen Abständen Schnappschüsse Ihrer Arbeit. Sie können die Häufigkeit der automatischen Speicherung, die maximale Anzahl der zu behaltenden Schnappschüsse und den Speicherort im Reiter **Einstellungen > Automatische Speicherung** konfigurieren. Standardmäßig erfolgen automatische Speicherungen nur, wenn ungespeicherte Änderungen vorliegen. Sie können die **erzwungene automatische Speicherung** aktivieren, um immer Schnappschüsse zu erstellen, unabhängig von Änderungen. Standardmäßig werden automatische Speicherungen im temporären Ordner Ihres Systems gespeichert.
 
 ---
 

@@ -14,10 +14,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
     audioDevices, fetchAudioDevices, audio_device,
     click_volume, spectrum_keys, default_output_folder,
     musicxml_author, updateConfig, time_signature, updateTimeSignature,
-    browseFolder
+    browseFolder, autosave_enabled, autosave_forced, autosave_interval,
+    autosave_max_snapshots, autosave_path
   } = useStore();
 
-  const [activeTab, setActiveTab] = useState<'global' | 'project' | 'keybinds'>('global');
+  const [activeTab, setActiveTab] = useState<'global' | 'project' | 'autosave' | 'keybinds'>('global');
 
   const [theme, setTheme] = useState(currentTheme);
   const [lang, setLang] = useState(language);
@@ -27,6 +28,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const [outputFolder, setOutputFolder] = useState(default_output_folder);
   const [author, setAuthor] = useState(musicxml_author);
   const [timeSig, setTimeSig] = useState(time_signature);
+  const [asEnabled, setAsEnabled] = useState(autosave_enabled);
+  const [asForced, setAsForced] = useState(autosave_forced);
+  const [asInterval, setAsInterval] = useState(autosave_interval);
+  const [asMaxSnapshots, setAsMaxSnapshots] = useState(autosave_max_snapshots);
+  const [asPath, setAsPath] = useState(autosave_path);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDenDropdownOpen, setIsDenDropdownOpen] = useState(false);
 
@@ -43,7 +49,12 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
         click_volume: clickVol / 100,
         spectrum_keys: keys,
         default_output_folder: outputFolder,
-        musicxml_author: author
+        musicxml_author: author,
+        autosave_enabled: asEnabled,
+        autosave_forced: asForced,
+        autosave_interval: asInterval,
+        autosave_max_snapshots: asMaxSnapshots,
+        autosave_path: asPath
     });
     await updateTimeSignature(timeSig.numerator, timeSig.denominator);
     onClose();
@@ -66,6 +77,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
             <button onClick={() => setActiveTab('project')}
                     className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'project' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
                 {t('settings.project')}
+            </button>
+            <button onClick={() => setActiveTab('autosave')}
+                    className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'autosave' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
+                {t('settings.autosave')}
             </button>
             <button onClick={() => setActiveTab('keybinds')}
                     className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'keybinds' ? 'bg-white/5 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
@@ -137,7 +152,76 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text accent-accent"
                                style={{ borderWidth: 'var(--ui-border)' }} />
                     </div>
+
                 </>
+            ) : activeTab === 'autosave' ? (
+                <div className="space-y-6">
+                    <div className="space-y-4">
+                        <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.autosave')}</label>
+
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm opacity-80">{t('settings.autosave_enabled')}</span>
+                            <button onClick={() => setAsEnabled(!asEnabled)}
+                                    className={`w-10 h-5 rounded-full transition-colors relative ${asEnabled ? 'bg-accent' : 'bg-grid'}`}>
+                                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${asEnabled ? 'left-6' : 'left-1'}`} />
+                            </button>
+                        </div>
+
+                        {asEnabled && (
+                            <div className="space-y-4 pl-2 border-l-2 border-accent/20 animate-in fade-in slide-in-from-left-1">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm opacity-80">{t('settings.autosave_forced')}</span>
+                                    <button onClick={() => setAsForced(!asForced)}
+                                            className={`w-10 h-5 rounded-full transition-colors relative ${asForced ? 'bg-accent' : 'bg-grid'}`}>
+                                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${asForced ? 'left-6' : 'left-1'}`} />
+                                    </button>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.autosave_interval')}</label>
+                                    <input type="number" min="1" max="60" value={asInterval} onChange={(e) => setAsInterval(parseInt(e.target.value))}
+                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                           style={{ borderWidth: 'var(--ui-border)' }} />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.autosave_snapshots')}</label>
+                                    <input type="number" min="1" max="50" value={asMaxSnapshots} onChange={(e) => setAsMaxSnapshots(parseInt(e.target.value))}
+                                           className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                           style={{ borderWidth: 'var(--ui-border)' }} />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.autosave_path')}</label>
+                                    <div className="flex gap-2">
+                                        <input type="text" value={asPath}
+                                               onChange={(e) => setAsPath(e.target.value)}
+                                               placeholder={t('settings.autosave_path_hint')}
+                                               className="flex-1 bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-xs font-mono text-text outline-none focus:border-accent"
+                                               style={{ borderWidth: 'var(--ui-border)' }} />
+                                        <button onClick={async () => {
+                                                    let initial = asPath;
+                                                    if (!initial) {
+                                                        try {
+                                                            const resp = await fetch(`${window.location.origin}/config/temp-dir`);
+                                                            const data = await resp.json();
+                                                            initial = data.temp_dir;
+                                                        } catch (e) {
+                                                            console.error("Failed to fetch temp dir", e);
+                                                        }
+                                                    }
+                                                    const res = await browseFolder(initial);
+                                                    if (res) setAsPath(res);
+                                                }}
+                                                className="bg-background border border-grid rounded-[var(--ui-radius)] px-3 hover:bg-white/5 transition-colors text-accent"
+                                                style={{ borderWidth: 'var(--ui-border)' }}
+                                                title="Browse">
+                                            <FolderOpen size={16} />
+                                        </button>
+                                    </div>
+                                    <p className="text-[9px] opacity-40">{t('settings.autosave_path_hint')}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
             ) : activeTab === 'project' ? (
                 <>
                     <div className="space-y-6">

@@ -156,6 +156,11 @@ export interface ConfigSlice {
   default_output_folder: string;
   musicxml_author: string;
   audio_device: string;
+  autosave_enabled: boolean;
+  autosave_forced: boolean;
+  autosave_interval: number;
+  autosave_max_snapshots: number;
+  autosave_path: string;
   language: string;
   showSettings: boolean;
   showSpectrum: boolean;
@@ -176,9 +181,14 @@ export interface ConfigSlice {
     default_output_folder?: string,
     musicxml_author?: string,
     audio_device?: string,
+    autosave_enabled?: boolean,
+    autosave_forced?: boolean,
+    autosave_interval?: number,
+    autosave_max_snapshots?: number,
+    autosave_path?: string,
     language?: string
   }) => Promise<void>;
-  browseFolder: () => Promise<string | null>;
+  browseFolder: (initialDir?: string) => Promise<string | null>;
   setShowSettings: (show: boolean) => void;
   setShowSpectrum: (show: boolean) => void;
   setShowLyrics: (show: boolean) => void;

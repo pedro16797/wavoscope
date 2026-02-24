@@ -55,6 +55,10 @@ def generate():
         time.sleep(0.5)
         page.evaluate("window.useStore.getState().setShowSettings(true)")
         time.sleep(1)
+        # Switch to Autosave tab to show the new category
+        # Since the tabs are buttons in a flex container, we can find it by text
+        page.locator("button:has-text('Autosave')").click()
+        time.sleep(1)
         page.locator(".fixed.inset-0").screenshot(path="docs/images/settings_dialog.png")
 
         # 7. Screenshot: Rhythm Flag Dialog

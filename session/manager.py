@@ -31,13 +31,15 @@ class ProjectManager:
             "time_signature": {"numerator": 4, "denominator": 4}
         })
 
-    def save(self):
+    def save(self, path: Path | None = None):
+        target = path or self.sidecar_path
         try:
             scrubbed_data = self._scrub_defaults(self.session_data)
-            self.sidecar_path.write_text(json.dumps(scrubbed_data, indent=2, ensure_ascii=False), encoding="utf-8")
-            self._dirty = False
+            target.write_text(json.dumps(scrubbed_data, indent=2, ensure_ascii=False), encoding="utf-8")
+            if path is None:
+                self._dirty = False
         except Exception as e:
-            logger.error(f"Error saving sidecar: {e}")
+            logger.error(f"Error saving sidecar to {target}: {e}")
 
     def _scrub_defaults(self, data: Dict[str, Any]) -> Dict[str, Any]:
         import copy

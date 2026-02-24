@@ -19,10 +19,11 @@ Wavoscope is designed to be self-contained. You do not need to install Python or
 
 On the first launch, Wavoscope will automatically download its own Python runtime and set up the necessary environment. This may take a few minutes depending on your internet connection. After the first run, you can simply use the generated `Wavoscope` executable (with the app icon).
 
-### Project Management
+### Project Management & Autosaves
 Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope creates or loads a `.oscope` file in the same directory to store your markers, loops, and settings.
 - **Open:** Click the folder icon in the playback bar to load any common audio format (MP3, WAV, FLAC, etc.).
 - **Save:** Click the floppy disk icon. The icon will glow with your theme's accent color when there are unsaved changes.
+- **Autosave:** Wavoscope automatically creates snapshots of your work at regular intervals. You can configure the autosave frequency, the maximum number of snapshots to keep, and the storage location in the **Settings > Autosave** tab. By default, autosaves only occur if there are unsaved changes. You can enable **Forced Autosave** to always create snapshots regardless of changes. By default, autosaves are stored in your system's temporary folder.
 
 ---
 
