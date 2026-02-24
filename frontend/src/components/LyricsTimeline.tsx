@@ -45,6 +45,7 @@ export const LyricsTimeline: React.FC = () => {
     const [editValue, setEditValue] = useState('');
     const [draggingLyric, setDraggingLyric] = useState<{idx: number, t: number, l: number, mode: 'move' | 'left' | 'right'} | null>(null);
     const [viewWidth, setViewWidth] = useState(0);
+    const [hoverCursor, setHoverCursor] = useState<string>('crosshair');
     const inputRef = useRef<HTMLInputElement>(null);
 
     const height = 32;
@@ -260,6 +261,27 @@ export const LyricsTimeline: React.FC = () => {
         }
     }, [removeLyric, updateLyric, setSelectedIdx]);
 
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (!canvasRef.current || !loaded) return;
+        const rect = canvasRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const time = offset + x / zoom;
+
+        const clickedIdx = lyrics.findIndex(lyr => time >= lyr.t && time <= lyr.t + lyr.l);
+        if (clickedIdx !== -1) {
+            const lyric = lyrics[clickedIdx];
+            const relativePos = (time - lyric.t) / lyric.l;
+            const newCursor = (relativePos < 0.1 || relativePos > 0.9) ? 'ew-resize' : 'pointer';
+            if (newCursor !== hoverCursor) {
+                setHoverCursor(newCursor);
+            }
+        } else {
+            if (hoverCursor !== 'crosshair') {
+                setHoverCursor('crosshair');
+            }
+        }
+    };
+
     const handleMouseDown = (e: React.MouseEvent) => {
         if (!loaded) return;
         const rect = canvasRef.current?.getBoundingClientRect();
@@ -286,6 +308,12 @@ export const LyricsTimeline: React.FC = () => {
 
                 if (editingIdx !== null && editingIdx !== clickedIdx) {
                     finishEditing();
+                }
+
+                if (dragMode === 'move') {
+                    document.body.style.cursor = 'grabbing';
+                } else {
+                    document.body.style.cursor = 'ew-resize';
                 }
 
                 const startX = e.clientX;
@@ -332,6 +360,7 @@ export const LyricsTimeline: React.FC = () => {
                 const onMouseUp = () => {
                     window.removeEventListener('mousemove', onMouseMove);
                     window.removeEventListener('mouseup', onMouseUp);
+                    document.body.style.cursor = '';
 
                     if (!hasMoved && isAlreadySelected) {
                         setSelectedIdx(null);
@@ -569,14 +598,20 @@ export const LyricsTimeline: React.FC = () => {
         }
     };
 
+    const activeCursor = draggingLyric
+        ? (draggingLyric.mode === 'move' ? 'grabbing' : 'ew-resize')
+        : hoverCursor;
+
     return (
         <div ref={containerRef} className="relative w-full h-8 select-none bg-surface border-b overflow-hidden" style={{ borderBottomColor: 'var(--color-grid)' }}>
             <canvas
                 ref={canvasRef}
+                onMouseMove={handleMouseMove}
                 onMouseDown={handleMouseDown}
                 onDoubleClick={handleDoubleClick}
                 onContextMenu={(e) => e.preventDefault()}
-                className="cursor-crosshair w-full h-full block"
+                className="w-full h-full block"
+                style={{ cursor: activeCursor }}
             />
             {editingIdx !== null && lyrics[editingIdx] && (
                 <div
