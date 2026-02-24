@@ -351,7 +351,9 @@ export const Timeline: React.FC = () => {
             return (
                 <div key={`chord-tip-${idx}`} className="absolute top-0 bottom-1/2 w-4 -translate-x-1/2 pointer-events-auto"
                      style={{ left: x }}>
-                    <Tooltip content={formatChord(f.c)} shortcut={t('keys.left_click_play')} className="w-full h-full" />
+                    <Tooltip content={formatChord(f.c)} shortcut={t('keys.left_click_play')} className="w-full h-full">
+                        <div className="w-full h-full" />
+                    </Tooltip>
                 </div>
             );
         })}
@@ -380,7 +382,9 @@ export const Timeline: React.FC = () => {
             return (
                 <div key={`rhythm-tip-${idx}`} className="absolute top-1/2 bottom-0 w-4 -translate-x-1/2 pointer-events-auto"
                      style={{ left: x }}>
-                    <Tooltip content={tipContent} className="w-full h-full" />
+                    <Tooltip content={tipContent} className="w-full h-full">
+                        <div className="w-full h-full" />
+                    </Tooltip>
                 </div>
             );
         })}
