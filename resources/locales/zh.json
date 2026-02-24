@@ -49,7 +49,6 @@
     "interactions": "时间轴交互",
     "kb_move_flag": "移动标记",
     "kb_rhythm_auto": "自动放置节奏标记",
-    "kb_audition": "试听和声",
     "kb_scroll": "滚动视图",
     "waveform": "波形",
     "spectrum": "频谱",
@@ -79,8 +78,7 @@
     "author_desc": "MusicXML 元数据的默认作者姓名。",
     "low_cutoff_desc": "过滤掉低于此点的频率。",
     "high_cutoff_desc": "过滤掉高于此点的频率。",
-    "kb_no_ui_desc": "以下快捷键不对应任何图形界面元素。",
-    "kb_lyrics_mouse": "添加歌词标记 (鼠标)"
+    "kb_no_ui_desc": "以下快捷键不对应任何图形界面元素。"
   },
   "keys": {
     "space": "空格",

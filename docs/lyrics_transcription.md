@@ -39,8 +39,8 @@ The most efficient way to transcribe a song is using the following workflow:
 | `Tab` | Cycle Loop Modes | Global |
 | `Enter` | Start/Finish Editing | Selected |
 | `Escape` | Cancel Editing / Deselect | Selected |
-| `Arrows (Left/Right)` | Nudge Position (0.1s) | Selected (Not editing) |
-| `Arrows (Up/Down)` | Adjust Duration (0.1s) | Selected (Not editing) |
+| `Arrows / `A` / `D`` | Nudge Position (0.1s) | Selected (Not editing) |
+| `Arrows / `W` / `S`` | Adjust Duration (0.1s) | Selected (Not editing) |
 | `Shift + Arrows` | Seek between Lyrics | Global / Selected |
 | `Space` / `-` | Commit & Spawn Next | Editing |
 

@@ -93,7 +93,7 @@ Wavoscope features an interactive lyrics track that allows for high-speed transc
     - Commit the current word.
     - Create a new lyric box immediately following it (at the current playhead or previous end).
     - Move focus to the new box so you can keep typing without stopping the music.
-4. **Seeking:** Use `Shift + Left/Right` to jump between lyric elements. This is perfect for verifying timing.
+4. **Seeking:** Use `Shift + Left/Right` / `Shift \+ A/D` to jump between lyric elements. This is perfect for verifying timing.
 
 ### Editing & Resizing
 - **Movement:** **Drag** the center 80% of a lyric box to move it.
@@ -146,10 +146,10 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | **Stop Playback** | `Shift + Space` |
 | **Toggle Metronome** | `M` |
 | **Toggle Settings** | `Esc` |
-| **Seek Forward/Back** | `Left` / `Right` |
-| **Increase/Decrease Speed** | `Up` / `Down` |
-| **Octave Up/Down** | `Shift + Left/Right` |
-| **FFT Window Size** | `Shift + Up/Down` |
+| **Seek Forward/Back** | `Left` / `Right` / `A` / `D` |
+| **Increase/Decrease Speed** | `Up` / `Down` / `W` / `S` |
+| **Octave Up/Down** | `Shift + Left/Right` / `Shift \+ A/D` |
+| **FFT Window Size** | `Shift + Up/Down` / `Shift \+ W/S` |
 | **Add Rhythm Flag** | `B` |
 | **Add Chord Flag** | `C` |
 | **Toggle Low Cutoff** | `F` |
@@ -158,7 +158,7 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | **Split & Advance Lyric**| `Space` / `-` (Inside Input) |
 | **Cycle Loop Modes** | `Tab` |
 | **Deselect Selection** | `Shift + V` |
-| **Seek between Lyrics** | `Shift + Left/Right` |
+| **Seek between Lyrics** | `Shift + Left/Right` / `Shift \+ A/D` |
 | **Delete Selected Item** | `Delete` / `Backspace` |
 | **Open File** | `Ctrl + O` |
 | **Save Project** | `Ctrl + S` |

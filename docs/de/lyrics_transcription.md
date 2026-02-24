@@ -39,9 +39,9 @@ Der effizienteste Weg, einen Song zu transkribieren, ist dieser Workflow:
 | `Tab` | Loop-Modi durchlaufen | Global |
 | `Enter` | Bearbeitung starten/beenden | Ausgewählt |
 | `Esc` | Bearbeitung abbrechen / Abwählen | Ausgewählt |
-| `Pfeiltasten (Links/Rechts)` | Position anpassen (0,1s) | Ausgewählt (Nicht im Editiermodus) |
-| `Pfeiltasten (Oben/Unten)` | Dauer anpassen (0,1s) | Ausgewählt (Nicht im Editiermodus) |
-| `Umschalt + Pfeiltasten` | Zwischen Lyrics springen | Global / Ausgewählt |
+| `Pfeiltasten / `A` / `D` / `W` / `S` (Links/Rechts)` | Position anpassen (0,1s) | Ausgewählt (Nicht im Editiermodus) |
+| `Pfeiltasten / `A` / `D` / `W` / `S` (Oben/Unten)` | Dauer anpassen (0,1s) | Ausgewählt (Nicht im Editiermodus) |
+| `Umschalt + Pfeiltasten / `A` / `D` / `W` / `S`` | Zwischen Lyrics springen | Global / Ausgewählt |
 | `Leertaste / -` | Bestätigen & Nächstes erstellen | Beim Editieren |
 
 ## Technische Implementierung

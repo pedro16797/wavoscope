@@ -49,7 +49,6 @@
     "interactions": "Interazioni Timeline",
     "kb_move_flag": "Sposta Marcatore",
     "kb_rhythm_auto": "Posizionamento auto marcatore ritmo",
-    "kb_audition": "Ascolta Armonia",
     "kb_scroll": "Scorri Vista",
     "waveform": "Forma d'Onda",
     "spectrum": "Spettro",
@@ -79,8 +78,7 @@
     "author_desc": "Nome autore predefinito per i metadati MusicXML.",
     "low_cutoff_desc": "Filtra le frequenze al di sotto di questo punto.",
     "high_cutoff_desc": "Filtra le frequenze al di sopra di questo punto.",
-    "kb_no_ui_desc": "Le seguenti scorciatoie da tastiera non corrispondono a nessun elemento dell'interfaccia grafica.",
-    "kb_lyrics_mouse": "Aggiungi marcatore testo (Mouse)"
+    "kb_no_ui_desc": "Le seguenti scorciatoie da tastiera non corrispondono a nessun elemento dell'interfaccia grafica."
   },
   "keys": {
     "space": "Spazio",

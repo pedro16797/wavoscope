@@ -39,9 +39,9 @@ La méthode la plus efficace pour transcrire une chanson est de suivre ce flux d
 | `Tab` | Changer mode de boucle | Global |
 | `Entrée` | Démarrer/Terminer édition | Sélectionné |
 | `Échap` | Annuler édition / Désélectionner | Sélectionné |
-| `Flèches (Gauche/Droite)` | Ajuster position (0.1s) | Sélectionné (Hors édition) |
-| `Flèches (Haut/Bas)` | Ajuster durée (0.1s) | Sélectionné (Hors édition) |
-| `Maj + Flèches` | Naviguer entre paroles | Global / Sélectionné |
+| `Flèches / `A` / `D` / `W` / `S` (Gauche/Droite)` | Ajuster position (0.1s) | Sélectionné (Hors édition) |
+| `Flèches / `A` / `D` / `W` / `S` (Haut/Bas)` | Ajuster durée (0.1s) | Sélectionné (Hors édition) |
+| `Maj + Flèches / `A` / `D` / `W` / `S`` | Naviguer entre paroles | Global / Sélectionné |
 | `Espace / -` | Valider et générer suivant | En édition |
 
 ## Implémentation Technique

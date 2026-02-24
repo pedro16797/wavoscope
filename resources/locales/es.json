@@ -51,7 +51,6 @@
     "interactions": "Interacciones en la línea de tiempo",
     "kb_move_flag": "Mover marca",
     "kb_rhythm_auto": "Autocolocar marca de ritmo",
-    "kb_audition": "Escuchar armonía",
     "kb_scroll": "Desplazar vista",
     "waveform": "Forma de onda",
     "spectrum": "Espectro",
@@ -81,8 +80,7 @@
     "author_desc": "Nombre del autor por defecto para los metadatos MusicXML.",
     "low_cutoff_desc": "Filtra las frecuencias por debajo de este punto.",
     "high_cutoff_desc": "Filtra las frecuencias por encima de este punto.",
-    "kb_no_ui_desc": "Los siguientes atajos de teclado no corresponden a ningún elemento de la interfaz gráfica.",
-    "kb_lyrics_mouse": "Añadir marca de letra (Ratón)"
+    "kb_no_ui_desc": "Los siguientes atajos de teclado no corresponden a ningún elemento de la interfaz gráfica."
   },
   "keys": {
     "space": "Espacio",

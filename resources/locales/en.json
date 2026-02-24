@@ -51,7 +51,6 @@
     "interactions": "Timeline Interactions",
     "kb_move_flag": "Move Flag",
     "kb_rhythm_auto": "Auto-place Rhythm Flag",
-    "kb_audition": "Audition Chord",
     "kb_scroll": "Scroll View",
     "waveform": "Waveform",
     "spectrum": "Spectrum",
@@ -81,8 +80,7 @@
     "author_desc": "Default author name for MusicXML metadata.",
     "low_cutoff_desc": "Filter out frequencies below this point.",
     "high_cutoff_desc": "Filter out frequencies above this point.",
-    "kb_no_ui_desc": "The following keybinds do not correspond to any graphical interface element.",
-    "kb_lyrics_mouse": "Add Lyrics Flag (Mouse)"
+    "kb_no_ui_desc": "The following keybinds do not correspond to any graphical interface element."
   },
   "keys": {
     "space": "Space",

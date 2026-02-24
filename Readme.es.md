@@ -147,10 +147,10 @@ Wavoscope está diseñado para ser impulsado por la comunidad. Puedes añadir o 
 | **Detener reproducción** | `Mayús + Espacio` |
 | **Alternar metrónomo** | `M` |
 | **Alternar ajustes** | `Esc` |
-| **Avanzar/Retroceder** | `Izquierda` / `Derecha` |
-| **Aumentar/Disminuir velocidad** | `Arriba` / `Abajo` |
-| **Subir/Bajar octava** | `Mayús + Izquierda/Derecha` |
-| **Tamaño de ventana FFT** | `Mayús + Arriba/Abajo` |
+| **Avanzar/Retroceder** | `Izquierda` / `Derecha` / `A` / `D` |
+| **Aumentar/Disminuir velocidad** | `Arriba` / `Abajo` / `W` / `S` |
+| **Subir/Bajar octava** | `Mayús + Izquierda/Derecha` / `Mayús \+ A/D` |
+| **Tamaño de ventana FFT** | `Mayús + Arriba/Abajo` / `Mayús \+ W/S` |
 | **Añadir marca de ritmo** | `B` |
 | **Añadir marca de armonía** | `C` |
 | **Alternar corte de bajos** | `F` |

@@ -93,7 +93,7 @@ Wavoscope verfügt über eine interaktive Songtext-Spur, die eine schnelle Trans
     - Das aktuelle Wort bestätigen.
     - Ein neues Textfeld direkt im Anschluss erstellen (an der aktuellen Abspielposition oder dem vorherigen Ende).
     - Den Fokus auf das neue Feld verschieben, sodass Sie weiter tippen können, ohne die Musik anzuhalten.
-4. **Springen:** Verwenden Sie `Umschalt + Links/Rechts`, um zwischen Songtext-Elementen zu springen. Dies ist perfekt zum Überprüfen des Timings.
+4. **Springen:** Verwenden Sie `Umschalt + Links/Rechts` / `Umschalt \+ A/D`, um zwischen Songtext-Elementen zu springen. Dies ist perfekt zum Überprüfen des Timings.
 
 ### Bearbeiten & Größe anpassen
 - **Verschieben:** **Ziehen** Sie die Mitte (80%) eines Textfeldes, um es zu verschieben.
@@ -147,10 +147,10 @@ Wavoscope ist so konzipiert, dass es von der Community getragen wird. Sie könne
 | **Wiedergabe stoppen** | `Umschalt + Leertaste` |
 | **Metronom umschalten** | `M` |
 | **Einstellungen umschalten** | `Esc` |
-| **Vorwärts/Rückwärts springen** | `Links` / `Rechts` |
-| **Geschwindigkeit +/-** | `Oben` / `Unten` |
-| **Oktave höher/tiefer** | `Umschalt + Links/Rechts` |
-| **FFT-Fenstergröße** | `Umschalt + Oben/Unten` |
+| **Vorwärts/Rückwärts springen** | `Links` / `Rechts` / `A` / `D` |
+| **Geschwindigkeit +/-** | `Oben` / `Unten` / `W` / `S` |
+| **Oktave höher/tiefer** | `Umschalt + Links/Rechts` / `Umschalt \+ A/D` |
+| **FFT-Fenstergröße** | `Umschalt + Oben/Unten` / `Umschalt \+ W/S` |
 | **Rhythmus-Markierung** | `B` |
 | **Harmonie-Markierung** | `C` |
 | **Tiefpass umschalten** | `F` |
@@ -159,7 +159,7 @@ Wavoscope ist so konzipiert, dass es von der Community getragen wird. Sie könne
 | **Teilen & Weiter (Lyrics)**| `Leertaste` / `-` (Im Eingabefeld) |
 | **Loop-Modi durchlaufen** | `Tab` |
 | **Auswahl aufheben** | `Umschalt + V` |
-| **Zwischen Lyrics springen** | `Umschalt + Links/Rechts` |
+| **Zwischen Lyrics springen** | `Umschalt + Links/Rechts` / `Umschalt \+ A/D` |
 | **Element löschen** | `Entf` / `Rücktaste` |
 | **Datei öffnen** | `Strg + O` |
 | **Projekt speichern** | `Strg + S` |

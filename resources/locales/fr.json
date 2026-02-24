@@ -49,7 +49,6 @@
     "interactions": "Interactions timeline",
     "kb_move_flag": "Déplacer le marqueur",
     "kb_rhythm_auto": "Placement auto du marqueur de rythme",
-    "kb_audition": "Écouter l'harmonie",
     "kb_scroll": "Faire défiler la vue",
     "waveform": "Forme d'onde",
     "spectrum": "Spectre",
@@ -79,8 +78,7 @@
     "author_desc": "Nom de l'auteur par défaut pour les métadonnées MusicXML.",
     "low_cutoff_desc": "Filtrer les fréquences en dessous de ce point.",
     "high_cutoff_desc": "Filtrer les fréquences au-dessus de ce point.",
-    "kb_no_ui_desc": "Les raccourcis clavier suivants ne correspondent à aucun élément de l'interface graphique.",
-    "kb_lyrics_mouse": "Ajouter un marqueur de paroles (Souris)"
+    "kb_no_ui_desc": "Les raccourcis clavier suivants ne correspondent à aucun élément de l'interface graphique."
   },
   "keys": {
     "space": "Espace",

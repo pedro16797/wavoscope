@@ -39,9 +39,9 @@ Il modo più efficiente per trascrivere una canzone è seguire questo flusso:
 | `Tab` | Cicla Modalità Loop | Globale |
 | `Invio` | Inizia/Termina Modifica | Selezionato |
 | `Esc` | Annulla Modifica / Deseleziona | Selezionato |
-| `Frecce (Sinistra/Destra)` | Regola Posizione (0.1s) | Selezionato (Non in modifica) |
-| `Frecce (Su/Giù)` | Regola Durata (0.1s) | Selezionato (Non in modifica) |
-| `Maiusc + Frecce` | Salta tra i Testi | Globale / Selezionato |
+| `Frecce / `A` / `D` / `W` / `S` (Sinistra/Destra)` | Regola Posizione (0.1s) | Selezionato (Non in modifica) |
+| `Frecce / `A` / `D` / `W` / `S` (Su/Giù)` | Regola Durata (0.1s) | Selezionato (Non in modifica) |
+| `Maiusc + Frecce / `A` / `D` / `W` / `S`` | Salta tra i Testi | Globale / Selezionato |
 | `Spazio / -` | Conferma e Genera Successivo | In modifica |
 
 ## Implementazione Tecnica

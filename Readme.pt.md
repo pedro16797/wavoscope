@@ -147,8 +147,8 @@ Wavoscope foi projetado para ser impulsionado pela comunidade. Você pode adicio
 | **Parar reprodução** | `Shift + Espaço` |
 | **Alternar Metrônomo** | `M` |
 | **Alternar Configurações** | `Esc` |
-| **Pular para Frente/Trás** | `Esquerda` / `Direita` |
-| **Aumentar/Diminuir Velocidade** | `Cima` / `Baixo` |
+| **Pular para Frente/Trás** | `Esquerda` / `Direita` / `A` / `D` |
+| **Aumentar/Diminuir Velocidade** | `Cima` / `Baixo` / `W` / `S` |
 | **Subir/Baixar oitava** | `Shift + Esquerda/Direita` |
 | **Tamanho da janela FFT** | `Shift + Cima/Baixo` |
 | **Adicionar Marcador Ritmo** | `B` |

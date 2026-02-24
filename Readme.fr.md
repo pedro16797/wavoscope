@@ -93,7 +93,7 @@ Wavoscope dispose d'une piste de paroles interactive qui permet une transcriptio
     - Valider le mot actuel.
     - Créer une nouvelle boîte de paroles immédiatement après (à la position actuelle de lecture ou à la fin de la précédente).
     - Déplacer le focus vers la nouvelle boîte pour que vous puissiez continuer à taper sans arrêter la musique.
-4. **Navigation :** Utilisez `Maj + Gauche/Droite` pour sauter entre les éléments de paroles. C'est parfait pour vérifier le timing.
+4. **Navigation :** Utilisez `Maj + Gauche/Droite` / `Maj \+ A/D` pour sauter entre les éléments de paroles. C'est parfait pour vérifier le timing.
 
 ### Édition & Redimensionnement
 - **Déplacement :** **Faites glisser** le centre (80%) d'une boîte de paroles pour la déplacer.
@@ -147,10 +147,10 @@ Wavoscope est conçu pour être géré par la communauté. Vous pouvez ajouter o
 | **Arrêter la lecture** | `Maj + Espace` |
 | **Activer le métronome** | `M` |
 | **Afficher les paramètres** | `Esc` |
-| **Saut Avant/Arrière** | `Gauche` / `Droite` |
-| **Augmenter/Diminuer Vitesse** | `Haut` / `Bas` |
-| **Monter/Baisser l'octave** | `Maj + Gauche/Droite` |
-| **Taille fenêtre FFT** | `Maj + Haut/Bas` |
+| **Saut Avant/Arrière** | `Gauche` / `Droite` / `A` / `D` |
+| **Augmenter/Diminuer Vitesse** | `Haut` / `Bas` / `W` / `S` |
+| **Monter/Baisser l'octave** | `Maj + Gauche/Droite` / `Maj \+ A/D` |
+| **Taille fenêtre FFT** | `Maj + Haut/Bas` / `Maj \+ W/S` |
 | **Ajouter Marqueur Rythme** | `B` |
 | **Ajouter Marqueur Harmonie** | `C` |
 | **Basculer coupe-bas** | `F` |
@@ -159,7 +159,7 @@ Wavoscope est conçu pour être géré par la communauté. Vous pouvez ajouter o
 | **Diviser & Avancer Paroles**| `Espace` / `-` (Dans l'entrée) |
 | **Changer Mode de Boucle** | `Tab` |
 | **Désélectionner Tout** | `Maj + V` |
-| **Naviguer entre Paroles** | `Maj + Gauche/Droite` |
+| **Naviguer entre Paroles** | `Maj + Gauche/Droite` / `Maj \+ A/D` |
 | **Supprimer l'Élément** | `Suppr` / `Retour Arrière` |
 | **Ouvrir un Fichier** | `Ctrl + O` |
 | **Enregistrer le Projet** | `Ctrl + S` |

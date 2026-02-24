@@ -93,7 +93,7 @@ Wavoscope include una traccia interattiva per i testi che permette una trascrizi
     - Conferma la parola corrente.
     - Crea una nuova casella di testo immediatamente dopo (alla posizione attuale o alla fine della precedente).
     - Sposta il focus sulla nuova casella così puoi continuare a digitare senza fermare la musica.
-4. **Navigazione:** Usa `Maiusc + Sinistra/Destra` per saltare tra gli elementi del testo. Perfetto per verificare il timing.
+4. **Navigazione:** Usa `Maiusc + Sinistra/Destra` / `Maiusc \+ A/D` per saltare tra gli elementi del testo. Perfetto per verificare il timing.
 
 ### Modifica e Ridimensionamento
 - **Spostamento:** **Trascina** il centro (80%) di una casella di testo per spostarla.
@@ -147,10 +147,10 @@ Wavoscope è progettato per essere guidato dalla comunità. Puoi aggiungere o mo
 | **Interrompi riproduzione** | `Maiusc + Spazio` |
 | **Attiva Metronomo** | `M` |
 | **Attiva Impostazioni** | `Esc` |
-| **Salta Avanti/Indietro** | `Sinistra` / `Destra` |
-| **Aumenta/Diminuisci Velocità** | `Su` / `Giù` |
-| **Alza/Abbassa Ottava** | `Maiusc + Sinistra/Destra` |
-| **Dimensione finestra FFT** | `Maiusc + Su/Giù` |
+| **Salta Avanti/Indietro** | `Sinistra` / `Destra` / `A` / `D` |
+| **Aumenta/Diminuisci Velocità** | `Su` / `Giù` / `W` / `S` |
+| **Alza/Abbassa Ottava** | `Maiusc + Sinistra/Destra` / `Maiusc \+ A/D` |
+| **Dimensione finestra FFT** | `Maiusc + Su/Giù` / `Maiusc \+ W/S` |
 | **Aggiungi Marcatore Ritmo** | `B` |
 | **Aggiungi Marcatore Armonia** | `C` |
 | **Attiva passa-basso** | `F` |
@@ -159,7 +159,7 @@ Wavoscope è progettato per essere guidato dalla comunità. Puoi aggiungere o mo
 | **Dividi e Avanza Testo**| `Spazio` / `-` (Dentro l'input) |
 | **Cicla Modalità Loop** | `Tab` |
 | **Deseleziona Tutto** | `Maiusc + V` |
-| **Salta tra i Testi** | `Maiusc + Sinistra/Destra` |
+| **Salta tra i Testi** | `Maiusc + Sinistra/Destra` / `Maiusc \+ A/D` |
 | **Elimina Elemento** | `Canc` / `Backspace` |
 | **Apri File** | `Ctrl + O` |
 | **Salva Progetto** | `Ctrl + S` |
