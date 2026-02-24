@@ -77,7 +77,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ children, content, shortcut, c
         >
           <div className="text-[10px] font-bold whitespace-nowrap">{content}</div>
           {shortcut && (
-              <div className="text-[9px] opacity-60 font-mono mt-0.5 bg-black/20 px-1.5 py-0.5 rounded border border-white/5">
+              <div className="text-[9px] opacity-60 font-mono mt-0.5 bg-black/20 px-1.5 py-0.5 rounded border border-white/5 whitespace-nowrap">
                   {shortcut}
               </div>
           )}

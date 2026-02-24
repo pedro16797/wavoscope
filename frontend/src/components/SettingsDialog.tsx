@@ -341,24 +341,12 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
             ) : (
                 <div className="space-y-4 text-xs">
                     <div className="font-bold border-b border-grid pb-1 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.keybinds')}</div>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        <span className="opacity-60">{t('settings.kb_play_pause')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.space')}</span>
-                        <span className="opacity-60">{t('settings.kb_stop')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift')} + {t('keys.space')}</span>
-                        <span className="opacity-60">{t('settings.kb_seek')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_right')}</span>
-                        <span className="opacity-60">{t('settings.kb_speed')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.up_down')}</span>
-                        <span className="opacity-60">{t('settings.kb_metronome')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">M</span>
-                        <span className="opacity-60">{t('settings.kb_settings')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">Esc</span>
-                        <span className="opacity-60">{t('settings.kb_rhythm')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">B</span>
-                        <span className="opacity-60">{t('settings.kb_harmony')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">H</span>
-                        <span className="opacity-60">{t('settings.kb_lyrics')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">L</span>
-                        <span className="opacity-60">{t('settings.kb_delete')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.delete')}</span>
-                        <span className="opacity-60">{t('settings.kb_open')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')} + O</span>
-                        <span className="opacity-60">{t('settings.kb_save')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')} + S</span>
-                        <span className="opacity-60">{t('settings.kb_export')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.ctrl')} + E</span>
-                    </div>
-
+                    <p className="text-[10px] opacity-40 mb-4 italic leading-tight">
+                        {t('settings.kb_no_ui_desc')}
+                    </p>
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.transcription')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                        <span className="opacity-60">{t('settings.kb_lyrics')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">V / {t('keys.left_click')}</span>
                         <span className="opacity-60">{t('settings.kb_add_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.space')}</span>
                         <span className="opacity-60">{t('settings.kb_add_syllable')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">-</span>
                         <span className="opacity-60">{t('settings.kb_finish_edit')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.enter')}</span>
@@ -369,11 +357,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
 
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.interactions')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        <span className="opacity-60">{t('settings.kb_rhythm')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_click')}</span>
+                        <span className="opacity-60">{t('settings.kb_rhythm')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">B / {t('keys.left_click')}</span>
                         <span className="opacity-60">{t('settings.kb_rhythm_auto')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift')} + {t('keys.left_click')}</span>
-                        <span className="opacity-60">{t('settings.kb_harmony')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click')}</span>
+                        <span className="opacity-60">{t('settings.kb_harmony')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">C / {t('keys.right_click')}</span>
                         <span className="opacity-60">{t('settings.kb_move_flag')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.left_drag')}</span>
-                        <span className="opacity-60">{t('settings.kb_audition')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.hold_click')}</span>
                         <span className="opacity-60">{t('settings.kb_scroll')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.mouse_wheel')}</span>
                     </div>
 
@@ -382,18 +369,13 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <span className="opacity-60">{t('settings.kb_seek_playhead')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.waveform_click')}</span>
                         <span className="opacity-60">{t('settings.kb_pan')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.waveform_drag')}</span>
                         <span className="opacity-60">{t('settings.kb_zoom')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.mouse_wheel')}</span>
-                        <span className="opacity-60">{t('views.fft_window').split(':')[0]}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift')} + {t('keys.up_down')}</span>
                     </div>
 
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.spectrum')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                         <span className="opacity-60">{t('settings.kb_play_note')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.spectrum_click')}</span>
-                        <span className="opacity-60">{t('settings.kb_toggle_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click_handle')}</span>
                         <span className="opacity-60">{t('settings.kb_place_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click')}</span>
                         <span className="opacity-60">{t('settings.kb_adjust_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.handle_drag')}</span>
-                        <span className="opacity-60">{t('settings.kb_low_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">F</span>
-                        <span className="opacity-60">{t('settings.kb_high_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift')} + F</span>
-                        <span className="opacity-60">{t('views.octave_up')} / {t('views.octave_down')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift')} + {t('keys.left_right')}</span>
                     </div>
                 </div>
             )}

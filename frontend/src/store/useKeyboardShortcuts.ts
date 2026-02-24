@@ -34,7 +34,7 @@ export const useKeyboardShortcuts = () => {
           return;
       }
 
-      if (e.key === 'L' && e.shiftKey) {
+      if (e.key === 'V' && e.shiftKey) {
         e.preventDefault();
         setSelectedLyricIdx(null);
         return;
@@ -71,8 +71,8 @@ export const useKeyboardShortcuts = () => {
           return;
       }
 
-      // Add Harmony Flag: H
-      if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.metaKey) {
+      // Add Harmony Flag: C
+      if (e.key.toLowerCase() === 'c' && !e.ctrlKey && !e.metaKey) {
           e.preventDefault();
           addHarmonyFlag(position).then((res: any) => {
               if (res && res.idx !== undefined && res.idx !== -1) setEditingHarmonyFlagIdx(res.idx);
@@ -114,6 +114,8 @@ export const useKeyboardShortcuts = () => {
           e.preventDefault();
           controlPlayback(playing ? 'pause' : 'play');
           break;
+        case 'a':
+        case 'A':
         case 'ArrowLeft':
           if (e.shiftKey) {
               setOctaveShift(octave_shift - 1);
@@ -121,6 +123,8 @@ export const useKeyboardShortcuts = () => {
               controlPlayback('seek', Math.max(0, position - 0.1));
           }
           break;
+        case 'd':
+        case 'D':
         case 'ArrowRight':
           if (e.shiftKey) {
               setOctaveShift(octave_shift + 1);
@@ -128,6 +132,8 @@ export const useKeyboardShortcuts = () => {
               controlPlayback('seek', Math.min(duration, position + 0.1));
           }
           break;
+        case 'w':
+        case 'W':
         case 'ArrowUp':
           if (e.shiftKey) {
               setFFTWindow(Math.min(1.0, fft_window + 0.05));
@@ -135,17 +141,25 @@ export const useKeyboardShortcuts = () => {
               controlPlayback('set_speed', Math.min(4.0, speed + 0.1));
           }
           break;
-        case 'ArrowDown':
+        case 's':
+        case 'S':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            saveProject();
+            break;
+          }
+          // S as ArrowDown
           if (e.shiftKey) {
               setFFTWindow(Math.max(0.05, fft_window - 0.05));
           } else {
               controlPlayback('set_speed', Math.max(0.1, speed - 0.1));
           }
           break;
-        case 's':
-          if (e.ctrlKey || e.metaKey) {
-            e.preventDefault();
-            saveProject();
+        case 'ArrowDown':
+          if (e.shiftKey) {
+              setFFTWindow(Math.max(0.05, fft_window - 0.05));
+          } else {
+              controlPlayback('set_speed', Math.max(0.1, speed - 0.1));
           }
           break;
         case 'o':

@@ -417,8 +417,8 @@ export const LyricsTimeline: React.FC = () => {
             const { loaded, lyrics, position, selectedIdx, editingIdx, editValue } = stateRef.current;
             if (!loaded) return;
 
-            // Global transcription key: 'L'
-            if (e.key.toLowerCase() === 'l' && !e.shiftKey) {
+            // Global transcription key: 'V'
+            if (e.key.toLowerCase() === 'v' && !e.shiftKey) {
                 if ((e.target as HTMLElement).tagName !== 'INPUT') {
                     e.preventDefault();
                     e.stopImmediatePropagation();
@@ -452,10 +452,15 @@ export const LyricsTimeline: React.FC = () => {
 
             // Shortcuts when something is selected
             if (selectedIdx !== null) {
-                if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Escape'].includes(e.key)) {
+                const navKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'a', 'A', 'd', 'D', 'w', 'W', 's', 'S'];
+                if (navKeys.includes(e.key)) {
                     if ((e.target as HTMLElement).tagName !== 'INPUT') {
-                        e.preventDefault();
-                        e.stopImmediatePropagation();
+                        if ((e.key.toLowerCase() === 's') && (e.ctrlKey || e.metaKey)) {
+                            // Let global handler catch Ctrl+S
+                        } else {
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                        }
                     }
                 }
 
@@ -469,7 +474,7 @@ export const LyricsTimeline: React.FC = () => {
                 } else if (e.key === 'Escape') {
                     finishEditing();
                     setSelectedIdx(null);
-                } else if (e.shiftKey && e.key === 'ArrowLeft') {
+                } else if (e.shiftKey && (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a')) {
                     e.preventDefault();
                     const lyric = lyrics[selectedIdx];
                     if (position > lyric.t + lyric.l * 0.1) {
@@ -479,42 +484,43 @@ export const LyricsTimeline: React.FC = () => {
                         controlPlayback('seek', prev.t);
                         setSelectedIdx(selectedIdx - 1);
                     }
-                } else if (e.shiftKey && e.key === 'ArrowRight') {
+                } else if (e.shiftKey && (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd')) {
                     e.preventDefault();
                     if (selectedIdx < lyrics.length - 1) {
                         const next = lyrics[selectedIdx + 1];
                         controlPlayback('seek', next.t);
                         setSelectedIdx(selectedIdx + 1);
                     }
-                } else if (e.key === 'ArrowLeft' && !e.shiftKey) {
+                } else if ((e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') && !e.shiftKey) {
                     if (editingIdx !== null) return;
                     e.preventDefault();
                     let newT = Math.round((lyrics[selectedIdx].t - 0.1) * 100) / 100;
                     const prev = lyrics[selectedIdx - 1];
                     if (prev && newT < prev.t + prev.l) newT = prev.t + prev.l;
                     moveLyric(selectedIdx, Math.max(0, newT)).then(res => { if(res) setSelectedIdx(res.idx); });
-                } else if (e.key === 'ArrowRight' && !e.shiftKey) {
+                } else if ((e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') && !e.shiftKey) {
                     if (editingIdx !== null) return;
                     e.preventDefault();
                     let newT = Math.round((lyrics[selectedIdx].t + 0.1) * 100) / 100;
                     const next = lyrics[selectedIdx + 1];
                     if (next && newT + lyrics[selectedIdx].l > next.t) newT = next.t - lyrics[selectedIdx].l;
                     moveLyric(selectedIdx, newT).then(res => { if(res) setSelectedIdx(res.idx); });
-                } else if (e.key === 'ArrowUp') {
+                } else if (e.key === 'ArrowUp' || e.key.toLowerCase() === 'w') {
                     if (editingIdx !== null) return;
                     e.preventDefault();
                     let newL = Math.round((lyrics[selectedIdx].l + 0.1) * 100) / 100;
                     const next = lyrics[selectedIdx + 1];
                     if (next && lyrics[selectedIdx].t + newL > next.t) newL = next.t - lyrics[selectedIdx].t;
                     updateLyric(selectedIdx, { l: newL }).then(res => { if(res) setSelectedIdx(res.idx); });
-                } else if (e.key === 'ArrowDown') {
+                } else if (e.key === 'ArrowDown' || e.key.toLowerCase() === 's') {
                     if (editingIdx !== null) return;
+                    if (e.ctrlKey || e.metaKey) return;
                     e.preventDefault();
                     updateLyric(selectedIdx, { l: Math.max(0.2, Math.round((lyrics[selectedIdx].l - 0.1) * 100) / 100) }).then(res => { if(res) setSelectedIdx(res.idx); });
                 }
             } else {
                 // Seek between words even if none selected
-                if (e.shiftKey && e.key === 'ArrowLeft') {
+                if (e.shiftKey && (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a')) {
                     e.preventDefault();
                     const prev = [...lyrics].reverse().find(lyr => lyr.t < position - 0.1);
                     if (prev) {
@@ -522,7 +528,7 @@ export const LyricsTimeline: React.FC = () => {
                         const idx = lyrics.findIndex(lyr => lyr.t === prev.t);
                         setSelectedIdx(idx);
                     }
-                } else if (e.shiftKey && e.key === 'ArrowRight') {
+                } else if (e.shiftKey && (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd')) {
                     e.preventDefault();
                     const next = lyrics.find(lyr => lyr.t > position + 0.1);
                     if (next) {

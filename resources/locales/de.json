@@ -1,5 +1,7 @@
 {
-  "meta": { "name": "Deutsch" },
+  "meta": {
+    "name": "Deutsch"
+  },
   "common": {
     "cancel": "Abbrechen",
     "save": "Speichern",
@@ -33,21 +35,10 @@
     "autosave_snapshots": "Maximale Snapshots",
     "autosave_path": "Speicherpfad für Autosaves",
     "autosave_path_hint": "Leer lassen für Standard-Temp-Ordner.",
-    "kb_play_pause": "Wiedergabe / Pause",
-    "kb_stop": "Wiedergabe stoppen",
-    "kb_export": "MusicXML exportieren",
-    "kb_metronome": "Metronom umschalten",
-    "kb_settings": "Einstellungen umschalten",
-    "kb_low_cutoff": "Tiefpass umschalten",
-    "kb_high_cutoff": "Hochpass umschalten",
-    "kb_seek": "Vorwärts/Rückwärts springen",
     "kb_speed": "Geschwindigkeit anpassen",
     "kb_rhythm": "Rhythmus-Markierung hinzufügen",
     "kb_harmony": "Harmonie-Markierung hinzufügen",
-    "kb_lyrics": "Songtext umschalten",
-    "kb_delete": "Auswahl löschen",
-    "kb_open": "Datei öffnen",
-    "kb_save": "Projekt speichern",
+    "kb_lyrics": "Songtext-Markierung hinzufügen",
     "transcription": "Songtext-Transkription",
     "kb_add_word": "Wort hinzufügen (Bearbeiten)",
     "kb_add_syllable": "Silbe hinzufügen (Bearbeiten)",
@@ -58,7 +49,6 @@
     "interactions": "Timeline-Interaktionen",
     "kb_move_flag": "Markierung verschieben",
     "kb_rhythm_auto": "Rhythmus-Flag automatisch platzieren",
-    "kb_audition": "Harmonie anhören",
     "kb_scroll": "Ansicht scrollen",
     "waveform": "Wellenform",
     "spectrum": "Spektrum",
@@ -66,7 +56,6 @@
     "kb_pan": "Ansicht verschieben",
     "kb_zoom": "Zoom",
     "kb_play_note": "Note spielen",
-    "kb_toggle_cutoff": "Cutoff umschalten",
     "kb_place_cutoff": "Cutoff setzen",
     "kb_adjust_cutoff": "Cutoff anpassen",
     "global_desc": "Globale Anwendungseinstellungen wie Design, Sprache und Audioausgabe.",
@@ -88,7 +77,8 @@
     "output_dir_desc": "Standardordner für MusicXML-Exporte.",
     "author_desc": "Standard-Autorenname für MusicXML-Metadaten.",
     "low_cutoff_desc": "Frequenzen unterhalb dieses Punktes herausfiltern.",
-    "high_cutoff_desc": "Frequenzen oberhalb dieses Punktes herausfiltern."
+    "high_cutoff_desc": "Frequenzen oberhalb dieses Punktes herausfiltern.",
+    "kb_no_ui_desc": "Die folgenden Tastenkombinationen entsprechen keinem grafischen Interface-Element."
   },
   "keys": {
     "space": "Leertaste",
@@ -97,9 +87,9 @@
     "delete": "Entf / Rücktaste",
     "ctrl": "Strg",
     "shift": "Umschalt",
-    "left_right": "← / →",
-    "up_down": "↑ / ↓",
-    "shift_arrows": "Umschalt + ← / →",
+    "left_right": "← / → / A / D",
+    "up_down": "↑ / ↓ / W / S",
+    "shift_arrows": "Umschalt + ← / → / A / D",
     "left_click": "Linksklick",
     "right_click": "Rechtsklick",
     "left_drag": "Links ziehen",
@@ -108,8 +98,8 @@
     "waveform_click": "Wellenform-Klick",
     "waveform_drag": "Wellenform ziehen",
     "spectrum_click": "Spektrum-Klick",
-    "right_click_handle": "Rechtsklick auf Griff",
-    "handle_drag": "Griff ziehen"
+    "handle_drag": "Griff ziehen",
+    "left_click_play": "Linksklick zum Spielen"
   },
   "playback": {
     "open": "Audiodatei öffnen",

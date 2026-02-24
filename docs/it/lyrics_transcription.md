@@ -12,7 +12,7 @@ La traccia del testo è una traccia specializzata basata su canvas situata sopra
 
 ### Flusso di Lavoro: "Digita-Dividi-Avanza"
 Il modo più efficiente per trascrivere una canzone è seguire questo flusso:
-1.  **Inizio:** Premi `L` o clicca su uno spazio vuoto per creare il primo testo alla posizione attuale.
+1.  **Inizio:** Premi `V` o clicca su uno spazio vuoto per creare il primo testo alla posizione attuale.
 2.  **Digita:** Inserisci la prima parola.
 3.  **Dividi:** Premi `Spazio` (per nuove parole) o `-` (per sillabe all'interno di una parola). Questo conferma il testo corrente e crea immediatamente una nuova casella.
     - **Differenziazione visiva:** Le parole divise da trattini (sillabe) sono collegate visivamente da una linea orizzontale nella timeline. Il trattino stesso viene memorizzato nei dati ma nascosto nell'interfaccia utente quando non è in fase di modifica, offrendo un aspetto pulito.
@@ -34,14 +34,14 @@ Il modo più efficiente per trascrivere una canzone è seguire questo flusso:
 
 | Tasto | Azione | Contesto |
 |-------|--------|----------|
-| `L` | Aggiungi / Conferma ed Avanza | Globale |
-| `Maiusc + L` | Deseleziona Tutto | Globale |
+| `V` | Aggiungi / Conferma ed Avanza | Globale |
+| `Maiusc + V` | Deseleziona Tutto | Globale |
 | `Tab` | Cicla Modalità Loop | Globale |
 | `Invio` | Inizia/Termina Modifica | Selezionato |
 | `Esc` | Annulla Modifica / Deseleziona | Selezionato |
-| `Frecce (Sinistra/Destra)` | Regola Posizione (0.1s) | Selezionato (Non in modifica) |
-| `Frecce (Su/Giù)` | Regola Durata (0.1s) | Selezionato (Non in modifica) |
-| `Maiusc + Frecce` | Salta tra i Testi | Globale / Selezionato |
+| `Frecce / `A` / `D` / `W` / `S` (Sinistra/Destra)` | Regola Posizione (0.1s) | Selezionato (Non in modifica) |
+| `Frecce / `A` / `D` / `W` / `S` (Su/Giù)` | Regola Durata (0.1s) | Selezionato (Non in modifica) |
+| `Maiusc + Frecce / `A` / `D` / `W` / `S`` | Salta tra i Testi | Globale / Selezionato |
 | `Spazio / -` | Conferma e Genera Successivo | In modifica |
 
 ## Implementazione Tecnica

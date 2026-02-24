@@ -12,7 +12,7 @@ Die Songtext-Spur ist eine spezialisierte, Canvas-basierte Spur oberhalb der Hau
 
 ### Transkriptions-Workflow: "Tippen-Teilen-Weiter"
 Der effizienteste Weg, einen Song zu transkribieren, ist dieser Workflow:
-1.  **Start:** Drücken Sie `L` oder klicken Sie auf eine leere Stelle, um das erste Element an der aktuellen Abspielposition zu erstellen.
+1.  **Start:** Drücken Sie `V` oder klicken Sie auf eine leere Stelle, um das erste Element an der aktuellen Abspielposition zu erstellen.
 2.  **Tippen:** Geben Sie das erste Wort ein.
 3.  **Teilen:** Drücken Sie die `Leertaste` (für neue Wörter) oder `-` (für Silben innerhalb eines Wortes). Dies bestätigt den aktuellen Text und erstellt sofort eine neue Textbox.
     - **Visuelle Differenzierung:** Durch Bindestriche getrennte Wörter (Silben) werden in der Timeline visuell durch eine horizontale Linie verbunden. Der Bindestrich selbst wird in den Daten gespeichert, aber in der Benutzeroberfläche ausgeblendet, wenn er nicht bearbeitet wird, was für ein sauberes Erscheinungsbild sorgt.
@@ -34,14 +34,14 @@ Der effizienteste Weg, einen Song zu transkribieren, ist dieser Workflow:
 
 | Taste | Aktion | Kontext |
 |-------|--------|----------|
-| `L` | Hinzufügen / Bestätigen & Weiter | Global |
-| `Umschalt + L` | Alles abwählen | Global |
+| `V` | Hinzufügen / Bestätigen & Weiter | Global |
+| `Umschalt + V` | Alles abwählen | Global |
 | `Tab` | Loop-Modi durchlaufen | Global |
 | `Enter` | Bearbeitung starten/beenden | Ausgewählt |
 | `Esc` | Bearbeitung abbrechen / Abwählen | Ausgewählt |
-| `Pfeiltasten (Links/Rechts)` | Position anpassen (0,1s) | Ausgewählt (Nicht im Editiermodus) |
-| `Pfeiltasten (Oben/Unten)` | Dauer anpassen (0,1s) | Ausgewählt (Nicht im Editiermodus) |
-| `Umschalt + Pfeiltasten` | Zwischen Lyrics springen | Global / Ausgewählt |
+| `Pfeiltasten / `A` / `D` / `W` / `S` (Links/Rechts)` | Position anpassen (0,1s) | Ausgewählt (Nicht im Editiermodus) |
+| `Pfeiltasten / `A` / `D` / `W` / `S` (Oben/Unten)` | Dauer anpassen (0,1s) | Ausgewählt (Nicht im Editiermodus) |
+| `Umschalt + Pfeiltasten / `A` / `D` / `W` / `S`` | Zwischen Lyrics springen | Global / Ausgewählt |
 | `Leertaste / -` | Bestätigen & Nächstes erstellen | Beim Editieren |
 
 ## Technische Implementierung

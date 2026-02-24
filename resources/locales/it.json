@@ -1,5 +1,7 @@
 {
-  "meta": { "name": "Italiano" },
+  "meta": {
+    "name": "Italiano"
+  },
   "common": {
     "cancel": "Annulla",
     "save": "Salva",
@@ -33,21 +35,10 @@
     "autosave_snapshots": "Snapshot massimi",
     "autosave_path": "Percorso salvataggio automatico",
     "autosave_path_hint": "Lascia vuoto per la cartella Temp predefinita.",
-    "kb_play_pause": "Riproduci / Pausa",
-    "kb_stop": "Interrompi riproduzione",
-    "kb_export": "Esporta MusicXML",
-    "kb_metronome": "Attiva Metronomo",
-    "kb_settings": "Attiva Impostazioni",
-    "kb_low_cutoff": "Attiva passa-basso",
-    "kb_high_cutoff": "Attiva passa-alto",
-    "kb_seek": "Salta Avanti/Indietro",
     "kb_speed": "Regola Velocità",
     "kb_rhythm": "Aggiungi Marcatore Ritmo",
     "kb_harmony": "Aggiungi Marcatore Armonia",
-    "kb_lyrics": "Mostra/Nascondi Testo",
-    "kb_delete": "Elimina Selezione",
-    "kb_open": "Apri File",
-    "kb_save": "Salva Progetto",
+    "kb_lyrics": "Aggiungi marcatore testo",
     "transcription": "Trascrizione Testo",
     "kb_add_word": "Aggiungi Parola (Modifica)",
     "kb_add_syllable": "Aggiungi Sillaba (Modifica)",
@@ -58,7 +49,6 @@
     "interactions": "Interazioni Timeline",
     "kb_move_flag": "Sposta Marcatore",
     "kb_rhythm_auto": "Posizionamento auto marcatore ritmo",
-    "kb_audition": "Ascolta Armonia",
     "kb_scroll": "Scorri Vista",
     "waveform": "Forma d'Onda",
     "spectrum": "Spettro",
@@ -66,7 +56,6 @@
     "kb_pan": "Sposta Vista",
     "kb_zoom": "Zoom",
     "kb_play_note": "Suona Nota",
-    "kb_toggle_cutoff": "Attiva/Disattiva Taglio",
     "kb_place_cutoff": "Posiziona Taglio",
     "kb_adjust_cutoff": "Regola Cutoff",
     "global_desc": "Impostazioni globali dell'applicazione come tema, lingua e uscita audio.",
@@ -88,7 +77,8 @@
     "output_dir_desc": "Cartella predefinita per le esportazioni MusicXML.",
     "author_desc": "Nome autore predefinito per i metadati MusicXML.",
     "low_cutoff_desc": "Filtra le frequenze al di sotto di questo punto.",
-    "high_cutoff_desc": "Filtra le frequenze al di sopra di questo punto."
+    "high_cutoff_desc": "Filtra le frequenze al di sopra di questo punto.",
+    "kb_no_ui_desc": "Le seguenti scorciatoie da tastiera non corrispondono a nessun elemento dell'interfaccia grafica."
   },
   "keys": {
     "space": "Spazio",
@@ -97,9 +87,9 @@
     "delete": "Canc / Backspace",
     "ctrl": "Ctrl",
     "shift": "Maiusc",
-    "left_right": "← / →",
-    "up_down": "↑ / ↓",
-    "shift_arrows": "Maiusc + ← / →",
+    "left_right": "← / → / A / D",
+    "up_down": "↑ / ↓ / W / S",
+    "shift_arrows": "Maiusc + ← / → / A / D",
     "left_click": "Clic Sinistro",
     "right_click": "Clic Destro",
     "left_drag": "Trascina Sinistro",
@@ -108,8 +98,8 @@
     "waveform_click": "Clic Forma d'Onda",
     "waveform_drag": "Trascina Forma d'Onda",
     "spectrum_click": "Clic Spettro",
-    "right_click_handle": "Clic Destro Maniglia",
-    "handle_drag": "Trascina Maniglia"
+    "handle_drag": "Trascina Maniglia",
+    "left_click_play": "Clic sinistro per suonare"
   },
   "playback": {
     "open": "Apri File Audio",

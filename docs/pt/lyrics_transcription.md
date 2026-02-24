@@ -12,7 +12,7 @@ A trilha de letras é uma trilha especializada baseada em canvas, localizada aci
 
 ### Fluxo de Trabalho: "Digitar-Dividir-Avançar"
 A forma mais eficiente de transcrever uma música é seguindo este fluxo:
-1.  **Início:** Pressione `L` ou clique em um espaço vazio para criar a primeira letra na posição atual do cursor.
+1.  **Início:** Pressione `V` ou clique em um espaço vazio para criar a primeira letra na posição atual do cursor.
 2.  **Digitar:** Digite a primeira palavra.
 3.  **Dividir:** Pressione `Espaço` (para novas palavras) ou `-` (para sílabas dentro de uma palavra). Isso confirma o texto atual e cria imediatamente uma nova caixa de letra.
     - **Diferenciação visual:** As palavras divididas por hifens (sílabas) são conectadas visualmente por uma linha horizontal na linha do tempo. O próprio hífen é armazenado nos dados, mas oculto na interface do utilizador quando não está a ser editado, proporcionando um aspeto limpo.
@@ -34,8 +34,8 @@ A forma mais eficiente de transcrever uma música é seguindo este fluxo:
 
 | Tecla | Ação | Contexto |
 |-------|--------|----------|
-| `L` | Adicionar / Confirmar e Avançar | Global |
-| `Shift + L` | Desmarcar tudo | Global |
+| `V` | Adicionar / Confirmar e Avançar | Global |
+| `Shift + V` | Desmarcar tudo | Global |
 | `Tab` | Ciclar modos de loop | Global |
 | `Enter` | Iniciar/Encerrar edição | Selecionado |
 | `Esc` | Cancelar edição / Desmarcar | Selecionado |

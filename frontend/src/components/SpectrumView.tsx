@@ -32,11 +32,11 @@ export const SpectrumView: React.FC = () => {
             {/* Octave Shift */}
             <div className="flex items-center gap-1 h-full border-l-[width:var(--ui-border)] border-white/10 pl-4">
                 <span className="text-[9px] opacity-60 font-bold mr-1">OCT</span>
-                <Tooltip content={t('views.octave_down')} shortcut={`${t('keys.shift')} + ←`}>
+                <Tooltip content={t('views.octave_down')} shortcut={`${t('keys.shift')} + ← / A`}>
                     <button onClick={() => setOctaveShift(octave_shift - 1)} className="p-0.5 hover:bg-white/10 rounded-[var(--ui-radius)]"><ChevronDown size={12}/></button>
                 </Tooltip>
                 <span className="text-[10px] font-mono w-4 text-center">{octave_shift > 0 ? `+${octave_shift}` : octave_shift}</span>
-                <Tooltip content={t('views.octave_up')} shortcut={`${t('keys.shift')} + →`}>
+                <Tooltip content={t('views.octave_up')} shortcut={`${t('keys.shift')} + → / D`}>
                     <button onClick={() => setOctaveShift(octave_shift + 1)} className="p-0.5 hover:bg-white/10 rounded-[var(--ui-radius)]"><ChevronUp size={12}/></button>
                 </Tooltip>
             </div>

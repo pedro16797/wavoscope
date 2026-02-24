@@ -66,7 +66,7 @@ Wavoscope verwendet ein duales Markierungssystem, um Ihnen bei der Kartierung de
 ![Rhythmus-Markierungsdialog](docs/images/rhythm_dialog.png)
 
 ### Harmonie-Markierungen (Akkord-Markierungen)
-- **Platzierung:** Drücken Sie `H` (Standard) oder **Rechtsklick** auf die Timeline, um eine Harmonie-Markierung zu setzen.
+- **Platzierung:** Drücken Sie `C` (Standard) oder **Rechtsklick** auf die Timeline, um eine Harmonie-Markierung zu setzen.
 - **Akkord-Editor:** **Rechtsklick** auf eine vorhandene Markierung, um den Akkord-Dialog zu öffnen. Sie können Akkordnamen eingeben (z. B. "Am7", "C/G") oder die Selektoren verwenden.
 - **Automatische Analyse:** Verwenden Sie die Schaltfläche **Vorschlagen**, damit Wavoscope das Audio an dieser Position analysiert und den wahrscheinlichsten Akkord empfiehlt.
 - **Anhören:** **Halten Sie den Linksklick** auf einen Harmonie-Markierungsgriff oder klicken Sie auf die Schaltfläche "Play" im Dialog, um den Akkord über den internen Synthesizer zu hören.
@@ -88,12 +88,12 @@ Wavoscope verfügt über eine interaktive Songtext-Spur, die eine schnelle Trans
 
 ### Transkriptions-Workflow
 1. **Spur umschalten:** Klicken Sie auf die Schaltfläche "Lyrics" im Header der Wellenform, um die Transkriptionsspur anzuzeigen.
-2. **Hinzufügen & Tippen:** Drücken Sie `L` oder machen Sie einen **Einfachklick** auf eine leere Stelle in der Songtext-Spur, um ein Wort hinzuzufügen.
+2. **Hinzufügen & Tippen:** Drücken Sie `V` oder machen Sie einen **Einfachklick** auf eine leere Stelle in der Songtext-Spur, um ein Wort hinzuzufügen.
 3. **Schnelleingabe:** Während Sie in ein Textfeld tippen, drücken Sie die **Leertaste** oder den **Bindestrich (`-`)**. Dies wird automatisch:
     - Das aktuelle Wort bestätigen.
     - Ein neues Textfeld direkt im Anschluss erstellen (an der aktuellen Abspielposition oder dem vorherigen Ende).
     - Den Fokus auf das neue Feld verschieben, sodass Sie weiter tippen können, ohne die Musik anzuhalten.
-4. **Springen:** Verwenden Sie `Umschalt + Links/Rechts`, um zwischen Songtext-Elementen zu springen. Dies ist perfekt zum Überprüfen des Timings.
+4. **Springen:** Verwenden Sie `Umschalt + Links/Rechts` / `Umschalt \+ A/D`, um zwischen Songtext-Elementen zu springen. Dies ist perfekt zum Überprüfen des Timings.
 
 ### Bearbeiten & Größe anpassen
 - **Verschieben:** **Ziehen** Sie die Mitte (80%) eines Textfeldes, um es zu verschieben.
@@ -147,19 +147,19 @@ Wavoscope ist so konzipiert, dass es von der Community getragen wird. Sie könne
 | **Wiedergabe stoppen** | `Umschalt + Leertaste` |
 | **Metronom umschalten** | `M` |
 | **Einstellungen umschalten** | `Esc` |
-| **Vorwärts/Rückwärts springen** | `Links` / `Rechts` |
-| **Geschwindigkeit +/-** | `Oben` / `Unten` |
-| **Oktave höher/tiefer** | `Umschalt + Links/Rechts` |
-| **FFT-Fenstergröße** | `Umschalt + Oben/Unten` |
+| **Vorwärts/Rückwärts springen** | `Links` / `Rechts` / `A` / `D` |
+| **Geschwindigkeit +/-** | `Oben` / `Unten` / `W` / `S` |
+| **Oktave höher/tiefer** | `Umschalt + Links/Rechts` / `Umschalt \+ A/D` |
+| **FFT-Fenstergröße** | `Umschalt + Oben/Unten` / `Umschalt \+ W/S` |
 | **Rhythmus-Markierung** | `B` |
-| **Harmonie-Markierung** | `H` |
+| **Harmonie-Markierung** | `C` |
 | **Tiefpass umschalten** | `F` |
 | **Hochpass umschalten** | `Umschalt + F` |
-| **Songtext hinzufügen/bestätigen** | `L` |
+| **Songtext hinzufügen/bestätigen** | `V` |
 | **Teilen & Weiter (Lyrics)**| `Leertaste` / `-` (Im Eingabefeld) |
 | **Loop-Modi durchlaufen** | `Tab` |
-| **Auswahl aufheben** | `Umschalt + L` |
-| **Zwischen Lyrics springen** | `Umschalt + Links/Rechts` |
+| **Auswahl aufheben** | `Umschalt + V` |
+| **Zwischen Lyrics springen** | `Umschalt + Links/Rechts` / `Umschalt \+ A/D` |
 | **Element löschen** | `Entf` / `Rücktaste` |
 | **Datei öffnen** | `Strg + O` |
 | **Projekt speichern** | `Strg + S` |

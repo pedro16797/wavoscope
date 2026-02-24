@@ -1,5 +1,7 @@
 {
-  "meta": { "name": "Português" },
+  "meta": {
+    "name": "Português"
+  },
   "common": {
     "cancel": "Cancelar",
     "save": "Salvar",
@@ -33,21 +35,10 @@
     "autosave_snapshots": "Máximo de capturas",
     "autosave_path": "Caminho de salvamento automático",
     "autosave_path_hint": "Deixe vazio para a pasta temporária padrão.",
-    "kb_play_pause": "Reproduzir / Pausar",
-    "kb_stop": "Parar reprodução",
-    "kb_export": "Exportar MusicXML",
-    "kb_metronome": "Alternar Metrônomo",
-    "kb_settings": "Alternar Configurações",
-    "kb_low_cutoff": "Alternar passa-baixas",
-    "kb_high_cutoff": "Alternar passa-altas",
-    "kb_seek": "Salto para frente/trás",
     "kb_speed": "Ajustar Velocidade",
     "kb_rhythm": "Adicionar Marcador de Ritmo",
     "kb_harmony": "Adicionar Marcador de Harmonia",
-    "kb_lyrics": "Alternar Letras",
-    "kb_delete": "Excluir Seleção",
-    "kb_open": "Abrir Arquivo",
-    "kb_save": "Salvar Projeto",
+    "kb_lyrics": "Adicionar marca de letra",
     "transcription": "Transcrição de Letras",
     "kb_add_word": "Adicionar Palavra (Editando)",
     "kb_add_syllable": "Adicionar Sílaba (Editando)",
@@ -58,7 +49,6 @@
     "interactions": "Interações na Linha do Tempo",
     "kb_move_flag": "Mover Marcador",
     "kb_rhythm_auto": "Colocação automática de marcador de ritmo",
-    "kb_audition": "Ouvir Harmonia",
     "kb_scroll": "Rolar a Vista",
     "waveform": "Forma de Onda",
     "spectrum": "Espectro",
@@ -66,7 +56,6 @@
     "kb_pan": "Mover a Vista",
     "kb_zoom": "Zoom",
     "kb_play_note": "Tocar Nota",
-    "kb_toggle_cutoff": "Alternar Corte",
     "kb_place_cutoff": "Posicionar Corte",
     "kb_adjust_cutoff": "Ajustar Corte",
     "global_desc": "Configurações globais do aplicativo, como tema, idioma e saída de áudio.",
@@ -88,7 +77,8 @@
     "output_dir_desc": "Pasta padrão para exportações MusicXML.",
     "author_desc": "Nome do autor padrão para metadados MusicXML.",
     "low_cutoff_desc": "Filtra frequências abaixo deste ponto.",
-    "high_cutoff_desc": "Filtra frequências acima deste ponto."
+    "high_cutoff_desc": "Filtra frequências acima deste ponto.",
+    "kb_no_ui_desc": "Os seguintes atalhos de teclado não correspondem a nenhum elemento da interface gráfica."
   },
   "keys": {
     "space": "Espaço",
@@ -97,9 +87,9 @@
     "delete": "Del / Backspace",
     "ctrl": "Ctrl",
     "shift": "Shift",
-    "left_right": "← / →",
-    "up_down": "↑ / ↓",
-    "shift_arrows": "Shift + ← / →",
+    "left_right": "← / → / A / D",
+    "up_down": "↑ / ↓ / W / S",
+    "shift_arrows": "Shift + ← / → / A / D",
     "left_click": "Clique Esquerdo",
     "right_click": "Clique Direito",
     "left_drag": "Arrastar Esquerdo",
@@ -108,8 +98,8 @@
     "waveform_click": "Clique na Forma de Onda",
     "waveform_drag": "Arrastar na Forma de Onda",
     "spectrum_click": "Clique no Espectro",
-    "right_click_handle": "Clique Direito na Alça",
-    "handle_drag": "Arrastar Alça"
+    "handle_drag": "Arrastar Alça",
+    "left_click_play": "Clique esquerdo para tocar"
   },
   "playback": {
     "open": "Abrir Arquivo de Áudio",

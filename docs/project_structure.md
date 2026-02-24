@@ -6,7 +6,7 @@ This document outlines the directory structure and the purpose of each component
 
 -   **`audio/`**: Contains the core audio engine.
     -   `audio_backend.py`: The main audio backend facade.
-    -   `chord_analyzer.py`: Chroma-based chord detection for harmony flags.
+    -   `chord_analyzer.py`: Chroma-based chord detection for chord flags.
     -   `ringbuffer.py`: Thread-safe ring buffer for audio streaming.
     -   `spectrum_analyzer.py`: Logic for computing FFTs and spectral data.
     -   `synth.py`: Real-time synthesis for metronome clicks and chord auditioning.
@@ -33,7 +33,7 @@ This document outlines the directory structure and the purpose of each component
 -   **`session/`**: Handles project persistence and high-level state.
     -   `project.py`: The `Project` class which ties audio, metadata (flags), and caching together.
     -   `manager.py`: Handles `.oscope` sidecar file I/O and scrubbing.
-    -   `flags.py`: Manages rhythm and harmony flag lists.
+    -   `flags.py`: Manages rhythm and chord flag lists.
     -   `looping.py`: Logic for various loop modes (all, section, marker, lyric).
     -   `export.py`: MusicXML export generation.
     -   `chord_utils.py`: Helpers for chord name parsing and validation.
