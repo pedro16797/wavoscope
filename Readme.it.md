@@ -144,8 +144,13 @@ Wavoscope è progettato per essere guidato dalla comunità. Puoi aggiungere o mo
 | Azione | Tasto |
 | :--- | :--- |
 | **Riproduci / Pausa** | `Spazio` |
+| **Interrompi riproduzione** | `Maiusc + Spazio` |
+| **Attiva Metronomo** | `M` |
+| **Attiva Impostazioni** | `Esc` |
 | **Salta Avanti/Indietro** | `Sinistra` / `Destra` |
 | **Aumenta/Diminuisci Velocità** | `Su` / `Giù` |
+| **Alza/Abbassa Ottava** | `Maiusc + Sinistra/Destra` |
+| **Dimensione finestra FFT** | `Maiusc + Su/Giù` |
 | **Aggiungi Marcatore Ritmo** | `B` |
 | **Aggiungi Marcatore Armonia** | `H` |
 | **Aggiungi/Conferma Testo** | `L` |
@@ -156,6 +161,7 @@ Wavoscope è progettato per essere guidato dalla comunità. Puoi aggiungere o mo
 | **Elimina Elemento** | `Canc` / `Backspace` |
 | **Apri File** | `Ctrl + O` |
 | **Salva Progetto** | `Ctrl + S` |
+| **Esporta MusicXML** | `Ctrl + E` |
 
 ### Interazioni Mouse
 | Area | Azione | Interazione |

@@ -125,8 +125,14 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
     stopAllTones();
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSave();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose} onKeyDown={handleKeyDown}>
       <div className="bg-surface border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] shadow-2xl w-full max-w-md overflow-hidden text-text flex flex-col isolation-auto"
            style={{ backgroundColor: 'var(--color-surface)', borderWidth: 'var(--ui-border)' }}
            onClick={e => e.stopPropagation()}>

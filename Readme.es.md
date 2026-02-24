@@ -144,8 +144,13 @@ Wavoscope está diseñado para ser impulsado por la comunidad. Puedes añadir o 
 | Acción | Tecla |
 | :--- | :--- |
 | **Reproducir / Pausa** | `Espacio` |
+| **Detener reproducción** | `Mayús + Espacio` |
+| **Alternar metrónomo** | `M` |
+| **Alternar ajustes** | `Esc` |
 | **Avanzar/Retroceder** | `Izquierda` / `Derecha` |
 | **Aumentar/Disminuir velocidad** | `Arriba` / `Abajo` |
+| **Subir/Bajar octava** | `Mayús + Izquierda/Derecha` |
+| **Tamaño de ventana FFT** | `Mayús + Arriba/Abajo` |
 | **Añadir marca de ritmo** | `B` |
 | **Añadir marca de armonía** | `H` |
 | **Añadir/Confirmar letra** | `L` |
@@ -156,6 +161,7 @@ Wavoscope está diseñado para ser impulsado por la comunidad. Puedes añadir o 
 | **Eliminar elemento seleccionado** | `Suprimir` / `Retroceso` |
 | **Abrir archivo** | `Ctrl + O` |
 | **Guardar proyecto** | `Ctrl + S` |
+| **Exportar MusicXML** | `Ctrl + E` |
 
 ### Interacciones con el ratón
 | Área | Acción | Interacción |

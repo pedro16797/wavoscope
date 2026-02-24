@@ -1,12 +1,15 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useStore, API_BASE } from '../store/useStore';
 import { getChordMidiNotes, midiToFreq, freqToMidi } from '../store/utils';
 import axios from 'axios';
+import { Tooltip } from './Tooltip';
 
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const WHITE_KEYS = new Set([0, 2, 4, 5, 7, 9, 11]);
 
 export const Spectrum: React.FC = () => {
+  const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const {
@@ -302,11 +305,36 @@ export const Spectrum: React.FC = () => {
     }
   };
 
+  const spanLog = Math.max(Math.log2(range.high / range.low), 1e-3);
+  const xScale = size.width / spanLog;
+  const xLow = Math.log2(filter_low_hz / range.low) * xScale;
+  const xHigh = Math.log2(filter_high_hz / range.low) * xScale;
+
   return (
     <div ref={containerRef} className="w-full h-full relative overflow-hidden select-none"
          onMouseDown={handleMouseDown}
          onContextMenu={handleContextMenu}>
         <canvas ref={canvasRef} className="w-full h-full block" />
+
+        {/* Hitbox for Low Handle */}
+        {xLow >= 0 && xLow <= size.width && (
+            <div className="absolute bottom-0 w-4 h-8 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
+                 style={{ left: xLow }}>
+                <Tooltip content={t('settings.kb_toggle_cutoff')} shortcut={t('keys.right_click')}>
+                    <div className="w-full h-full" />
+                </Tooltip>
+            </div>
+        )}
+
+        {/* Hitbox for High Handle */}
+        {xHigh >= 0 && xHigh <= size.width && (
+            <div className="absolute bottom-0 w-4 h-8 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
+                 style={{ left: xHigh }}>
+                <Tooltip content={t('settings.kb_toggle_cutoff')} shortcut={t('keys.right_click')}>
+                    <div className="w-full h-full" />
+                </Tooltip>
+            </div>
+        )}
     </div>
   );
 };

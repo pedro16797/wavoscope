@@ -143,8 +143,13 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | Action | Key |
 | :--- | :--- |
 | **Play / Pause** | `Space` |
+| **Stop Playback** | `Shift + Space` |
+| **Toggle Metronome** | `M` |
+| **Toggle Settings** | `Esc` |
 | **Seek Forward/Back** | `Left` / `Right` |
 | **Increase/Decrease Speed** | `Up` / `Down` |
+| **Octave Up/Down** | `Shift + Left/Right` |
+| **FFT Window Size** | `Shift + Up/Down` |
 | **Add Rhythm Flag** | `B` |
 | **Add Harmony Flag** | `H` |
 | **Add/Commit Lyric** | `L` |
@@ -155,6 +160,7 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | **Delete Selected Item** | `Delete` / `Backspace` |
 | **Open File** | `Ctrl + O` |
 | **Save Project** | `Ctrl + S` |
+| **Export MusicXML** | `Ctrl + E` |
 
 ### Mouse Interactions
 | Area | Action | Interaction |

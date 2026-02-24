@@ -64,7 +64,7 @@ export const PlaybackBar: React.FC = () => {
                 <Save size={20} className={dirty ? 'text-accent' : 'text-text'} />
             </button>
         </Tooltip>
-        <Tooltip content={t('playback.export_xml')}>
+        <Tooltip content={t('playback.export_xml')} shortcut={`${t('keys.ctrl')}+E`}>
             <button onClick={exportMusicXML} disabled={!loaded} aria-label={t('playback.export_xml')}
                     className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : 'opacity-90'}`}>
                 <FileDown size={20} />
@@ -79,7 +79,7 @@ export const PlaybackBar: React.FC = () => {
                     {playing ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
                     </button>
                 </Tooltip>
-                <Tooltip content={t('playback.stop')}>
+                <Tooltip content={t('playback.stop')} shortcut={`${t('keys.shift')}+${t('keys.space')}`}>
                     <button onClick={() => controlPlayback('stop')}
                             aria-label={t('playback.stop')}
                             className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-1">
@@ -95,7 +95,7 @@ export const PlaybackBar: React.FC = () => {
                     </button>
                 </Tooltip>
                 {/* Metronome */}
-                <Tooltip content={t('playback.metronome')}>
+                <Tooltip content={t('playback.metronome')} shortcut="M">
                     <button onClick={() => updateMetronome(!metronome_enabled)} aria-label={t('playback.metronome')}
                             className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${metronome_enabled ? 'text-accent bg-accent/10' : 'opacity-40'}`}>
                         <Timer size={18} />
@@ -153,7 +153,7 @@ export const PlaybackBar: React.FC = () => {
             </Tooltip>
         </div>
 
-        <Tooltip content={t('playback.settings')}>
+        <Tooltip content={t('playback.settings')} shortcut="Esc">
             <button onClick={() => setShowSettings(true)} aria-label={t('playback.settings')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
                 <Settings size={18} />
             </button>

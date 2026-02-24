@@ -2,22 +2,52 @@ import { useEffect } from 'react';
 import { useStore } from './useStore';
 
 export const useKeyboardShortcuts = () => {
-  const { loaded, playing, controlPlayback, position, duration, speed, browseFile, cycleLoopMode, setSelectedLyricIdx } = useStore();
+  const {
+    loaded, playing, controlPlayback, position, duration, speed, browseFile, cycleLoopMode,
+    setSelectedLyricIdx, showSettings, setShowSettings, saveProject, exportMusicXML,
+    octave_shift, setOctaveShift, fft_window, setFFTWindow, metronome_enabled, updateMetronome,
+    editingFlagIdx, editingHarmonyFlagIdx, setEditingFlagIdx, setEditingHarmonyFlagIdx
+  } = useStore();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!loaded && !['o'].includes(e.key.toLowerCase())) return;
+      const isInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || (e.target as HTMLElement).isContentEditable;
+      if (isInput) return;
+
+      const allowedWhenNotLoaded = ['o', 'escape'];
+      if (!loaded && !allowedWhenNotLoaded.includes(e.key.toLowerCase())) return;
+
+      // Handle Escape
+      if (e.key === 'Escape') {
+          if (editingFlagIdx !== null) {
+              setEditingFlagIdx(null);
+              return;
+          }
+          if (editingHarmonyFlagIdx !== null) {
+              setEditingHarmonyFlagIdx(null);
+              return;
+          }
+          setShowSettings(!showSettings);
+          return;
+      }
 
       if (e.key === 'L' && e.shiftKey) {
-        if (e.target instanceof HTMLInputElement) return;
         e.preventDefault();
         setSelectedLyricIdx(null);
         return;
       }
 
-      // Prevent default for handled shortcuts
-      if ([' ', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 's', 'o', 'Tab'].includes(e.key)) {
-        if (e.target instanceof HTMLInputElement) return; // Don't interrupt typing
+      // Stop: Shift + Space
+      if (e.key === ' ' && e.shiftKey) {
+          e.preventDefault();
+          controlPlayback('stop');
+          return;
+      }
+
+      // Metronome: M
+      if (e.key.toLowerCase() === 'm' && !e.ctrlKey && !e.metaKey) {
+          updateMetronome(!metronome_enabled);
+          return;
       }
 
       switch (e.key) {
@@ -30,21 +60,37 @@ export const useKeyboardShortcuts = () => {
           controlPlayback(playing ? 'pause' : 'play');
           break;
         case 'ArrowLeft':
-          controlPlayback('seek', Math.max(0, position - 0.1));
+          if (e.shiftKey) {
+              setOctaveShift(octave_shift - 1);
+          } else {
+              controlPlayback('seek', Math.max(0, position - 0.1));
+          }
           break;
         case 'ArrowRight':
-          controlPlayback('seek', Math.min(duration, position + 0.1));
+          if (e.shiftKey) {
+              setOctaveShift(octave_shift + 1);
+          } else {
+              controlPlayback('seek', Math.min(duration, position + 0.1));
+          }
           break;
         case 'ArrowUp':
-          controlPlayback('set_speed', Math.min(4.0, speed + 0.1));
+          if (e.shiftKey) {
+              setFFTWindow(Math.min(1.0, fft_window + 0.05));
+          } else {
+              controlPlayback('set_speed', Math.min(4.0, speed + 0.1));
+          }
           break;
         case 'ArrowDown':
-          controlPlayback('set_speed', Math.max(0.1, speed - 0.1));
+          if (e.shiftKey) {
+              setFFTWindow(Math.max(0.05, fft_window - 0.05));
+          } else {
+              controlPlayback('set_speed', Math.max(0.1, speed - 0.1));
+          }
           break;
         case 's':
           if (e.ctrlKey || e.metaKey) {
             e.preventDefault();
-            useStore.getState().saveProject();
+            saveProject();
           }
           break;
         case 'o':
@@ -53,11 +99,23 @@ export const useKeyboardShortcuts = () => {
             browseFile();
           }
           break;
+        case 'e':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            exportMusicXML();
+          }
+          break;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [loaded, playing, controlPlayback, position, duration, speed, browseFile]);
+  }, [
+      loaded, playing, controlPlayback, position, duration, speed, browseFile,
+      showSettings, setShowSettings, saveProject, exportMusicXML,
+      octave_shift, setOctaveShift, fft_window, setFFTWindow, metronome_enabled, updateMetronome,
+      editingFlagIdx, editingHarmonyFlagIdx, setEditingFlagIdx, setEditingHarmonyFlagIdx,
+      setSelectedLyricIdx, cycleLoopMode
+  ]);
 };
 
