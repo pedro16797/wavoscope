@@ -1,9 +1,7 @@
 import type { StateCreator } from 'zustand';
 import axios from 'axios';
-import type { AppState, Chord, Lyric, Flag } from '../types';
+import type { AppState, Chord, Lyric, Flag, ProjectSlice } from '../types';
 import { API_BASE } from '../useStore';
-
-import type { ProjectSlice } from '../types';
 
 export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = (set, get) => ({
   loaded: false,

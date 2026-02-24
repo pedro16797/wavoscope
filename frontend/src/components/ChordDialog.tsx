@@ -22,9 +22,15 @@ const ADDITIONS = ['add9', 'add11', 'add13'];
 export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) => {
   const { t } = useTranslation();
   const { updateHarmonyFlag, removeHarmonyFlag, duration, playTone, stopAllTones } = useStore();
-  const [chord, setChord] = useState<Chord>(flag.c);
-  const [time, setTime] = useState(flag.t);
-  const [chordText, setChordText] = useState(formatChord(flag.c));
+
+  const [chord, setChord] = useState<Chord>(flag?.c || { r: 'C', ca: '', q: '', ext: '', alt: [], add: [], b: '', ba: '' });
+  const [time, setTime] = useState(flag?.t || 0);
+  const [chordText, setChordText] = useState(flag ? formatChord(flag.c) : '');
+
+  if (!flag) {
+    onClose();
+    return null;
+  }
 
   const handleTextChange = (text: string) => {
     setChordText(text);

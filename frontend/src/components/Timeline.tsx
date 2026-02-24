@@ -236,9 +236,10 @@ export const Timeline: React.FC = () => {
             const onMouseUp = () => {
                 window.removeEventListener('mousemove', onMouseMove);
                 window.removeEventListener('mouseup', onMouseUp);
-                moveHarmonyFlag(foundHarmonyIdx, latestT);
-                setDragHarmonyIdx(null);
-                setDragT(null);
+                moveHarmonyFlag(foundHarmonyIdx, latestT).finally(() => {
+                    setDragHarmonyIdx(null);
+                    setDragT(null);
+                });
                 stopAllTones();
             };
             window.addEventListener('mousemove', onMouseMove);
@@ -266,9 +267,10 @@ export const Timeline: React.FC = () => {
             const onMouseUp = () => {
                 window.removeEventListener('mousemove', onMouseMove);
                 window.removeEventListener('mouseup', onMouseUp);
-                moveFlag(foundIdx, latestT);
-                setDragIdx(null);
-                setDragT(null);
+                moveFlag(foundIdx, latestT).finally(() => {
+                    setDragIdx(null);
+                    setDragT(null);
+                });
             };
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mouseup', onMouseUp);
