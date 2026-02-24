@@ -11,9 +11,9 @@ def test_musicxml_export_padding(tmp_path):
 
     # Audio duration is 10 seconds
     # First flag at 4.0s
-    project.add_flag(4.0, type="rhythm", div=4)
+    project.add_flag(4.0, kind="rhythm", div=4)
     # Second flag at 6.0s
-    project.add_flag(6.0, type="rhythm", div=4)
+    project.add_flag(6.0, kind="rhythm", div=4)
 
     # We mock the duration for the export call
     xml_content = generate_musicxml(project.session_data, "test_padding.mp3", audio_duration=10.0)

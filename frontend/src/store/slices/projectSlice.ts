@@ -16,6 +16,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   editingHarmonyFlagIdx: null,
   selectedLyricIdx: null,
   export_status: { active: false, progress: 0, message: '' },
+  undo_history: [],
 
   fetchStatus: async () => {
     try {
@@ -283,4 +284,29 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
       get().setLoopMode('none');
     }
   },
+
+  fetchUndoSteps: async () => {
+    try {
+        const res = await axios.get(`${API_BASE}/project/undo/steps`);
+        set({ undo_history: res.data });
+    } catch (e) {
+        console.error("[Store] Failed to fetch undo steps:", e);
+    }
+  },
+
+  restoreUndoStep: async (index: number) => {
+    try {
+        const res = await axios.post(`${API_BASE}/project/undo/restore`, { index });
+        set({
+            flags: res.data.flags,
+            harmony_flags: res.data.harmony_flags,
+            lyrics: res.data.lyrics,
+            time_signature: res.data.time_signature,
+            dirty: true
+        });
+        await get().fetchUndoSteps();
+    } catch (e) {
+        console.error("[Store] Failed to restore undo step:", e);
+    }
+  }
 });

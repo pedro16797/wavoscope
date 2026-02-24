@@ -16,10 +16,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
     click_volume, spectrum_keys, default_output_folder,
     musicxml_author, updateConfig, time_signature, updateTimeSignature,
     browseFolder, autosave_enabled, autosave_forced, autosave_interval,
-    autosave_max_snapshots, autosave_path
+    autosave_max_snapshots, autosave_path, undo_steps, undo_history,
+    fetchUndoSteps, restoreUndoStep
   } = useStore();
 
-  const [activeTab, setActiveTab] = useState<'global' | 'project' | 'autosave' | 'keybinds'>('global');
+  const [activeTab, setActiveTab] = useState<'global' | 'project' | 'recovery' | 'keybinds'>('global');
 
   const [theme, setTheme] = useState(currentTheme);
   const [lang, setLang] = useState(language);
@@ -34,13 +35,21 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const [asInterval, setAsInterval] = useState(autosave_interval);
   const [asMaxSnapshots, setAsMaxSnapshots] = useState(autosave_max_snapshots);
   const [asPath, setAsPath] = useState(autosave_path);
+  const [uSteps, setUSteps] = useState(undo_steps);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDenDropdownOpen, setIsDenDropdownOpen] = useState(false);
+  const [isUndoDropdownOpen, setIsUndoDropdownOpen] = useState(false);
 
   useEffect(() => {
     fetchLocales();
     fetchAudioDevices();
   }, [fetchLocales, fetchAudioDevices]);
+
+  useEffect(() => {
+    if (activeTab === 'recovery') {
+        fetchUndoSteps();
+    }
+  }, [activeTab, fetchUndoSteps]);
 
   const handleSave = async () => {
     updateConfig({
@@ -55,7 +64,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
         autosave_forced: asForced,
         autosave_interval: asInterval,
         autosave_max_snapshots: asMaxSnapshots,
-        autosave_path: asPath
+        autosave_path: asPath,
+        undo_steps: uSteps
     });
     await updateTimeSignature(timeSig.numerator, timeSig.denominator);
     onClose();
@@ -83,10 +93,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     {t('settings.project')}
                 </button>
             </Tooltip>
-            <Tooltip content={t('settings.autosave_desc')} className="flex-1">
-                <button onClick={() => setActiveTab('autosave')}
-                        className={`w-full p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'autosave' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
-                    {t('settings.autosave')}
+            <Tooltip content={t('settings.recovery_desc')} className="flex-1">
+                <button onClick={() => setActiveTab('recovery')}
+                        className={`w-full p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'recovery' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
+                    {t('settings.recovery')}
                 </button>
             </Tooltip>
             <Tooltip content={t('settings.keybinds_desc')} className="flex-1">
@@ -173,8 +183,54 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     </div>
 
                 </>
-            ) : activeTab === 'autosave' ? (
+            ) : activeTab === 'recovery' ? (
                 <div className="space-y-6">
+                    <div className="space-y-4">
+                        <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.undo')}</label>
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.undo_steps')}</label>
+                            <Tooltip content={t('settings.undo_steps_desc')} className="w-full">
+                                <input type="number" min="0" max="1000" value={uSteps} onChange={(e) => setUSteps(parseInt(e.target.value))}
+                                    className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                    style={{ borderWidth: 'var(--ui-border)' }} />
+                            </Tooltip>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.undo_history')}</label>
+                            <div className="relative">
+                                <Tooltip content={t('settings.undo_history_desc')} className="w-full">
+                                    <button onClick={() => setIsUndoDropdownOpen(!isUndoDropdownOpen)}
+                                            className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 flex justify-between items-center text-sm text-text outline-none focus:border-accent transition-colors"
+                                            style={{ borderWidth: 'var(--ui-border)' }}>
+                                        <span className="truncate">{undo_history.length > 0 ? undo_history[undo_history.length - 1].label : t('settings.undo_initial_state')}</span>
+                                        <ChevronDown size={14} className={`transition-transform duration-200 ${isUndoDropdownOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                </Tooltip>
+                                {isUndoDropdownOpen && (
+                                    <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-grid rounded-[var(--ui-radius)] shadow-2xl z-50 overflow-hidden"
+                                         style={{ backgroundColor: 'var(--color-surface)', borderWidth: 'var(--ui-border)' }}>
+                                        <div className="max-h-48 overflow-y-auto">
+                                            {undo_history.length === 0 ? (
+                                                <div className="px-3 py-2 text-xs opacity-50">{t('common.none')}</div>
+                                            ) : (
+                                                undo_history.map((step, idx) => (
+                                                    <button key={idx}
+                                                            onClick={() => { restoreUndoStep(idx); setIsUndoDropdownOpen(false); }}
+                                                            className="w-full text-left px-3 py-2 text-xs hover:bg-accent/20 text-text flex justify-between gap-4 transition-colors">
+                                                        <span className="truncate">{step.label}</span>
+                                                        <span className="opacity-40 font-mono whitespace-nowrap">{new Date(step.timestamp * 1000).toLocaleTimeString()}</span>
+                                                    </button>
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-grid pt-4 mt-4" style={{ borderColor: 'var(--ui-border)' }} />
+
                     <div className="space-y-4">
                         <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.autosave')}</label>
 

@@ -78,7 +78,15 @@
     "author_desc": "Nome autore predefinito per i metadati MusicXML.",
     "low_cutoff_desc": "Filtra le frequenze al di sotto di questo punto.",
     "high_cutoff_desc": "Filtra le frequenze al di sopra di questo punto.",
-    "kb_no_ui_desc": "Le seguenti scorciatoie da tastiera non corrispondono a nessun elemento dell'interfaccia grafica."
+    "kb_no_ui_desc": "Le seguenti scorciatoie da tastiera non corrispondono a nessun elemento dell'interfaccia grafica.",
+    "recovery": "Ripristino",
+    "undo": "Cronologia annullamenti",
+    "undo_steps": "Passi annullamento",
+    "undo_history": "Punto di ripristino",
+    "undo_initial_state": "Stato iniziale",
+    "recovery_desc": "Configura le opzioni di ripristino del progetto, la cronologia degli annullamenti e il salvataggio automatico.",
+    "undo_steps_desc": "Numero massimo di passaggi di annullamento da memorizzare.",
+    "undo_history_desc": "Seleziona uno stato precedente per ripristinare il tuo progetto."
   },
   "keys": {
     "space": "Spazio",

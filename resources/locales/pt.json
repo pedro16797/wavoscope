@@ -78,7 +78,15 @@
     "author_desc": "Nome do autor padrão para metadados MusicXML.",
     "low_cutoff_desc": "Filtra frequências abaixo deste ponto.",
     "high_cutoff_desc": "Filtra frequências acima deste ponto.",
-    "kb_no_ui_desc": "Os seguintes atalhos de teclado não correspondem a nenhum elemento da interface gráfica."
+    "kb_no_ui_desc": "Os seguintes atalhos de teclado não correspondem a nenhum elemento da interface gráfica.",
+    "recovery": "Recuperação",
+    "undo": "Histórico de desfazer",
+    "undo_steps": "Passos de desfazer",
+    "undo_history": "Ponto de restauração",
+    "undo_initial_state": "Estado inicial",
+    "recovery_desc": "Configure as opções de recuperação do projeto, o histórico de desfazer e o salvamento automático.",
+    "undo_steps_desc": "Número máximo de passos de desfazer a armazenar na memória.",
+    "undo_history_desc": "Selecione um estado anterior para restaurar o seu projeto."
   },
   "keys": {
     "space": "Espaço",

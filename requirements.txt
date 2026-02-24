@@ -7,5 +7,6 @@ websockets
 pywebview
 python-stretch
 tinytag
+jsonpatch
 nodeenv
 pyinstaller

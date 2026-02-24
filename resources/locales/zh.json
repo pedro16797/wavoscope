@@ -78,7 +78,15 @@
     "author_desc": "MusicXML 元数据的默认作者姓名。",
     "low_cutoff_desc": "过滤掉低于此点的频率。",
     "high_cutoff_desc": "过滤掉高于此点的频率。",
-    "kb_no_ui_desc": "以下快捷键不对应任何图形界面元素。"
+    "kb_no_ui_desc": "以下快捷键不对应任何图形界面元素。",
+    "recovery": "恢复",
+    "undo": "撤销历史",
+    "undo_steps": "撤销步数",
+    "undo_history": "还原点",
+    "undo_initial_state": "初始状态",
+    "recovery_desc": "配置项目恢复选项、撤销历史和自动保存。",
+    "undo_steps_desc": "内存中存储的最大撤销步数。",
+    "undo_history_desc": "选择以前的状态以还原您的项目。"
   },
   "keys": {
     "space": "空格",

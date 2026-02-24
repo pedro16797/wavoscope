@@ -7,6 +7,7 @@ from unittest.mock import MagicMock
 client = TestClient(app)
 
 def test_status():
+    state.project = None
     response = client.get("/status")
     assert response.status_code == 200
     assert response.json() == {"loaded": False}

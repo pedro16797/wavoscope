@@ -38,26 +38,30 @@
         "speed_min": 0.1,
         "speed_max": 4.0
     },
-    "autosave": {
-        "enabled": {
+    "recovery": {
+        "autosave_enabled": {
             "type": "boolean",
             "default": true
         },
-        "forced": {
+        "autosave_forced": {
             "type": "boolean",
             "default": false
         },
-        "interval_minutes": {
+        "autosave_interval_minutes": {
             "type": "number",
             "default": 5
         },
-        "max_snapshots": {
+        "autosave_max_snapshots": {
             "type": "number",
             "default": 5
         },
-        "path": {
+        "autosave_path": {
             "type": "string",
             "default": ""
+        },
+        "undo_steps": {
+            "type": "number",
+            "default": 50
         }
     }
 }

@@ -30,9 +30,9 @@ class AutosaveManager:
         while not self._stop_event.is_set():
             try:
                 cfg = Config()
-                enabled = cfg.get("autosave.enabled", True)
-                forced = cfg.get("autosave.forced", False)
-                interval_min = cfg.get("autosave.interval_minutes", 5)
+                enabled = cfg.get("recovery.autosave_enabled", True)
+                forced = cfg.get("recovery.autosave_forced", False)
+                interval_min = cfg.get("recovery.autosave_interval_minutes", 5)
                 interval_sec = interval_min * 60
 
                 now = time.time()
@@ -51,8 +51,8 @@ class AutosaveManager:
 
     def _do_autosave(self):
         cfg = Config()
-        max_snapshots = cfg.get("autosave.max_snapshots", 5)
-        path_str = cfg.get("autosave.path", "")
+        max_snapshots = cfg.get("recovery.autosave_max_snapshots", 5)
+        path_str = cfg.get("recovery.autosave_path", "")
 
         if not path_str:
             autosave_dir = Path(tempfile.gettempdir()) / "wavoscope_autosaves"

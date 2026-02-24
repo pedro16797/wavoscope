@@ -24,6 +24,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   autosave_interval: 5,
   autosave_max_snapshots: 5,
   autosave_path: '',
+  undo_steps: 50,
   showSettings: false,
   showSpectrum: true,
   showLyrics: false,
@@ -75,7 +76,8 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         autosave_forced: res.data.autosave_forced,
         autosave_interval: res.data.autosave_interval,
         autosave_max_snapshots: res.data.autosave_max_snapshots,
-        autosave_path: res.data.autosave_path
+        autosave_path: res.data.autosave_path,
+        undo_steps: res.data.undo_steps
       };
 
       const maxShift = 6 - Math.floor(newKeys / 12);
@@ -142,6 +144,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         if (cfg.autosave_interval !== undefined) set({ autosave_interval: cfg.autosave_interval });
         if (cfg.autosave_max_snapshots !== undefined) set({ autosave_max_snapshots: cfg.autosave_max_snapshots });
         if (cfg.autosave_path !== undefined) set({ autosave_path: cfg.autosave_path });
+        if (cfg.undo_steps !== undefined) set({ undo_steps: cfg.undo_steps });
 
         if (cfg.spectrum_keys !== undefined && cfg.spectrum_keys !== oldState.spectrum_keys) {
             const newKeys = cfg.spectrum_keys;
