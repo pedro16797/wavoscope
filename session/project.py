@@ -59,7 +59,6 @@ class Project:
             except Exception as e:
                 logger.exception("Failed to open audio file")
                 raise
-            self._spectrum_cache: Dict[str, Any] = {}
 
     def close(self) -> None:
         with self._lock:
@@ -138,6 +137,7 @@ class Project:
             if self._flags.remove_flag(idx):
                 self._clear_backend_cache()
                 self.mark_dirty()
+                self._emit("flag_removed", idx)
 
     def add_harmony_flag(self, time: float, chord: Dict[str, Any] | None = None) -> None:
         with self._lock:
