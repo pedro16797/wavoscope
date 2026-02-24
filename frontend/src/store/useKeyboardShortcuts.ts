@@ -6,7 +6,8 @@ export const useKeyboardShortcuts = () => {
     loaded, playing, controlPlayback, position, duration, speed, browseFile, cycleLoopMode,
     setSelectedLyricIdx, showSettings, setShowSettings, saveProject, exportMusicXML,
     octave_shift, setOctaveShift, fft_window, setFFTWindow, metronome_enabled, updateMetronome,
-    editingFlagIdx, editingHarmonyFlagIdx, setEditingFlagIdx, setEditingHarmonyFlagIdx
+    editingFlagIdx, editingHarmonyFlagIdx, setEditingFlagIdx, setEditingHarmonyFlagIdx,
+    updateFilter
   } = useStore();
 
   useEffect(() => {
@@ -47,6 +48,18 @@ export const useKeyboardShortcuts = () => {
       // Metronome: M
       if (e.key.toLowerCase() === 'm' && !e.ctrlKey && !e.metaKey) {
           updateMetronome(!metronome_enabled);
+          return;
+      }
+
+      // Filter: F / Shift+F
+      if (e.key.toLowerCase() === 'f' && !e.ctrlKey && !e.metaKey) {
+          if (e.shiftKey) {
+              const { filter_high_enabled } = useStore.getState();
+              updateFilter({ high_enabled: !filter_high_enabled, enabled: true });
+          } else {
+              const { filter_low_enabled } = useStore.getState();
+              updateFilter({ low_enabled: !filter_low_enabled, enabled: true });
+          }
           return;
       }
 

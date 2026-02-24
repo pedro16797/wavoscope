@@ -153,6 +153,8 @@ Wavoscope está deseñado para ser impulsado pola comunidade. Podes engadir ou m
 | **Tamaño de ventá FFT** | `Maiús + Arriba/Abaixo` |
 | **Engadir marca de ritmo** | `B` |
 | **Engadir marca de harmonía** | `H` |
+| **Alternar corte de baixos** | `F` |
+| **Alternar corte de agudos** | `Maiús + F` |
 | **Engadir/Confirmar letra** | `L` |
 | **Dividir e avanzar letra**| `Espazo` / `-` (Dentro da entrada) |
 | **Alternar modos de bucle** | `Tab` |

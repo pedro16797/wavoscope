@@ -153,6 +153,8 @@ Wavoscope est conçu pour être géré par la communauté. Vous pouvez ajouter o
 | **Taille fenêtre FFT** | `Maj + Haut/Bas` |
 | **Ajouter Marqueur Rythme** | `B` |
 | **Ajouter Marqueur Harmonie** | `H` |
+| **Basculer coupe-bas** | `F` |
+| **Basculer coupe-haut** | `Maj + F` |
 | **Ajouter/Valider Paroles** | `L` |
 | **Diviser & Avancer Paroles**| `Espace` / `-` (Dans l'entrée) |
 | **Changer Mode de Boucle** | `Tab` |

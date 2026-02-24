@@ -153,6 +153,8 @@ Wavoscope está diseñado para ser impulsado por la comunidad. Puedes añadir o 
 | **Tamaño de ventana FFT** | `Mayús + Arriba/Abajo` |
 | **Añadir marca de ritmo** | `B` |
 | **Añadir marca de armonía** | `H` |
+| **Alternar corte de bajos** | `F` |
+| **Alternar corte de agudos** | `Mayús + F` |
 | **Añadir/Confirmar letra** | `L` |
 | **Dividir y avanzar letra**| `Espacio` / `-` (Dentro de la entrada) |
 | **Alternar modos de bucle** | `Tab` |

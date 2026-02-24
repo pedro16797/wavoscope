@@ -153,6 +153,8 @@ Wavoscope ist so konzipiert, dass es von der Community getragen wird. Sie könne
 | **FFT-Fenstergröße** | `Umschalt + Oben/Unten` |
 | **Rhythmus-Markierung** | `B` |
 | **Harmonie-Markierung** | `H` |
+| **Tiefpass umschalten** | `F` |
+| **Hochpass umschalten** | `Umschalt + F` |
 | **Songtext hinzufügen/bestätigen** | `L` |
 | **Teilen & Weiter (Lyrics)**| `Leertaste` / `-` (Im Eingabefeld) |
 | **Loop-Modi durchlaufen** | `Tab` |

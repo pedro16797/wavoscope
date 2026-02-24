@@ -153,6 +153,8 @@ Wavoscope è progettato per essere guidato dalla comunità. Puoi aggiungere o mo
 | **Dimensione finestra FFT** | `Maiusc + Su/Giù` |
 | **Aggiungi Marcatore Ritmo** | `B` |
 | **Aggiungi Marcatore Armonia** | `H` |
+| **Attiva passa-basso** | `F` |
+| **Attiva passa-alto** | `Maiusc + F` |
 | **Aggiungi/Conferma Testo** | `L` |
 | **Dividi e Avanza Testo**| `Spazio` / `-` (Dentro l'input) |
 | **Cicla Modalità Loop** | `Tab` |

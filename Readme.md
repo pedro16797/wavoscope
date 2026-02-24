@@ -152,6 +152,8 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | **FFT Window Size** | `Shift + Up/Down` |
 | **Add Rhythm Flag** | `B` |
 | **Add Harmony Flag** | `H` |
+| **Toggle Low Cutoff** | `F` |
+| **Toggle High Cutoff** | `Shift + F` |
 | **Add/Commit Lyric** | `L` |
 | **Split & Advance Lyric**| `Space` / `-` (Inside Input) |
 | **Cycle Loop Modes** | `Tab` |

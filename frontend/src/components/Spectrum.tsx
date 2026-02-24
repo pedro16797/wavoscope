@@ -318,9 +318,9 @@ export const Spectrum: React.FC = () => {
 
         {/* Hitbox for Low Handle */}
         {xLow >= 0 && xLow <= size.width && (
-            <div className="absolute bottom-0 w-4 h-8 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
+            <div className="absolute top-0 bottom-0 w-8 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
                  style={{ left: xLow }}>
-                <Tooltip content={t('settings.kb_toggle_cutoff')} shortcut={t('keys.right_click')}>
+                <Tooltip content={t('settings.low_cutoff_desc')} shortcut="F" className="w-full h-full">
                     <div className="w-full h-full" />
                 </Tooltip>
             </div>
@@ -328,9 +328,9 @@ export const Spectrum: React.FC = () => {
 
         {/* Hitbox for High Handle */}
         {xHigh >= 0 && xHigh <= size.width && (
-            <div className="absolute bottom-0 w-4 h-8 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
+            <div className="absolute top-0 bottom-0 w-8 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
                  style={{ left: xHigh }}>
-                <Tooltip content={t('settings.kb_toggle_cutoff')} shortcut={t('keys.right_click')}>
+                <Tooltip content={t('settings.high_cutoff_desc')} shortcut="Shift+F" className="w-full h-full">
                     <div className="w-full h-full" />
                 </Tooltip>
             </div>

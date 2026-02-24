@@ -71,27 +71,27 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
 
         <div className="flex border-b-[var(--ui-border)] border-grid bg-surface"
              style={{ backgroundColor: 'var(--color-surface)', borderBottomWidth: 'var(--ui-border)' }}>
-            <Tooltip content={t('settings.global')}>
+            <Tooltip content={t('settings.global_desc')} className="flex-1">
                 <button onClick={() => setActiveTab('global')}
-                        className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'global' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
+                        className={`w-full p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'global' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
                     {t('settings.global')}
                 </button>
             </Tooltip>
-            <Tooltip content={t('settings.project')}>
+            <Tooltip content={t('settings.project_desc')} className="flex-1">
                 <button onClick={() => setActiveTab('project')}
-                        className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'project' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
+                        className={`w-full p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'project' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
                     {t('settings.project')}
                 </button>
             </Tooltip>
-            <Tooltip content={t('settings.autosave')}>
+            <Tooltip content={t('settings.autosave_desc')} className="flex-1">
                 <button onClick={() => setActiveTab('autosave')}
-                        className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'autosave' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
+                        className={`w-full p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'autosave' ? 'bg-accent/10 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
                     {t('settings.autosave')}
                 </button>
             </Tooltip>
-            <Tooltip content={t('settings.keybinds')}>
+            <Tooltip content={t('settings.keybinds_desc')} className="flex-1">
                 <button onClick={() => setActiveTab('keybinds')}
-                        className={`flex-1 p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'keybinds' ? 'bg-white/5 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
+                        className={`w-full p-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${activeTab === 'keybinds' ? 'bg-white/5 border-b-2 border-accent text-accent' : 'opacity-50 hover:opacity-100'}`}>
                     {t('settings.keybinds')}
                 </button>
             </Tooltip>
@@ -104,7 +104,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.theme')}</label>
                         <div className="relative">
-                            <Tooltip content={t('settings.theme')}>
+                            <Tooltip content={t('settings.theme_desc')} className="w-full">
                                 <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                         className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 flex justify-between items-center text-sm text-text outline-none focus:border-accent transition-colors"
                                         style={{ borderWidth: 'var(--ui-border)' }}>
@@ -133,14 +133,14 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                             <span>{t('settings.volume')}</span>
                             <span className="font-mono">{Math.round(clickVol)}%</span>
                         </label>
-                        <Tooltip content={t('settings.volume')}>
+                        <Tooltip content={t('settings.volume_desc')} className="w-full">
                             <input type="range" min="0" max="100" value={clickVol} onChange={(e) => setClickVol(parseInt(e.target.value))}
                                 className="w-full accent-accent" />
                         </Tooltip>
                     </div>
                     <div className="space-y-2">
                         <label htmlFor="language-select" className="text-[10px] uppercase font-bold opacity-50">{t('settings.language')}</label>
-                        <Tooltip content={t('settings.language')}>
+                        <Tooltip content={t('settings.language_desc')} className="w-full">
                             <select id="language-select" value={lang} onChange={(e) => setLang(e.target.value)}
                                     className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm text-text outline-none focus:border-accent"
                                     style={{ borderWidth: 'var(--ui-border)' }}>
@@ -152,7 +152,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     </div>
                     <div className="space-y-2">
                         <label htmlFor="audio-device-select" className="text-[10px] uppercase font-bold opacity-50">{t('settings.audio_device')}</label>
-                        <Tooltip content={t('settings.audio_device')}>
+                        <Tooltip content={t('settings.audio_device_desc')} className="w-full">
                             <select id="audio-device-select" value={audioDev} onChange={(e) => setAudioDev(e.target.value)}
                                     className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm text-text outline-none focus:border-accent"
                                     style={{ borderWidth: 'var(--ui-border)' }}>
@@ -165,7 +165,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.keys')}</label>
-                        <Tooltip content={t('settings.keys')}>
+                        <Tooltip content={t('settings.keys_desc')} className="w-full">
                             <input type="number" min="12" max="120" value={keys} onChange={(e) => setKeys(parseInt(e.target.value))}
                                 className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text accent-accent"
                                 style={{ borderWidth: 'var(--ui-border)' }} />
@@ -180,7 +180,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
 
                         <div className="flex items-center justify-between">
                             <span className="text-sm opacity-80">{t('settings.autosave_enabled')}</span>
-                            <Tooltip content={t('settings.autosave_enabled')}>
+                            <Tooltip content={t('settings.autosave_enabled_desc')}>
                                 <button onClick={() => setAsEnabled(!asEnabled)}
                                         className={`w-10 h-5 rounded-full transition-colors relative ${asEnabled ? 'bg-accent' : 'bg-grid'}`}>
                                     <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${asEnabled ? 'left-6' : 'left-1'}`} />
@@ -192,7 +192,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                             <div className="space-y-4 pl-2 border-l-2 border-accent/20 animate-in fade-in slide-in-from-left-1">
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm opacity-80">{t('settings.autosave_forced')}</span>
-                                    <Tooltip content={t('settings.autosave_forced')}>
+                                    <Tooltip content={t('settings.autosave_forced_desc')}>
                                         <button onClick={() => setAsForced(!asForced)}
                                                 className={`w-10 h-5 rounded-full transition-colors relative ${asForced ? 'bg-accent' : 'bg-grid'}`}>
                                             <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${asForced ? 'left-6' : 'left-1'}`} />
@@ -201,7 +201,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.autosave_interval')}</label>
-                                    <Tooltip content={t('settings.autosave_interval')}>
+                                    <Tooltip content={t('settings.autosave_interval_desc')} className="w-full">
                                         <input type="number" min="1" max="60" value={asInterval} onChange={(e) => setAsInterval(parseInt(e.target.value))}
                                             className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
                                             style={{ borderWidth: 'var(--ui-border)' }} />
@@ -209,7 +209,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.autosave_snapshots')}</label>
-                                    <Tooltip content={t('settings.autosave_snapshots')}>
+                                    <Tooltip content={t('settings.autosave_snapshots_desc')} className="w-full">
                                         <input type="number" min="1" max="50" value={asMaxSnapshots} onChange={(e) => setAsMaxSnapshots(parseInt(e.target.value))}
                                             className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
                                             style={{ borderWidth: 'var(--ui-border)' }} />
@@ -218,11 +218,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase font-bold opacity-50">{t('settings.autosave_path')}</label>
                                     <div className="flex gap-2">
-                                        <Tooltip content={t('settings.autosave_path')}>
+                                        <Tooltip content={t('settings.autosave_path_desc')} className="flex-1">
                                             <input type="text" value={asPath}
                                                 onChange={(e) => setAsPath(e.target.value)}
                                                 placeholder={t('settings.autosave_path_hint')}
-                                                className="flex-1 bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-xs font-mono text-text outline-none focus:border-accent"
+                                                className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-xs font-mono text-text outline-none focus:border-accent"
                                                 style={{ borderWidth: 'var(--ui-border)' }} />
                                         </Tooltip>
                                         <Tooltip content={t('settings.browse')}>
@@ -260,7 +260,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                             <div className="flex items-center gap-4">
                                 <div className="flex-1 space-y-1">
                                     <label htmlFor="time-sig-num" className="text-[9px] opacity-40 uppercase">{t('settings.numerator')}</label>
-                                    <Tooltip content={t('settings.numerator')}>
+                                    <Tooltip content={t('settings.numerator_desc')} className="w-full">
                                         <input id="time-sig-num" type="number" min="1" max="32" value={timeSig.numerator}
                                             onChange={(e) => setTimeSig({...timeSig, numerator: parseInt(e.target.value)})}
                                             className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent accent-accent"
@@ -271,7 +271,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                 <div className="flex-1 space-y-1">
                                     <label className="text-[9px] opacity-40 uppercase font-bold">{t('settings.denominator')}</label>
                                     <div className="relative">
-                                        <Tooltip content={t('settings.denominator')}>
+                                        <Tooltip content={t('settings.denominator_desc')} className="w-full">
                                             <button onClick={() => setIsDenDropdownOpen(!isDenDropdownOpen)}
                                                     className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 flex justify-between items-center text-sm font-mono text-text outline-none focus:border-accent transition-colors"
                                                     style={{ borderWidth: 'var(--ui-border)' }}>
@@ -305,11 +305,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                 <div className="space-y-1">
                                     <label htmlFor="output-folder" className="text-[9px] opacity-40 uppercase font-bold">{t('settings.output_dir')}</label>
                                     <div className="flex gap-2">
-                                        <Tooltip content={t('settings.output_dir')}>
+                                        <Tooltip content={t('settings.output_dir_desc')} className="flex-1">
                                             <input id="output-folder" type="text" value={outputFolder}
                                                 onChange={(e) => setOutputFolder(e.target.value)}
                                                 placeholder="e.g. /Users/Name/Documents"
-                                                className="flex-1 bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
+                                                className="w-full bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-sm font-mono text-text outline-none focus:border-accent"
                                                 style={{ borderWidth: 'var(--ui-border)' }} />
                                         </Tooltip>
                                         <Tooltip content={t('settings.browse')}>
@@ -326,7 +326,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                 </div>
                                 <div className="space-y-1">
                                     <label htmlFor="musicxml-author" className="text-[9px] opacity-40 uppercase font-bold">{t('settings.author')}</label>
-                                    <Tooltip content={t('settings.author')}>
+                                    <Tooltip content={t('settings.author_desc')} className="w-full">
                                         <input id="musicxml-author" type="text" value={author}
                                             onChange={(e) => setAuthor(e.target.value)}
                                             placeholder="Your Name"
@@ -391,6 +391,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <span className="opacity-60">{t('settings.kb_toggle_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click_handle')}</span>
                         <span className="opacity-60">{t('settings.kb_place_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click')}</span>
                         <span className="opacity-60">{t('settings.kb_adjust_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.handle_drag')}</span>
+                        <span className="opacity-60">{t('settings.kb_low_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">F</span>
+                        <span className="opacity-60">{t('settings.kb_high_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift')} + F</span>
                         <span className="opacity-60">{t('views.octave_up')} / {t('views.octave_down')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.shift')} + {t('keys.left_right')}</span>
                     </div>
                 </div>
