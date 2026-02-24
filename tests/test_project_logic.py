@@ -30,9 +30,9 @@ def test_subdivision_ticks(dummy_project):
     proj, _ = dummy_project
 
     # Add rhythm flags
-    proj.add_flag(0.0, type="rhythm", div=4)
-    proj.add_flag(1.0, type="rhythm", div=4)
-    proj.add_flag(2.0, type="rhythm", div=1)
+    proj.add_flag(0.0, kind="rhythm", div=4)
+    proj.add_flag(1.0, kind="rhythm", div=4)
+    proj.add_flag(2.0, kind="rhythm", div=1)
 
     # Check ticks between 0.0 and 1.0 (exclusive end usually)
     # 0.0 (strong), 0.25, 0.5, 0.75 (weak)
@@ -46,9 +46,9 @@ def test_subdivision_ticks(dummy_project):
 def test_loop_range_logic(dummy_project):
     proj, mock_backend = dummy_project
 
-    proj.add_flag(0.0, type="rhythm", s=True)
-    proj.add_flag(10.0, type="rhythm", s=True)
-    proj.add_flag(20.0, type="rhythm", s=False) # Just a rhythm flag
+    proj.add_flag(0.0, kind="rhythm", s=True)
+    proj.add_flag(10.0, kind="rhythm", s=True)
+    proj.add_flag(20.0, kind="rhythm", s=False) # Just a rhythm flag
 
     # Mode: Whole
     proj.set_loop_mode("whole")
@@ -89,9 +89,9 @@ def test_loop_range_lyrics(dummy_project):
 
 def test_auto_naming(dummy_project):
     proj, _ = dummy_project
-    proj.add_flag(0.0, type="rhythm", s=True)
-    proj.add_flag(1.0, type="rhythm")
-    proj.add_flag(2.0, type="rhythm", s=True)
+    proj.add_flag(0.0, kind="rhythm", s=True)
+    proj.add_flag(1.0, kind="rhythm")
+    proj.add_flag(2.0, kind="rhythm", s=True)
 
     flags = proj.flags
     assert flags[0]["auto_name"] == "A"

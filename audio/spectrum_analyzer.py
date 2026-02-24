@@ -51,11 +51,14 @@ def analyze(
     fft = np.abs(_PLANS[n_fft](chunk, n=n_fft))
     freqs = numpy.fft.rfftfreq(n_fft, 1.0 / sr)
 
-    mask = (freqs >= low_hz) & (freqs <= high_hz)
-    if not np.any(mask):
-        return np.empty(0), np.empty(0)
+    idx_first = np.searchsorted(freqs, low_hz)
+    if idx_first > 0:
+        idx_first -= 1
+    idx_last = np.searchsorted(freqs, high_hz) + 1
 
-    f, a = freqs[mask], fft[mask]
+    f, a = freqs[idx_first:idx_last], fft[idx_first:idx_last]
+    if f.size == 0:
+        return np.empty(0), np.empty(0)
 
     # dB relative to RMS of the chunk
     rms = np.sqrt(np.mean(np.square(chunk))) + 1e-12

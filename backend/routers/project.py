@@ -41,7 +41,7 @@ async def add_flag(flag: FlagData):
     try:
         idx = state.project.add_flag(
             t=flag.t,
-            type=flag.type,
+            kind=flag.type,
             div=flag.div,
             n=flag.n,
             s=flag.s,
@@ -88,7 +88,7 @@ async def update_flag(idx: int, flag: FlagData):
         state.project.update_flag(
             idx=idx,
             t=flag.t,
-            type=flag.type,
+            kind=flag.type,
             div=flag.div,
             n=flag.n,
             s=flag.s,
