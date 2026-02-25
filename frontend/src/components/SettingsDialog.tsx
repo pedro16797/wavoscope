@@ -168,7 +168,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                             <span className="font-mono">{uiScale.toFixed(2)}x</span>
                         </label>
                         <Tooltip content={t('settings.ui_scale_desc')} className="w-full">
-                            <input type="range" min="0.5" max="2.0" step="0.05" value={uiScale} onChange={(e) => setUiScale(parseFloat(e.target.value))}
+                            <input type="range" min="1.0" max="3.0" step="0.05" value={uiScale} onChange={(e) => setUiScale(parseFloat(e.target.value))}
                                 className="w-full accent-accent" />
                         </Tooltip>
                     </div>
