@@ -22,11 +22,16 @@ def generate():
 
         # 2. Load the audio file via API
         audio_path = os.path.abspath("tests/data/Test.mp3")
+        oscope_path = audio_path + ".oscope"
+        if os.path.exists(oscope_path):
+            os.remove(oscope_path)
+
         post_json("http://127.0.0.1:8000/project/open", {"path": audio_path})
         time.sleep(2) # Wait for processing
 
         # 3. Take main UI screenshot
         # Add some flags and lyrics first
+        page.evaluate("window.useStore.setState({ lyrics: [], flags: [], harmony_flags: [] })")
         page.evaluate("window.useStore.getState().setShowLyrics(true)")
         page.evaluate("window.useStore.getState().addFlag(1.0)")
         page.evaluate("window.useStore.getState().addHarmonyFlag(2.0, {r: 'G', ca: '', q: 'm', ext: '7', alt: [], add: [], b: '', ba: ''})")
@@ -43,7 +48,7 @@ def generate():
 
         # 5. Screenshot: Spectrum with Filter
         # Enable filter handles
-        page.evaluate("window.useStore.getState().updateFilter({low_enabled: true, high_enabled: true, low_hz: 300, high_hz: 3000})")
+        page.evaluate("window.useStore.getState().updateFilter({low_enabled: true, high_enabled: true, low_hz: 300, high_hz: 800})")
         time.sleep(1)
 
         # Focus on spectrum
