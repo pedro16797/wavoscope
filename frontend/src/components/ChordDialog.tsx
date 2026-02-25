@@ -21,7 +21,7 @@ const ADDITIONS = ['add9', 'add11', 'add13'];
 
 export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) => {
   const { t } = useTranslation();
-  const { updateHarmonyFlag, removeHarmonyFlag, duration, playTone, stopAllTones } = useStore();
+  const { updateHarmonyFlag, removeHarmonyFlag, duration, playTone, stopAllTones, ui_scale } = useStore();
 
   const [chord, setChord] = useState<Chord>(flag?.c || { r: 'C', ca: '', q: '', ext: '', alt: [], add: [], b: '', ba: '' });
   const [time, setTime] = useState(flag?.t || 0);
@@ -145,12 +145,12 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
         <div className="p-4 border-b-[var(--ui-border)] border-grid font-bold text-sm uppercase tracking-widest opacity-80 flex justify-between items-center bg-surface"
              style={{ backgroundColor: 'var(--color-surface)', borderBottomWidth: 'var(--ui-border)' }}>
             <span>{t('chord.edit_title')}</span>
-            <span className="font-mono text-[10px] opacity-40">#{idx}</span>
+            <span className="font-mono text-[0.625rem] opacity-40">#{idx}</span>
         </div>
 
         <div className="p-4 space-y-4">
             <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.notation')}</label>
+                <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('chord.notation')}</label>
                 <div className="flex gap-2">
                     <input type="text" value={chordText}
                            autoFocus
@@ -168,7 +168,7 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
                             className="px-4 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] hover:bg-white/5 text-accent transition-colors flex items-center justify-center group active:scale-95"
                             style={{ borderWidth: 'var(--ui-border)' }}
                         >
-                            <Volume2 size={20} className="group-active:scale-110 transition-transform" />
+                            <Volume2 size={20 * ui_scale} className="group-active:scale-110 transition-transform" />
                         </button>
                     </Tooltip>
                 </div>
@@ -176,7 +176,7 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
 
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.root')}</label>
+                    <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('chord.root')}</label>
                     <div className="flex gap-1">
                         <select value={chord.r} onChange={e => updateChordFromSelectors({ r: e.target.value })}
                                 className="flex-1 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 text-sm outline-none text-text"
@@ -191,7 +191,7 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
                     </div>
                 </div>
                 <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.quality_ext')}</label>
+                    <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('chord.quality_ext')}</label>
                     <div className="flex gap-1">
                         <select value={chord.q} onChange={e => updateChordFromSelectors({ q: e.target.value })}
                                 className="flex-1 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 text-sm outline-none text-text"
@@ -208,11 +208,11 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
             </div>
 
             <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.alterations')}</label>
+                <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('chord.alterations')}</label>
                 <div className="flex flex-wrap gap-2">
                     {ALTERATIONS.map(altVal => (
                         <button key={altVal} onClick={() => toggleAlteration(altVal)}
-                                className={`px-2 py-1 rounded-[var(--ui-radius)] text-[10px] font-bold border-[var(--ui-border)] transition-colors ${chord.alt.includes(altVal) ? 'bg-accent text-background border-accent' : 'bg-white/5 border-grid hover:bg-white/10'}`}
+                                className={`px-2 py-1 rounded-[var(--ui-radius)] text-[0.625rem] font-bold border-[var(--ui-border)] transition-colors ${chord.alt.includes(altVal) ? 'bg-accent text-background border-accent' : 'bg-white/5 border-grid hover:bg-white/10'}`}
                                 style={{ borderWidth: 'var(--ui-border)' }}>
                             {altVal}
                         </button>
@@ -221,11 +221,11 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
             </div>
 
             <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.added_tones')}</label>
+                <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('chord.added_tones')}</label>
                 <div className="flex flex-wrap gap-2">
                     {ADDITIONS.map(addVal => (
                         <button key={addVal} onClick={() => toggleAddition(addVal)}
-                                className={`px-2 py-1 rounded-[var(--ui-radius)] text-[10px] font-bold border-[var(--ui-border)] transition-colors ${chord.add.includes(addVal) ? 'bg-accent text-background border-accent' : 'bg-white/5 border-grid hover:bg-white/10'}`}
+                                className={`px-2 py-1 rounded-[var(--ui-radius)] text-[0.625rem] font-bold border-[var(--ui-border)] transition-colors ${chord.add.includes(addVal) ? 'bg-accent text-background border-accent' : 'bg-white/5 border-grid hover:bg-white/10'}`}
                                 style={{ borderWidth: 'var(--ui-border)' }}>
                             {addVal}
                         </button>
@@ -235,7 +235,7 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
 
             <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.bass')}</label>
+                    <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('chord.bass')}</label>
                     <div className="flex gap-1">
                         <select value={chord.b} onChange={e => updateChordFromSelectors({ b: e.target.value })}
                                 className="flex-1 bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 text-sm outline-none text-text"
@@ -251,7 +251,7 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
                     </div>
                 </div>
                 <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold opacity-50">{t('chord.time')}</label>
+                    <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('chord.time')}</label>
                     <input type="number" step="0.001" min="0" max={duration} value={time} onChange={(e) => setTime(parseFloat(e.target.value))}
                            className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text"
                            style={{ borderWidth: 'var(--ui-border)' }} />

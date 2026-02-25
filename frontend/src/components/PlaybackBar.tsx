@@ -8,7 +8,7 @@ export const PlaybackBar: React.FC = () => {
   const { t } = useTranslation();
   const {
     loaded, position, duration, playing, speed, volume, filename, metadata,
-    controlPlayback, currentTheme, themes,
+    controlPlayback, currentTheme, themes, ui_scale,
     metronome_enabled, updateMetronome, setShowSettings, browseFile,
     saveProject, exportMusicXML, dirty, loop_mode, cycleLoopMode
   } = useStore();
@@ -25,8 +25,8 @@ export const PlaybackBar: React.FC = () => {
 
 
   const getLoopIcon = () => {
-    if (loop_mode === 'bar' || loop_mode === 'lyric') return <Repeat1 size={20} />;
-    return <Repeat size={20} />;
+    if (loop_mode === 'bar' || loop_mode === 'lyric') return <Repeat1 size={20 * ui_scale} />;
+    return <Repeat size={20 * ui_scale} />;
   };
 
   const getLoopTitle = () => {
@@ -55,19 +55,19 @@ export const PlaybackBar: React.FC = () => {
       <div className="flex items-center gap-1">
         <Tooltip content={t('playback.open')} shortcut={`${t('keys.ctrl')} + O`}>
             <button onClick={browseFile} aria-label={t('playback.open')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
-                <FolderOpen size={20} />
+                <FolderOpen size={20 * ui_scale} />
             </button>
         </Tooltip>
         <Tooltip content={dirty ? t('playback.save_dirty') : t('playback.save_clean')} shortcut={`${t('keys.ctrl')} + S`}>
             <button onClick={saveProject} disabled={!loaded} aria-label={t('playback.save_clean')}
                     className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${!loaded ? 'opacity-20' : 'opacity-90'}`}>
-                <Save size={20} className={dirty ? 'text-accent' : 'text-text'} />
+                <Save size={20 * ui_scale} className={dirty ? 'text-accent' : 'text-text'} />
             </button>
         </Tooltip>
         <Tooltip content={t('playback.export_xml')} shortcut={`${t('keys.ctrl')} + E`}>
             <button onClick={exportMusicXML} disabled={!loaded} aria-label={t('playback.export_xml')}
                     className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : 'opacity-90'}`}>
-                <FileDown size={20} />
+                <FileDown size={20 * ui_scale} />
             </button>
         </Tooltip>
         {loaded && (
@@ -76,29 +76,29 @@ export const PlaybackBar: React.FC = () => {
                     <button onClick={() => controlPlayback(playing ? 'pause' : 'play')}
                             aria-label={playing ? t('playback.pause') : t('playback.play')}
                             className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
-                    {playing ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
+                    {playing ? <Pause size={20 * ui_scale} fill="currentColor" /> : <Play size={20 * ui_scale} fill="currentColor" />}
                     </button>
                 </Tooltip>
                 <Tooltip content={t('playback.stop')} shortcut={`${t('keys.shift')} + ${t('keys.space')}`}>
                     <button onClick={() => controlPlayback('stop')}
                             aria-label={t('playback.stop')}
                             className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-1">
-                    <Square size={20} fill="currentColor" />
+                    <Square size={20 * ui_scale} fill="currentColor" />
                     </button>
                 </Tooltip>
                 <Tooltip content={getLoopTitle()} shortcut={t('keys.tab')}>
                     <button onClick={() => cycleLoopMode()} aria-label={getLoopTitle()}
                             className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors relative ${loop_mode !== 'none' ? 'text-accent' : 'opacity-40'}`}>
                         {getLoopIcon()}
-                        {loop_mode === 'section' && <span className="absolute top-1 right-1 text-[8px] font-bold bg-accent text-surface rounded-full w-3 h-3 flex items-center justify-center border border-surface shadow-sm">S</span>}
-                        {loop_mode === 'lyric' && <span className="absolute top-1 right-1 text-[8px] font-bold bg-accent text-surface rounded-full w-3 h-3 flex items-center justify-center border border-surface shadow-sm">L</span>}
+                        {loop_mode === 'section' && <span className="absolute top-1 right-1 text-[0.5rem] font-bold bg-accent text-surface rounded-full w-3 h-3 flex items-center justify-center border border-surface shadow-sm">S</span>}
+                        {loop_mode === 'lyric' && <span className="absolute top-1 right-1 text-[0.5rem] font-bold bg-accent text-surface rounded-full w-3 h-3 flex items-center justify-center border border-surface shadow-sm">L</span>}
                     </button>
                 </Tooltip>
                 {/* Metronome */}
                 <Tooltip content={t('playback.metronome')} shortcut="M">
                     <button onClick={() => updateMetronome(!metronome_enabled)} aria-label={t('playback.metronome')}
                             className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${metronome_enabled ? 'text-accent bg-accent/10' : 'opacity-40'}`}>
-                        <Timer size={18} />
+                        <Timer size={18 * ui_scale} />
                     </button>
                 </Tooltip>
             </>
@@ -111,7 +111,7 @@ export const PlaybackBar: React.FC = () => {
                 {getHeaderText()}
             </div>
         </Tooltip>
-        <div className="flex items-center gap-3 text-[11px] font-mono">
+        <div className="flex items-center gap-3 text-[0.6875rem] font-mono">
             <span className="w-12 text-right">{formatTime(position)}</span>
             <Tooltip content={t('settings.kb_seek_playhead')} shortcut={t('keys.left_right')} className="flex-1 flex items-center">
                 <div className="flex-1 h-3 bg-white/5 rounded-full relative overflow-hidden cursor-pointer hover:bg-white/10 transition-colors shadow-inner border border-white/5"
@@ -133,18 +133,18 @@ export const PlaybackBar: React.FC = () => {
         {/* Speed & Volume */}
         <div className="flex items-center gap-2 border-l-[width:var(--ui-border)] border-white/10 pl-4">
             <Tooltip content={t('settings.kb_speed')} shortcut={t('keys.up_down')}>
-                <span className="text-[9px] opacity-60 font-bold">{t('playback.speed')}</span>
+                <span className="text-[0.5625rem] opacity-60 font-bold">{t('playback.speed')}</span>
             </Tooltip>
             <Tooltip content={t('settings.kb_speed')} shortcut={t('keys.up_down')}>
                 <input type="range" min="0.1" max="2" step="0.1" value={speed}
                     onChange={(e) => controlPlayback('set_speed', parseFloat(e.target.value))}
                     className="w-16 accent-current" />
             </Tooltip>
-            <span className="text-[10px] font-mono w-8">{speed.toFixed(1)}x</span>
+            <span className="text-[0.625rem] font-mono w-8">{speed.toFixed(1)}x</span>
         </div>
         <div className="flex items-center gap-2">
             <Tooltip content={t('playback.volume_desc')}>
-                <Volume2 size={16} className="opacity-60" />
+                <Volume2 size={16 * ui_scale} className="opacity-60" />
             </Tooltip>
             <Tooltip content={t('playback.volume_desc')}>
                 <input type="range" min="0" max="1" step="0.05" value={volume}
@@ -155,7 +155,7 @@ export const PlaybackBar: React.FC = () => {
 
         <Tooltip content={t('playback.settings')} shortcut="Esc">
             <button onClick={() => setShowSettings(true)} aria-label={t('playback.settings')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
-                <Settings size={18} />
+                <Settings size={18 * ui_scale} />
             </button>
         </Tooltip>
       </div>

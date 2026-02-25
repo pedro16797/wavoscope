@@ -63,23 +63,23 @@ export const FlagDialog: React.FC<{ idx: number; flag: Flag; onClose: () => void
         <div className="p-4 border-b-[var(--ui-border)] border-grid font-bold text-sm uppercase tracking-widest opacity-80 flex justify-between items-center bg-surface"
              style={{ backgroundColor: 'var(--color-surface)', borderBottomWidth: 'var(--ui-border)' }}>
             <span>{t('flag.edit_title')}</span>
-            <span className="font-mono text-[10px] opacity-40">#{idx}</span>
+            <span className="font-mono text-[0.625rem] opacity-40">#{idx}</span>
         </div>
         <div className="p-4 space-y-4">
             <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold opacity-50">{t('flag.name')}</label>
+                <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('flag.name')}</label>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)}
                        className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm text-text"
                        style={{ borderWidth: 'var(--ui-border)' }} />
             </div>
             <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold opacity-50">{t('flag.time')}</label>
+                <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('flag.time')}</label>
                 <input type="number" step="0.001" min="0" max={duration} value={time} onChange={(e) => setTime(parseFloat(e.target.value))}
                        className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text"
                        style={{ borderWidth: 'var(--ui-border)' }} />
             </div>
             <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold opacity-50">{t('flag.subdivisions')}</label>
+                <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('flag.subdivisions')}</label>
                 <input type="number" min="0" max="32" value={subdivision} onChange={(e) => setSubdivision(parseInt(e.target.value))}
                        className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm text-text"
                        style={{ borderWidth: 'var(--ui-border)' }} />
