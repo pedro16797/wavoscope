@@ -6,6 +6,7 @@ import { Waveform } from './Waveform';
 import { LyricsTimeline } from './LyricsTimeline';
 import { Type } from 'lucide-react';
 import { Tooltip } from './Tooltip';
+import { TempoDisplay } from './TempoDisplay';
 
 export const WaveformView: React.FC = () => {
   const { t } = useTranslation();
@@ -16,15 +17,19 @@ export const WaveformView: React.FC = () => {
       <div className="h-6 border-b-[width:var(--ui-border)] flex items-center justify-between px-4 font-bold text-[0.625rem] opacity-50 uppercase tracking-widest shrink-0 bg-surface"
            style={{ borderBottomColor: 'var(--color-grid)' }}>
         <span>{t('views.timeline_waveform')}</span>
-        <Tooltip content={t('views.lyrics_toggle')}>
-          <button
-            onClick={() => setShowLyrics(!showLyrics)}
+        <div className="flex items-center gap-2">
+          <TempoDisplay />
+          <div className="w-[1px] h-3 bg-white/10 mx-1" />
+          <Tooltip content={t('views.lyrics_toggle')}>
+            <button
+              onClick={() => setShowLyrics(!showLyrics)}
             className={`flex items-center gap-1 px-1 rounded transition-colors ${showLyrics ? 'bg-accent text-white opacity-100' : 'hover:bg-white/10'}`}
           >
             <Type size={12 * ui_scale} />
             <span>{t('views.lyrics_label')}</span>
           </button>
         </Tooltip>
+        </div>
       </div>
       <Timeline />
       {showLyrics && <LyricsTimeline />}

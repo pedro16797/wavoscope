@@ -169,6 +169,8 @@
     "timeline_waveform": "Timeline & Waveform",
     "lyrics_toggle": "Toggle Lyrics Track",
     "lyrics_label": "Lyrics",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "Tap Tempo",
     "spectrum_analyzer": "Spectrum Analyzer",
     "fft_window": "FFT Window: {{val}}s",
     "octave_down": "Lower Octave",
