@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 import { useStore } from '../store/useStore';
 
 export const useAudioWebSocket = () => {
-  const { fetchThemes, fetchStatus, fetchConfig, updatePosition, setPlaying } = useStore();
+  const { fetchThemes, fetchStatus, fetchConfig, fetchLocales, fetchAudioDevices, updatePosition, setPlaying } = useStore();
 
   useEffect(() => {
     fetchThemes();
     fetchStatus();
     fetchConfig();
+    fetchLocales();
+    fetchAudioDevices();
 
     const ws = new WebSocket('ws://127.0.0.1:8000/ws');
     ws.onmessage = (event) => {
@@ -16,5 +18,5 @@ export const useAudioWebSocket = () => {
         setPlaying(data.playing);
     };
     return () => ws.close();
-  }, [fetchThemes, fetchStatus, fetchConfig, updatePosition, setPlaying]);
+  }, [fetchThemes, fetchStatus, fetchConfig, fetchLocales, fetchAudioDevices, updatePosition, setPlaying]);
 };

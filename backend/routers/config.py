@@ -15,10 +15,11 @@ class AppConfig(BaseModel):
     audio_device: Optional[str] = None
     autosave_enabled: Optional[bool] = None
     autosave_forced: Optional[bool] = None
-    autosave_interval: Optional[int] = None
+    autosave_interval: Optional[float] = None
     autosave_max_snapshots: Optional[int] = None
     autosave_path: Optional[str] = None
     undo_steps: Optional[int] = None
+    language: Optional[str] = None
 
 @router.get("")
 async def get_config():
@@ -31,6 +32,7 @@ async def get_config():
         "default_output_folder": cfg.get("ui.default_output_folder", ""),
         "musicxml_author": cfg.get("ui.musicxml_author", ""),
         "audio_device": cfg.get("ui.audio_device", ""),
+        "language": cfg.get("ui.language", "en"),
         "autosave_enabled": cfg.get("recovery.autosave_enabled", True),
         "autosave_forced": cfg.get("recovery.autosave_forced", False),
         "autosave_interval": cfg.get("recovery.autosave_interval_minutes", 5),
@@ -73,6 +75,8 @@ async def update_config(new_cfg: AppConfig):
         cfg.set("recovery.undo_steps", new_cfg.undo_steps)
         if state.project:
             state.project._undo.set_max_steps(new_cfg.undo_steps)
+    if new_cfg.language is not None:
+        cfg.set("ui.language", new_cfg.language)
     return {"status": "ok"}
 
 @router.get("/audio-devices")

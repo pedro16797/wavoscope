@@ -11,8 +11,8 @@ interface SettingsDialogProps {
 export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const {
-    themes, currentTheme, locales, fetchLocales, language,
-    audioDevices, fetchAudioDevices, audio_device,
+    themes, currentTheme, locales, language,
+    audioDevices, audio_device,
     click_volume, spectrum_keys, default_output_folder,
     musicxml_author, updateConfig, time_signature, updateTimeSignature,
     browseFolder, autosave_enabled, autosave_forced, autosave_interval,
@@ -41,18 +41,29 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const [isUndoDropdownOpen, setIsUndoDropdownOpen] = useState(false);
 
   useEffect(() => {
-    fetchLocales();
-    fetchAudioDevices();
-  }, [fetchLocales, fetchAudioDevices]);
-
-  useEffect(() => {
     if (activeTab === 'recovery') {
         fetchUndoSteps();
     }
   }, [activeTab, fetchUndoSteps]);
 
+  // Sync with store when it updates (e.g. initial fetch completes)
+  useEffect(() => { setTheme(currentTheme); }, [currentTheme]);
+  useEffect(() => { setLang(language); }, [language]);
+  useEffect(() => { setAudioDev(audio_device); }, [audio_device]);
+  useEffect(() => { setClickVol(click_volume * 100); }, [click_volume]);
+  useEffect(() => { setKeys(spectrum_keys); }, [spectrum_keys]);
+  useEffect(() => { setOutputFolder(default_output_folder); }, [default_output_folder]);
+  useEffect(() => { setAuthor(musicxml_author); }, [musicxml_author]);
+  useEffect(() => { setTimeSig(time_signature); }, [time_signature]);
+  useEffect(() => { setAsEnabled(autosave_enabled); }, [autosave_enabled]);
+  useEffect(() => { setAsForced(autosave_forced); }, [autosave_forced]);
+  useEffect(() => { setAsInterval(autosave_interval); }, [autosave_interval]);
+  useEffect(() => { setAsMaxSnapshots(autosave_max_snapshots); }, [autosave_max_snapshots]);
+  useEffect(() => { setAsPath(autosave_path); }, [autosave_path]);
+  useEffect(() => { setUSteps(undo_steps); }, [undo_steps]);
+
   const handleSave = async () => {
-    updateConfig({
+    await updateConfig({
         theme,
         language: lang,
         audio_device: audioDev,
