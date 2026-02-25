@@ -161,6 +161,7 @@ export interface ConfigSlice {
   audioDevices: AudioDevice[];
   metronome_enabled: boolean;
   click_volume: number;
+  ui_scale: number;
   spectrum_keys: number;
   default_output_folder: string;
   musicxml_author: string;
@@ -186,6 +187,7 @@ export interface ConfigSlice {
   updateMetronome: (enabled?: boolean, gain?: number) => Promise<void>;
   updateConfig: (cfg: {
     theme?: string,
+    ui_scale?: number,
     click_volume?: number,
     spectrum_keys?: number,
     default_output_folder?: string,

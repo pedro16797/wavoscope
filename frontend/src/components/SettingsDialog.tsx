@@ -13,7 +13,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const {
     themes, currentTheme, locales, language,
     audioDevices, audio_device,
-    click_volume, spectrum_keys, default_output_folder,
+    click_volume, ui_scale, spectrum_keys, default_output_folder,
     musicxml_author, updateConfig, time_signature, updateTimeSignature,
     browseFolder, autosave_enabled, autosave_forced, autosave_interval,
     autosave_max_snapshots, autosave_path, undo_steps, undo_history,
@@ -26,6 +26,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const [lang, setLang] = useState(language);
   const [audioDev, setAudioDev] = useState(audio_device);
   const [clickVol, setClickVol] = useState(click_volume * 100);
+  const [uiScale, setUiScale] = useState(ui_scale);
   const [keys, setKeys] = useState(spectrum_keys);
   const [outputFolder, setOutputFolder] = useState(default_output_folder);
   const [author, setAuthor] = useState(musicxml_author);
@@ -51,6 +52,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   useEffect(() => { setLang(language); }, [language]);
   useEffect(() => { setAudioDev(audio_device); }, [audio_device]);
   useEffect(() => { setClickVol(click_volume * 100); }, [click_volume]);
+  useEffect(() => { setUiScale(ui_scale); }, [ui_scale]);
   useEffect(() => { setKeys(spectrum_keys); }, [spectrum_keys]);
   useEffect(() => { setOutputFolder(default_output_folder); }, [default_output_folder]);
   useEffect(() => { setAuthor(musicxml_author); }, [musicxml_author]);
@@ -68,6 +70,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
         language: lang,
         audio_device: audioDev,
         click_volume: clickVol / 100,
+        ui_scale: uiScale,
         spectrum_keys: keys,
         default_output_folder: outputFolder,
         musicxml_author: author,
@@ -156,6 +159,16 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         </label>
                         <Tooltip content={t('settings.volume_desc')} className="w-full">
                             <input type="range" min="0" max="100" value={clickVol} onChange={(e) => setClickVol(parseInt(e.target.value))}
+                                className="w-full accent-accent" />
+                        </Tooltip>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] uppercase font-bold opacity-50 flex justify-between">
+                            <span>{t('settings.ui_scale')}</span>
+                            <span className="font-mono">{uiScale.toFixed(2)}x</span>
+                        </label>
+                        <Tooltip content={t('settings.ui_scale_desc')} className="w-full">
+                            <input type="range" min="0.5" max="2.0" step="0.05" value={uiScale} onChange={(e) => setUiScale(parseFloat(e.target.value))}
                                 className="w-full accent-accent" />
                         </Tooltip>
                     </div>

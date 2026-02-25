@@ -15,6 +15,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   language: 'en',
   metronome_enabled: true,
   click_volume: 0.3,
+  ui_scale: 1.0,
   spectrum_keys: 37,
   default_output_folder: '',
   musicxml_author: '',
@@ -67,6 +68,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
       const updates: any = {
         currentTheme: res.data.theme,
         click_volume: res.data.click_volume,
+        ui_scale: res.data.ui_scale,
         spectrum_keys: newKeys,
         default_output_folder: res.data.default_output_folder,
         musicxml_author: res.data.musicxml_author,
@@ -137,6 +139,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
             set({ language: cfg.language });
             i18n.changeLanguage(cfg.language);
         }
+        if (cfg.ui_scale !== undefined) set({ ui_scale: cfg.ui_scale });
         if (cfg.click_volume !== undefined) set({ click_volume: cfg.click_volume });
         if (cfg.default_output_folder !== undefined) set({ default_output_folder: cfg.default_output_folder });
         if (cfg.musicxml_author !== undefined) set({ musicxml_author: cfg.musicxml_author });

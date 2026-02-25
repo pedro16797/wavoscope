@@ -37,6 +37,7 @@ export const LyricsTimeline: React.FC = () => {
         setSelectedLyricIdx: setSelectedIdx,
         offset,
         zoom,
+        ui_scale,
         setViewport,
         duration: projectDuration
     } = useStore();
@@ -48,7 +49,7 @@ export const LyricsTimeline: React.FC = () => {
     const [hoverCursor, setHoverCursor] = useState<string>('crosshair');
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const height = 32;
+    const height = 32 * ui_scale;
 
     // Stable references for the keyboard listener to avoid frequent re-attachment
     const stateRef = useRef({ lyrics, position, selectedIdx, editingIdx, editValue, loaded });
@@ -100,7 +101,7 @@ export const LyricsTimeline: React.FC = () => {
 
                 if (x2 >= x1) {
                     ctx.strokeStyle = theme.accent || '#4fd1c5';
-                    ctx.lineWidth = 2;
+                    ctx.lineWidth = 2 * ui_scale;
                     ctx.beginPath();
                     // Extend line slightly into the boxes to ensure visibility for contiguous syllables
                     ctx.moveTo(x1 - 2, height / 2);
@@ -138,8 +139,8 @@ export const LyricsTimeline: React.FC = () => {
             ctx.lineWidth = isEditing ? 3 : isSelected ? 2 : 1.5;
 
             // Rounded rect
-            const r = 4;
-            const paddingY = 6;
+            const r = 4 * ui_scale;
+            const paddingY = 6 * ui_scale;
             ctx.beginPath();
             ctx.moveTo(x + r, paddingY);
             ctx.lineTo(x + w - r, paddingY);
@@ -160,7 +161,7 @@ export const LyricsTimeline: React.FC = () => {
             ctx.rect(x, 0, w, height);
             ctx.clip();
 
-            ctx.font = '12px sans-serif';
+            ctx.font = `${12 * ui_scale}px sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
@@ -196,7 +197,7 @@ export const LyricsTimeline: React.FC = () => {
         const playheadX = (position - offset) * zoom;
         if (playheadX >= 0 && playheadX <= width) {
             ctx.strokeStyle = theme.playhead || '#f56565';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 2 * ui_scale;
             ctx.beginPath();
             ctx.moveTo(playheadX, 0);
             ctx.lineTo(playheadX, height);
@@ -610,7 +611,7 @@ export const LyricsTimeline: React.FC = () => {
         : hoverCursor;
 
     return (
-        <div ref={containerRef} className="relative w-full h-8 select-none bg-surface border-b overflow-hidden" style={{ borderBottomColor: 'var(--color-grid)' }}>
+        <div ref={containerRef} className="relative w-full select-none bg-surface border-b overflow-hidden" style={{ height: height, borderBottomColor: 'var(--color-grid)' }}>
             <canvas
                 ref={canvasRef}
                 onMouseMove={handleMouseMove}
@@ -625,9 +626,9 @@ export const LyricsTimeline: React.FC = () => {
                     className="absolute z-10"
                     style={{
                         left: (lyrics[editingIdx].t - offset) * zoom,
-                        top: 4,
-                        width: Math.max(80, lyrics[editingIdx].l * zoom),
-                        height: 24
+                        top: 4 * ui_scale,
+                        width: Math.max(80 * ui_scale, lyrics[editingIdx].l * zoom),
+                        height: 24 * ui_scale
                     }}
                 >
                     <input

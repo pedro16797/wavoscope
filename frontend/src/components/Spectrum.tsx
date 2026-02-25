@@ -13,7 +13,7 @@ export const Spectrum: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const {
-    loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys,
+    loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys, ui_scale,
     filter_enabled, filter_low_enabled, filter_high_enabled, filter_low_hz, filter_high_hz, updateFilter,
     playTone: playToneStore, stopAllTones
   } = useStore();
@@ -119,7 +119,7 @@ export const Spectrum: React.FC = () => {
 
         ctx.strokeStyle = WHITE_KEYS.has(midi % 12) ? (theme.keyWhite || '#fff') : (theme.keyBlack || '#333');
         ctx.globalAlpha = isActive ? 0.9 : 0.4;
-        ctx.lineWidth = isActive ? 4 : 2;
+        ctx.lineWidth = (isActive ? 4 : 2) * ui_scale;
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, h);
@@ -128,13 +128,13 @@ export const Spectrum: React.FC = () => {
         if (isActive) {
             ctx.fillStyle = theme.accent;
             ctx.globalAlpha = 0.2;
-            ctx.fillRect(x - 2, 0, 4, h);
+            ctx.fillRect(x - 2 * ui_scale, 0, 4 * ui_scale, h);
         }
 
         ctx.globalAlpha = 0.8;
         ctx.fillStyle = theme.text;
-        ctx.font = '10px sans-serif';
-        ctx.fillText(`${NOTE_NAMES[midi % 12]}${Math.floor(midi / 12) - 1}`, x + 4, 12);
+        ctx.font = `${10 * ui_scale}px sans-serif`;
+        ctx.fillText(`${NOTE_NAMES[midi % 12]}${Math.floor(midi / 12) - 1}`, x + 4 * ui_scale, 12 * ui_scale);
     }
 
     const xLow = Math.log2(filter_low_hz / range.low) * xScale;
@@ -149,35 +149,35 @@ export const Spectrum: React.FC = () => {
     // Low Cutoff Handle
     if (xLow >= 0 && xLow <= w) {
         ctx.strokeStyle = theme.accent;
-        ctx.setLineDash(filter_low_enabled ? [] : [5, 5]);
-        ctx.lineWidth = 2;
+        ctx.setLineDash(filter_low_enabled ? [] : [5 * ui_scale, 5 * ui_scale]);
+        ctx.lineWidth = 2 * ui_scale;
         ctx.globalAlpha = filter_low_enabled ? 0.8 : 0.3;
         ctx.beginPath(); ctx.moveTo(xLow, 0); ctx.lineTo(xLow, h); ctx.stroke();
 
         ctx.fillStyle = theme.accent;
         ctx.globalAlpha = filter_low_enabled ? 1.0 : 0.4;
-        ctx.fillRect(xLow - 6, h - 30, 12, 30);
+        ctx.fillRect(xLow - 6 * ui_scale, h - 30 * ui_scale, 12 * ui_scale, 30 * ui_scale);
         ctx.fillStyle = theme.text;
         ctx.globalAlpha = filter_low_enabled ? 1.0 : 0.6;
-        ctx.font = 'bold 10px sans-serif';
-        ctx.fillText('LOW', xLow + 8, h - 10);
+        ctx.font = `bold ${10 * ui_scale}px sans-serif`;
+        ctx.fillText('LOW', xLow + 8 * ui_scale, h - 10 * ui_scale);
     }
 
     // High Cutoff Handle
     if (xHigh >= 0 && xHigh <= w) {
         ctx.strokeStyle = theme.accent;
-        ctx.setLineDash(filter_high_enabled ? [] : [5, 5]);
-        ctx.lineWidth = 2;
+        ctx.setLineDash(filter_high_enabled ? [] : [5 * ui_scale, 5 * ui_scale]);
+        ctx.lineWidth = 2 * ui_scale;
         ctx.globalAlpha = filter_high_enabled ? 0.8 : 0.3;
         ctx.beginPath(); ctx.moveTo(xHigh, 0); ctx.lineTo(xHigh, h); ctx.stroke();
 
         ctx.fillStyle = theme.accent;
         ctx.globalAlpha = filter_high_enabled ? 1.0 : 0.4;
-        ctx.fillRect(xHigh - 6, h - 30, 12, 30);
+        ctx.fillRect(xHigh - 6 * ui_scale, h - 30 * ui_scale, 12 * ui_scale, 30 * ui_scale);
         ctx.fillStyle = theme.text;
         ctx.globalAlpha = filter_high_enabled ? 1.0 : 0.6;
-        ctx.font = 'bold 10px sans-serif';
-        ctx.fillText('HIGH', xHigh - 35, h - 10);
+        ctx.font = `bold ${10 * ui_scale}px sans-serif`;
+        ctx.fillText('HIGH', xHigh - 35 * ui_scale, h - 10 * ui_scale);
     }
     ctx.setLineDash([]);
     ctx.globalAlpha = 1.0;
@@ -221,8 +221,8 @@ export const Spectrum: React.FC = () => {
 
     let dragging: 'low' | 'high' | 'tone' = 'tone';
 
-    if (Math.abs(x - xLow) < 20) dragging = 'low';
-    else if (Math.abs(x - xHigh) < 20) dragging = 'high';
+    if (Math.abs(x - xLow) < 20 * ui_scale) dragging = 'low';
+    else if (Math.abs(x - xHigh) < 20 * ui_scale) dragging = 'high';
 
     setDraggingMode(dragging);
 
@@ -300,11 +300,11 @@ export const Spectrum: React.FC = () => {
     const xHigh = Math.log2(filter_high_hz / range.low) * xScale;
 
     // Check if clicking on a handle area
-    if (Math.abs(x - xLow) < 20) {
+    if (Math.abs(x - xLow) < 20 * ui_scale) {
         updateFilter({ low_enabled: !filter_low_enabled, enabled: true });
         return;
     }
-    if (Math.abs(x - xHigh) < 20) {
+    if (Math.abs(x - xHigh) < 20 * ui_scale) {
         updateFilter({ high_enabled: !filter_high_enabled, enabled: true });
         return;
     }
@@ -334,9 +334,9 @@ export const Spectrum: React.FC = () => {
 
         {/* Hitbox for Low Handle */}
         {xLow >= 0 && xLow <= size.width && (
-            <div className="absolute top-0 bottom-0 w-8 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
-                 style={{ left: xLow }}>
-                <Tooltip content={t('settings.low_cutoff_desc')} shortcut={`F / ${t('keys.right_click')}`} className="absolute bottom-0 w-full h-8">
+            <div className="absolute top-0 bottom-0 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
+                 style={{ left: xLow, width: 32 * ui_scale }}>
+                <Tooltip content={t('settings.low_cutoff_desc')} shortcut={`F / ${t('keys.right_click')}`} className="absolute bottom-0 w-full h-8" style={{ height: 32 * ui_scale }}>
                     <div className="w-full h-full" />
                 </Tooltip>
             </div>
@@ -344,9 +344,9 @@ export const Spectrum: React.FC = () => {
 
         {/* Hitbox for High Handle */}
         {xHigh >= 0 && xHigh <= size.width && (
-            <div className="absolute top-0 bottom-0 w-8 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
-                 style={{ left: xHigh }}>
-                <Tooltip content={t('settings.high_cutoff_desc')} shortcut={`${t('keys.shift')} + F / ${t('keys.right_click')}`} className="absolute bottom-0 w-full h-8">
+            <div className="absolute top-0 bottom-0 -translate-x-1/2 cursor-ew-resize pointer-events-auto"
+                 style={{ left: xHigh, width: 32 * ui_scale }}>
+                <Tooltip content={t('settings.high_cutoff_desc')} shortcut={`${t('keys.shift')} + F / ${t('keys.right_click')}`} className="absolute bottom-0 w-full h-8" style={{ height: 32 * ui_scale }}>
                     <div className="w-full h-full" />
                 </Tooltip>
             </div>

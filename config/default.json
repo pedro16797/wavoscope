@@ -11,6 +11,7 @@
             ],
             "default": "cosmic"
         },
+        "ui_scale": 1.0,
         "spectrum_keys": 37,
         "click_volume": 0.3,
         "default_output_folder": "",

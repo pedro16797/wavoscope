@@ -6,9 +6,10 @@ interface TooltipProps {
   content: string;
   shortcut?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export const Tooltip: React.FC<TooltipProps> = ({ children, content, shortcut, className }) => {
+export const Tooltip: React.FC<TooltipProps> = ({ children, content, shortcut, className, style }) => {
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ x: 0, y: 0, showBelow: false });
   const [adjustedX, setAdjustedX] = useState(0);
@@ -58,6 +59,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ children, content, shortcut, c
     <div
       ref={triggerRef}
       className={className || 'inline-block'}
+      style={style}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setVisible(false)}
     >

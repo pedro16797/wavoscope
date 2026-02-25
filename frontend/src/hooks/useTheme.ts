@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useStore } from '../store/useStore';
 
 export const useTheme = () => {
-  const { currentTheme, themes } = useStore();
+  const { currentTheme, themes, ui_scale } = useStore();
 
   useEffect(() => {
     const theme = themes[currentTheme];
@@ -17,4 +17,9 @@ export const useTheme = () => {
         document.documentElement.style.setProperty('--ui-border', theme.borderWidth || '1px');
     }
   }, [themes, currentTheme]);
+
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${16 * ui_scale}px`;
+    document.documentElement.style.setProperty('--ui-scale', ui_scale.toString());
+  }, [ui_scale]);
 };
