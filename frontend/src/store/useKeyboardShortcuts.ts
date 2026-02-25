@@ -11,7 +11,7 @@ export const useKeyboardShortcuts = () => {
         octave_shift, setOctaveShift, fft_window, setFFTWindow, metronome_enabled, updateMetronome,
         editingFlagIdx, editingHarmonyFlagIdx, setEditingFlagIdx, setEditingHarmonyFlagIdx,
         addFlag, addHarmonyFlag, removeFlag, removeHarmonyFlag, removeLyric,
-        updateFilter
+        updateFilter, undo
       } = state;
 
       const isInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || (e.target as HTMLElement).isContentEditable;
@@ -90,6 +90,13 @@ export const useKeyboardShortcuts = () => {
       // Metronome: M
       if (e.key.toLowerCase() === 'm' && !e.ctrlKey && !e.metaKey) {
           updateMetronome(!metronome_enabled);
+          return;
+      }
+
+      // Undo: Ctrl+Z
+      if (e.key.toLowerCase() === 'z' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          undo();
           return;
       }
 

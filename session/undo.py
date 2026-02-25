@@ -60,3 +60,12 @@ class UndoManager:
 
         self._current_state = copy.deepcopy(state)
         return state
+
+    @property
+    def can_undo(self) -> bool:
+        return len(self.steps) > 0
+
+    def undo(self) -> Dict[str, Any]:
+        if not self.can_undo:
+            return self._current_state
+        return self.restore(len(self.steps) - 1)

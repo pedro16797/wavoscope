@@ -111,6 +111,7 @@ export interface ProjectSlice {
   setSelectedLyricIdx: (idx: number | null) => void;
   fetchUndoSteps: () => Promise<void>;
   restoreUndoStep: (index: number) => Promise<void>;
+  undo: () => Promise<void>;
 }
 
 export interface PlaybackSlice {

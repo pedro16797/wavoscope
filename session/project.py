@@ -357,7 +357,7 @@ class Project:
             added = False
             for i in range(1, count + 1):
                 t_new = left["t"] + i * step
-                if self._flags.add_flag(t_new, type="rhythm", div=subdiv, n="", s=False, divshade=False) != -1:
+                if self._flags.add_flag(t_new, kind="rhythm", div=subdiv, n="", s=False, divshade=False) != -1:
                     added = True
 
             if added:
@@ -374,10 +374,19 @@ class Project:
     def restore_checkpoint(self, index: int) -> None:
         with self._lock:
             new_data = self._undo.restore(index)
-            # Update session_data and all managers
-            self.session_data.clear()
-            self.session_data.update(new_data)
-            self._manager._fill_defaults(self.session_data)
-            self._flags = FlagManager(self.session_data)
-            self._clear_backend_cache()
-            self.mark_dirty()
+            self._apply_new_data(new_data)
+
+    def undo(self) -> None:
+        with self._lock:
+            if self._undo.can_undo:
+                new_data = self._undo.undo()
+                self._apply_new_data(new_data)
+
+    def _apply_new_data(self, new_data: Dict[str, Any]) -> None:
+        # Update session_data and all managers
+        self.session_data.clear()
+        self.session_data.update(new_data)
+        self._manager._fill_defaults(self.session_data)
+        self._flags = FlagManager(self.session_data)
+        self._clear_backend_cache()
+        self.mark_dirty()

@@ -14,22 +14,23 @@ class FlagManager:
     def harmony_flags(self) -> List[Dict[str, Any]]:
         return self.session_data.setdefault("harmony_flags", [])
 
-    def add_flag(self, time: float, kind: str, div: int, n: str, s: bool, divshade: bool) -> bool:
+    def add_flag(self, time: float, kind: str = "rhythm", div: int = 0, n: str = "", s: bool = False, divshade: bool = False) -> int:
         flags = self.flags
         if any(abs(f["t"] - time) < 0.001 for f in flags):
-            return False
+            return -1
 
-        flags.append({
+        new_flag = {
             "t": time,
             "type": kind,
             "div": div,
             "n": n,
             "s": s,
             "divshade": divshade,
-        })
+        }
+        flags.append(new_flag)
         flags.sort(key=lambda f: f["t"])
         self._recompute_auto_names()
-        return True
+        return flags.index(new_flag)
 
     def remove_flag(self, idx: int) -> bool:
         flags = self.flags
@@ -39,14 +40,15 @@ class FlagManager:
             return True
         return False
 
-    def add_harmony_flag(self, time: float, chord: Dict[str, Any]) -> bool:
+    def add_harmony_flag(self, time: float, chord: Dict[str, Any]) -> int:
         flags = self.harmony_flags
         if any(abs(f["t"] - time) < 0.001 for f in flags):
-            return False
+            return -1
 
-        flags.append({"t": time, "c": chord})
+        new_flag = {"t": time, "c": chord}
+        flags.append(new_flag)
         flags.sort(key=lambda f: f["t"])
-        return True
+        return flags.index(new_flag)
 
     def remove_harmony_flag(self, idx: int) -> bool:
         flags = self.harmony_flags
