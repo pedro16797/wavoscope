@@ -66,7 +66,6 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
 
       const updates: any = {
         currentTheme: res.data.theme,
-        language: res.data.language,
         click_volume: res.data.click_volume,
         spectrum_keys: newKeys,
         default_output_folder: res.data.default_output_folder,
@@ -87,8 +86,11 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         updates.octave_shift = effectiveShift;
       }
 
-      if (res.data.language && res.data.language !== i18n.language) {
-        i18n.changeLanguage(res.data.language);
+      if (res.data.language) {
+          updates.language = res.data.language;
+          if (res.data.language !== i18n.language) {
+              i18n.changeLanguage(res.data.language);
+          }
       }
 
       if (newKeys !== oldState.spectrum_keys || effectiveShift !== oldState.octave_shift) {

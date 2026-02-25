@@ -16,6 +16,10 @@
         "default_output_folder": "",
         "musicxml_author": "",
         "audio_device": "",
+        "language": {
+            "type": "string",
+            "default": "en"
+        },
         "keybinds": {
             "play_pause": "Space",
             "seek_left": "Left",
