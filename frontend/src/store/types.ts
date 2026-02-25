@@ -63,6 +63,11 @@ export interface ExportStatus {
   message: string;
 }
 
+export interface UndoStep {
+  label: string;
+  timestamp: number;
+}
+
 export interface ProjectSlice {
   loaded: boolean;
   filename: string;
@@ -80,6 +85,7 @@ export interface ProjectSlice {
   editingHarmonyFlagIdx: null | number;
   selectedLyricIdx: null | number;
   export_status: ExportStatus;
+  undo_history: UndoStep[];
 
   fetchStatus: () => Promise<void>;
   browseFile: () => Promise<void>;
@@ -103,6 +109,9 @@ export interface ProjectSlice {
   setEditingFlagIdx: (idx: number | null) => void;
   setEditingHarmonyFlagIdx: (idx: number | null) => void;
   setSelectedLyricIdx: (idx: number | null) => void;
+  fetchUndoSteps: () => Promise<void>;
+  restoreUndoStep: (index: number) => Promise<void>;
+  undo: () => Promise<void>;
 }
 
 export interface PlaybackSlice {
@@ -161,6 +170,7 @@ export interface ConfigSlice {
   autosave_interval: number;
   autosave_max_snapshots: number;
   autosave_path: string;
+  undo_steps: number;
   language: string;
   showSettings: boolean;
   showSpectrum: boolean;
@@ -186,6 +196,7 @@ export interface ConfigSlice {
     autosave_interval?: number,
     autosave_max_snapshots?: number,
     autosave_path?: string,
+    undo_steps?: number,
     language?: string
   }) => Promise<void>;
   browseFolder: (initialDir?: string) => Promise<string | null>;

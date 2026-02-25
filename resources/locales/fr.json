@@ -78,7 +78,15 @@
     "author_desc": "Nom de l'auteur par défaut pour les métadonnées MusicXML.",
     "low_cutoff_desc": "Filtrer les fréquences en dessous de ce point.",
     "high_cutoff_desc": "Filtrer les fréquences au-dessus de ce point.",
-    "kb_no_ui_desc": "Les raccourcis clavier suivants ne correspondent à aucun élément de l'interface graphique."
+    "kb_no_ui_desc": "Les raccourcis clavier suivants ne correspondent à aucun élément de l'interface graphique.",
+    "recovery": "Récupération",
+    "undo": "Historique d'annulation",
+    "undo_steps": "Nombre d'annulations",
+    "undo_history": "Point de restauration",
+    "undo_initial_state": "État initial",
+    "recovery_desc": "Configurer les options de récupération, l'historique d'annulation et la sauvegarde automatique.",
+    "undo_steps_desc": "Nombre maximum d'étapes d'annulation à stocker en mémoire.",
+    "undo_history_desc": "Sélectionnez un état précédent pour restaurer votre projet."
   },
   "keys": {
     "space": "Espace",

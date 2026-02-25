@@ -375,6 +375,49 @@ async def export_musicxml():
 class OpenProject(BaseModel):
     path: str
 
+@router.get("/undo/steps")
+async def get_undo_steps():
+    if not state.project:
+        return []
+    return state.project._undo.get_history()
+
+class UndoRestore(BaseModel):
+    index: int
+
+@router.post("/undo/restore")
+async def restore_undo(data: UndoRestore):
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    try:
+        state.project.restore_checkpoint(data.index)
+        return {
+            "status": "ok",
+            "flags": state.project.flags,
+            "harmony_flags": state.project.harmony_flags,
+            "lyrics": state.project.lyrics,
+            "time_signature": state.project.time_signature
+        }
+    except Exception as e:
+        logger.exception("Error in restore_undo")
+        raise HTTPException(status_code=500, detail=f"Failed to restore: {str(e)}")
+
+@router.post("/undo")
+async def undo_project():
+    if not state.project:
+        raise HTTPException(status_code=400, detail="No project loaded")
+    try:
+        state.project.undo()
+        return {
+            "status": "ok",
+            "flags": state.project.flags,
+            "harmony_flags": state.project.harmony_flags,
+            "lyrics": state.project.lyrics,
+            "time_signature": state.project.time_signature
+        }
+    except Exception as e:
+        logger.exception("Error in undo_project")
+        raise HTTPException(status_code=500, detail=f"Failed to undo: {str(e)}")
+
 @router.post("/open")
 async def open_project(data: OpenProject):
     path = Path(data.path)

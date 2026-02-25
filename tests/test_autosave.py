@@ -22,11 +22,11 @@ def test_autosave_rotation(tmp_path):
     # Configure autosave
     autosave_dir = tmp_path / "autosaves"
     cfg = Config()
-    cfg.set("autosave.enabled", True)
-    cfg.set("autosave.forced", False)
-    cfg.set("autosave.interval_minutes", 0.0001)
-    cfg.set("autosave.max_snapshots", 3)
-    cfg.set("autosave.path", str(autosave_dir))
+    cfg.set("recovery.autosave_enabled", True)
+    cfg.set("recovery.autosave_forced", False)
+    cfg.set("recovery.autosave_interval_minutes", 0.0001)
+    cfg.set("recovery.autosave_max_snapshots", 3)
+    cfg.set("recovery.autosave_path", str(autosave_dir))
 
     from backend.autosave import _manager
 
@@ -60,19 +60,19 @@ def test_autosave_forced_vs_dirty(tmp_path):
 
     autosave_dir = tmp_path / "autosaves_forced"
     cfg = Config()
-    cfg.set("autosave.enabled", True)
-    cfg.set("autosave.path", str(autosave_dir))
+    cfg.set("recovery.autosave_enabled", True)
+    cfg.set("recovery.autosave_path", str(autosave_dir))
 
     from backend.autosave import _manager
 
     # Case 1: Not forced, Not dirty -> No save
-    cfg.set("autosave.forced", False)
+    cfg.set("recovery.autosave_forced", False)
     mock_project._dirty = False
     # We can't easily test the _run loop, but we can test the logic if we exposed it.
     # For now, let's just ensure _do_autosave works when called.
 
     # Case 2: Forced, Not dirty -> Save
-    cfg.set("autosave.forced", True)
+    cfg.set("recovery.autosave_forced", True)
     _manager._do_autosave()
     assert (autosave_dir / "test_song.autosave.1.oscope").exists()
 

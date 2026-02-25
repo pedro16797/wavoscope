@@ -55,9 +55,9 @@ def generate():
         time.sleep(0.5)
         page.evaluate("window.useStore.getState().setShowSettings(true)")
         time.sleep(1)
-        # Switch to Autosave tab to show the new category
+        # Switch to Recovery tab to show the new category
         # Since the tabs are buttons in a flex container, we can find it by text
-        page.locator("button:has-text('Autosave')").click()
+        page.locator("button:has-text('Recovery')").click()
         time.sleep(1)
         page.locator(".fixed.inset-0").screenshot(path="docs/images/settings_dialog.png")
 

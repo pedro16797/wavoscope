@@ -16,6 +16,7 @@ from utils.logging import logger
 from session.manager import ProjectManager
 from session.flags import FlagManager
 from session.looping import LoopingEngine
+from session.undo import UndoManager
 
 
 class Project:
@@ -29,6 +30,10 @@ class Project:
         self._flags = FlagManager(self._manager.session_data)
         self._looping = LoopingEngine()
         self.selected_lyric_idx: int | None = None
+
+        from utils.config import Config
+        cfg = Config()
+        self._undo = UndoManager(self.session_data, max_steps=cfg.get("recovery.undo_steps", 50))
 
         self.backend = AudioBackend()
         self.backend.set_tick_provider(self.subdivision_ticks_between)
@@ -99,6 +104,7 @@ class Project:
         with self._lock:
             self.session_data["time_signature"] = {"numerator": numerator, "denominator": denominator}
             self.mark_dirty()
+            self.checkpoint(f"Changed Time Signature to {numerator}/{denominator}")
 
     def generate_musicxml(self) -> str:
         from session.export import generate_musicxml
@@ -132,6 +138,7 @@ class Project:
                 self._clear_backend_cache()
                 self.mark_dirty()
                 self._emit("flag_added", t)
+                self.checkpoint(f"Added Rhythm Flag #{idx + 1} at {t:.3f}s")
             return idx
 
     def remove_flag(self, idx: int) -> None:
@@ -140,6 +147,7 @@ class Project:
                 self._clear_backend_cache()
                 self.mark_dirty()
                 self._emit("flag_removed", idx)
+                self.checkpoint(f"Removed Rhythm Flag #{idx + 1}")
 
     def add_harmony_flag(self, t: float, chord: Dict[str, Any] | None = None) -> int:
         with self._lock:
@@ -149,6 +157,7 @@ class Project:
             if idx != -1:
                 self.mark_dirty()
                 self._emit("flag_added", t)
+                self.checkpoint(f"Added Chord Flag #{idx + 1} at {t:.3f}s")
             return idx
 
     def remove_harmony_flag(self, idx: int) -> None:
@@ -156,6 +165,7 @@ class Project:
             if self._flags.remove_harmony_flag(idx):
                 self.mark_dirty()
                 self._emit("flag_removed", idx)
+                self.checkpoint(f"Removed Chord Flag #{idx + 1}")
 
     def add_lyric(self, s: str, t: float, l: float) -> dict:
         with self._lock:
@@ -166,6 +176,7 @@ class Project:
             self.session_data["lyrics"] = lyrics
             self.mark_dirty()
             idx = lyrics.index(new_lyric)
+            self.checkpoint(f"Added Lyric #{idx + 1}: {s}")
             return {"idx": idx, "lyric": new_lyric}
 
     def remove_lyric(self, idx: int) -> None:
@@ -174,6 +185,7 @@ class Project:
             if 0 <= idx < len(lyrics):
                 lyrics.pop(idx)
                 self.mark_dirty()
+                self.checkpoint(f"Removed Lyric #{idx + 1}")
 
     def update_lyric(self, idx: int, s: str | None = None, t: float | None = None, l: float | None = None) -> dict | None:
         with self._lock:
@@ -187,6 +199,7 @@ class Project:
                 self.mark_dirty()
                 self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
+                self.checkpoint(f"Updated Lyric #{new_idx + 1}: {lyric['s']}")
                 return {"idx": new_idx, "lyric": lyric}
             return None
 
@@ -205,6 +218,7 @@ class Project:
                 self.mark_dirty()
                 self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
+                self.checkpoint(f"Moved Lyric #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "lyric": lyric}
             return None
 
@@ -217,6 +231,7 @@ class Project:
                 flags.sort(key=lambda f: f["t"])
                 self.mark_dirty()
                 new_idx = flags.index(flag)
+                self.checkpoint(f"Moved Chord Flag #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "flag": flag}
             return None
 
@@ -227,6 +242,7 @@ class Project:
                 flags[idx] = {"t": t, "c": chord}
                 flags.sort(key=lambda f: f["t"])
                 self.mark_dirty()
+                self.checkpoint(f"Updated Chord Flag #{idx + 1} at {t:.3f}s")
 
     def move_flag(self, idx: int, t: float) -> dict | None:
         with self._lock:
@@ -239,6 +255,7 @@ class Project:
                 self._clear_backend_cache()
                 self.mark_dirty()
                 new_idx = flags.index(flag)
+                self.checkpoint(f"Moved Rhythm Flag #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "flag": flag}
             return None
 
@@ -251,6 +268,7 @@ class Project:
                 self._flags._recompute_auto_names()
                 self._clear_backend_cache()
                 self.mark_dirty()
+                self.checkpoint(f"Updated Rhythm Flag #{idx + 1} at {t:.3f}s")
 
     # ---------- playback passthrough ----------
     def seek(self, time: float) -> None: self.backend.seek(time)
@@ -339,10 +357,36 @@ class Project:
             added = False
             for i in range(1, count + 1):
                 t_new = left["t"] + i * step
-                if self._flags.add_flag(t_new, type="rhythm", div=subdiv, n="", s=False, divshade=False) != -1:
+                if self._flags.add_flag(t_new, kind="rhythm", div=subdiv, n="", s=False, divshade=False) != -1:
                     added = True
 
             if added:
                 self._clear_backend_cache()
                 self.mark_dirty()
                 self._emit("flag_added", left["t"])
+                self.checkpoint(f"Inserted {count} Rhythm Flags")
+
+    def checkpoint(self, label: str) -> None:
+        with self._lock:
+            data = self._manager._scrub_defaults(self.session_data)
+            self._undo.push(label, data)
+
+    def restore_checkpoint(self, index: int) -> None:
+        with self._lock:
+            new_data = self._undo.restore(index)
+            self._apply_new_data(new_data)
+
+    def undo(self) -> None:
+        with self._lock:
+            if self._undo.can_undo:
+                new_data = self._undo.undo()
+                self._apply_new_data(new_data)
+
+    def _apply_new_data(self, new_data: Dict[str, Any]) -> None:
+        # Update session_data and all managers
+        self.session_data.clear()
+        self.session_data.update(new_data)
+        self._manager._fill_defaults(self.session_data)
+        self._flags = FlagManager(self.session_data)
+        self._clear_backend_cache()
+        self.mark_dirty()

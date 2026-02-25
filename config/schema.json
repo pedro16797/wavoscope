@@ -52,6 +52,38 @@
                 }
             }
         },
+        "recovery": {
+            "type": "object",
+            "properties": {
+                "autosave_enabled": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "autosave_forced": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "autosave_interval_minutes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 5
+                },
+                "autosave_max_snapshots": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 5
+                },
+                "autosave_path": {
+                    "type": "string",
+                    "default": ""
+                },
+                "undo_steps": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 50
+                }
+            }
+        },
         "fft": {
             "type": "object",
             "properties": {
