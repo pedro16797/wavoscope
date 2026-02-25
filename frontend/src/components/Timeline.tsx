@@ -301,9 +301,7 @@ export const Timeline: React.FC = () => {
             window.addEventListener('mouseup', onMouseUp);
         } else {
             const snappedT = Math.round(clickT * 100) / 100;
-            addFlag(snappedT).then(res => {
-                if (res && res.idx !== -1) setEditingFlagIdx(res.idx);
-            });
+            addFlag(snappedT);
         }
     }
   };

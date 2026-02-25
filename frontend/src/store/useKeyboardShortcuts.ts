@@ -65,9 +65,7 @@ export const useKeyboardShortcuts = () => {
       // Add Rhythm Flag: B
       if (e.key.toLowerCase() === 'b' && !e.ctrlKey && !e.metaKey) {
           e.preventDefault();
-          addFlag(position).then((res: any) => {
-              if (res && res.idx !== undefined && res.idx !== -1) setEditingFlagIdx(res.idx);
-          });
+          addFlag(position);
           return;
       }
 

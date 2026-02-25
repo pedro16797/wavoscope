@@ -57,7 +57,7 @@ def test_undo_max_steps(tmp_path):
     project.add_flag(4.0) # Truncates Initial State
     history = project._undo.get_history()
     assert len(history) == 4 # Base (was Step 1) + 3 steps
-    assert "Added Rhythm Flag at 1.000s" in history[0]["label"]
+    assert "Added Rhythm Flag #1 at 1.000s" in history[0]["label"]
 
     # Check that we can still restore to the new base
     project.restore_checkpoint(0)

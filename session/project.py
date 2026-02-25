@@ -104,7 +104,7 @@ class Project:
         with self._lock:
             self.session_data["time_signature"] = {"numerator": numerator, "denominator": denominator}
             self.mark_dirty()
-            self.checkpoint(f"Time Signature: {numerator}/{denominator}")
+            self.checkpoint(f"Changed Time Signature to {numerator}/{denominator}")
 
     def generate_musicxml(self) -> str:
         from session.export import generate_musicxml
@@ -138,7 +138,7 @@ class Project:
                 self._clear_backend_cache()
                 self.mark_dirty()
                 self._emit("flag_added", t)
-                self.checkpoint(f"Added Rhythm Flag at {t:.3f}s")
+                self.checkpoint(f"Added Rhythm Flag #{idx + 1} at {t:.3f}s")
             return idx
 
     def remove_flag(self, idx: int) -> None:
@@ -147,7 +147,7 @@ class Project:
                 self._clear_backend_cache()
                 self.mark_dirty()
                 self._emit("flag_removed", idx)
-                self.checkpoint("Removed Rhythm Flag")
+                self.checkpoint(f"Removed Rhythm Flag #{idx + 1}")
 
     def add_harmony_flag(self, t: float, chord: Dict[str, Any] | None = None) -> int:
         with self._lock:
@@ -157,7 +157,7 @@ class Project:
             if idx != -1:
                 self.mark_dirty()
                 self._emit("flag_added", t)
-                self.checkpoint(f"Added Chord Flag at {t:.3f}s")
+                self.checkpoint(f"Added Chord Flag #{idx + 1} at {t:.3f}s")
             return idx
 
     def remove_harmony_flag(self, idx: int) -> None:
@@ -165,7 +165,7 @@ class Project:
             if self._flags.remove_harmony_flag(idx):
                 self.mark_dirty()
                 self._emit("flag_removed", idx)
-                self.checkpoint("Removed Chord Flag")
+                self.checkpoint(f"Removed Chord Flag #{idx + 1}")
 
     def add_lyric(self, s: str, t: float, l: float) -> dict:
         with self._lock:
@@ -175,8 +175,8 @@ class Project:
             lyrics.sort(key=lambda item: item["t"])
             self.session_data["lyrics"] = lyrics
             self.mark_dirty()
-            self.checkpoint(f"Added Lyric: {s}")
             idx = lyrics.index(new_lyric)
+            self.checkpoint(f"Added Lyric #{idx + 1}: {s}")
             return {"idx": idx, "lyric": new_lyric}
 
     def remove_lyric(self, idx: int) -> None:
@@ -185,7 +185,7 @@ class Project:
             if 0 <= idx < len(lyrics):
                 lyrics.pop(idx)
                 self.mark_dirty()
-                self.checkpoint("Removed Lyric")
+                self.checkpoint(f"Removed Lyric #{idx + 1}")
 
     def update_lyric(self, idx: int, s: str | None = None, t: float | None = None, l: float | None = None) -> dict | None:
         with self._lock:
@@ -197,9 +197,9 @@ class Project:
                 if l is not None: lyric["l"] = l
                 lyrics.sort(key=lambda item: item["t"])
                 self.mark_dirty()
-                self.checkpoint(f"Updated Lyric: {lyric['s']}")
                 self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
+                self.checkpoint(f"Updated Lyric #{new_idx + 1}: {lyric['s']}")
                 return {"idx": new_idx, "lyric": lyric}
             return None
 
@@ -216,9 +216,9 @@ class Project:
                 lyric["t"] = t
                 lyrics.sort(key=lambda item: item["t"])
                 self.mark_dirty()
-                self.checkpoint(f"Moved Lyric to {t:.3f}s")
                 self.backend.reset_loop_range()
                 new_idx = lyrics.index(lyric)
+                self.checkpoint(f"Moved Lyric #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "lyric": lyric}
             return None
 
@@ -230,8 +230,8 @@ class Project:
                 flag["t"] = t
                 flags.sort(key=lambda f: f["t"])
                 self.mark_dirty()
-                self.checkpoint(f"Moved Chord Flag to {t:.3f}s")
                 new_idx = flags.index(flag)
+                self.checkpoint(f"Moved Chord Flag #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "flag": flag}
             return None
 
@@ -242,7 +242,7 @@ class Project:
                 flags[idx] = {"t": t, "c": chord}
                 flags.sort(key=lambda f: f["t"])
                 self.mark_dirty()
-                self.checkpoint(f"Updated Chord Flag at {t:.3f}s")
+                self.checkpoint(f"Updated Chord Flag #{idx + 1} at {t:.3f}s")
 
     def move_flag(self, idx: int, t: float) -> dict | None:
         with self._lock:
@@ -254,8 +254,8 @@ class Project:
                 self._flags._recompute_auto_names()
                 self._clear_backend_cache()
                 self.mark_dirty()
-                self.checkpoint(f"Moved Rhythm Flag to {t:.3f}s")
                 new_idx = flags.index(flag)
+                self.checkpoint(f"Moved Rhythm Flag #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "flag": flag}
             return None
 
@@ -268,7 +268,7 @@ class Project:
                 self._flags._recompute_auto_names()
                 self._clear_backend_cache()
                 self.mark_dirty()
-                self.checkpoint(f"Updated Rhythm Flag at {t:.3f}s")
+                self.checkpoint(f"Updated Rhythm Flag #{idx + 1} at {t:.3f}s")
 
     # ---------- playback passthrough ----------
     def seek(self, time: float) -> None: self.backend.seek(time)
@@ -364,7 +364,7 @@ class Project:
                 self._clear_backend_cache()
                 self.mark_dirty()
                 self._emit("flag_added", left["t"])
-                self.checkpoint(f"Inserted {count} flags")
+                self.checkpoint(f"Inserted {count} Rhythm Flags")
 
     def checkpoint(self, label: str) -> None:
         with self._lock:
