@@ -6,9 +6,10 @@ interface TooltipProps {
   content: string;
   shortcut?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export const Tooltip: React.FC<TooltipProps> = ({ children, content, shortcut, className }) => {
+export const Tooltip: React.FC<TooltipProps> = ({ children, content, shortcut, className, style }) => {
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ x: 0, y: 0, showBelow: false });
   const [adjustedX, setAdjustedX] = useState(0);
@@ -18,7 +19,8 @@ export const Tooltip: React.FC<TooltipProps> = ({ children, content, shortcut, c
   const updateCoords = () => {
     if (triggerRef.current) {
         const rect = triggerRef.current.getBoundingClientRect();
-        const showBelow = rect.top < 60;
+        const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ui-scale') || '1');
+        const showBelow = rect.top < 60 * scale;
         const centerX = rect.left + rect.width / 2;
         setCoords({
             x: centerX,
@@ -58,6 +60,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ children, content, shortcut, c
     <div
       ref={triggerRef}
       className={className || 'inline-block'}
+      style={style}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setVisible(false)}
     >
@@ -65,7 +68,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ children, content, shortcut, c
       {visible && createPortal(
         <div
           ref={tooltipRef}
-          className={`fixed z-[9999] px-2 py-1.5 flex flex-col items-center border rounded-[var(--ui-radius)] shadow-xl pointer-events-none -translate-x-1/2 transition-opacity duration-150 ${coords.showBelow ? 'translate-y-2' : '-translate-y-[calc(100%+8px)]'}`}
+          className={`fixed z-[9999] px-2 py-1.5 flex flex-col items-center border rounded-[var(--ui-radius)] shadow-xl pointer-events-none -translate-x-1/2 transition-opacity duration-150 ${coords.showBelow ? 'translate-y-2' : '-translate-y-[calc(100%+0.5rem)]'}`}
           style={{
             left: adjustedX,
             top: coords.y,
@@ -75,9 +78,9 @@ export const Tooltip: React.FC<TooltipProps> = ({ children, content, shortcut, c
             borderWidth: 'var(--ui-border)'
           }}
         >
-          <div className="text-[10px] font-bold whitespace-nowrap">{content}</div>
+        <div className="text-[0.625rem] font-bold whitespace-nowrap">{content}</div>
           {shortcut && (
-              <div className="text-[9px] opacity-60 font-mono mt-0.5 bg-black/20 px-1.5 py-0.5 rounded border border-white/5 whitespace-nowrap">
+            <div className="text-[0.5625rem] opacity-60 font-mono mt-0.5 bg-black/20 px-1.5 py-0.5 rounded border border-white/5 whitespace-nowrap">
                   {shortcut}
               </div>
           )}

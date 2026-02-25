@@ -9,7 +9,7 @@ export const Timeline: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const {
-    loaded, duration, currentTheme, themes, flags, harmony_flags,
+    loaded, duration, currentTheme, themes, flags, harmony_flags, ui_scale,
     addFlag, moveFlag, setEditingFlagIdx,
     addHarmonyFlag, moveHarmonyFlag, setEditingHarmonyFlagIdx,
     loop_mode, loop_range, playTone, stopAllTones,
@@ -53,9 +53,9 @@ export const Timeline: React.FC = () => {
     const end = offset + span;
 
     ctx.strokeStyle = theme.grid || '#404040';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1 * ui_scale;
     ctx.fillStyle = theme.text || '#e0e0e0';
-    ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+    ctx.font = `${10 * ui_scale}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`;
 
     const step = getTimelineStep(span);
     const startTick = Math.floor(offset / step) * step;
@@ -70,7 +70,7 @@ export const Timeline: React.FC = () => {
         ctx.stroke();
 
         const label = formatTimelineLabel(t, step);
-        ctx.fillText(label, x + 4, 15);
+        ctx.fillText(label, x + 4 * ui_scale, 15 * ui_scale);
     }
 
     // Draw Loop Range
@@ -112,7 +112,7 @@ export const Timeline: React.FC = () => {
             const yEnd = hasOverlap ? size.height / 2 : size.height;
 
             ctx.strokeStyle = theme.flagHarmony || '#00aaff';
-            ctx.lineWidth = dragHarmonyIdx === idx ? 4 : 2;
+            ctx.lineWidth = (dragHarmonyIdx === idx ? 4 : 2) * ui_scale;
             ctx.beginPath();
             ctx.moveTo(x, yStart);
             ctx.lineTo(x, yEnd);
@@ -122,9 +122,9 @@ export const Timeline: React.FC = () => {
             const label = formatChord(f.c);
 
             const textWidth = ctx.measureText(label).width;
-            ctx.fillRect(x - textWidth/2 - 2, 5, textWidth + 4, 12);
+            ctx.fillRect(x - textWidth/2 - 2 * ui_scale, 5 * ui_scale, textWidth + 4 * ui_scale, 12 * ui_scale);
             ctx.fillStyle = theme.text || '#fff';
-            ctx.fillText(label, x - textWidth/2, 15);
+            ctx.fillText(label, x - textWidth/2, 15 * ui_scale);
         }
     });
 
@@ -138,7 +138,7 @@ export const Timeline: React.FC = () => {
             const yEnd = size.height;
 
             ctx.strokeStyle = theme.flagRhythm || '#ff4757';
-            ctx.lineWidth = dragIdx === idx ? 4 : 2;
+            ctx.lineWidth = (dragIdx === idx ? 4 : 2) * ui_scale;
             ctx.beginPath();
             ctx.moveTo(x, yStart);
             ctx.lineTo(x, yEnd);
@@ -147,9 +147,9 @@ export const Timeline: React.FC = () => {
             ctx.fillStyle = theme.surface || '#252525';
             const label = f.n || f.auto_name || '';
             const textWidth = ctx.measureText(label).width;
-            ctx.fillRect(x - textWidth/2 - 2, 20, textWidth + 4, 12);
+            ctx.fillRect(x - textWidth/2 - 2 * ui_scale, 20 * ui_scale, textWidth + 4 * ui_scale, 12 * ui_scale);
             ctx.fillStyle = theme.text || '#fff';
-            ctx.fillText(label, x - textWidth/2, 30);
+            ctx.fillText(label, x - textWidth/2, 30 * ui_scale);
         }
 
         // Draw subdivisions
@@ -359,8 +359,8 @@ export const Timeline: React.FC = () => {
   const activeCursor = (dragIdx !== null || dragHarmonyIdx !== null) ? 'ew-resize' : hoverCursor;
 
   return (
-    <div ref={containerRef} className="h-10 w-full border-b select-none cursor-crosshair relative"
-        style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
+    <div ref={containerRef} className="w-full border-b select-none cursor-crosshair relative"
+        style={{ height: 40 * ui_scale, backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
         onMouseDown={handleMouseDown}
         onContextMenu={handleContextMenu}
         onWheel={handleWheel}>

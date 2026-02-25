@@ -8,6 +8,7 @@ router = APIRouter(prefix="/config", tags=["config"])
 
 class AppConfig(BaseModel):
     theme: Optional[str] = None
+    ui_scale: Optional[float] = None
     click_volume: Optional[float] = None
     spectrum_keys: Optional[int] = None
     default_output_folder: Optional[str] = None
@@ -27,6 +28,7 @@ async def get_config():
     cfg = Config()
     return {
         "theme": cfg.get("ui.theme", "dark"),
+        "ui_scale": cfg.get("ui.ui_scale", 1.0),
         "click_volume": cfg.get("ui.click_volume", 0.3),
         "spectrum_keys": cfg.get("ui.spectrum_keys", 37),
         "default_output_folder": cfg.get("ui.default_output_folder", ""),
@@ -47,6 +49,8 @@ async def update_config(new_cfg: AppConfig):
     cfg = Config()
     if new_cfg.theme is not None:
         cfg.set("ui.theme", new_cfg.theme)
+    if new_cfg.ui_scale is not None:
+        cfg.set("ui.ui_scale", new_cfg.ui_scale)
     if new_cfg.click_volume is not None:
         cfg.set("ui.click_volume", new_cfg.click_volume)
         if state.project:
