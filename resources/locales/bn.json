@@ -170,6 +170,8 @@
     "spectrum_analyzer": "স্পেকট্রাম অ্যানালাইজার",
     "fft_window": "FFT উইন্ডো: {{val}}s",
     "octave_down": "নিচের সপ্তক",
-    "octave_up": "উপরের সপ্তক"
+    "octave_up": "উপরের সপ্তক",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "ট্যাপ টেম্পো"
   }
 }

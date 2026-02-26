@@ -170,6 +170,8 @@
     "spectrum_analyzer": "Penganalisis Spektrum",
     "fft_window": "Jendela FFT: {{val}}s",
     "octave_down": "Turunkan Oktaf",
-    "octave_up": "Naikkan Oktaf"
+    "octave_up": "Naikkan Oktaf",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "Tap Tempo"
   }
 }

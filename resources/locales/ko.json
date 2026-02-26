@@ -170,6 +170,8 @@
     "spectrum_analyzer": "스펙트럼 분석기",
     "fft_window": "FFT 윈도우: {{val}}초",
     "octave_down": "옥타브 내리기",
-    "octave_up": "옥타브 올리기"
+    "octave_up": "옥타브 올리기",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "탭 템포"
   }
 }

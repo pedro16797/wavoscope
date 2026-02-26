@@ -170,6 +170,8 @@
     "spectrum_analyzer": "स्पेक्ट्रम एनालाइजर",
     "fft_window": "FFT विंडो: {{val}}s",
     "octave_down": "निचला सप्तक",
-    "octave_up": "ऊपरी सप्तक"
+    "octave_up": "ऊपरी सप्तक",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "टैप टेंपो"
   }
 }

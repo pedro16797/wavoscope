@@ -170,6 +170,8 @@
     "spectrum_analyzer": "Спектральний аналізатор",
     "fft_window": "Вікно FFT: {{val}}с",
     "octave_down": "Нижче на октаву",
-    "octave_up": "Вище на октаву"
+    "octave_up": "Вище на октаву",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "Тап темп"
   }
 }

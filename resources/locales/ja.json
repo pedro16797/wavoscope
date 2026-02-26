@@ -170,6 +170,8 @@
     "spectrum_analyzer": "スペクトラムアナライザ",
     "fft_window": "FFTウィンドウ: {{val}}秒",
     "octave_down": "オクターブ下げる",
-    "octave_up": "オクターブ上げる"
+    "octave_up": "オクターブ上げる",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "タップテンポ"
   }
 }

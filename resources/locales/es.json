@@ -170,6 +170,8 @@
     "spectrum_analyzer": "Analizador de espectro",
     "fft_window": "Ventana FFT: {{val}}s",
     "octave_down": "Bajar octava",
-    "octave_up": "Subir octava"
+    "octave_up": "Subir octava",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "Marcar tempo"
   }
 }

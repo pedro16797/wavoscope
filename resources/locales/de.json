@@ -168,6 +168,8 @@
     "spectrum_analyzer": "Spektrum-Analysator",
     "fft_window": "FFT-Fenster: {{val}}s",
     "octave_down": "Oktave tiefer",
-    "octave_up": "Oktave höher"
+    "octave_up": "Oktave höher",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "Tap Tempo"
   }
 }
