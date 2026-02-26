@@ -168,6 +168,8 @@
     "spectrum_analyzer": "Analizzatore di Spettro",
     "fft_window": "Finestra FFT: {{val}}s",
     "octave_down": "Abbassa di un'ottava",
-    "octave_up": "Alza di un'ottava"
+    "octave_up": "Alza di un'ottava",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "Tap Tempo"
   }
 }

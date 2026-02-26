@@ -35,6 +35,7 @@ Wavoscope utilizza un sistema di file "sidecar". Quando apri un file audio, Wavo
 - **Suddivisioni Adattive:** La timeline regola automaticamente i passi della griglia (da 0.01s a diverse ore) mentre esegui lo zoom, garantendo il miglior dettaglio senza affollamento visivo.
 - **Cursore di Riproduzione:** **Clic sinistro** sulla forma d'onda per spostare la testina di riproduzione.
 - **Controllo Velocità:** Usa lo slider nella barra inferiore per regolare la velocità da 0.1x a 2.0x. Wavoscope utilizza un algoritmo di time-stretching di alta qualità che preserva l'intonazione (pitch).
+- **Tempo e Tap Tempo:** Il tempo attuale (in BPM) è visualizzato nell'intestazione della forma d'onda. Fare clic ripetutamente per misurare manualmente il tempo (**Tap Tempo**). Torna automaticamente al tempo misurato dopo 3 secondi di inattività.
 
 ---
 

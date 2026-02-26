@@ -35,6 +35,7 @@ Wavoscope verwendet ein "Sidecar"-Dateisystem. Wenn Sie eine Audiodatei öffnen,
 - **Adaptive Unterteilungen:** Die Timeline passt ihre Gitterschritte automatisch an (von 0,01s bis zu mehreren Stunden), wenn Sie zoomen. Dies gewährleistet optimale Detailtiefe ohne Überfüllung.
 - **Abspielposition:** **Linksklick** auf die Wellenform, um die Abspielposition zu verschieben.
 - **Geschwindigkeitssteuerung:** Verwenden Sie den Schieberegler in der unteren Leiste, um die Geschwindigkeit von 0,1x bis 2,0x anzupassen. Wavoscope verwendet hochwertiges Time-Stretching, das die Tonhöhe (Pitch) beibehält.
+- **Tempo & Tap Tempo:** Das aktuelle Tempo (in BPM) wird im Header der Wellenform angezeigt. Klicken Sie wiederholt darauf, um das Tempo manuell zu messen (**Tap Tempo**). Nach 3 Sekunden Inaktivität kehrt es automatisch zum berechneten Takttempo zurück.
 
 ---
 

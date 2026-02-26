@@ -35,6 +35,7 @@ Wavoscope utilise un système de fichiers "sidecar". Lorsque vous ouvrez un fich
 - **Subdivisions Adaptatives :** La timeline ajuste automatiquement ses pas de grille (de 0,01s à plusieurs heures) au fur et à mesure que vous zoomez, garantissant un niveau de détail optimal sans encombrement.
 - **Curseur de Lecture :** **Clic gauche** sur la forme d'onde pour déplacer la tête de lecture.
 - **Contrôle de la Vitesse :** Utilisez le curseur dans la barre du bas pour ajuster la vitesse de 0,1x à 2,0x. Wavoscope utilise un étirement temporel de haute qualité qui préserve la hauteur tonale (pitch).
+- **Tempo & Tap Tempo :** Le tempo actuel (en BPM) est affiché dans l'en-tête de la forme d'onde. Cliquez plusieurs fois pour mesurer manuellement le tempo (**Tap Tempo**). Il revient automatiquement au tempo de mesure calculé après 3 secondes d'inactivité.
 
 ---
 

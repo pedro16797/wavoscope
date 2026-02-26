@@ -35,6 +35,7 @@ Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope c
 - **Adaptive Subdivisions:** The timeline automatically adjusts its grid steps (from 0.01s up to several hours) as you zoom, ensuring optimal detail without overcrowding.
 - **Playback Cursor:** **Left Click** on the waveform to move the playhead.
 - **Speed Control:** Use the slider in the bottom bar to adjust speed from 0.1x to 2.0x. Wavoscope uses high-quality time-stretching that preserves pitch.
+- **Tempo & Tap Tempo:** The current tempo (in BPM) is displayed in the waveform header. Click it repeatedly to manually measure the tempo (**Tap Tempo**). It automatically reverts to the calculated measure tempo after 3 seconds of inactivity.
 
 ---
 

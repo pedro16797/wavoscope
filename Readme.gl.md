@@ -35,6 +35,7 @@ Wavoscope utiliza un sistema de ficheiros "sidecar". Cando abres un ficheiro de 
 - **Subdivisións adaptativas:** A liña de tempo axusta automaticamente os seus pasos de grade (dende 0,01s ata varias horas) a medida que fas zoom, garantindo un nivel de detalle óptimo sen sobrecargar a vista.
 - **Cursor de reprodución:** **Clic esquerdo** na forma de onda para mover o cursor de reprodución.
 - **Control de velocidade:** Usa o desprazable na barra inferior para axustar a velocidade de 0,1x a 2,0x. Wavoscope utiliza un estiramento de tempo de alta calidade que preserva o ton.
+- **Tempo e Tap Tempo:** O tempo actual (en BPM) amósase na cabeceira da forma de onda. Fai clic repetidamente para medir o tempo manualmente (**Tap Tempo**). Volve automaticamente ao tempo calculado do compás tras 3 segundos de inactividade.
 
 ---
 

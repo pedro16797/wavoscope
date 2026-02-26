@@ -168,6 +168,8 @@
     "spectrum_analyzer": "Analisador de Espectro",
     "fft_window": "Janela FFT: {{val}}s",
     "octave_down": "Baixar oitava",
-    "octave_up": "Subir oitava"
+    "octave_up": "Subir oitava",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "Marcar tempo"
   }
 }

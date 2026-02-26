@@ -168,6 +168,8 @@
     "spectrum_analyzer": "频谱分析仪",
     "fft_window": "FFT 窗口: {{val}}秒",
     "octave_down": "降低八度",
-    "octave_up": "提高八度"
+    "octave_up": "提高八度",
+    "tempo": "{{bpm}} BPM",
+    "tap_tempo": "打拍测速"
   }
 }
