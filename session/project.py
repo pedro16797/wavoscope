@@ -36,7 +36,6 @@ class Project:
         self._undo = UndoManager(self.session_data, max_steps=cfg.get("recovery.undo_steps", 50))
 
         self.backend = AudioBackend()
-        self.backend.set_tick_provider(self.subdivision_ticks_between)
 
         self.metadata: Dict[str, str] = {"title": "", "artist": "", "album": ""}
 
@@ -47,7 +46,6 @@ class Project:
             self.backend.set_device(device_name)
 
         self.backend.set_click_volume(cfg.get("ui.click_volume", 0.3))
-        self.backend.set_loop_provider(self.get_loop_range)
 
         self.wave_cache: WaveformCache | None = None
         self._lock = threading.RLock()
@@ -61,6 +59,7 @@ class Project:
                 self.backend.open_file(path)
                 self.wave_cache = WaveformCache(self.backend._data, self.backend._sr)
                 self._extract_metadata(path)
+                self._sync_backend_data()
             except Exception as e:
                 logger.exception("Failed to open audio file")
                 raise
@@ -207,6 +206,7 @@ class Project:
         with self._lock:
             self.selected_lyric_idx = idx
             self.backend.reset_loop_range()
+            self._sync_backend_data()
 
     def move_lyric(self, idx: int, t: float) -> dict | None:
         with self._lock:
@@ -284,6 +284,7 @@ class Project:
             self._looping.set_loop_mode(mode)
             self.backend.set_loop_enabled(mode != "none")
             self.backend.reset_loop_range()
+            self._sync_backend_data()
 
     @property
     def loop_mode(self): return self._looping.loop_mode
@@ -338,6 +339,18 @@ class Project:
     def _clear_backend_cache(self) -> None:
         self.backend.clear_tick_cache()
         self.backend.reset_loop_range()
+        self._sync_backend_data()
+
+    def _sync_backend_data(self) -> None:
+        """Push a safe copy of project data to the backend."""
+        with self._lock:
+            self.backend.sync_project_data(
+                flags=list(self._flags.flags),
+                lyrics=list(self.lyrics),
+                loop_mode=self._looping.loop_mode,
+                selected_lyric_idx=self.selected_lyric_idx,
+                duration=self.duration
+            )
 
     def register_callback(self, event: str, callback: Callable) -> None:
         if event in self._callbacks: self._callbacks[event].append(callback)

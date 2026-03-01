@@ -18,7 +18,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 # Position update at ~30fps is fine during playback,
                 # but if paused and not seeking, no need to spam.
                 loop_range = state.project.get_loop_range()
-                if playing or abs(pos - last_state["position"]) > 1e-4 or playing != last_state["playing"]:
+                if playing or abs(pos - last_state["position"]) > 1e-4 or playing != last_state["playing"] or loop_range != last_state.get("loop_range"):
                     await websocket.send_json({
                         "position": pos,
                         "playing": playing,
@@ -26,6 +26,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     })
                     last_state["position"] = pos
                     last_state["playing"] = playing
+                    last_state["loop_range"] = loop_range
 
             await asyncio.sleep(0.03) # 30fps update
     except WebSocketDisconnect:
