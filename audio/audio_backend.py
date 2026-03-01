@@ -352,11 +352,20 @@ class AudioBackend:
                     self._processor._last_tsm_overlap = None
 
                 if self._processor._tsm_buffer.available_read() == 0:
-                    self._playback._playing = False
-                    self._playback._cursor = 0.0
-                    self._read_sample_idx = 0
-                    self._processor.reset()
-                    self._playback._on_finished()
+                    if self._loop_enabled and self._loop_provider:
+                        if self._active_loop_range is None:
+                            self._active_loop_range = self._loop_provider(self._playback._cursor)
+                        lstart, _ = self._active_loop_range
+                        self._playback._cursor = lstart
+                        self._read_sample_idx = int(self._playback._cursor * self._playback._sr)
+                        self._processor.reset()
+                        self.clear_tick_cache()
+                    else:
+                        self._playback._playing = False
+                        self._playback._cursor = 0.0
+                        self._read_sample_idx = 0
+                        self._processor.reset()
+                        self._playback._on_finished()
 
         except Exception:
             logger.exception("Error in audio callback")

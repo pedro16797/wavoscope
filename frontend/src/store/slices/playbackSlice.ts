@@ -32,8 +32,10 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     }
   },
 
-  updatePosition: (pos: number) => {
-    set({ position: pos });
+  updatePosition: (pos: number, loop_range?: [number, number]) => {
+    const updates: any = { position: pos };
+    if (loop_range) updates.loop_range = loop_range;
+    set(updates);
   },
 
   setPlaying: (playing: boolean) => {
