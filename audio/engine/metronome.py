@@ -97,8 +97,8 @@ class MetronomeEngine:
 
             shaded = False
             if hasattr(provider, "__self__"):
-                project = getattr(provider, "__self__")
-                flags = project.flags
+                backend_or_project = getattr(provider, "__self__")
+                flags = getattr(backend_or_project, "flags", [])
                 if flags:
                     times = [f["t"] for f in flags]
                     idx = bisect.bisect_right(times, tick_time) - 1

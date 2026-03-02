@@ -274,6 +274,16 @@ class AudioBackend:
         with self._playback._lock:
             return self._active_loop_range
 
+    @property
+    def flags(self) -> List[Dict[str, Any]]:
+        with self._playback._lock:
+            return self._cached_flags
+
+    @property
+    def lyrics(self) -> List[Dict[str, Any]]:
+        with self._playback._lock:
+            return self._cached_lyrics
+
     def register_callback(self, event: str, callback: Callable) -> None:
         self._playback.register_callback(event, callback)
 
