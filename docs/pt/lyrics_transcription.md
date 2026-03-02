@@ -54,7 +54,7 @@ A forma mais eficiente de transcrever uma música é seguindo este fluxo:
 ### Backend
 - **Estrutura de Dados**: Letras são armazenadas como uma lista ordenada de objetos `{text, timestamp, duration}` no arquivo `.oscope`.
 - **Motor de Loop**: O `LoopingEngine` suporta um modo `lyric`, que define automaticamente o intervalo do loop para a letra selecionada no momento.
-- **Exportação MusicXML**: `session/export.py` divide os compassos em segmentos em cada limite de letra e harmonia. Isso garante que as tags `<lyric>` estejam perfeitamente alinhadas com a estrutura rítmica na partitura exportada.
+- **Exportação MusicXML**: `src/session/export.py` divide os compassos em segmentos em cada limite de letra e harmonia. Isso garante que as tags `<lyric>` estejam perfeitamente alinhadas com a estrutura rítmica na partitura exportada.
 
 ## Dicas de Alinhamento
 - **Zoom Alto:** Para alinhamento palavra por palavra, aumente o zoom até ver claramente os transientes na forma de onda.

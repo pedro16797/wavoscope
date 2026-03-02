@@ -54,7 +54,7 @@ La forma más eficiente de transcribir una canción es siguiendo este flujo de t
 ### Backend
 - **Estructura de datos**: Las letras se almacenan como una lista ordenada de objetos `{text, timestamp, duration}` en el archivo `.oscope`.
 - **Motor de bucles**: El `LoopingEngine` soporta un modo `lyric`, que establece automáticamente el rango del bucle a la letra seleccionada actualmente.
-- **Exportación MusicXML**: `session/export.py` divide los compases en segmentos en cada límite de letra y armonía. Esto garantiza que las etiquetas `<lyric>` estén perfectamente alineadas con la estructura rítmica en la partitura exportada.
+- **Exportación MusicXML**: `src/session/export.py` divide los compases en segmentos en cada límite de letra y armonía. Esto garantiza que las etiquetas `<lyric>` estén perfectamente alineadas con la estructura rítmica en la partitura exportada.
 
 ## Consejos de alineación
 - **Zoom alto:** Para la alineación a nivel de palabra, aumenta el zoom hasta que puedas ver claramente los transitorios en la forma de onda.

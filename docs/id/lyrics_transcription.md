@@ -54,7 +54,7 @@ Cara paling efisien untuk mentranskripsi lagu adalah menggunakan alur kerja beri
 ### Backend
 - **Struktur Data:** Lirik disimpan sebagai daftar objek `{text, timestamp, duration}` yang diurutkan dalam file sidecar `.oscope`.
 - **Mesin Looping:** `LoopingEngine` mendukung mode `lyric`, yang secara otomatis mengatur rentang loop ke lirik yang dipilih saat ini.
-- **Ekspor MusicXML:** `session/export.py` membagi birama menjadi segmen-segmen di setiap batas lirik dan akord. Ini memastikan bahwa tag `<lyric>` selaras sempurna dengan struktur ritme dalam skor yang diekspor.
+- **Ekspor MusicXML:** `src/session/export.py` membagi birama menjadi segmen-segmen di setiap batas lirik dan akord. Ini memastikan bahwa tag `<lyric>` selaras sempurna dengan struktur ritme dalam skor yang diekspor.
 
 ## Tips Penyelarasan
 - **Zoom Tinggi:** Untuk penyelarasan tingkat kata, perbesar hingga Anda dapat melihat transien dalam bentuk gelombang dengan jelas.

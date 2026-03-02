@@ -54,7 +54,7 @@ The most efficient way to transcribe a song is using the following workflow:
 ### Backend
 - **Data Structure**: Lyrics are stored as a sorted list of objects `{text, timestamp, duration}` in the `.oscope` sidecar file.
 - **Looping Engine**: The `LoopingEngine` supports a `lyric` mode, which automatically sets the loop range to the currently selected lyric.
-- **MusicXML Export**: `session/export.py` splits measures into segments at every lyric and chord boundary. This ensures that `<lyric>` tags are perfectly aligned with the rhythmic structure in the exported score.
+- **MusicXML Export**: `src/session/export.py` splits measures into segments at every lyric and chord boundary. This ensures that `<lyric>` tags are perfectly aligned with the rhythmic structure in the exported score.
 
 ## Alignment Tips
 - **High Zoom:** For word-level alignment, zoom in until you can clearly see the transients in the waveform.

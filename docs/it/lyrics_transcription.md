@@ -54,7 +54,7 @@ Il modo più efficiente per trascrivere una canzone è seguire questo flusso:
 ### Backend
 - **Struttura Dati**: I testi sono memorizzati come una lista ordinata di oggetti `{text, timestamp, duration}` nel file `.oscope`.
 - **Motore di Loop**: Il `LoopingEngine` supporta una modalità `lyric`, che imposta automaticamente l'intervallo del loop sul testo attualmente selezionato.
-- **Esportazione MusicXML**: `session/export.py` divide le misure in segmenti ad ogni limite di testo e armonia. Questo garantisce che i tag `<lyric>` siano perfettamente allineati con la struttura ritmica nella partitura esportata.
+- **Esportazione MusicXML**: `src/session/export.py` divide le misure in segmenti ad ogni limite di testo e armonia. Questo garantisce che i tag `<lyric>` siano perfettamente allineati con la struttura ritmica nella partitura esportata.
 
 ## Consigli per l'Allineamento
 - **Zoom Elevato:** Per l'allineamento a livello di parola, aumenta lo zoom finché non vedi chiaramente i transienti nella forma d'onda.
