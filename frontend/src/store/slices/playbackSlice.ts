@@ -58,9 +58,9 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
 
     const isAvailable = (mode: string) => {
         if (mode === 'none' || mode === 'whole') return true;
-        if (mode === 'lyric') return state.selectedLyricIdx !== null;
-        if (mode === 'section') return state.flags.some(f => f.s && f.t <= state.position);
-        if (mode === 'bar') return state.flags.some(f => f.type === 'rhythm' && f.t <= state.position);
+        if (mode === 'lyric') return state.lyrics.length > 0;
+        if (mode === 'section') return state.flags.some(f => f.s);
+        if (mode === 'bar') return state.flags.some(f => f.type === 'rhythm');
         return false;
     };
 

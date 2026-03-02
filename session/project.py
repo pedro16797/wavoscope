@@ -344,9 +344,12 @@ class Project:
     def _sync_backend_data(self) -> None:
         """Push a safe copy of project data to the backend."""
         with self._lock:
+            # Create copies to avoid thread-safety issues during iteration/sorting
+            safe_flags = [f.copy() for f in self._flags.flags]
+            safe_lyrics = [l.copy() for l in self.lyrics]
             self.backend.sync_project_data(
-                flags=list(self._flags.flags),
-                lyrics=list(self.lyrics),
+                flags=safe_flags,
+                lyrics=safe_lyrics,
                 loop_mode=self._looping.loop_mode,
                 selected_lyric_idx=self.selected_lyric_idx,
                 duration=self.duration
