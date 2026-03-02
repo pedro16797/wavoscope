@@ -21,12 +21,24 @@ class LoopingEngine:
             for l in lyrics:
                 if l["t"] <= pos <= l["t"] + l["l"]:
                     return (l["t"], l["t"] + l["l"])
+
+            # If before first lyric, pick first
+            if lyrics and pos < lyrics[0]["t"]:
+                l = lyrics[0]
+                return (l["t"], l["t"] + l["l"])
+
             return (0.0, duration)
 
         if self.loop_mode == "section":
             section_starts = [f["t"] for f in flags if f.get("s")]
             if not section_starts:
                 return (0.0, duration)
+
+            if pos < section_starts[0]:
+                start = section_starts[0]
+                end = section_starts[1] if len(section_starts) > 1 else duration
+                return (start, end)
+
             idx = bisect.bisect_right(section_starts, pos) - 1
             start = section_starts[idx] if idx >= 0 else 0.0
             end = section_starts[idx + 1] if idx + 1 < len(section_starts) else duration
@@ -36,6 +48,12 @@ class LoopingEngine:
             times = [f["t"] for f in flags if f.get("type", "rhythm") == "rhythm"]
             if not times:
                 return (0.0, duration)
+
+            if pos < times[0]:
+                start = times[0]
+                end = times[1] if len(times) > 1 else duration
+                return (start, end)
+
             idx = bisect.bisect_right(times, pos) - 1
             start = times[idx] if idx >= 0 else 0.0
             end = times[idx + 1] if idx + 1 < len(times) else duration

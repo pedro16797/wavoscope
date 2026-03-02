@@ -10,6 +10,7 @@ from typing import Callable, List, Tuple, Any, Dict
 import numpy as np
 import soundfile as sf
 
+from session.looping import LoopingEngine
 from audio.synth import SimpleSynth
 from audio.engine.playback import PlaybackEngine
 from audio.engine.processing import AudioProcessor
@@ -42,10 +43,14 @@ class AudioBackend:
 
         # Looping state
         self._loop_enabled: bool = False
-        self._loop_provider: Callable[[float], Tuple[float, float]] | None = None
         self._active_loop_range: Tuple[float, float] | None = None
 
-        self._subdivision_ticks_between: Callable[[float, float], List[Tuple[float, bool]]] | None = None
+        # Project data cache for thread-safety and performance
+        self._cached_flags: List[Dict[str, Any]] = []
+        self._cached_lyrics: List[Dict[str, Any]] = []
+        self._cached_loop_mode: str = "none"
+        self._cached_selected_lyric_idx: int | None = None
+        self._cached_duration: float = 0.0
 
     # ---------- file I/O ----------
     def open_file(self, path: Path) -> None:
@@ -180,11 +185,13 @@ class AudioBackend:
     def set_click_volume(self, volume: float) -> None:
         self._metronome.set_volume(volume)
 
-    def set_tick_provider(self, fn: Callable[[float, float], list[tuple[float, bool]]]) -> None:
-        self._subdivision_ticks_between = fn
-
-    def set_loop_provider(self, fn: Callable[[float], Tuple[float, float]]) -> None:
-        self._loop_provider = fn
+    def sync_project_data(self, flags: List[Dict[str, Any]], lyrics: List[Dict[str, Any]], loop_mode: str, selected_lyric_idx: int | None, duration: float) -> None:
+        with self._playback._lock:
+            self._cached_flags = flags
+            self._cached_lyrics = lyrics
+            self._cached_loop_mode = loop_mode
+            self._cached_selected_lyric_idx = selected_lyric_idx
+            self._cached_duration = duration
 
     def set_loop_enabled(self, enabled: bool) -> None:
         with self._playback._lock:
@@ -267,8 +274,47 @@ class AudioBackend:
         with self._playback._lock:
             return self._active_loop_range
 
+    @property
+    def flags(self) -> List[Dict[str, Any]]:
+        with self._playback._lock:
+            return self._cached_flags
+
+    @property
+    def lyrics(self) -> List[Dict[str, Any]]:
+        with self._playback._lock:
+            return self._cached_lyrics
+
     def register_callback(self, event: str, callback: Callable) -> None:
         self._playback.register_callback(event, callback)
+
+    def _calculate_subdivision_ticks(self, start: float, end: float) -> list[tuple[float, bool]]:
+        """Replacement for Project.subdivision_ticks_between using cached data."""
+        ticks: list[tuple[float, bool]] = []
+        flags = self._cached_flags
+
+        for i, prev in enumerate(flags):
+            if prev.get("type", "rhythm") != "rhythm":
+                continue
+            if start <= prev["t"] < end:
+                ticks.append((prev["t"], True))
+            if i + 1 < len(flags):
+                nxt = flags[i + 1]
+                subdiv = prev.get("div", 0)
+                if subdiv == 0:
+                    for p in reversed(flags[: i + 1]):
+                        if p.get("type", "rhythm") == "rhythm" and p.get("div", 0) != 0:
+                            subdiv = p["div"]
+                            break
+                    else:
+                        subdiv = 1
+                if subdiv > 1:
+                    span = nxt["t"] - prev["t"]
+                    step = span / subdiv
+                    for k in range(1, subdiv):
+                        tick_time = prev["t"] + k * step
+                        if start <= tick_time < end:
+                            ticks.append((tick_time, False))
+        return sorted(ticks, key=lambda t: t[0])
 
     # ---------- real-time callback ----------
     def _audio_callback(
@@ -278,8 +324,8 @@ class AudioBackend:
         _time: Any,
         status: Any,
     ) -> None:
+        outdata[:] = 0.0
         if not self._playback._lock.acquire(blocking=False):
-            outdata[:] = 0.0
             return
 
         try:
@@ -289,9 +335,17 @@ class AudioBackend:
                 return
 
             # Handle Looping
-            if self._loop_enabled and self._loop_provider:
+            if self._loop_enabled:
                 if self._active_loop_range is None:
-                    self._active_loop_range = self._loop_provider(self._playback._cursor)
+                    engine = LoopingEngine()
+                    engine.set_loop_mode(self._cached_loop_mode)
+                    self._active_loop_range = engine.get_loop_range(
+                        self._playback._cursor,
+                        self._cached_duration,
+                        self._cached_flags,
+                        self._cached_lyrics,
+                        self._cached_selected_lyric_idx
+                    )
 
                 lstart, lend = self._active_loop_range
                 if self._playback._cursor >= lend - 0.001:
@@ -339,7 +393,13 @@ class AudioBackend:
                 outdata[:, 0] = samples * self._playback._volume
 
             # Metronome
-            self._metronome.add_clicks(outdata, to_read, self._playback._cursor, self._subdivision_ticks_between, self._playback._speed)
+            self._metronome.add_clicks(
+                outdata,
+                to_read,
+                self._playback._cursor,
+                self._calculate_subdivision_ticks,
+                self._playback._speed
+            )
 
             # Update cursor
             if to_read > 0:
@@ -352,11 +412,28 @@ class AudioBackend:
                     self._processor._last_tsm_overlap = None
 
                 if self._processor._tsm_buffer.available_read() == 0:
-                    self._playback._playing = False
-                    self._playback._cursor = 0.0
-                    self._read_sample_idx = 0
-                    self._processor.reset()
-                    self._playback._on_finished()
+                    if self._loop_enabled:
+                        if self._active_loop_range is None:
+                            engine = LoopingEngine()
+                            engine.set_loop_mode(self._cached_loop_mode)
+                            self._active_loop_range = engine.get_loop_range(
+                                self._playback._cursor,
+                                self._cached_duration,
+                                self._cached_flags,
+                                self._cached_lyrics,
+                                self._cached_selected_lyric_idx
+                            )
+                        lstart, _ = self._active_loop_range
+                        self._playback._cursor = lstart
+                        self._read_sample_idx = int(self._playback._cursor * self._playback._sr)
+                        self._processor.reset()
+                        self.clear_tick_cache()
+                    else:
+                        self._playback._playing = False
+                        self._playback._cursor = 0.0
+                        self._read_sample_idx = 0
+                        self._processor.reset()
+                        self._playback._on_finished()
 
         except Exception:
             logger.exception("Error in audio callback")

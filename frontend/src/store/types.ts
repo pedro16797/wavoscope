@@ -131,7 +131,7 @@ export interface PlaybackSlice {
   octave_shift: number;
 
   controlPlayback: (action: string, value?: number) => Promise<void>;
-  updatePosition: (pos: number) => void;
+  updatePosition: (pos: number, loop_range?: [number, number]) => void;
   setPlaying: (playing: boolean) => void;
   setLoopMode: (mode: string) => Promise<void>;
   cycleLoopMode: () => Promise<void>;
