@@ -2,8 +2,9 @@ import sys
 from pathlib import Path
 
 # Fix imports for wavoscope package
-root_path = Path(__file__).resolve().parent.parent
-sys.path.append(str(root_path))
+src_path = Path(__file__).resolve().parent.parent
+sys.path.append(str(src_path))
+root_path = src_path.parent
 
 from fastapi import FastAPI  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
@@ -77,7 +78,7 @@ async def get_status():
     }
 
 # Serve frontend if it exists
-frontend_path = root_path / "frontend" / "dist"
+frontend_path = src_path / "frontend" / "dist"
 
 @app.get("/")
 async def read_index():

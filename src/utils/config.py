@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 _CONFIG_PATH = Path.home() / ".wavoscope_config.json"
-_DEFAULT_FILE: Path = Path(__file__).resolve().parent.parent / "config" / "default.json"
+_DEFAULT_FILE: Path = Path(__file__).resolve().parent.parent.parent / "config" / "default.json"
 AUDIO_FILTER = "Audio Files (*.wav *.mp3 *.flac *.ogg)"
 
 

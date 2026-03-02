@@ -3,8 +3,8 @@ import argparse
 from pathlib import Path
 
 # Fix imports for wavoscope package
-root_path = Path(__file__).resolve().parent
-sys.path.append(str(root_path))
+src_path = Path(__file__).resolve().parent
+sys.path.append(str(src_path))
 
 from cli.launcher import start_backend_thread, wait_for_backend
 from cli.gui import run_gui

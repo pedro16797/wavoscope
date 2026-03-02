@@ -94,7 +94,7 @@ python3 -m pip install -q --upgrade pip
 
 # Ensure requirements are installed and up to date
 echo "Checking dependencies..."
-pip install -q -r requirements.txt
+pip install -q -r src/requirements.txt
 
 # Check for npm, if missing use nodeenv
 if ! command -v npm &> /dev/null; then
@@ -105,24 +105,24 @@ if ! command -v npm &> /dev/null; then
 fi
 
 # Build frontend
-if [ "$WAVOSCOPE_LAUNCHER" == "1" ] && [ -d "frontend/dist" ]; then
+if [ "$WAVOSCOPE_LAUNCHER" == "1" ] && [ -d "src/frontend/dist" ]; then
     echo "Frontend already built. Skipping frontend build."
 else
     echo "Building frontend..."
-    cd frontend
+    cd src/frontend
     npm install --no-fund --no-audit
     npm run build
-    cd ..
+    cd ../..
 fi
 
 # Build launcher if missing
 if [ ! -f "Wavoscope" ]; then
     echo "Building launcher executable..."
-    python3 scripts/create_launcher.py || echo "[WARNING] Failed to build launcher executable. You can still use run.sh."
+    PYTHONPATH=src python3 src/scripts/create_launcher.py || echo "[WARNING] Failed to build launcher executable. You can still use run.sh."
 fi
 
 # Run the application
 echo "Launching Wavoscope..."
-python3 main.py
+PYTHONPATH=src python3 src/main.py
 
 echo "Wavoscope closed."
