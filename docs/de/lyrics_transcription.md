@@ -54,7 +54,7 @@ Der effizienteste Weg, einen Song zu transkribieren, ist dieser Workflow:
 ### Backend
 - **Datenstruktur**: Lyrics werden als sortierte Liste von Objekten `{text, timestamp, duration}` in der `.oscope`-Datei gespeichert.
 - **Loop-Engine**: Die `LoopingEngine` unterstützt einen `lyric`-Modus, der den Loop-Bereich automatisch auf das aktuell ausgewählte Element setzt.
-- **MusicXML-Export**: `session/export.py` teilt Takte an jeder Songtext- und Harmonie-Grenze in Segmente auf. Dies stellt sicher, dass `<lyric>`-Tags in der exportierten Partitur perfekt mit der rhythmischen Struktur übereinstimmen.
+- **MusicXML-Export**: `src/session/export.py` teilt Takte an jeder Songtext- und Harmonie-Grenze in Segmente auf. Dies stellt sicher, dass `<lyric>`-Tags in der exportierten Partitur perfekt mit der rhythmischen Struktur übereinstimmen.
 
 ## Tipps zur Ausrichtung
 - **Hoher Zoom:** Vergrößern Sie die Wellenform so weit, dass Sie Transienten (Anschläge) deutlich sehen können.

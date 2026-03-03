@@ -5,7 +5,7 @@ from pathlib import Path
 router = APIRouter(prefix="/themes", tags=["themes"])
 
 # Root path relative to this file: backend/routers/themes.py -> root
-root_path = Path(__file__).resolve().parent.parent.parent
+root_path = Path(__file__).resolve().parent.parent.parent.parent
 
 @router.get("")
 async def get_themes():

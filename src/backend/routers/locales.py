@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 router = APIRouter(prefix="/locales-api", tags=["locales"])
-root_path = Path(__file__).resolve().parent.parent.parent
+root_path = Path(__file__).resolve().parent.parent.parent.parent
 
 @router.get("/list")
 async def list_locales():

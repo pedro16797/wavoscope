@@ -54,7 +54,7 @@ La méthode la plus efficace pour transcrire une chanson est de suivre ce flux d
 ### Backend
 - **Structure de données** : Les paroles sont stockées sous forme d'une liste ordonnée d'objets `{text, timestamp, duration}` dans le fichier `.oscope`.
 - **Moteur de boucle** : Le `LoopingEngine` prend en charge un mode `lyric`, qui définit automatiquement la plage de boucle sur la parole actuellement sélectionnée.
-- **Export MusicXML** : `session/export.py` divise les mesures en segments à chaque limite de paroles et d'harmonie. Cela garantit que les balises `<lyric>` sont parfaitement alignées avec la structure rythmique dans la partition exportée.
+- **Export MusicXML** : `src/session/export.py` divise les mesures en segments à chaque limite de paroles et d'harmonie. Cela garantit que les balises `<lyric>` sont parfaitement alignées avec la structure rythmique dans la partition exportée.
 
 ## Conseils d'Alignement
 - **Zoom élevé :** Pour un alignement au mot près, zoomez jusqu'à ce que vous puissiez voir clairement les transitoires dans la forme d'onde.

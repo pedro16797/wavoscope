@@ -7,8 +7,9 @@ def create_launcher():
     """
     Uses PyInstaller to bundle launcher.py into a small executable with an icon.
     """
-    root_dir = Path(__file__).resolve().parent.parent
-    launcher_path = root_dir / "launcher.py"
+    src_dir = Path(__file__).resolve().parent.parent
+    root_dir = src_dir.parent
+    launcher_path = src_dir / "launcher.py"
     icon_path = root_dir / "resources" / "icons" / "app-icon.ico"
 
     if not icon_path.exists():
@@ -21,9 +22,9 @@ def create_launcher():
         str(launcher_path),
         '--onefile',
         '--name=Wavoscope',
-        '--distpath=' + str(root_dir / "dist"),
-        '--workpath=' + str(root_dir / "build_launcher"),
-        '--specpath=' + str(root_dir),
+        '--distpath=' + str(src_dir / "dist"),
+        '--workpath=' + str(src_dir / "build_launcher"),
+        '--specpath=' + str(src_dir),
     ]
 
     if sys.platform == "win32":
@@ -39,7 +40,7 @@ def create_launcher():
 
     # Move to root
     exe_name = "Wavoscope.exe" if sys.platform == "win32" else "Wavoscope"
-    src = root_dir / "dist" / exe_name
+    src = src_dir / "dist" / exe_name
     dst = root_dir / exe_name
 
     if src.exists():

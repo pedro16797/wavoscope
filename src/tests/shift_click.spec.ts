@@ -6,7 +6,7 @@ test('shift-click rhythm flag adds new flag at correct interval', async ({ page 
   await page.goto('http://127.0.0.1:8000');
 
   // Load audio
-  const audioPath = '/app/tests/data/Test.mp3';
+  const audioPath = '/app/src/tests/data/Test.mp3';
   await page.evaluate(async (path) => {
     const res = await fetch('/project/open', {
       method: 'POST',

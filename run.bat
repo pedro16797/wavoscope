@@ -6,6 +6,12 @@ REM This script always uses a contained Python runtime to ensure consistency.
 
 echo Starting Wavoscope...
 
+REM Clean legacy caches and artifacts
+echo Cleaning environment...
+if exist "__pycache__" rd /s /q "__pycache__"
+if exist "*.pyc" del /f /q "*.pyc"
+if exist ".pytest_cache" rd /s /q ".pytest_cache"
+
 set "RUNTIME_DIR=%~dp0.python_runtime"
 set "PYTHON_EXE=!RUNTIME_DIR!\python.exe"
 
@@ -70,7 +76,7 @@ python -m pip install -q --upgrade pip
 
 REM Ensure requirements are installed and up to date
 echo Checking dependencies...
-pip install -q -r requirements.txt
+pip install -q -r src\requirements.txt
 if errorlevel 1 (
     echo [ERROR] Failed to install dependencies.
     pause
@@ -92,25 +98,25 @@ if errorlevel 1 (
 )
 
 REM Build frontend
-if "%WAVOSCOPE_LAUNCHER%"=="1" if exist "frontend\dist\" goto :frontend_ready
+if "%WAVOSCOPE_LAUNCHER%"=="1" if exist "src\frontend\dist\" goto :frontend_ready
 
 echo Building frontend...
-cd frontend
+cd src\frontend
 call npm install --no-fund --no-audit
 if errorlevel 1 (
     echo [ERROR] npm install failed.
-    cd ..
+    cd ..\..
     pause
     exit /b 1
 )
 call npm run build
 if errorlevel 1 (
     echo [ERROR] npm build failed.
-    cd ..
+    cd ..\..
     pause
     exit /b 1
 )
-cd ..
+cd ..\..
 
 :frontend_ready
 echo [INFO] Frontend ready.
@@ -118,7 +124,8 @@ echo [INFO] Frontend ready.
 REM Build launcher if missing
 if exist "Wavoscope.exe" goto :launcher_ready
 echo Building launcher executable...
-python scripts/create_launcher.py
+set "PYTHONPATH=src"
+python src\scripts\create_launcher.py
 if errorlevel 1 (
     echo [WARNING] Failed to build launcher executable. You can still use run.bat.
 )
@@ -126,7 +133,8 @@ if errorlevel 1 (
 :launcher_ready
 REM Run the application
 echo Launching Wavoscope...
-python main.py
+set "PYTHONPATH=src"
+python src\main.py
 if errorlevel 1 (
     echo [ERROR] Application exited with error code %errorlevel%.
     pause

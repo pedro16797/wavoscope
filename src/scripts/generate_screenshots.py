@@ -21,7 +21,7 @@ def generate():
         time.sleep(2)
 
         # 2. Load the audio file via API
-        audio_path = os.path.abspath("tests/data/Test.mp3")
+        audio_path = os.path.abspath("src/tests/data/Test.mp3")
         oscope_path = audio_path + ".oscope"
         if os.path.exists(oscope_path):
             os.remove(oscope_path)

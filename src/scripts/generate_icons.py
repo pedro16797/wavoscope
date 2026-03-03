@@ -6,10 +6,11 @@ from PIL import Image
 
 def generate_icons():
     # Paths
-    root_dir = Path(__file__).resolve().parent.parent
+    src_dir = Path(__file__).resolve().parent.parent
+    root_dir = src_dir.parent
     svg_path = root_dir / "resources" / "icons" / "WavoscopeLogo.svg"
     output_dir = root_dir / "resources" / "icons"
-    public_dir = root_dir / "frontend" / "public"
+    public_dir = src_dir / "frontend" / "public"
 
     if not svg_path.exists():
         print(f"Error: {svg_path} not found.")

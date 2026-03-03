@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { TempoDisplay } from './TempoDisplay';
-import { useStore } from '../store/useStore';
+import { TempoDisplay } from '../src/components/TempoDisplay';
+import { useStore } from '../src/store/useStore';
 import { useTranslation } from 'react-i18next';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-vi.mock('../store/useStore');
+vi.mock('../src/store/useStore');
 vi.mock('react-i18next');
 
 describe('TempoDisplay', () => {

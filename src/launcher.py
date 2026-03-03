@@ -33,19 +33,16 @@ def main():
     # Get the directory where the launcher is located
     if getattr(sys, 'frozen', False):
         # Running as a bundle (PyInstaller)
-        base_dir = Path(sys.executable).resolve().parent
+        # The executable is at the project root.
+        root_dir = Path(sys.executable).resolve().parent
     else:
-        # Running as a script
-        base_dir = Path(__file__).resolve().parent
-
-    # Also check parent directory (for dist/ structure)
-    parent_dir = base_dir.parent
+        # Running as a script (e.g., python3 src/launcher.py)
+        # Path(__file__) is project_root/src/launcher.py
+        root_dir = Path(__file__).resolve().parent.parent
 
     if sys.platform == "win32":
         script_name = "run.bat"
-        script = base_dir / script_name
-        if not script.exists():
-            script = parent_dir / script_name
+        script = root_dir / script_name
 
         if script.exists():
             # Change directory to where the script is
@@ -71,9 +68,7 @@ def main():
             sys.exit(1)
     else:
         script_name = "run.sh"
-        script = base_dir / script_name
-        if not script.exists():
-            script = parent_dir / script_name
+        script = root_dir / script_name
 
         if script.exists():
             # Ensure it's executable

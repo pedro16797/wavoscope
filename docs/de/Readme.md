@@ -17,6 +17,11 @@ Wavoscope ist so konzipiert, dass es eigenständig funktioniert. Sie müssen Pyt
 - **Windows:** Doppelklicken Sie auf `run.bat`. Dies richtet automatisch die Umgebung ein und erstellt eine `Wavoscope.exe` im Hauptverzeichnis für die zukünftige Verwendung.
 - **Linux/macOS:** Führen Sie `bash run.sh` in Ihrem Terminal aus. Dies erstellt eine `Wavoscope`-Binärdatei im Hauptverzeichnis.
 
+### Entwicklung & Testen
+Wenn Sie aus dem Quellcode ausführen und Tests ausführen möchten:
+- **Backend-Tests:** `PYTHONPATH=src python3 -m pytest src/tests`
+- **Frontend-Tests:** `cd src/frontend && npm test`
+
 Beim ersten Start lädt Wavoscope automatisch seine eigene Python-Laufzeitumgebung herunter und richtet die erforderliche Umgebung ein. Dies kann je nach Internetverbindung einige Minuten dauern. Nach dem ersten Durchlauf können Sie einfach die generierte `Wavoscope`-Programmdatei (mit dem App-Icon) verwenden.
 
 ### Projektverwaltung & automatische Speicherung
