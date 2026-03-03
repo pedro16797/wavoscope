@@ -65,6 +65,12 @@ download_python() {
 
 echo "Starting Wavoscope..."
 
+# Clean legacy caches and artifacts
+echo "Cleaning environment..."
+find . -maxdepth 1 -name "__pycache__" -type d -exec rm -rf {} +
+find . -maxdepth 1 -name "*.pyc" -delete
+rm -rf .pytest_cache
+
 # Ensure local Python runtime exists
 if [ ! -f "$RUNTIME_DIR/bin/python3" ]; then
     echo "[INFO] Local Python runtime not found. Attempting to download portable Python..."

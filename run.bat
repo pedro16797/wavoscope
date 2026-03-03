@@ -6,6 +6,12 @@ REM This script always uses a contained Python runtime to ensure consistency.
 
 echo Starting Wavoscope...
 
+REM Clean legacy caches and artifacts
+echo Cleaning environment...
+if exist "__pycache__" rd /s /q "__pycache__"
+if exist "*.pyc" del /f /q "*.pyc"
+if exist ".pytest_cache" rd /s /q ".pytest_cache"
+
 set "RUNTIME_DIR=%~dp0.python_runtime"
 set "PYTHON_EXE=!RUNTIME_DIR!\python.exe"
 
