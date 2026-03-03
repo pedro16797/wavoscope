@@ -10,7 +10,7 @@ export const TempoDisplay: React.FC = () => {
 
   const [taps, setTaps] = useState<number[]>([]);
   const [isTapping, setIsTapping] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {

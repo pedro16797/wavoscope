@@ -47,5 +47,5 @@ Este documento descreve a estrutura de diretórios e o propósito de cada compon
 -   **`AGENTS.md`**: Guia e roteiro para agentes de IA trabalhando no projeto.
 -   **`CONTRIBUTING.md`**: Diretrizes para contribuir com o projeto.
 -   **`Readme.md`**: Visão geral do projeto e instruções de configuração.
--   **`LICENSE`**: Termos da licenza MIT do projeto.
+-   **`LICENSE`**: Termos da licença MIT do projeto.
 -   **`SECURITY.md`**: Política para relatar vulnerabilidades de segurança.
