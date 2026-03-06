@@ -8,6 +8,7 @@ export const PlaybackBar: React.FC = () => {
   const { t } = useTranslation();
   const {
     loaded, position, duration, playing, speed, volume, filename, metadata,
+    overdrive, toggleOverdrive,
     controlPlayback, currentTheme, themes, ui_scale,
     metronome_enabled, updateMetronome, setShowSettings, browseFile,
     saveProject, exportMusicXML, dirty, loop_mode, cycleLoopMode
@@ -143,11 +144,14 @@ export const PlaybackBar: React.FC = () => {
             <span className="text-[0.625rem] font-mono w-8">{speed.toFixed(1)}x</span>
         </div>
         <div className="flex items-center gap-2">
-            <Tooltip content={t('playback.volume_desc')}>
-                <Volume2 size={16 * ui_scale} className="opacity-60" />
+            <Tooltip content={t('playback.overdrive_desc')} shortcut="G">
+                <button type="button" onClick={toggleOverdrive} aria-label={t('playback.overdrive_toggle')}
+                        className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors active:scale-95 ${overdrive ? 'text-accent bg-accent/10' : 'opacity-40'}`}>
+                    <Volume2 size={18 * ui_scale} />
+                </button>
             </Tooltip>
             <Tooltip content={t('playback.volume_desc')}>
-                <input type="range" min="0" max="1" step="0.05" value={volume}
+                <input type="range" min={overdrive ? "1" : "0"} max={overdrive ? "2" : "1"} step="0.05" value={volume}
                     onChange={(e) => controlPlayback('set_volume', parseFloat(e.target.value))}
                     className="w-16 accent-current" />
             </Tooltip>
