@@ -47,6 +47,7 @@
     "kb_rhythm": "Add Rhythm Flag",
     "kb_harmony": "Add Chord Flag",
     "kb_lyrics": "Add Lyrics Flag",
+    "kb_overdrive": "Toggle Volume Overdrive",
     "transcription": "Lyrics Transcription",
     "kb_add_word": "Add Word (Editing)",
     "kb_add_syllable": "Add Syllable (Editing)",
@@ -130,6 +131,8 @@
     "stop": "Stop",
     "volume": "Playback Volume",
     "volume_desc": "Adjust the overall loudness of the audio playback.",
+    "overdrive_toggle": "Toggle Overdrive",
+    "overdrive_desc": "Overdrive: Boost volume range to 100%-200%",
     "settings": "Settings"
   },
   "chord": {

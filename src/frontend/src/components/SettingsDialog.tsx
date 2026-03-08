@@ -461,6 +461,9 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <span className="opacity-60">{t('settings.kb_place_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click')}</span>
                         <span className="opacity-60">{t('settings.kb_adjust_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.handle_drag')}</span>
                     </div>
+                    <div className="flex justify-between items-center text-xs">
+                        <span className="opacity-60">{t('settings.kb_overdrive')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">G</span>
+                    </div>
                 </div>
             )}
         </div>

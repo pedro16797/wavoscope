@@ -39,6 +39,7 @@
     "kb_rhythm": "Ajouter marqueur de rythme",
     "kb_harmony": "Ajouter marqueur d'harmonie",
     "kb_lyrics": "Ajouter un marqueur de paroles",
+    "kb_overdrive": "Basculer l'Overdrive de volume",
     "transcription": "Transcription des paroles",
     "kb_add_word": "Ajouter un mot (Édition)",
     "kb_add_syllable": "Ajouter une syllabe (Édition)",
@@ -126,6 +127,8 @@
     "stop": "Arrêter",
     "volume": "Volume de lecture",
     "volume_desc": "Ajuster le volume global de la lecture audio.",
+    "overdrive_toggle": "Basculer l'Overdrive",
+    "overdrive_desc": "Overdrive : Augmenter la plage de volume de 100% à 200%",
     "settings": "Paramètres"
   },
   "chord": {

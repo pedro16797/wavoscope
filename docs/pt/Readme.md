@@ -40,6 +40,7 @@ O Wavoscope usa um sistema de arquivo "sidecar". Quando você abre um arquivo de
 - **Subdivisões Adaptativas:** A linha do tempo ajusta automaticamente seus passos de grade (de 0,01s até várias horas) conforme você aplica o zoom, garantindo o nível ideal de detalhes sem poluição visual.
 - **Cursor de Reprodução:** **Clique esquerdo** na forma de onda para mover o cursor.
 - **Controle de Velocidade:** Use o controle deslizante na barra inferior para ajustar a velocidade de 0,1x a 2,0x. Wavoscope utiliza estiramento de tempo de alta qualidade que preserva a afinação (pitch).
+- **Volume e Overdrive:** Ajuste o volume geral com o controle deslizante. Clique no **ícone de volume** ou pressione `G` para alternar o **modo Overdrive**, que estende o intervalo de volume de 100% para 200%. O aplicativo lembra níveis de volume independentes para os modos normal e overdrive.
 - **Tempo e Tap Tempo:** O tempo atual (em BPM) é exibido no cabeçalho da forma de onda. Clique repetidamente para medir manualmente o tempo (**Tap Tempo**). Ele retorna automaticamente ao tempo calculado do compasso após 3 segundos de inatividade.
 
 ---
@@ -162,6 +163,7 @@ Wavoscope foi projetado para ser impulsionado pela comunidade. Você pode adicio
 | **Alternar passa-baixas** | `F` |
 | **Alternar passa-altas** | `Shift + F` |
 | **Adicionar/Confirmar Letra** | `V` |
+| **Alternar Overdrive** | `G` |
 | **Dividir e Avançar Letra**| `Espaço` / `-` (Dentro da entrada) |
 | **Ciclar Modos de Loop** | `Tab` |
 | **Desmarcar Seleção** | `Shift + V` |

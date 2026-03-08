@@ -46,6 +46,7 @@
     "kb_rhythm": "リズムフラグを追加",
     "kb_harmony": "コードフラグを追加",
     "kb_lyrics": "歌詞フラグを追加",
+    "kb_overdrive": "音量オーバードライブを切り替え",
     "transcription": "歌詞の文字起こし",
     "kb_add_word": "単語を追加 (編集時)",
     "kb_add_syllable": "音節を追加 (編集時)",
@@ -128,6 +129,8 @@
     "stop": "停止",
     "volume": "再生音量",
     "volume_desc": "オーディオ再生の全体的な音量を調整します。",
+    "overdrive_toggle": "オーバードライブを切り替え",
+    "overdrive_desc": "オーバードライブ：音量範囲を100%-200%にブースト",
     "settings": "設定"
   },
   "chord": {

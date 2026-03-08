@@ -46,6 +46,7 @@
     "kb_rhythm": "리듬 플래그 추가",
     "kb_harmony": "코드 플래그 추가",
     "kb_lyrics": "가사 플래그 추가",
+    "kb_overdrive": "볼륨 오버드라이브 토글",
     "transcription": "가사 전사",
     "kb_add_word": "단어 추가 (편집 중)",
     "kb_add_syllable": "음절 추가 (편집 중)",
@@ -128,6 +129,8 @@
     "stop": "정지",
     "volume": "재생 볼륨",
     "volume_desc": "오디오 재생의 전체적인 크기를 조절합니다.",
+    "overdrive_toggle": "오버드라이브 토글",
+    "overdrive_desc": "오버드라이브: 볼륨 범위를 100%-200%로 부스트",
     "settings": "설정"
   },
   "chord": {

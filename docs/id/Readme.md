@@ -35,6 +35,7 @@ Wavoscope menggunakan sistem file "sidecar". Saat Anda membuka file audio, Wavos
 - **Subdivisi Adaptif:** Timeline secara otomatis menyesuaikan langkah gridnya (dari 0.01 detik hingga beberapa jam) saat Anda melakukan zoom, memastikan detail yang optimal tanpa terlihat terlalu padat.
 - **Kursor Pemutaran:** **Klik Kiri** pada bentuk gelombang untuk memindahkan playhead.
 - **Kontrol Kecepatan:** Gunakan slider di bilah bawah untuk menyesuaikan kecepatan dari 0.1x ke 2.0x. Wavoscope menggunakan perentangan waktu (time-stretching) berkualitas tinggi yang mempertahankan nada.
+- **Volume & Overdrive:** Sesuaikan volume pemutaran keseluruhan dengan slider. Klik pada **ikon Volume** atau tekan `G` untuk mengalihkan **mode Overdrive**, yang memperluas rentang volume dari 100% hingga 200%. Aplikasi mengingat tingkat volume yang berbeda untuk mode normal dan overdrive.
 - **Tempo & Tap Tempo:** Tempo saat ini (dalam BPM) ditampilkan di header waveform. Klik berulang kali untuk mengukur tempo secara manual (**Tap Tempo**). Secara otomatis akan kembali ke tempo birama yang dihitung setelah 3 detik tidak ada aktivitas.
 
 ---
@@ -156,6 +157,7 @@ Wavoscope dirancang untuk digerakkan oleh komunitas. Anda dapat menambah atau me
 | **Alihkan Low Cutoff** | `F` |
 | **Alihkan High Cutoff** | `Shift + F` |
 | **Tambah Bendera Lirik** | `V` |
+| **Alihkan Overdrive** | `G` |
 | **Pisah & Majukan Lirik**| `Spasi` / `-` (Di Dalam Input) |
 | **Siklus Mode Loop** | `Tab` |
 | **Batalkan Pilihan** | `Shift + V` |

@@ -46,6 +46,7 @@
     "kb_rhythm": "Tambah Bendera Ritme",
     "kb_harmony": "Tambah Bendera Akord",
     "kb_lyrics": "Tambah Bendera Lirik",
+    "kb_overdrive": "Alihkan Overdrive Volume",
     "transcription": "Transkripsi Lirik",
     "kb_add_word": "Tambah Kata (Sedang Mengedit)",
     "kb_add_syllable": "Tambah Suku Kata (Sedang Mengedit)",
@@ -128,6 +129,8 @@
     "stop": "Berhenti",
     "volume": "Volume Pemutaran",
     "volume_desc": "Sesuaikan kenyaringan keseluruhan pemutaran audio.",
+    "overdrive_toggle": "Alihkan Overdrive",
+    "overdrive_desc": "Overdrive: Tingkatkan rentang volume ke 100%-200%",
     "settings": "Pengaturan"
   },
   "chord": {
