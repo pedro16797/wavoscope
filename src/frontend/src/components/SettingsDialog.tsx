@@ -429,7 +429,6 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                     </p>
                     <div className="font-bold border-b border-grid pb-1 mt-6 mb-2 opacity-50 uppercase tracking-tighter">{t('settings.transcription')}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        <span className="opacity-60">{t('playback.overdrive_toggle')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">G</span>
                         <span className="opacity-60">{t('settings.kb_lyrics')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">V / {t('keys.left_click')}</span>
                         <span className="opacity-60">{t('settings.kb_add_word')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.space')}</span>
                         <span className="opacity-60">{t('settings.kb_add_syllable')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">-</span>
@@ -460,9 +459,6 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         <span className="opacity-60">{t('settings.kb_play_note')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.spectrum_click')}</span>
                         <span className="opacity-60">{t('settings.kb_place_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.right_click')}</span>
                         <span className="opacity-60">{t('settings.kb_adjust_cutoff')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">{t('keys.handle_drag')}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs">
-                        <span className="opacity-60">{t('settings.kb_overdrive')}</span> <span className="font-mono bg-white/5 px-1 rounded text-accent">G</span>
                     </div>
                 </div>
             )}
