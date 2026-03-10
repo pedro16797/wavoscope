@@ -151,7 +151,7 @@ export const PlaybackBar: React.FC = () => {
                 </button>
             </Tooltip>
             <Tooltip content={t('playback.volume_desc')}>
-                <input type="range" min={overdrive ? "1" : "0"} max={overdrive ? "2" : "1"} step="0.05" value={volume}
+                <input type="range" min={overdrive ? "1" : "0"} max={overdrive ? "4" : "1"} step="0.05" value={volume}
                     onChange={(e) => controlPlayback('set_volume', parseFloat(e.target.value))}
                     className="w-16 accent-current" />
             </Tooltip>

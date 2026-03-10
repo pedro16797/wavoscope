@@ -127,7 +127,7 @@
     "volume": "Volume di riproduzione",
     "volume_desc": "Regola il volume generale della riproduzione audio.",
     "overdrive_toggle": "Attiva/disattiva Overdrive",
-    "overdrive_desc": "Overdrive: Aumenta l'intervallo di volume al 100%-200%",
+    "overdrive_desc": "Aumenta il volume",
     "settings": "Impostazioni"
   },
   "chord": {

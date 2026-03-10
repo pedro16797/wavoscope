@@ -127,7 +127,7 @@
     "volume": "Wiedergabelautstärke",
     "volume_desc": "Die Gesamtlautstärke der Audiowiedergabe anpassen.",
     "overdrive_toggle": "Overdrive umschalten",
-    "overdrive_desc": "Overdrive: Lautstärkebereich auf 100%-200% erhöhen",
+    "overdrive_desc": "Verstärkt die Lautstärke",
     "settings": "Einstellungen"
   },
   "chord": {

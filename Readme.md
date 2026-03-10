@@ -40,7 +40,7 @@ Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope c
 - **Adaptive Subdivisions:** The timeline automatically adjusts its grid steps (from 0.01s up to several hours) as you zoom, ensuring optimal detail without overcrowding.
 - **Playback Cursor:** **Left Click** on the waveform to move the playhead.
 - **Speed Control:** Use the slider in the bottom bar to adjust speed from 0.1x to 2.0x. Wavoscope uses high-quality time-stretching that preserves pitch.
-- **Volume & Overdrive:** Adjust the overall playback volume with the slider. Click the **Volume Icon** or press `G` to toggle **Overdrive mode**, which extends the volume range from 100% up to 200%. The app remembers separate volume levels for normal and overdrive modes.
+- **Volume & Overdrive:** Adjust the overall playback volume with the slider. Click the **Volume Icon** or press `G` to toggle **Overdrive mode**, which extends the volume range from 100% up to 400%. The app remembers separate volume levels for normal and overdrive modes.
 - **Tempo & Tap Tempo:** The current tempo (in BPM) is displayed in the waveform header. Click it repeatedly to manually measure the tempo (**Tap Tempo**). It automatically reverts to the calculated measure tempo after 3 seconds of inactivity.
 
 ---
@@ -162,7 +162,6 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | **Toggle Low Cutoff** | `F` |
 | **Toggle High Cutoff** | `Shift + F` |
 | **Add Lyrics Flag** | `V` |
-| **Toggle Overdrive**| `G` |
 | **Split & Advance Lyric**| `Space` / `-` (Inside Input) |
 | **Cycle Loop Modes** | `Tab` |
 | **Deselect Selection** | `Shift + V` |

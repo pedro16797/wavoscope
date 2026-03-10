@@ -131,7 +131,7 @@
     "volume": "Playback Volume",
     "volume_desc": "Adjust the overall loudness of the audio playback.",
     "overdrive_toggle": "Toggle Overdrive",
-    "overdrive_desc": "Overdrive: Boost volume range to 100%-200%",
+    "overdrive_desc": "Boosts the volume",
     "settings": "Settings"
   },
   "chord": {

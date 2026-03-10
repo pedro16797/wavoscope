@@ -129,7 +129,7 @@
     "volume": "재생 볼륨",
     "volume_desc": "오디오 재생의 전체적인 크기를 조절합니다.",
     "overdrive_toggle": "오버드라이브 토글",
-    "overdrive_desc": "오버드라이브: 볼륨 범위를 100%-200%로 부스트",
+    "overdrive_desc": "볼륨 부스트",
     "settings": "설정"
   },
   "chord": {

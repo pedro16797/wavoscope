@@ -129,7 +129,7 @@
     "volume": "再生音量",
     "volume_desc": "オーディオ再生の全体的な音量を調整します。",
     "overdrive_toggle": "オーバードライブを切り替え",
-    "overdrive_desc": "オーバードライブ：音量範囲を100%-200%にブースト",
+    "overdrive_desc": "音量をブースト",
     "settings": "設定"
   },
   "chord": {

@@ -47,7 +47,7 @@ class PlaybackEngine:
 
     def set_volume(self, vol: float):
         with self._lock:
-            self._volume = max(0.0, min(vol, 2.0))
+            self._volume = max(0.0, min(vol, 4.0))
 
     def start_stream(self, callback: Callable):
         if sd is None:

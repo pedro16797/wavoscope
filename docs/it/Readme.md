@@ -40,7 +40,7 @@ Wavoscope utilizza un sistema di file "sidecar". Quando apri un file audio, Wavo
 - **Suddivisioni Adattive:** La timeline regola automaticamente i passi della griglia (da 0.01s a diverse ore) mentre esegui lo zoom, garantendo il miglior dettaglio senza affollamento visivo.
 - **Cursore di Riproduzione:** **Clic sinistro** sulla forma d'onda per spostare la testina di riproduzione.
 - **Controllo Velocità:** Usa lo slider nella barra inferiore per regolare la velocità da 0.1x a 2.0x. Wavoscope utilizza un algoritmo di time-stretching di alta qualità che preserva l'intonazione (pitch).
-- **Volume & Overdrive:** Regola il volume generale con il cursore. Clicca sull'**icona del volume** o premi `G` per attivare la **modalità Overdrive**, che estende l'intervallo di volume dal 100% al 200%. L'app ricorda livelli di volume separati per le modalità normale e overdrive.
+- **Volume & Overdrive:** Regola il volume generale con il cursore. Clicca sull'**icona del volume** o premi `G` per attivare la **modalità Overdrive**, che estende l'intervallo di volume dal 100% al 400%. L'app ricorda livelli di volume separati per le modalità normale e overdrive.
 - **Tempo e Tap Tempo:** Il tempo attuale (in BPM) è visualizzato nell'intestazione della forma d'onda. Fare clic ripetutamente per misurare manualmente il tempo (**Tap Tempo**). Torna automaticamente al tempo misurato dopo 3 secondi di inattività.
 
 ---
@@ -163,7 +163,6 @@ Wavoscope è progettato per essere guidato dalla comunità. Puoi aggiungere o mo
 | **Attiva passa-basso** | `F` |
 | **Attiva passa-alto** | `Maiusc + F` |
 | **Aggiungi/Conferma Testo** | `V` |
-| **Attiva/disattiva Overdrive** | `G` |
 | **Dividi e Avanza Testo**| `Spazio` / `-` (Dentro l'input) |
 | **Cicla Modalità Loop** | `Tab` |
 | **Deseleziona Tutto** | `Maiusc + V` |
