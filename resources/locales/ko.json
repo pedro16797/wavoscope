@@ -88,6 +88,8 @@
     "author_desc": "MusicXML 메타데이터의 기본 작성자 이름입니다.",
     "low_cutoff_desc": "이 지점 미만의 주파수를 필터링합니다.",
     "high_cutoff_desc": "이 지점 초과의 주파수를 필터링합니다.",
+    "filter_auto_gain": "자동 게인",
+    "filter_auto_gain_desc": "필터링으로 인한 볼륨 손실을 자동으로 보정하여 일정한 인지 음량을 유지합니다.",
     "kb_no_ui_desc": "다음 단축키는 그래픽 인터페이스 요소에 대응하지 않습니다."
   },
   "keys": {

@@ -78,6 +78,8 @@
     "author_desc": "MusicXML 元数据的默认作者姓名。",
     "low_cutoff_desc": "过滤掉低于此点的频率。",
     "high_cutoff_desc": "过滤掉高于此点的频率。",
+    "filter_auto_gain": "自动增益",
+    "filter_auto_gain_desc": "自动补偿因滤波而损失的音量，以保持一致的感知响度。",
     "kb_no_ui_desc": "以下快捷键不对应任何图形界面元素。",
     "recovery": "恢复",
     "undo": "撤销历史",

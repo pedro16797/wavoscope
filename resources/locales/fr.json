@@ -78,6 +78,8 @@
     "author_desc": "Nom de l'auteur par défaut pour les métadonnées MusicXML.",
     "low_cutoff_desc": "Filtrer les fréquences en dessous de ce point.",
     "high_cutoff_desc": "Filtrer les fréquences au-dessus de ce point.",
+    "filter_auto_gain": "Gain Auto",
+    "filter_auto_gain_desc": "Compense automatiquement la perte de volume due au filtrage pour maintenir une sonie perçue constante.",
     "kb_no_ui_desc": "Les raccourcis clavier suivants ne correspondent à aucun élément de l'interface graphique.",
     "recovery": "Récupération",
     "undo": "Historique d'annulation",

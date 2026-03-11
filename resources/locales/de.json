@@ -78,6 +78,8 @@
     "author_desc": "Standard-Autorenname für MusicXML-Metadaten.",
     "low_cutoff_desc": "Frequenzen unterhalb dieses Punktes herausfiltern.",
     "high_cutoff_desc": "Frequenzen oberhalb dieses Punktes herausfiltern.",
+    "filter_auto_gain": "Auto-Gain",
+    "filter_auto_gain_desc": "Kompensiert automatisch den Lautstärkeverlust durch Filterung, um eine gleichmäßige wahrgenommene Lautstärke beizubehalten.",
     "kb_no_ui_desc": "Die folgenden Tastenkombinationen entsprechen keinem grafischen Interface-Element.",
     "recovery": "Wiederherstellung",
     "undo": "Rückgängig-Verlauf",

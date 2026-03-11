@@ -88,6 +88,8 @@
     "author_desc": "Nama penulis default untuk metadata MusicXML.",
     "low_cutoff_desc": "Saring frekuensi di bawah titik ini.",
     "high_cutoff_desc": "Saring frekuensi di atas titik ini.",
+    "filter_auto_gain": "Auto-Gain",
+    "filter_auto_gain_desc": "Secara otomatis mengompensasi volume yang hilang akibat pemfilteran untuk mempertahankan kenyaringan yang konsisten.",
     "kb_no_ui_desc": "Pintasan keyboard berikut tidak sesuai dengan elemen antarmuka grafis apa pun."
   },
   "keys": {
