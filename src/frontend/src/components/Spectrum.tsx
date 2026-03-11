@@ -14,7 +14,7 @@ export const Spectrum: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const {
     loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys, ui_scale,
-    filter_enabled, filter_low_enabled, filter_high_enabled, filter_low_hz, filter_high_hz, filter_auto_gain, updateFilter,
+    filter_enabled, filter_low_enabled, filter_high_enabled, filter_low_hz, filter_high_hz, updateFilter,
     playTone: playToneStore, stopAllTones
   } = useStore();
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
