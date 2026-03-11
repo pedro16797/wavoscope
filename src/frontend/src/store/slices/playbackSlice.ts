@@ -22,6 +22,7 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
   filter_high_enabled: false,
   filter_low_hz: midiToFreq(48 + 37 * 0.1),
   filter_high_hz: midiToFreq(48 + 37 * 0.9),
+  filter_auto_gain: true,
   fft_window: 0.3,
   octave_shift: 0,
 
@@ -100,7 +101,7 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     }
   },
 
-  updateFilter: async (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => {
+  updateFilter: async (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean, auto_gain?: boolean }) => {
     const oldState = get();
     const updates: any = {};
 
@@ -109,12 +110,14 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     if (filter.high_hz !== undefined) updates.filter_high_hz = filter.high_hz;
     if (filter.low_enabled !== undefined) updates.filter_low_enabled = filter.low_enabled;
     if (filter.high_enabled !== undefined) updates.filter_high_enabled = filter.high_enabled;
+    if (filter.auto_gain !== undefined) updates.filter_auto_gain = filter.auto_gain;
     set(updates);
 
     const shouldUpdateBackend =
         filter.low_enabled !== undefined ||
         filter.high_enabled !== undefined ||
         filter.enabled !== undefined ||
+        filter.auto_gain !== undefined ||
         (filter.low_hz !== undefined && oldState.filter_low_enabled) ||
         (filter.high_hz !== undefined && oldState.filter_high_enabled);
 
@@ -125,7 +128,8 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
             low_hz: newState.filter_low_hz,
             high_hz: newState.filter_high_hz,
             low_enabled: newState.filter_low_enabled,
-            high_enabled: newState.filter_high_enabled
+            high_enabled: newState.filter_high_enabled,
+            auto_gain: newState.filter_auto_gain
         };
         try {
             await axios.post(`${API_BASE}/playback/filter`, payload);

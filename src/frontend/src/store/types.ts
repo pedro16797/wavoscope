@@ -130,6 +130,7 @@ export interface PlaybackSlice {
   filter_high_enabled: boolean;
   filter_low_hz: number;
   filter_high_hz: number;
+  filter_auto_gain: boolean;
   fft_window: number;
   octave_shift: number;
 
@@ -138,7 +139,7 @@ export interface PlaybackSlice {
   setPlaying: (playing: boolean) => void;
   setLoopMode: (mode: string) => Promise<void>;
   cycleLoopMode: () => Promise<void>;
-  updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
+  updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean, auto_gain?: boolean }) => Promise<void>;
   toggleOverdrive: () => Promise<void>;
   setFFTWindow: (sec: number) => void;
   setOctaveShift: (shift: number) => void;

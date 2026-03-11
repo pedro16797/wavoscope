@@ -8,7 +8,8 @@ import { Tooltip } from './Tooltip';
 export const SpectrumView: React.FC = () => {
   const { t } = useTranslation();
   const {
-    fft_window, setFFTWindow, octave_shift, setOctaveShift, ui_scale
+    fft_window, setFFTWindow, octave_shift, setOctaveShift, ui_scale,
+    filter_auto_gain, updateFilter
   } = useStore();
 
   return (
@@ -18,6 +19,23 @@ export const SpectrumView: React.FC = () => {
         <span className="opacity-50">{t('views.spectrum_analyzer')}</span>
 
         <div className="flex items-center gap-4 h-full">
+            {/* Auto-Gain Toggle */}
+            <div className="flex items-center h-full border-l border-white/10 pl-4">
+                <Tooltip content={t('settings.filter_auto_gain_desc')}>
+                    <button
+                        onClick={() => updateFilter({ auto_gain: !filter_auto_gain })}
+                        className={`px-2 py-0.5 rounded-[var(--ui-radius)] text-[0.5rem] font-bold uppercase tracking-tighter transition-all active:scale-95 border ${
+                            filter_auto_gain
+                                ? 'bg-accent text-background border-accent'
+                                : 'bg-white/5 text-text/40 hover:text-text/60 border-white/10'
+                        }`}
+                        style={{ borderWidth: 'var(--ui-border)' }}
+                    >
+                        {t('settings.filter_auto_gain')}
+                    </button>
+                </Tooltip>
+            </div>
+
             {/* FFT Window */}
             <div className="flex items-center gap-2 h-full border-l border-white/10 pl-4">
                 <span className="text-[0.5625rem] opacity-60 font-bold">FFT</span>
