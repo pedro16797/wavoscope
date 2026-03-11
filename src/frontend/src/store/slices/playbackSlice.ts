@@ -12,6 +12,9 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
   playing: false,
   speed: 1.0,
   volume: 1.0,
+  overdrive: false,
+  normalVolume: 1.0,
+  overdriveVolume: 1.0,
   loop_mode: 'none',
   loop_range: [0, 0],
   filter_enabled: true,
@@ -26,7 +29,15 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     try {
       await axios.post(`${API_BASE}/playback`, { action, value });
       if (action === 'set_speed' && value !== undefined) set({ speed: value });
-      if (action === 'set_volume' && value !== undefined) set({ volume: value });
+      if (action === 'set_volume' && value !== undefined) {
+          const updates: any = { volume: value };
+          if (get().overdrive) {
+              updates.overdriveVolume = value;
+          } else {
+              updates.normalVolume = value;
+          }
+          set(updates);
+      }
     } catch (e) {
       console.error(`[Store] Failed to control playback (${action}):`, e);
     }
@@ -74,6 +85,19 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
         }
     }
     await state.setLoopMode(nextMode);
+  },
+
+  toggleOverdrive: async () => {
+    const state = get();
+    const newOverdrive = !state.overdrive;
+    const newVolume = newOverdrive ? state.overdriveVolume : state.normalVolume;
+
+    set({ overdrive: newOverdrive, volume: newVolume });
+    try {
+        await axios.post(`${API_BASE}/playback`, { action: 'set_volume', value: newVolume });
+    } catch (e) {
+        console.error("[Store] Failed to sync volume after overdrive toggle:", e);
+    }
   },
 
   updateFilter: async (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => {

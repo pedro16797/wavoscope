@@ -120,6 +120,9 @@ export interface PlaybackSlice {
   playing: boolean;
   speed: number;
   volume: number;
+  overdrive: boolean;
+  normalVolume: number;
+  overdriveVolume: number;
   loop_mode: string;
   loop_range: [number, number];
   filter_enabled: boolean;
@@ -136,6 +139,7 @@ export interface PlaybackSlice {
   setLoopMode: (mode: string) => Promise<void>;
   cycleLoopMode: () => Promise<void>;
   updateFilter: (filter: { enabled?: boolean, low_hz?: number, high_hz?: number, low_enabled?: boolean, high_enabled?: boolean }) => Promise<void>;
+  toggleOverdrive: () => Promise<void>;
   setFFTWindow: (sec: number) => void;
   setOctaveShift: (shift: number) => void;
   playTone: (freq: number, action: 'start' | 'stop') => Promise<void>;

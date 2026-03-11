@@ -39,7 +39,8 @@ Wavoscope utiliza un sistema de archivos "sidecar". Cuando abres un archivo de a
 - **Desplazamiento lateral:** **Clica y arrastra** la forma de onda o el espectro para moverte por la línea de tiempo.
 - **Subdivisiones adaptativas:** La línea de tiempo ajusta automáticamente sus pasos de rejilla (desde 0,01s hasta varias horas) a medida que haces zoom, garantizando un nivel de detalle óptimo sin sobrecargar la vista.
 - **Cursor de reproducción:** **Clic izquierdo** en la forma de onda para mover el cursor de reproducción.
-- **Control de velocidad:** Usa el deslizador en la barra inferior para ajustar la velocidad de 0,1x a 2,0x. Wavoscope utiliza un estiramiento de tiempo de alta calidad que preserva el tono.
+- **Control de velocidad:** Usa el deslizador en la barra inferior para ajustar la velocidad de 0,1x a 2.0x. Wavoscope utiliza un estiramiento de tiempo de alta calidad que preserva el tono.
+- **Volumen y Overdrive:** Ajusta el volumen general con el deslizador. Haz clic en el **icono de volumen** o presiona `G` para alternar el **modo Overdrive**, que extiende el rango de volumen del 100% al 400%. La aplicación recuerda niveles de volumen independientes para los modos normal y overdrive.
 - **Tempo y Tap Tempo:** El tempo actual (en BPM) se muestra en el encabezado de la forma de onda. Haz clic repetidamente para medir el tempo manualmente (**Tap Tempo**). Vuelve automáticamente al tempo calculado del compás tras 3 segundos de inactividad.
 
 ---

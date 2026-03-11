@@ -128,6 +128,8 @@
     "stop": "Berhenti",
     "volume": "Volume Pemutaran",
     "volume_desc": "Sesuaikan kenyaringan keseluruhan pemutaran audio.",
+    "overdrive_toggle": "Alihkan Overdrive",
+    "overdrive_desc": "Tingkatkan volume",
     "settings": "Pengaturan"
   },
   "chord": {

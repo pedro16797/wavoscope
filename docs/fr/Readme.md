@@ -39,7 +39,8 @@ Wavoscope utilise un système de fichiers "sidecar". Lorsque vous ouvrez un fich
 - **Panoramique :** **Cliquez et faites glisser** la forme d'onde ou le spectre pour vous déplacer dans la timeline.
 - **Subdivisions Adaptatives :** La timeline ajuste automatiquement ses pas de grille (de 0,01s à plusieurs heures) au fur et à mesure que vous zoomez, garantissant un niveau de détail optimal sans encombrement.
 - **Curseur de Lecture :** **Clic gauche** sur la forme d'onde pour déplacer la tête de lecture.
-- **Contrôle de la Vitesse :** Utilisez le curseur dans la barre du bas pour ajuster la vitesse de 0,1x à 2,0x. Wavoscope utilise un étirement temporel de haute qualité qui préserve la hauteur tonale (pitch).
+- **Contrôle de la Vitesse :** Utilisez le curseur dans la barre du bas pour ajuster la vitesse de 0,1x à 2.0x. Wavoscope utilise un étirement temporel de haute qualité qui préserve la hauteur tonale (pitch).
+- **Volume & Overdrive :** Ajustez le volume général avec le curseur. Cliquez sur l'**icône de volume** ou appuyez sur `G` pour basculer en **mode Overdrive**, qui étend la plage de volume de 100% à 400%. L'application mémorise des niveaux de volume distincts pour les modes normal et overdrive.
 - **Tempo & Tap Tempo :** Le tempo actuel (en BPM) est affiché dans l'en-tête de la forme d'onde. Cliquez plusieurs fois pour mesurer manuellement le tempo (**Tap Tempo**). Il revient automatiquement au tempo de mesure calculé après 3 secondes d'inactivité.
 
 ---

@@ -128,6 +128,8 @@
     "stop": "Detener",
     "volume": "Volumen de reproducción",
     "volume_desc": "Ajusta el volumen general de la reproducción de audio.",
+    "overdrive_toggle": "Alternar Overdrive",
+    "overdrive_desc": "Aumenta el volumen",
     "settings": "Ajustes"
   },
   "chord": {
