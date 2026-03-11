@@ -180,7 +180,8 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
                     low_hz: newState.filter_low_hz,
                     high_hz: newState.filter_high_hz,
                     low_enabled: newState.filter_low_enabled,
-                    high_enabled: newState.filter_high_enabled
+                    high_enabled: newState.filter_high_enabled,
+                    auto_gain: newState.filter_auto_gain
                 }).catch(e => console.error("[Store] Failed to update filter after zoom change:", e));
             }
         }

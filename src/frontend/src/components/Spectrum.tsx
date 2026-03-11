@@ -336,6 +336,7 @@ export const Spectrum: React.FC = () => {
         <div className="absolute top-2 right-2 flex flex-col gap-2">
             <Tooltip content={t('settings.filter_auto_gain_desc')} className="pointer-events-auto">
                 <button
+                    onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => {
                         e.stopPropagation();
                         updateFilter({ auto_gain: !filter_auto_gain });

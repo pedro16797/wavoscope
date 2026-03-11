@@ -112,7 +112,7 @@ class FilterEngine:
         # EMA for auto-gain compensation
         self._ema_in: float = -1.0
         self._ema_out: float = -1.0
-        self._ema_alpha: float = 0.1
+        self._ema_alpha: float = 0.2
 
         self.update_coeffs()
 
@@ -168,6 +168,8 @@ class FilterEngine:
         self._zi = sosfilt_zi(self._sos)
 
     def process(self, chunk: np.ndarray) -> np.ndarray:
+        if not self._enabled:
+            return chunk
         if self._sos is not None and self._zi is not None:
             if not self._auto_gain:
                 chunk, self._zi = sosfilt(self._sos, chunk, self._zi)
