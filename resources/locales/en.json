@@ -90,6 +90,8 @@
     "author_desc": "Default author name for MusicXML metadata.",
     "low_cutoff_desc": "Filter out frequencies below this point.",
     "high_cutoff_desc": "Filter out frequencies above this point.",
+    "filter_auto_gain": "Auto-Gain",
+    "filter_auto_gain_desc": "Automatically compensate for volume lost due to filtering to maintain a consistent perceived loudness.",
     "kb_no_ui_desc": "The following keybinds do not correspond to any graphical interface element."
   },
   "keys": {

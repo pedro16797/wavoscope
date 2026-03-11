@@ -270,6 +270,10 @@ class AudioBackend:
         return self._filters._high_hz
 
     @property
+    def _filter_auto_gain(self) -> bool:
+        return self._filters._auto_gain
+
+    @property
     def active_loop_range(self) -> Tuple[float, float] | None:
         with self._playback._lock:
             return self._active_loop_range

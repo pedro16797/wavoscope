@@ -102,11 +102,18 @@ class FilterEngine:
         self._enabled: bool = True
         self._low_enabled: bool = False
         self._high_enabled: bool = False
+        self._auto_gain: bool = False
         # Match frontend defaults (10% and 90% of visible range MIDI 48..85)
         self._low_hz: float = 161.98
         self._high_hz: float = 895.38
         self._sos: np.ndarray | None = None
         self._zi: np.ndarray | None = None
+
+        # EMA for auto-gain compensation
+        self._ema_in: float = -1.0
+        self._ema_out: float = -1.0
+        self._ema_alpha: float = 0.1
+
         self.update_coeffs()
 
     def set_sr(self, sr: int):
@@ -118,13 +125,16 @@ class FilterEngine:
                    low: float | None = None,
                    high: float | None = None,
                    low_enabled: bool | None = None,
-                   high_enabled: bool | None = None):
+                   high_enabled: bool | None = None,
+                   auto_gain: bool | None = None):
         if enabled is not None:
             self._enabled = enabled
         if low_enabled is not None:
             self._low_enabled = low_enabled
         if high_enabled is not None:
             self._high_enabled = high_enabled
+        if auto_gain is not None:
+            self._auto_gain = auto_gain
 
         min_gap = 50.0
         new_low = low if low is not None else self._low_hz
@@ -149,17 +159,46 @@ class FilterEngine:
             sos_low = butter_4th_order_sos(self._high_hz, self._sr, 'lowpass')
             self._sos = np.vstack([sos_high, sos_low])
         elif self._low_enabled:
+            # Highpass: filter out frequencies below low_hz
             self._sos = butter_4th_order_sos(self._low_hz, self._sr, 'highpass')
         else:
+            # Lowpass: filter out frequencies above high_hz
             self._sos = butter_4th_order_sos(self._high_hz, self._sr, 'lowpass')
 
         self._zi = sosfilt_zi(self._sos)
 
     def process(self, chunk: np.ndarray) -> np.ndarray:
         if self._sos is not None and self._zi is not None:
-            chunk, self._zi = sosfilt(self._sos, chunk, self._zi)
+            if not self._auto_gain:
+                chunk, self._zi = sosfilt(self._sos, chunk, self._zi)
+            else:
+                # Calculate input power
+                p_in = np.mean(chunk * chunk)
+
+                # Filter
+                chunk, self._zi = sosfilt(self._sos, chunk, self._zi)
+
+                # Calculate output power
+                p_out = np.mean(chunk * chunk)
+
+                # Update EMAs
+                if self._ema_in < 0:
+                    self._ema_in = p_in
+                    self._ema_out = p_out
+                else:
+                    self._ema_in = (1 - self._ema_alpha) * self._ema_in + self._ema_alpha * p_in
+                    self._ema_out = (1 - self._ema_alpha) * self._ema_out + self._ema_alpha * p_out
+
+                # Apply compensation gain
+                # Use a small epsilon to avoid division by zero and limit max gain boost
+                ratio = self._ema_in / (self._ema_out + 1e-9)
+                gain = np.sqrt(np.clip(ratio, 0.0, 100.0)) # Max 20dB boost
+                chunk *= gain
+
         return chunk
 
     def reset_zi(self):
         if self._sos is not None:
             self._zi = sosfilt_zi(self._sos)
+        self._ema_in = -1.0
+        self._ema_out = -1.0

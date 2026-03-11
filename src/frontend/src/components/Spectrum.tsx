@@ -14,7 +14,7 @@ export const Spectrum: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const {
     loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys, ui_scale,
-    filter_enabled, filter_low_enabled, filter_high_enabled, filter_low_hz, filter_high_hz, updateFilter,
+    filter_enabled, filter_low_enabled, filter_high_enabled, filter_low_hz, filter_high_hz, filter_auto_gain, updateFilter,
     playTone: playToneStore, stopAllTones
   } = useStore();
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
@@ -331,6 +331,26 @@ export const Spectrum: React.FC = () => {
          onMouseDown={handleMouseDown}
          onContextMenu={handleContextMenu}>
         <canvas ref={canvasRef} className="w-full h-full block" style={{ cursor: activeCursor }} />
+
+        {/* Auto-Gain Toggle */}
+        <div className="absolute top-2 right-2 flex flex-col gap-2">
+            <Tooltip content={t('settings.filter_auto_gain_desc')} className="pointer-events-auto">
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        updateFilter({ auto_gain: !filter_auto_gain });
+                    }}
+                    className={`px-3 py-1.5 rounded-[var(--ui-radius)] text-[0.625rem] font-bold uppercase tracking-wider transition-all shadow-lg active:scale-95 border border-grid ${
+                        filter_auto_gain
+                            ? 'bg-accent text-background border-accent'
+                            : 'bg-surface/80 text-text/60 hover:text-text hover:bg-surface'
+                    }`}
+                    style={{ borderWidth: 'var(--ui-border)' }}
+                >
+                    {t('settings.filter_auto_gain')}
+                </button>
+            </Tooltip>
+        </div>
 
         {/* Hitbox for Low Handle */}
         {xLow >= 0 && xLow <= size.width && (

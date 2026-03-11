@@ -94,6 +94,7 @@ class FilterControl(BaseModel):
     high_hz: Optional[float] = None
     low_enabled: Optional[bool] = None
     high_enabled: Optional[bool] = None
+    auto_gain: Optional[bool] = None
 
 @router.post("/loop")
 async def control_loop(control: LoopControl):
@@ -118,7 +119,8 @@ async def control_filter(control: FilterControl):
             low=control.low_hz,
             high=control.high_hz,
             low_enabled=control.low_enabled,
-            high_enabled=control.high_enabled
+            high_enabled=control.high_enabled,
+            auto_gain=control.auto_gain
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Filter control error: {str(e)}")
