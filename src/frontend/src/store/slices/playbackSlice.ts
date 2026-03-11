@@ -22,7 +22,7 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
   filter_high_enabled: false,
   filter_low_hz: midiToFreq(48 + 37 * 0.1),
   filter_high_hz: midiToFreq(48 + 37 * 0.9),
-  filter_auto_gain: false,
+  filter_auto_gain: true,
   fft_window: 0.3,
   octave_shift: 0,
 

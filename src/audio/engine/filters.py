@@ -102,7 +102,7 @@ class FilterEngine:
         self._enabled: bool = True
         self._low_enabled: bool = False
         self._high_enabled: bool = False
-        self._auto_gain: bool = False
+        self._auto_gain: bool = True
         # Match frontend defaults (10% and 90% of visible range MIDI 48..85)
         self._low_hz: float = 161.98
         self._high_hz: float = 895.38
