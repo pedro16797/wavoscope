@@ -38,6 +38,12 @@ def analyze_chord_at(audio_data: np.ndarray, sr: int, t: float, window_s: float 
     if np.sum(chroma_mean) > 0:
         chroma_mean /= np.max(chroma_mean)
 
+    return analyze_chroma(chroma_mean)
+
+def analyze_chroma(chroma_mean: np.ndarray) -> Dict[str, Any]:
+    """
+    Suggest a chord based on chroma vector.
+    """
     roots = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
     # Templates: root, major third, fifth
@@ -48,12 +54,30 @@ def analyze_chord_at(audio_data: np.ndarray, sr: int, t: float, window_s: float 
     dom7_template = np.array([1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0])
     # Templates: root, minor third, fifth, minor seventh
     m7_template = np.array([1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0])
+    # Templates: root, major third, fifth, major seventh
+    maj7_template = np.array([1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1])
+    # Templates: root, major third, fifth, sixth
+    maj6_template = np.array([1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0])
+    # Templates: root, second, fifth
+    sus2_template = np.array([1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0])
+    # Templates: root, fourth, fifth
+    sus4_template = np.array([1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0])
+    # Templates: root, minor third, diminished fifth
+    dim_template = np.array([1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0])
+    # Templates: root, major third, augmented fifth
+    aug_template = np.array([1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0])
 
     templates = [
         (major_template, "", ""),
         (minor_template, "m", ""),
         (dom7_template, "", "7"),
         (m7_template, "m", "7"),
+        (maj7_template, "", "maj7"),
+        (maj6_template, "", "6"),
+        (sus2_template, "sus2", ""),
+        (sus4_template, "sus4", ""),
+        (dim_template, "dim", ""),
+        (aug_template, "aug", ""),
     ]
 
     best_score = -1.0
@@ -63,7 +87,16 @@ def analyze_chord_at(audio_data: np.ndarray, sr: int, t: float, window_s: float 
         for template, quality, extension in templates:
             cur_template = np.roll(template, i)
             # Dot product for similarity
-            score = np.dot(chroma_mean, cur_template)
+            raw_score = np.dot(chroma_mean, cur_template)
+
+            # Penalise the number of active notes in the template slightly to avoid "over-fitting"
+            # simple triads, but normalize by note count so complex chords can still win if they fit well.
+            active_notes = np.sum(template)
+            score = raw_score / active_notes
+
+            # Small bonus for more complex chords if they match well
+            if active_notes > 3:
+                score *= 1.05
 
             if score > best_score:
                 best_score = score
