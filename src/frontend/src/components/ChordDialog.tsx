@@ -14,10 +14,10 @@ interface ChordDialogProps {
 
 const ROOTS = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 const ACCIDENTALS = ['', '#', 'b'];
-const QUALITIES = ['', 'm', 'dim', 'aug', 'sus2', 'sus4'];
-const EXTENSIONS = ['', '7', '9', '11', '13'];
+const QUALITIES = ['', 'm', 'dim', 'aug', 'sus2', 'sus4', 'msus2', 'msus4'];
+const EXTENSIONS = ['', '6', '7', '9', '11', '13', 'maj7', 'maj9', 'maj11', 'maj13'];
 const ALTERATIONS = ['b5', '#5', 'b9', '#9', '#11', 'b13'];
-const ADDITIONS = ['add9', 'add11', 'add13'];
+const ADDITIONS = ['add2', 'add4', 'add9', 'add11', 'add13'];
 
 export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) => {
   const { t } = useTranslation();
@@ -38,7 +38,7 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
 
     // Regex to pull apart the string
     // 1: Root, 2: Accidental, 3: Quality, 4: Extension, 5: Rest (Alterations, Additions, Bass)
-    const mainRegex = /^([A-G])([#b]?)(m|dim|aug|sus2|sus4|M?)(7|9|11|13|)?(.*)$/;
+    const mainRegex = /^([A-G])([#b]?)(msus2|msus4|m(?!aj)|dim|aug|sus2|sus4|M?)(maj7|maj9|maj11|maj13|M7|M9|M11|M13|6|7|9|11|13|)?(.*)$/;
     const match = text.match(mainRegex);
 
     if (match) {
@@ -46,6 +46,11 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
         newChord.ca = match[2];
         newChord.q = match[3] === 'M' ? '' : (match[3] || '');
         newChord.ext = match[4] || '';
+
+        // Normalize M7 to maj7 etc
+        if (newChord.ext.startsWith('M')) {
+            newChord.ext = 'maj' + newChord.ext.substring(1);
+        }
 
         let rest = match[5];
 

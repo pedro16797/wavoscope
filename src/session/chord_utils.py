@@ -6,7 +6,11 @@ def get_chord_midi_notes(chord: Dict[str, Any]) -> List[int]:
     acc = chord.get('ca', '')
     if acc == '#': root += 1
     elif acc == 'b': root -= 1
-    base = 60 + root # C4 base
+
+    # Base octave logic: Keep roots in G3-F#4 range (55-66)
+    base = 60 + root
+    if root >= 7:
+        base -= 12
 
     intervals = [0] # Intervals relative to root
 
@@ -17,18 +21,26 @@ def get_chord_midi_notes(chord: Dict[str, Any]) -> List[int]:
     elif quality == 'aug': intervals += [4, 8]
     elif quality == 'sus2': intervals += [2, 7]
     elif quality == 'sus4': intervals += [5, 7]
+    elif quality == 'msus2': intervals += [2, 3, 7]
+    elif quality == 'msus4': intervals += [3, 5, 7]
     else: intervals += [4, 7] # Default to Major
 
     # Extension
     ext = chord.get('ext', '')
-    if ext == '7':
-        intervals.append(9 if quality == 'dim' else 10)
-    elif ext == '9':
-        intervals += [9 if quality == 'dim' else 10, 14]
-    elif ext == '11':
-        intervals += [9 if quality == 'dim' else 10, 14, 17]
-    elif ext == '13':
-        intervals += [9 if quality == 'dim' else 10, 14, 17, 21]
+    if ext:
+        # Determine 7th/6th interval
+        is_major_7 = any(m in ext for m in ['maj', 'M'])
+        if is_major_7:
+            intervals.append(11)
+        elif ext == '6':
+            intervals.append(9)
+        elif any(x in ext for x in ['7', '9', '11', '13']):
+            intervals.append(9 if quality == 'dim' else 10)
+
+        # Add higher extensions
+        if '9' in ext: intervals.append(14)
+        if '11' in ext: intervals.append(17)
+        if '13' in ext: intervals.append(21)
 
     # Alterations
     for alt_val in chord.get('alt', []):
@@ -48,6 +60,8 @@ def get_chord_midi_notes(chord: Dict[str, Any]) -> List[int]:
         if add_val == 'add9': intervals.append(14)
         elif add_val == 'add11': intervals.append(17)
         elif add_val == 'add13': intervals.append(21)
+        elif add_val == 'add2': intervals.append(2)
+        elif add_val == 'add4': intervals.append(5)
 
     midi_notes = [base + n for n in intervals]
 
@@ -58,8 +72,8 @@ def get_chord_midi_notes(chord: Dict[str, Any]) -> List[int]:
         b_acc = chord.get('ba', '')
         if b_acc == '#': b_root += 1
         elif b_acc == 'b': b_root -= 1
-        midi_notes.append(48 + b_root) # C3 base for bass
+        midi_notes.append(36 + b_root) # C2 base for bass
     else:
-        midi_notes.append(48 + root) # Add root as bass by default
+        midi_notes.append(36 + root) # Add root as bass by default
 
     return sorted(list(set(midi_notes)))

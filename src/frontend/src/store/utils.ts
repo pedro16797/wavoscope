@@ -16,7 +16,12 @@ export const formatChord = (chord: Chord): string => {
 export const getChordMidiNotes = (chord: Chord): number[] => {
   const rootMap: Record<string, number> = { 'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11 };
   const root = (rootMap[chord.r] || 0) + (chord.ca === '#' ? 1 : chord.ca === 'b' ? -1 : 0);
-  const base = 60 + root; // C4 base
+
+  // Base octave logic: Keep roots in G3-F#4 range (55-66)
+  let base = 60 + root;
+  if (root >= 7) {
+    base -= 12;
+  }
 
   const intervals: number[] = [0]; // Intervals relative to root
 
@@ -26,18 +31,24 @@ export const getChordMidiNotes = (chord: Chord): number[] => {
   else if (chord.q === 'aug') intervals.push(4, 8);
   else if (chord.q === 'sus2') intervals.push(2, 7);
   else if (chord.q === 'sus4') intervals.push(5, 7);
+  else if (chord.q === 'msus2') intervals.push(2, 3, 7);
+  else if (chord.q === 'msus4') intervals.push(3, 5, 7);
   else intervals.push(4, 7); // Default to Major
 
   // Extension
-  if (chord.ext === '7') {
-    if (chord.q === 'dim') intervals.push(9); // Full dim
-    else intervals.push(10); // dominant/minor 7th
-  } else if (chord.ext === '9') {
-    intervals.push(chord.q === 'dim' ? 9 : 10, 14);
-  } else if (chord.ext === '11') {
-    intervals.push(chord.q === 'dim' ? 9 : 10, 14, 17);
-  } else if (chord.ext === '13') {
-    intervals.push(chord.q === 'dim' ? 9 : 10, 14, 17, 21);
+  if (chord.ext) {
+    const isMajor7 = chord.ext.includes('maj') || chord.ext.includes('M');
+    if (isMajor7) {
+        intervals.push(11);
+    } else if (chord.ext === '6') {
+        intervals.push(9);
+    } else if (['7', '9', '11', '13'].some(x => chord.ext.includes(x))) {
+        intervals.push(chord.q === 'dim' ? 9 : 10);
+    }
+
+    if (chord.ext.includes('9')) intervals.push(14);
+    if (chord.ext.includes('11')) intervals.push(17);
+    if (chord.ext.includes('13')) intervals.push(21);
   }
 
   // Alterations
@@ -61,6 +72,8 @@ export const getChordMidiNotes = (chord: Chord): number[] => {
     if (add_val === 'add9') intervals.push(14);
     else if (add_val === 'add11') intervals.push(17);
     else if (add_val === 'add13') intervals.push(21);
+    else if (add_val === 'add2') intervals.push(2);
+    else if (add_val === 'add4') intervals.push(5);
   });
 
   const midiNotes = intervals.map(n => base + n);
@@ -68,9 +81,9 @@ export const getChordMidiNotes = (chord: Chord): number[] => {
   // Bass
   if (chord.b) {
     const bassRoot = (rootMap[chord.b] || 0) + (chord.ba === '#' ? 1 : chord.ba === 'b' ? -1 : 0);
-    midiNotes.push(48 + bassRoot); // C3 base for bass
+    midiNotes.push(36 + bassRoot); // C2 base for bass
   } else {
-    midiNotes.push(48 + root); // Add root as bass by default
+    midiNotes.push(36 + root); // Add root as bass by default
   }
 
   return Array.from(new Set(midiNotes)).sort((a, b) => a - b);
