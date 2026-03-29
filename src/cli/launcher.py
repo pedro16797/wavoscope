@@ -17,17 +17,17 @@ def find_available_port(host="127.0.0.1", start_port=8000):
             port += 1
     return start_port
 
-def run_server(port=8000):
+def run_server(port=8000, host="127.0.0.1"):
     global _backend_exception
     try:
         from backend.main import app
-        uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning")
+        uvicorn.run(app, host=host, port=port, log_level="warning")
     except Exception as e:
         _backend_exception = e
         raise e
 
-def start_backend_thread(port=8000):
-    server_thread = threading.Thread(target=run_server, args=(port,), daemon=True)
+def start_backend_thread(port=8000, host="127.0.0.1"):
+    server_thread = threading.Thread(target=run_server, args=(port, host), daemon=True)
     server_thread.start()
     return server_thread
 

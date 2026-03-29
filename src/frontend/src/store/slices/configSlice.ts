@@ -26,6 +26,8 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   autosave_max_snapshots: 5,
   autosave_path: '',
   undo_steps: 50,
+  remote_access: false,
+  remote_url: '',
   showSettings: false,
   showSpectrum: true,
   showLyrics: false,
@@ -78,7 +80,8 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         autosave_interval: res.data.autosave_interval,
         autosave_max_snapshots: res.data.autosave_max_snapshots,
         autosave_path: res.data.autosave_path,
-        undo_steps: res.data.undo_steps
+        undo_steps: res.data.undo_steps,
+        remote_access: res.data.remote_access
       };
 
       const maxShift = 6 - Math.floor(newKeys / 12);
@@ -150,6 +153,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         if (cfg.autosave_max_snapshots !== undefined) set({ autosave_max_snapshots: cfg.autosave_max_snapshots });
         if (cfg.autosave_path !== undefined) set({ autosave_path: cfg.autosave_path });
         if (cfg.undo_steps !== undefined) set({ undo_steps: cfg.undo_steps });
+        if (cfg.remote_access !== undefined) set({ remote_access: cfg.remote_access });
 
         if (cfg.spectrum_keys !== undefined && cfg.spectrum_keys !== oldState.spectrum_keys) {
             const newKeys = cfg.spectrum_keys;
@@ -202,4 +206,13 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   setShowSpectrum: (show: boolean) => set({ showSpectrum: show }),
   setShowLyrics: (show: boolean) => set({ showLyrics: show }),
   setViewport: (offset: number, zoom: number) => set({ offset, zoom }),
+
+  fetchRemoteUrl: async () => {
+    try {
+        const res = await axios.get(`${API_BASE}/config/remote-url`);
+        set({ remote_url: res.data.url });
+    } catch (e) {
+        console.error("[Store] Failed to fetch remote url:", e);
+    }
+  },
 });

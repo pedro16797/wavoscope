@@ -17,7 +17,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
     musicxml_author, updateConfig, time_signature, updateTimeSignature,
     browseFolder, autosave_enabled, autosave_forced, autosave_interval,
     autosave_max_snapshots, autosave_path, undo_steps, undo_history,
-    fetchUndoSteps, restoreUndoStep
+    fetchUndoSteps, restoreUndoStep,
+    remote_access, remote_url, fetchRemoteUrl
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<'global' | 'project' | 'recovery' | 'keybinds'>('global');
@@ -37,6 +38,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   const [asMaxSnapshots, setAsMaxSnapshots] = useState(autosave_max_snapshots);
   const [asPath, setAsPath] = useState(autosave_path);
   const [uSteps, setUSteps] = useState(undo_steps);
+  const [remAccess, setRemAccess] = useState(remote_access);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDenDropdownOpen, setIsDenDropdownOpen] = useState(false);
   const [isUndoDropdownOpen, setIsUndoDropdownOpen] = useState(false);
@@ -63,6 +65,13 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
   useEffect(() => { setAsMaxSnapshots(autosave_max_snapshots); }, [autosave_max_snapshots]);
   useEffect(() => { setAsPath(autosave_path); }, [autosave_path]);
   useEffect(() => { setUSteps(undo_steps); }, [undo_steps]);
+  useEffect(() => { setRemAccess(remote_access); }, [remote_access]);
+
+  useEffect(() => {
+    if (activeTab === 'global' && remote_access) {
+        fetchRemoteUrl();
+    }
+  }, [activeTab, remote_access, fetchRemoteUrl]);
 
   const handleSave = async () => {
     await updateConfig({
@@ -79,7 +88,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
         autosave_interval: asInterval,
         autosave_max_snapshots: asMaxSnapshots,
         autosave_path: asPath,
-        undo_steps: uSteps
+        undo_steps: uSteps,
+        remote_access: remAccess
     });
     await updateTimeSignature(timeSig.numerator, timeSig.denominator);
     onClose();
@@ -204,6 +214,38 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                 className="w-full bg-background border-[var(--ui-border)] border-grid rounded-[var(--ui-radius)] p-2 outline-none focus:border-accent text-sm font-mono text-text accent-accent"
                                 style={{ borderWidth: 'var(--ui-border)' }} />
                         </Tooltip>
+                    </div>
+
+                    <div className="border-t border-grid pt-4 mt-4" style={{ borderColor: 'var(--ui-border)' }} />
+
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm opacity-80">{t('settings.remote_access')}</span>
+                            <Tooltip content={t('settings.remote_access_desc')}>
+                                <button onClick={() => setRemAccess(!remAccess)}
+                                        className={`w-10 h-5 rounded-full transition-colors relative ${remAccess ? 'bg-accent' : 'bg-grid'}`}>
+                                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${remAccess ? 'left-6' : 'left-1'}`} />
+                                </button>
+                            </Tooltip>
+                        </div>
+                        {remAccess && (
+                            <div className="space-y-3 pl-2 border-l-2 border-accent/20 animate-in fade-in slide-in-from-left-1">
+                                <div className="space-y-1">
+                                    <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('settings.remote_url')}</label>
+                                    <div className="bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-xs font-mono text-accent break-all select-all"
+                                         style={{ borderWidth: 'var(--ui-border)' }}>
+                                        {remote_url || '...'}
+                                    </div>
+                                    <p className="text-[0.5625rem] opacity-40 leading-tight">
+                                        {t('settings.remote_url_hint')}
+                                    </p>
+                                </div>
+                                <div className="p-2 bg-accent/5 border border-accent/20 rounded-[var(--ui-radius)] text-[0.625rem] text-accent/80 flex items-start gap-2">
+                                    <span className="mt-0.5">ℹ️</span>
+                                    <span>{t('settings.remote_restart_hint')}</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                 </>
