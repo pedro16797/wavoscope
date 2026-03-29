@@ -12,7 +12,16 @@ from fastapi.staticfiles import StaticFiles  # noqa: E402
 from fastapi.responses import FileResponse  # noqa: E402
 
 from backend import state  # noqa: E402
-from backend.routers import playback, audio, project, config, themes, ws, locales  # noqa: E402
+from backend.routers import (  # noqa: E402
+    playback,
+    audio,
+    project,
+    config,
+    themes,
+    ws,
+    locales,
+    playlists,
+)
 from backend import autosave  # noqa: E402
 from utils.logging import logger # noqa: E402
 
@@ -21,6 +30,15 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup_event():
     autosave.start()
+
+    def on_playback_finished():
+        if state.project and state.project.loop_mode == "playlist":
+            from backend.routers.playback import trigger_next_playlist_item
+            trigger_next_playlist_item()
+
+    # We need to wait for a project to be loaded to register the callback to its backend
+    # But the project can change, so we might need a more global way or register it on project load.
+    state.on_playback_finished = on_playback_finished
 
 @app.on_event("shutdown")
 async def shutdown_event():
@@ -42,6 +60,7 @@ app.include_router(config.router)
 app.include_router(themes.router)
 app.include_router(ws.router)
 app.include_router(locales.router)
+app.include_router(playlists.router)
 
 # Serve locales
 locales_path = root_path / "resources" / "locales"

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
-import { Play, Pause, Square, Volume2, Settings, Timer, FolderOpen, Save, Repeat, Repeat1, FileDown } from 'lucide-react';
+import { Play, Pause, Square, Volume2, Settings, Timer, FolderOpen, Save, Repeat, Repeat1, FileDown, ListMusic, SkipBack, SkipForward } from 'lucide-react';
 import { Tooltip } from './Tooltip';
 
 export const PlaybackBar: React.FC = () => {
@@ -11,7 +11,8 @@ export const PlaybackBar: React.FC = () => {
     overdrive, toggleOverdrive,
     controlPlayback, currentTheme, themes, ui_scale,
     metronome_enabled, updateMetronome, setShowSettings, browseFile,
-    saveProject, exportMusicXML, dirty, loop_mode, cycleLoopMode
+    saveProject, exportMusicXML, dirty, loop_mode, cycleLoopMode,
+    activePlaylistId, setShowPlaylistDialog, nextPlaylistItem, prevPlaylistItem
   } = useStore();
 
   const theme = themes[currentTheme] || {};
@@ -27,6 +28,7 @@ export const PlaybackBar: React.FC = () => {
 
   const getLoopIcon = () => {
     if (loop_mode === 'bar' || loop_mode === 'lyric') return <Repeat1 size={20 * ui_scale} />;
+    if (loop_mode === 'playlist') return <Repeat size={20 * ui_scale} className="text-accent" />;
     return <Repeat size={20 * ui_scale} />;
   };
 
@@ -36,6 +38,7 @@ export const PlaybackBar: React.FC = () => {
         case 'section': return t('playback.loop_section');
         case 'bar': return t('playback.loop_bar');
         case 'lyric': return t('playback.loop_lyric');
+        case 'playlist': return t('playback.loop_playlist');
         default: return t('playback.loop_off');
     }
   };
@@ -57,6 +60,12 @@ export const PlaybackBar: React.FC = () => {
         <Tooltip content={t('playback.open')} shortcut={`${t('keys.ctrl')} + O`}>
             <button onClick={browseFile} aria-label={t('playback.open')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
                 <FolderOpen size={20 * ui_scale} />
+            </button>
+        </Tooltip>
+        <Tooltip content={t('playlist.title')}>
+            <button onClick={() => setShowPlaylistDialog(true)} aria-label={t('playlist.title')}
+                    className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${activePlaylistId ? 'text-accent' : 'opacity-90'}`}>
+                <ListMusic size={20 * ui_scale} />
             </button>
         </Tooltip>
         <Tooltip content={dirty ? t('playback.save_dirty') : t('playback.save_clean')} shortcut={`${t('keys.ctrl')} + S`}>
@@ -83,10 +92,26 @@ export const PlaybackBar: React.FC = () => {
                 <Tooltip content={t('playback.stop')} shortcut={`${t('keys.shift')} + ${t('keys.space')}`}>
                     <button onClick={() => controlPlayback('stop')}
                             aria-label={t('playback.stop')}
-                            className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-1">
+                            className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
                     <Square size={20 * ui_scale} fill="currentColor" />
                     </button>
                 </Tooltip>
+                {activePlaylistId && (
+                    <>
+                        <Tooltip content={t('playlist.prev')}>
+                            <button onClick={prevPlaylistItem} aria-label={t('playlist.prev')}
+                                    className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
+                                <SkipBack size={20 * ui_scale} fill="currentColor" />
+                            </button>
+                        </Tooltip>
+                        <Tooltip content={t('playlist.next')}>
+                            <button onClick={nextPlaylistItem} aria-label={t('playlist.next')}
+                                    className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-1">
+                                <SkipForward size={20 * ui_scale} fill="currentColor" />
+                            </button>
+                        </Tooltip>
+                    </>
+                )}
                 <Tooltip content={getLoopTitle()} shortcut={t('keys.tab')}>
                     <button onClick={() => cycleLoopMode()} aria-label={getLoopTitle()}
                             className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors relative ${loop_mode !== 'none' ? 'text-accent' : 'opacity-40'}`}>

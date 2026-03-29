@@ -36,15 +36,15 @@ def generate():
         page.evaluate("window.useStore.getState().addFlag(1.0)")
         page.evaluate("window.useStore.getState().addHarmonyFlag(2.0, {r: 'G', ca: '', q: 'm', ext: '7', alt: [], add: [], b: '', ba: ''})")
         page.evaluate("window.useStore.getState().addLyric({s: 'Wavoscope', t: 1.5, l: 1.0})")
-        time.sleep(1)
+        time.sleep(2)
 
         # Screenshot: Main View
         page.screenshot(path="docs/images/main_view.png")
 
         # 4. Screenshot: Lyrics Track Detail
         # Focus on the lyrics/waveform area
-        lyrics_track = page.locator(".relative.w-full.h-8.select-none.bg-surface")
-        lyrics_track.screenshot(path="docs/images/lyrics_track.png")
+        # Use a more resilient selector if possible
+        page.locator("div:has-text('Lyrics')").last.screenshot(path="docs/images/lyrics_track.png")
 
         # 5. Screenshot: Spectrum with Filter
         # Enable filter handles
@@ -78,6 +78,12 @@ def generate():
         page.evaluate("window.useStore.getState().setEditingHarmonyFlagIdx(0)")
         time.sleep(1)
         page.locator(".fixed.inset-0 > div").screenshot(path="docs/images/harmony_dialog.png")
+
+        # 9. Screenshot: Playlist Dialog
+        page.evaluate("window.useStore.getState().setEditingHarmonyFlagIdx(null)")
+        page.evaluate("window.useStore.getState().setShowPlaylistDialog(true)")
+        time.sleep(1)
+        page.locator(".fixed.inset-0 > div").screenshot(path="docs/images/playlist_dialog.png")
 
         browser.close()
 

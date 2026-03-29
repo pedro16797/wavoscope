@@ -122,6 +122,7 @@
     "loop_section": "Loop: Bagian Saat Ini",
     "loop_bar": "Loop: Birama Saat Ini",
     "loop_lyric": "Loop: Lirik Terpilih",
+    "loop_playlist": "Playlist: Maju otomatis",
     "loop_off": "Loop: Mati",
     "metronome": "Alihkan Metronom",
     "speed": "Kecepatan",
@@ -166,6 +167,16 @@
   "progress": {
     "title": "Memproses...",
     "please_wait": "Harap tunggu sementara kami memproses permintaan Anda."
+  },
+  "playlist": {
+    "title": "Daftar Putar",
+    "new_placeholder": "Nama daftar putar...",
+    "add_song": "Tambah Lagu",
+    "empty": "Tidak ada lagu dalam daftar putar ini.",
+    "select_prompt": "Pilih daftar putar untuk melihat isinya.",
+    "not_found": "Hilang",
+    "prev": "Lagu sebelumnya",
+    "next": "Lagu berikutnya"
   },
   "views": {
     "timeline_waveform": "Timeline & Bentuk Gelombang",

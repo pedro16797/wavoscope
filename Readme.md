@@ -41,6 +41,8 @@ Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope c
 - **Playback Cursor:** **Left Click** on the waveform to move the playhead.
 - **Speed Control:** Use the slider in the bottom bar to adjust speed from 0.1x to 2.0x. Wavoscope uses high-quality time-stretching that preserves pitch.
 - **Volume & Overdrive:** Adjust the overall playback volume with the slider. Click the **Volume Icon** or press `G` to toggle **Overdrive mode**, which extends the volume range from 100% up to 400%. The app remembers separate volume levels for normal and overdrive modes.
+- **Playlists:** Click the playlist icon to manage collections of songs. You can create, edit, and delete playlists, and easily switch between tracks.
+- **Auto-Advance:** When a playlist is active, you can enable the **Playlist loop mode** to automatically play the next song in the list when the current one ends.
 - **Tempo & Tap Tempo:** The current tempo (in BPM) is displayed in the waveform header. Click it repeatedly to manually measure the tempo (**Tap Tempo**). It automatically reverts to the calculated measure tempo after 3 seconds of inactivity.
 
 ---
@@ -163,6 +165,7 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | **Toggle High Cutoff** | `Shift + F` |
 | **Add Lyrics Flag** | `V` |
 | **Split & Advance Lyric**| `Space` / `-` (Inside Input) |
+| **Open Playlists** | `P` |
 | **Cycle Loop Modes** | `Tab` |
 | **Deselect Selection** | `Shift + V` |
 | **Seek between Lyrics** | `Shift + Left/Right` / `Shift \+ A/D` |
