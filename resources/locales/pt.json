@@ -88,7 +88,12 @@
     "undo_initial_state": "Estado inicial",
     "recovery_desc": "Configure as opções de recuperação do projeto, o histórico de desfazer e o salvamento automático.",
     "undo_steps_desc": "Número máximo de passos de desfazer a armazenar na memória.",
-    "undo_history_desc": "Selecione um estado anterior para restaurar o seu projeto."
+    "undo_history_desc": "Selecione um estado anterior para restaurar o seu projeto.",
+    "remote_access": "Acesso Remoto",
+    "remote_access_desc": "Permitir que outros dispositivos na sua rede local controlem o Wavoscope.",
+    "remote_url": "URL de Controle Remoto",
+    "remote_url_hint": "Introduza este URL no navegador do seu telemóvel ou outro dispositivo.",
+    "remote_restart_hint": "Deve reiniciar o Wavoscope para que as alterações ao acesso remoto produzam efeito."
   },
   "keys": {
     "space": "Espaço",

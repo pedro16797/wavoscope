@@ -88,7 +88,12 @@
     "undo_initial_state": "Initialzustand",
     "recovery_desc": "Konfigurieren Sie Projekt-Wiederherstellungsoptionen, den Rückgängig-Verlauf und die automatische Speicherung.",
     "undo_steps_desc": "Maximale Anzahl der im Speicher zu speichernden Rückgängig-Schritte.",
-    "undo_history_desc": "Wählen Sie einen vorherigen Zustand aus, um Ihr Projekt wiederherzustellen."
+    "undo_history_desc": "Wählen Sie einen vorherigen Zustand aus, um Ihr Projekt wiederherzustellen.",
+    "remote_access": "Fernzugriff",
+    "remote_access_desc": "Ermöglicht anderen Geräten in Ihrem lokalen Netzwerk die Steuerung von Wavoscope.",
+    "remote_url": "Fernsteuerungs-URL",
+    "remote_url_hint": "Geben Sie diese URL im Browser Ihres Telefons oder eines anderen Geräts ein.",
+    "remote_restart_hint": "Sie müssen Wavoscope neu starten, damit die Änderungen am Fernzugriff wirksam werden."
   },
   "keys": {
     "space": "Leertaste",

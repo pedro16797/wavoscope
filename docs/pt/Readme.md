@@ -42,6 +42,7 @@ O Wavoscope usa um sistema de arquivo "sidecar". Quando você abre um arquivo de
 - **Controle de Velocidade:** Use o controle deslizante na barra inferior para ajustar a velocidade de 0,1x a 2.0x. Wavoscope utiliza estiramento de tempo de alta qualidade que preserva a afinação (pitch).
 - **Volume e Overdrive:** Ajuste o volume geral com o controle deslizante. Clique no **ícone de volume** ou pressione `G` para alternar o **modo Overdrive**, que estende o intervalo de volume de 100% para 400%. O aplicativo lembra níveis de volume independentes para os modos normal e overdrive.
 - **Tempo e Tap Tempo:** O tempo atual (em BPM) é exibido no cabeçalho da forma de onda. Clique repetidamente para medir manualmente o tempo (**Tap Tempo**). Ele retorna automaticamente ao tempo calculado do compasso após 3 segundos de inatividade.
+- **Controle Remoto:** Ative o **Acesso Remoto** nas configurações para controlar o Wavoscope a partir de outros dispositivos (como um telemóvel) na mesma rede local. As configurações exibirão um URL que pode inserir no navegador do seu dispositivo remoto para aceder à interface e controlar a reprodução.
 
 ---
 

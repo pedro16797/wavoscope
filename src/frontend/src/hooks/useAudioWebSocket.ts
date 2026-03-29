@@ -19,6 +19,12 @@ export const useAudioWebSocket = () => {
     const ws = new WebSocket(wsUrl);
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        if (data.loaded !== undefined) {
+            const wasLoaded = useStore.getState().loaded;
+            if (data.loaded && !wasLoaded) {
+                fetchStatus();
+            }
+        }
         updatePosition(data.position, data.loop_range);
         setPlaying(data.playing);
     };

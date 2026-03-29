@@ -42,6 +42,7 @@ Wavoscope utilizza un sistema di file "sidecar". Quando apri un file audio, Wavo
 - **Controllo Velocità:** Usa lo slider nella barra inferiore per regolare la velocità da 0.1x a 2.0x. Wavoscope utilizza un algoritmo di time-stretching di alta qualità che preserva l'intonazione (pitch).
 - **Volume & Overdrive:** Regola il volume generale con il cursore. Clicca sull'**icona del volume** o premi `G` per attivare la **modalità Overdrive**, che estende l'intervallo di volume dal 100% al 400%. L'app ricorda livelli di volume separati per le modalità normale e overdrive.
 - **Tempo e Tap Tempo:** Il tempo attuale (in BPM) è visualizzato nell'intestazione della forma d'onda. Fare clic ripetutamente per misurare manualmente il tempo (**Tap Tempo**). Torna automaticamente al tempo misurato dopo 3 secondi di inattività.
+- **Telecomando:** Abilita l'**Accesso remoto** nelle impostazioni per controllare Wavoscope da altri dispositivi (come un telefono cellulare) sulla stessa rete locale. Le impostazioni visualizzeranno un URL che puoi inserire nel browser del tuo dispositivo remoto per accedere all'interfaccia e controllare la riproduzione.
 
 ---
 
