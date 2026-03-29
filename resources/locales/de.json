@@ -93,7 +93,8 @@
     "remote_access_desc": "Ermöglicht anderen Geräten in Ihrem lokalen Netzwerk die Steuerung von Wavoscope.",
     "remote_url": "Fernsteuerungs-URL",
     "remote_url_hint": "Geben Sie diese URL im Browser Ihres Telefons oder eines anderen Geräts ein.",
-    "remote_restart_hint": "Sie müssen Wavoscope neu starten, damit die Änderungen am Fernzugriff wirksam werden."
+    "remote_restart_hint": "Sie müssen Wavoscope neu starten, damit die Änderungen am Fernzugriff wirksam werden.",
+    "remote_warning": "Warnung: Der Fernzugriff ist nicht passwortgeschützt. Jeder in Ihrem lokalen Netzwerk kann die App steuern."
   },
   "keys": {
     "space": "Leertaste",

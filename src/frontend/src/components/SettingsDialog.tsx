@@ -244,6 +244,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                     <span className="mt-0.5">ℹ️</span>
                                     <span>{t('settings.remote_restart_hint')}</span>
                                 </div>
+                                <div className="p-2 bg-red-500/10 border border-red-500/20 rounded-[var(--ui-radius)] text-[0.5625rem] text-red-400 flex items-start gap-2">
+                                    <span className="mt-0.5">⚠️</span>
+                                    <span>{t('settings.remote_warning')}</span>
+                                </div>
                             </div>
                         )}
                     </div>

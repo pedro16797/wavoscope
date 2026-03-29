@@ -44,7 +44,7 @@ Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope c
 - **Playlists:** Click the playlist icon to manage collections of songs. You can create, edit, and delete playlists, and easily switch between tracks.
 - **Auto-Advance:** When a playlist is active, you can enable the **Playlist loop mode** to automatically play the next song in the list when the current one ends.
 - **Tempo & Tap Tempo:** The current tempo (in BPM) is displayed in the waveform header. Click it repeatedly to manually measure the tempo (**Tap Tempo**). It automatically reverts to the calculated measure tempo after 3 seconds of inactivity.
-- **Remote Control:** Enable **Remote Access** in settings to control Wavoscope from other devices (like a mobile phone) on the same local network. The settings will display a URL that you can enter in your remote device's browser to access the interface and control playback.
+- **Remote Control:** Enable **Remote Access** in settings to control Wavoscope from other devices (like a mobile phone) on the same local network. The settings will display a URL that you can enter in your remote device's browser to access the interface and control playback. *Note: Remote access is unauthenticated; anyone on your local network will be able to control the application.*
 
 ---
 

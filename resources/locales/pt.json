@@ -93,7 +93,8 @@
     "remote_access_desc": "Permitir que outros dispositivos na sua rede local controlem o Wavoscope.",
     "remote_url": "URL de Controle Remoto",
     "remote_url_hint": "Introduza este URL no navegador do seu telemóvel ou outro dispositivo.",
-    "remote_restart_hint": "Deve reiniciar o Wavoscope para que as alterações ao acesso remoto produzam efeito."
+    "remote_restart_hint": "Deve reiniciar o Wavoscope para que as alterações ao acesso remoto produzam efeito.",
+    "remote_warning": "Aviso: O acesso remoto não é autenticado. Qualquer pessoa na sua rede local pode controlar a aplicação."
   },
   "keys": {
     "space": "Espaço",

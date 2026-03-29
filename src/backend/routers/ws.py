@@ -7,33 +7,35 @@ router = APIRouter(tags=["websocket"])
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
+    from utils.logging import logger
 
     # Send initial state
-    initial_loaded = state.project is not None
+    p = state.project
+    initial_loaded = p is not None
     if initial_loaded:
         await websocket.send_json({
-            "position": state.project.position,
-            "playing": state.project.backend._playing,
-            "loop_range": state.project.get_loop_range(),
+            "position": p.position,
+            "playing": p.backend._playing,
+            "loop_range": p.get_loop_range(),
             "loaded": True
         })
     else:
         await websocket.send_json({"loaded": False})
 
     last_state = {
-        "position": state.project.position if initial_loaded else -1.0,
-        "playing": state.project.backend._playing if initial_loaded else False,
+        "position": p.position if initial_loaded else -1.0,
+        "playing": p.backend._playing if initial_loaded else False,
         "loaded": initial_loaded,
-        "loop_range": state.project.get_loop_range() if initial_loaded else None
+        "loop_range": p.get_loop_range() if initial_loaded else None
     }
 
     try:
         while True:
-            current_loaded = state.project is not None
+            p = state.project
+            current_loaded = p is not None
             if current_loaded:
-                from utils.logging import logger
-                pos = state.project.position
-                playing = state.project.backend._playing
+                pos = p.position
+                playing = p.backend._playing
 
                 # Only send if something meaningful changed
                 # Position update at ~30fps is fine during playback,

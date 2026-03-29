@@ -42,7 +42,7 @@ Wavoscope verwendet ein "Sidecar"-Dateisystem. Wenn Sie eine Audiodatei öffnen,
 - **Geschwindigkeitssteuerung:** Verwenden Sie den Schieberegler in der unteren Leiste, um die Geschwindigkeit von 0,1x bis 2.0x anzupassen. Wavoscope verwendet hochwertiges Time-Stretching, das die Tonhöhe (Pitch) beibehält.
 - **Lautstärke & Overdrive:** Passen Sie die Gesamtlautstärke mit dem Schieberegler an. Klicken Sie auf das **Lautstärkesymbol** oder drücken Sie `G`, um den **Overdrive-Modus** umzuschalten, der den Lautstärkebereich von 100% auf bis zu 400% erweitert. Die App speichert separate Lautstärkeniveaus für den normalen und den Overdrive-Modus.
 - **Tempo & Tap Tempo:** Das aktuelle Tempo (in BPM) wird im Header der Wellenform angezeigt. Klicken Sie wiederholt darauf, um das Tempo manuell zu messen (**Tap Tempo**). Nach 3 Sekunden Inaktivität kehrt es automatisch zum berechneten Takttempo zurück.
-- **Fernsteuerung:** Aktivieren Sie den **Fernzugriff** in den Einstellungen, um Wavoscope von anderen Geräten (z. B. einem Mobiltelefon) im selben lokalen Netzwerk zu steuern. In den Einstellungen wird eine URL angezeigt, die Sie im Browser Ihres Remote-Geräts eingeben können, um auf die Benutzeroberfläche zuzugreifen und die Wiedergabe zu steuern.
+- **Fernsteuerung:** Aktivieren Sie den **Fernzugriff** in den Einstellungen, um Wavoscope von anderen Geräten (z. B. einem Mobiltelefon) im selben lokalen Netzwerk zu steuern. In den Einstellungen wird eine URL angezeigt, die Sie im Browser Ihres Remote-Geräts eingeben können, um auf die Benutzeroberfläche zuzugreifen und die Wiedergabe zu steuern. *Hinweis: Der Fernzugriff ist nicht passwortgeschützt; jeder in Ihrem lokalen Netzwerk kann die Anwendung steuern.*
 
 ---
 

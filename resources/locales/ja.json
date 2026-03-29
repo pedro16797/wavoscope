@@ -95,7 +95,8 @@
     "remote_access_desc": "ローカルネットワーク上の他のデバイスから Wavoscope を制御できるようにします。",
     "remote_url": "リモートコントロール URL",
     "remote_url_hint": "お使いのスマートフォンや他のデバイスのブラウザでこの URL を入力してください。",
-    "remote_restart_hint": "リモートアクセスの変更を有効にするには、Wavoscope を再起動する必要があります。"
+    "remote_restart_hint": "リモートアクセスの変更を有効にするには、Wavoscope を再起動する必要があります。",
+    "remote_warning": "警告：リモートアクセスは認証されていません。ローカルネットワーク上の誰でもアプリを制御できます。"
   },
   "keys": {
     "space": "スペース",

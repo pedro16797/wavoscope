@@ -84,6 +84,7 @@
     "remote_url": "Remote Control URL",
     "remote_url_hint": "Enter this URL in the browser of your phone or other device.",
     "remote_restart_hint": "You must restart Wavoscope for changes to remote access to take effect.",
+    "remote_warning": "Warning: Remote access is unauthenticated. Anyone on your local network can control the app.",
     "autosave_enabled_desc": "Toggle automatic background saving of your project.",
     "autosave_forced_desc": "Save even if no changes have been detected.",
     "autosave_interval_desc": "How often (in minutes) to perform an autosave.",
