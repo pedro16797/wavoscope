@@ -24,6 +24,19 @@ async def create_playlist(data: PlaylistCreate):
     pl = state.playlist_manager.create_playlist(data.name)
     return pl.to_dict()
 
+@router.get("/active")
+def get_active_playlist_info():
+    return {
+        "active_playlist_id": state.active_playlist_id,
+        "active_item_id": state.active_item_id
+    }
+
+@router.post("/select")
+async def select_playlist_item(playlist_id: Optional[str] = None, item_id: Optional[str] = None):
+    state.active_playlist_id = playlist_id
+    state.active_item_id = item_id
+    return {"status": "ok"}
+
 @router.get("/{playlist_id}")
 async def get_playlist(playlist_id: str):
     pl = state.playlist_manager.get_playlist(playlist_id)
@@ -57,16 +70,3 @@ async def remove_item(playlist_id: str, item_id: str):
     if state.active_item_id == item_id:
         state.active_item_id = None
     return {"status": "ok"}
-
-@router.post("/select")
-async def select_playlist_item(playlist_id: Optional[str] = None, item_id: Optional[str] = None):
-    state.active_playlist_id = playlist_id
-    state.active_item_id = item_id
-    return {"status": "ok"}
-
-@router.get("/active")
-def get_active_playlist_info():
-    return {
-        "active_playlist_id": state.active_playlist_id,
-        "active_item_id": state.active_item_id
-    }
