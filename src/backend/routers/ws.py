@@ -17,7 +17,8 @@ async def websocket_endpoint(websocket: WebSocket):
             "position": p.position,
             "playing": p.backend._playing,
             "loop_range": p.get_loop_range(),
-            "loaded": True
+            "loaded": True,
+            "filename": p.audio_path.name
         })
     else:
         await websocket.send_json({"loaded": False})
@@ -26,7 +27,8 @@ async def websocket_endpoint(websocket: WebSocket):
         "position": p.position if initial_loaded else -1.0,
         "playing": p.backend._playing if initial_loaded else False,
         "loaded": initial_loaded,
-        "loop_range": p.get_loop_range() if initial_loaded else None
+        "loop_range": p.get_loop_range() if initial_loaded else None,
+        "filename": p.audio_path.name if initial_loaded else None
     }
 
     try:
@@ -36,6 +38,7 @@ async def websocket_endpoint(websocket: WebSocket):
             if current_loaded:
                 pos = p.position
                 playing = p.backend._playing
+                filename = p.audio_path.name
 
                 # Only send if something meaningful changed
                 # Position update at ~30fps is fine during playback,
@@ -44,21 +47,24 @@ async def websocket_endpoint(websocket: WebSocket):
                 if (playing or abs(pos - last_state.get("position", -1.0)) > 1e-4
                     or playing != last_state.get("playing")
                     or loop_range != last_state.get("loop_range")
+                    or filename != last_state.get("filename")
                     or not last_state.get("loaded")):
 
-                    if not last_state.get("loaded"):
-                        logger.info("WS: Project detected as loaded, sending update")
+                    if not last_state.get("loaded") or filename != last_state.get("filename"):
+                        logger.info(f"WS: Project updated (loaded: {not last_state.get('loaded')}, changed: {filename != last_state.get('filename')}), sending update")
 
                     await websocket.send_json({
                         "position": pos,
                         "playing": playing,
                         "loop_range": loop_range,
-                        "loaded": True
+                        "loaded": True,
+                        "filename": filename
                     })
                     last_state["position"] = pos
                     last_state["playing"] = playing
                     last_state["loop_range"] = loop_range
                     last_state["loaded"] = True
+                    last_state["filename"] = filename
             elif last_state.get("loaded"):
                 # Project was closed
                 await websocket.send_json({"loaded": False})

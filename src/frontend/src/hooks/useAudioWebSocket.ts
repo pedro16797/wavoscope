@@ -21,7 +21,9 @@ export const useAudioWebSocket = () => {
         const data = JSON.parse(event.data);
         if (data.loaded !== undefined) {
             const wasLoaded = useStore.getState().loaded;
-            if (data.loaded && !wasLoaded) {
+            const currentFilename = useStore.getState().filename;
+
+            if (data.loaded && (!wasLoaded || (data.filename && data.filename !== currentFilename))) {
                 fetchStatus();
             }
         }
