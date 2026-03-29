@@ -77,6 +77,12 @@
     "recovery_desc": "프로젝트 복구 옵션, 실행 취소 기록 및 자동 저장을 설정합니다.",
     "undo_steps_desc": "메모리에 저장할 최대 실행 취소 단계 수입니다.",
     "undo_history_desc": "프로젝트를 이전 상태로 복원하려면 선택하세요.",
+    "remote_access": "원격 접속",
+    "remote_access_desc": "로컬 네트워크의 다른 장치가 Wavoscope를 제어할 수 있도록 허용합니다.",
+    "remote_url": "원격 제어 URL",
+    "remote_url_hint": "휴대폰이나 다른 장치의 브라우저에 이 URL을 입력하십시오.",
+    "remote_restart_hint": "원격 접속 변경 사항을 적용하려면 Wavoscope를 다시 시작해야 합니다.",
+    "remote_warning": "경고: 원격 접속은 인증되지 않았습니다. 로컬 네트워크의 누구나 앱을 제어할 수 있습니다."
     "autosave_enabled_desc": "프로젝트의 자동 백그라운드 저장을 토글합니다.",
     "autosave_forced_desc": "변경 사항이 감지되지 않아도 저장합니다.",
     "autosave_interval_desc": "자동 저장을 수행할 빈도(분 단위)입니다.",

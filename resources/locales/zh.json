@@ -88,7 +88,13 @@
     "undo_initial_state": "初始状态",
     "recovery_desc": "配置项目恢复选项、撤销历史和自动保存。",
     "undo_steps_desc": "内存中存储的最大撤销步数。",
-    "undo_history_desc": "选择以前的状态以还原您的项目。"
+    "undo_history_desc": "选择以前的状态以还原您的项目。",
+    "remote_access": "远程访问",
+    "remote_access_desc": "允许本地网络中的其他设备控制 Wavoscope。",
+    "remote_url": "远程控制 URL",
+    "remote_url_hint": "在您的手机或其他设备的浏览器中输入此 URL。",
+    "remote_restart_hint": "您必须重新启动 Wavoscope 才能使远程访问的更改生效。",
+    "remote_warning": "警告：远程访问未经身份验证。局域网内的任何人都可以控制此应用。"
   },
   "keys": {
     "space": "空格",

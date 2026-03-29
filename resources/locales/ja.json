@@ -90,7 +90,13 @@
     "high_cutoff_desc": "このポイント以上の周波数をカットします。",
     "filter_auto_gain": "自動ゲイン",
     "filter_auto_gain_desc": "フィルタリングによる音量の低下を自動的に補正し、一定の知覚音量を維持します。",
-    "kb_no_ui_desc": "以下のキーバインドは、グラフィカルインターフェースの要素に対応していません。"
+    "undo_history_desc": "以前の状態を選択して、プロジェクトを復元します。",
+    "remote_access": "リモートアクセス",
+    "remote_access_desc": "ローカルネットワーク上の他のデバイスから Wavoscope を制御できるようにします。",
+    "remote_url": "リモートコントロール URL",
+    "remote_url_hint": "お使いのスマートフォンや他のデバイスのブラウザでこの URL を入力してください。",
+    "remote_restart_hint": "リモートアクセスの変更を有効にするには、Wavoscope を再起動する必要があります。",
+    "remote_warning": "警告：リモートアクセスは認証されていません。ローカルネットワーク上の誰でもアプリを制御できます。"
   },
   "keys": {
     "space": "スペース",

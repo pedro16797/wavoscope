@@ -210,6 +210,8 @@ export interface ConfigSlice {
   autosave_path: string;
   undo_steps: number;
   language: string;
+  remote_access: boolean;
+  remote_url: string;
   showSettings: boolean;
   showSpectrum: boolean;
   showLyrics: boolean;
@@ -236,8 +238,10 @@ export interface ConfigSlice {
     autosave_max_snapshots?: number,
     autosave_path?: string,
     undo_steps?: number,
-    language?: string
+    language?: string,
+    remote_access?: boolean
   }) => Promise<void>;
+  fetchRemoteUrl: () => Promise<void>;
   browseFolder: (initialDir?: string) => Promise<string | null>;
   setShowSettings: (show: boolean) => void;
   setShowSpectrum: (show: boolean) => void;

@@ -17,12 +17,20 @@ def main():
     cli_args, _ = parser.parse_known_args()
 
     try:
+        from utils.config import Config
+        cfg = Config()
+        remote_access = cfg.get("network.remote_access", False)
+
+        # Determine host
+        host = "0.0.0.0" if remote_access else "127.0.0.1"
+
         # Determine port
-        port = find_available_port()
-        logger.info(f"Starting backend on port {port}")
+        port = find_available_port(host=host)
+        state.port = port
+        logger.info(f"Starting backend on {host}:{port}")
 
         # Start FastAPI in a background thread
-        start_backend_thread(port=port)
+        start_backend_thread(port=port, host=host)
 
         url = f'http://127.0.0.1:{port}'
 

@@ -3,6 +3,7 @@ from session.project import Project
 from session.playlist import PlaylistManager
 
 project: Optional[Project] = None
+port: int = 8000
 
 playlist_manager = PlaylistManager()
 active_playlist_id: Optional[str] = None

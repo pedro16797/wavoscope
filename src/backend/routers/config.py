@@ -21,6 +21,7 @@ class AppConfig(BaseModel):
     autosave_path: Optional[str] = None
     undo_steps: Optional[int] = None
     language: Optional[str] = None
+    remote_access: Optional[bool] = None
 
 @router.get("")
 async def get_config():
@@ -40,7 +41,8 @@ async def get_config():
         "autosave_interval": cfg.get("recovery.autosave_interval_minutes", 5),
         "autosave_max_snapshots": cfg.get("recovery.autosave_max_snapshots", 5),
         "autosave_path": cfg.get("recovery.autosave_path", ""),
-        "undo_steps": cfg.get("recovery.undo_steps", 50)
+        "undo_steps": cfg.get("recovery.undo_steps", 50),
+        "remote_access": cfg.get("network.remote_access", False)
     }
 
 @router.post("")
@@ -81,6 +83,8 @@ async def update_config(new_cfg: AppConfig):
             state.project._undo.set_max_steps(new_cfg.undo_steps)
     if new_cfg.language is not None:
         cfg.set("ui.language", new_cfg.language)
+    if new_cfg.remote_access is not None:
+        cfg.set("network.remote_access", new_cfg.remote_access)
     return {"status": "ok"}
 
 @router.get("/audio-devices")
@@ -91,3 +95,23 @@ async def list_audio_devices():
 @router.get("/temp-dir")
 async def get_temp_dir():
     return {"temp_dir": tempfile.gettempdir()}
+
+@router.get("/remote-url")
+async def get_remote_url():
+    import socket
+    try:
+        # Get local IP address
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(0)
+        try:
+            # doesn't even have to be reachable
+            s.connect(('10.254.254.254', 1))
+            ip = s.getsockname()[0]
+        except Exception:
+            ip = '127.0.0.1'
+        finally:
+            s.close()
+    except Exception:
+        ip = '127.0.0.1'
+
+    return {"url": f"http://{ip}:{state.port}"}
