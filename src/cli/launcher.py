@@ -2,15 +2,39 @@ import uvicorn
 import urllib.request
 import time
 import threading
+import socket
 
-def run_server():
-    from backend.main import app
-    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="warning")
+_backend_exception = None
 
-def start_backend_thread():
-    server_thread = threading.Thread(target=run_server, daemon=True)
+def find_available_port(host="127.0.0.1", start_port=8000):
+    port = start_port
+    while port < start_port + 100:
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.bind((host, port))
+                return port
+        except socket.error:
+            port += 1
+    return start_port
+
+def run_server(port=8000):
+    global _backend_exception
+    try:
+        from backend.main import app
+        uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning")
+    except Exception as e:
+        _backend_exception = e
+        raise e
+
+def start_backend_thread(port=8000):
+    server_thread = threading.Thread(target=run_server, args=(port,), daemon=True)
     server_thread.start()
     return server_thread
+
+def get_backend_error():
+    if _backend_exception:
+        return str(_backend_exception)
+    return None
 
 def wait_for_backend(url='http://127.0.0.1:8000', max_retries=5):
     for i in range(max_retries):

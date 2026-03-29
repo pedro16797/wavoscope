@@ -4,7 +4,7 @@ import HttpBackend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 const isDev = window.location.origin.includes(':5173') || window.location.origin.includes(':5174');
-const backendUrl = isDev ? 'http://127.0.0.1:8000' : '';
+const backendUrl = isDev ? `http://${window.location.hostname}:8000` : '';
 
 i18n
   .use(HttpBackend)
