@@ -31,7 +31,7 @@ def generate():
 
         # 3. Take main UI screenshot
         # Add some flags and lyrics first
-        page.evaluate("window.useStore.setState({ lyrics: [], flags: [], harmony_flags: [] })")
+        page.evaluate("window.useStore.setState({ lyrics: [], flags: [], harmony_flags: [], playlists: [], activePlaylistId: null, activeItemId: null })")
         page.evaluate("window.useStore.getState().setShowLyrics(true)")
         page.evaluate("window.useStore.getState().addFlag(1.0)")
         page.evaluate("window.useStore.getState().addHarmonyFlag(2.0, {r: 'G', ca: '', q: 'm', ext: '7', alt: [], add: [], b: '', ba: ''})")
@@ -82,6 +82,8 @@ def generate():
         # 9. Screenshot: Playlist Dialog
         page.evaluate("window.useStore.getState().setEditingHarmonyFlagIdx(null)")
         page.evaluate("window.useStore.getState().setShowPlaylistDialog(true)")
+        page.evaluate("window.useStore.getState().createPlaylist('Jazz Essentials')")
+        page.evaluate("window.useStore.getState().createPlaylist('Piano Practice')")
         time.sleep(1)
         page.locator(".fixed.inset-0 > div").screenshot(path="docs/images/playlist_dialog.png")
 

@@ -88,7 +88,10 @@ export const PlaylistDialog: React.FC<PlaylistDialogProps> = ({ onClose }) => {
                                     className="flex-1 bg-black/20 border border-white/10 rounded px-2 py-1 text-xs outline-none focus:border-accent"
                                     onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
                                 />
-                                <button onClick={handleCreate} className="p-1 bg-accent text-surface rounded hover:opacity-80 transition-opacity">
+                                <button
+                                    onClick={handleCreate}
+                                    disabled={!newPlaylistName.trim()}
+                                    className={`p-1 bg-accent text-surface rounded transition-opacity ${!newPlaylistName.trim() ? 'opacity-30 cursor-not-allowed' : 'hover:opacity-80'}`}>
                                     <Plus size={16 * ui_scale} />
                                 </button>
                             </div>
