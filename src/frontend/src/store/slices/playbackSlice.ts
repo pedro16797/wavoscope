@@ -66,13 +66,14 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
 
   cycleLoopMode: async () => {
     const state = get();
-    const modes = ['none', 'lyric', 'section', 'bar', 'whole'];
+    const modes = ['none', 'lyric', 'section', 'bar', 'playlist', 'whole'];
 
     const isAvailable = (mode: string) => {
         if (mode === 'none' || mode === 'whole') return true;
         if (mode === 'lyric') return state.lyrics.length > 0;
         if (mode === 'section') return state.flags.some(f => f.s);
         if (mode === 'bar') return state.flags.some(f => f.type === 'rhythm');
+        if (mode === 'playlist') return !!state.activePlaylistId;
         return false;
     };
 

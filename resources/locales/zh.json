@@ -120,6 +120,7 @@
     "loop_section": "循环: 当前部分",
     "loop_bar": "循环: 当前小节",
     "loop_lyric": "循环: 选中的歌词",
+    "loop_playlist": "播放列表：自动前进",
     "loop_off": "循环: 关闭",
     "metronome": "切换节拍器",
     "speed": "速度",
@@ -164,6 +165,16 @@
   "progress": {
     "title": "处理中...",
     "please_wait": "请稍候，我们正在处理您的请求。"
+  },
+  "playlist": {
+    "title": "播放列表",
+    "new_placeholder": "播放列表名称...",
+    "add_song": "添加歌曲",
+    "empty": "此播放列表中没有歌曲。",
+    "select_prompt": "选择一个播放列表以查看其内容。",
+    "not_found": "缺失",
+    "prev": "上一首歌曲",
+    "next": "下一首歌曲"
   },
   "views": {
     "timeline_waveform": "时间轴与波形",

@@ -120,6 +120,7 @@
     "loop_section": "Loop: Seção Atual",
     "loop_bar": "Loop: Compasso Atual",
     "loop_lyric": "Loop: Letra Selecionada",
+    "loop_playlist": "Playlist: Avanço Automático",
     "loop_off": "Loop: Desativado",
     "metronome": "Alternar Metrônomo",
     "speed": "VELOCIDADE",
@@ -164,6 +165,16 @@
   "progress": {
     "title": "Processando...",
     "please_wait": "Por favor, aguarde enquanto processamos sua solicitação."
+  },
+  "playlist": {
+    "title": "Playlists",
+    "new_placeholder": "Nome da playlist...",
+    "add_song": "Adicionar música",
+    "empty": "Nenhuma música nesta playlist.",
+    "select_prompt": "Selecione uma playlist para ver seu conteúdo.",
+    "not_found": "Faltando",
+    "prev": "Música anterior",
+    "next": "Próxima música"
   },
   "views": {
     "timeline_waveform": "Linha do Tempo e Forma de Onda",

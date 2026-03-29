@@ -68,6 +68,38 @@ export interface UndoStep {
   timestamp: number;
 }
 
+export interface PlaylistItem {
+    id: string;
+    path: string;
+    name: string;
+    exists: boolean;
+}
+
+export interface Playlist {
+    id: string;
+    name: string;
+    items: PlaylistItem[];
+}
+
+export interface PlaylistSlice {
+    playlists: Playlist[];
+    activePlaylistId: string | null;
+    activeItemId: string | null;
+    showPlaylistDialog: boolean;
+
+    fetchPlaylists: () => Promise<void>;
+    createPlaylist: (name: string) => Promise<void>;
+    updatePlaylist: (id: string, name: string) => Promise<void>;
+    deletePlaylist: (id: string) => Promise<void>;
+    addItemToPlaylist: (playlistId: string, path: string, name?: string) => Promise<void>;
+    removeItemFromPlaylist: (playlistId: string, itemId: string) => Promise<void>;
+    selectPlaylistItem: (playlistId: string | null, itemId: string | null) => Promise<void>;
+    loadPlaylistItem: (item: PlaylistItem) => Promise<void>;
+    setShowPlaylistDialog: (show: boolean) => void;
+    nextPlaylistItem: () => Promise<void>;
+    prevPlaylistItem: () => Promise<void>;
+}
+
 export interface ProjectSlice {
   loaded: boolean;
   filename: string;
@@ -213,4 +245,4 @@ export interface ConfigSlice {
   setViewport: (offset: number, zoom: number) => void;
 }
 
-export type AppState = ProjectSlice & PlaybackSlice & ConfigSlice;
+export type AppState = ProjectSlice & PlaybackSlice & ConfigSlice & PlaylistSlice;

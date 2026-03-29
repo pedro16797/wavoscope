@@ -122,6 +122,7 @@
     "loop_section": "Bucle: Sección actual",
     "loop_bar": "Bucle: Compás actual",
     "loop_lyric": "Bucle: Letra seleccionada",
+    "loop_playlist": "Lista: Avance automático",
     "loop_off": "Bucle: Desactivado",
     "metronome": "Alternar metrónomo",
     "speed": "VELOCIDAD",
@@ -166,6 +167,16 @@
   "progress": {
     "title": "Procesando...",
     "please_wait": "Espera mientras procesamos tu solicitud."
+  },
+  "playlist": {
+    "title": "Listas de reproducción",
+    "new_placeholder": "Nombre de la lista...",
+    "add_song": "Añadir canción",
+    "empty": "No hay canciones en esta lista.",
+    "select_prompt": "Seleccione una lista para ver su contenido.",
+    "not_found": "Falta",
+    "prev": "Canción anterior",
+    "next": "Canción siguiente"
   },
   "views": {
     "timeline_waveform": "Línea de tiempo y Forma de onda",

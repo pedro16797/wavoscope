@@ -11,10 +11,12 @@ import { SettingsDialog } from './components/SettingsDialog';
 import { FlagDialog } from './components/FlagDialog';
 import { ChordDialog } from './components/ChordDialog';
 import { ProgressDialog } from './components/ProgressDialog';
+import { PlaylistDialog } from './components/PlaylistDialog';
 
 const App: React.FC = () => {
   const {
     showSettings, setShowSettings,
+    showPlaylistDialog, setShowPlaylistDialog,
     editingFlagIdx, setEditingFlagIdx, flags,
     editingHarmonyFlagIdx, setEditingHarmonyFlagIdx, harmony_flags
   } = useStore();
@@ -46,6 +48,7 @@ const App: React.FC = () => {
       </div>
 
       {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
+      {showPlaylistDialog && <PlaylistDialog onClose={() => setShowPlaylistDialog(false)} />}
       {editingFlagIdx !== null && (
         <FlagDialog
           idx={editingFlagIdx}

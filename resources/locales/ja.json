@@ -122,6 +122,7 @@
     "loop_section": "ループ: 現在のセクション",
     "loop_bar": "ループ: 現在の小節",
     "loop_lyric": "ループ: 選択した歌詞",
+    "loop_playlist": "プレイリスト：自動進行",
     "loop_off": "ループ: オフ",
     "metronome": "メトロノームの切り替え",
     "speed": "速度",
@@ -166,6 +167,16 @@
   "progress": {
     "title": "処理中...",
     "please_wait": "リクエストを処理しています。しばらくお待ちください。"
+  },
+  "playlist": {
+    "title": "プレイリスト",
+    "new_placeholder": "プレイリスト名...",
+    "add_song": "曲を追加",
+    "empty": "このプレイリストに曲はありません。",
+    "select_prompt": "内容を表示するプレイリストを選択してください。",
+    "not_found": "不明",
+    "prev": "前の曲",
+    "next": "次の曲"
   },
   "views": {
     "timeline_waveform": "タイムラインと波形",

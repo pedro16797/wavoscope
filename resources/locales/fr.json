@@ -120,6 +120,7 @@
     "loop_section": "Boucle : Section actuelle",
     "loop_bar": "Boucle : Mesure actuelle",
     "loop_lyric": "Boucle : Paroles sélectionnées",
+    "loop_playlist": "Playlist : Avance automatique",
     "loop_off": "Boucle : Désactivée",
     "metronome": "Activer le métronome",
     "speed": "VITESSE",
@@ -164,6 +165,16 @@
   "progress": {
     "title": "Traitement...",
     "please_wait": "Veuillez patienter pendant le traitement de votre demande."
+  },
+  "playlist": {
+    "title": "Listes de lecture",
+    "new_placeholder": "Nom de la playlist...",
+    "add_song": "Ajouter un morceau",
+    "empty": "Aucun morceau dans cette playlist.",
+    "select_prompt": "Sélectionnez une playlist pour voir son contenu.",
+    "not_found": "Manquant",
+    "prev": "Morceau précédent",
+    "next": "Morceau suivant"
   },
   "views": {
     "timeline_waveform": "Timeline & Forme d'onde",

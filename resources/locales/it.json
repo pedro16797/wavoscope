@@ -120,6 +120,7 @@
     "loop_section": "Loop: Sezione Corrente",
     "loop_bar": "Loop: Battuta Corrente",
     "loop_lyric": "Loop: Testo Selezionato",
+    "loop_playlist": "Playlist: Avanzamento automatico",
     "loop_off": "Loop: Disattivato",
     "metronome": "Attiva Metronomo",
     "speed": "VELOCITÀ",
@@ -164,6 +165,16 @@
   "progress": {
     "title": "Elaborazione...",
     "please_wait": "Attendere durante l'elaborazione della richiesta."
+  },
+  "playlist": {
+    "title": "Playlist",
+    "new_placeholder": "Nome playlist...",
+    "add_song": "Aggiungi brano",
+    "empty": "Nessun brano in questa playlist.",
+    "select_prompt": "Seleziona una playlist per vederne il contenuto.",
+    "not_found": "Mancante",
+    "prev": "Brano precedente",
+    "next": "Brano successivo"
   },
   "views": {
     "timeline_waveform": "Timeline & Forma d'Onda",

@@ -432,6 +432,11 @@ async def open_project(data: OpenProject):
         new_project = Project(path)
         new_project.open_file(path)
         state.project = new_project
+
+        # Register callback for playlist auto-advance
+        if hasattr(state, 'on_playback_finished'):
+            state.project.backend.register_callback("finished", state.on_playback_finished)
+
         return {"status": "ok", "filename": path.name}
     except Exception as e:
         logger.exception("Exception during open_project")

@@ -15,15 +15,20 @@ def on_closing():
     return True
 
 class Api:
-    def browse(self):
+    def browse_file_path(self):
         if not webview.windows:
             logger.error("No windows found")
-            return
+            return None
         window = webview.windows[0]
         file_types = ('Audio Files (*.wav;*.mp3;*.flac;*.ogg)', 'All files (*.*)')
         res = window.create_file_dialog(webview.FileDialog.OPEN, allow_multiple=False, file_types=file_types)
         if res:
-            file_path = res[0]
+            return res[0]
+        return None
+
+    def browse(self):
+        file_path = self.browse_file_path()
+        if file_path:
             try:
                 data = json.dumps({'path': file_path}).encode('utf-8')
                 req = urllib.request.Request('http://127.0.0.1:8000/project/open', data=data, method='POST')

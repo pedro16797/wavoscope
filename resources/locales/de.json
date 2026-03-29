@@ -120,6 +120,7 @@
     "loop_section": "Loop: Aktueller Abschnitt",
     "loop_bar": "Loop: Aktueller Takt",
     "loop_lyric": "Loop: Ausgewählter Text",
+    "loop_playlist": "Wiedergabeliste: Automatische Wiedergabe",
     "loop_off": "Loop: Aus",
     "metronome": "Metronom umschalten",
     "speed": "GESCHWINDIGKEIT",
@@ -164,6 +165,16 @@
   "progress": {
     "title": "Verarbeitung...",
     "please_wait": "Bitte warten Sie, während wir Ihre Anfrage verarbeiten."
+  },
+  "playlist": {
+    "title": "Wiedergabelisten",
+    "new_placeholder": "Name der Wiedergabeliste...",
+    "add_song": "Song hinzufügen",
+    "empty": "Keine Songs in dieser Wiedergabeliste.",
+    "select_prompt": "Wählen Sie eine Wiedergabeliste aus, um ihren Inhalt anzuzeigen.",
+    "not_found": "Fehlt",
+    "prev": "Vorheriger Song",
+    "next": "Nächster Song"
   },
   "views": {
     "timeline_waveform": "Timeline & Wellenform",

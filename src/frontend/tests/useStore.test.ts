@@ -35,11 +35,11 @@ describe('Store Utilities', () => {
       ba: ''
     };
     const notes = getChordMidiNotes(chord);
-    // C4(60), E4(64), G4(67) + Bass C3(48)
+    // C4(60), E4(64), G4(67) + Bass C2(36)
     expect(notes).toContain(60);
     expect(notes).toContain(64);
     expect(notes).toContain(67);
-    expect(notes).toContain(48);
+    expect(notes).toContain(36);
   });
 
   describe('Timeline Utilities', () => {

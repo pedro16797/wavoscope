@@ -124,6 +124,7 @@
     "loop_section": "Loop: Current Section",
     "loop_bar": "Loop: Current Bar",
     "loop_lyric": "Loop: Selected Lyric",
+    "loop_playlist": "Playlist: Auto-advance",
     "loop_off": "Loop: Off",
     "metronome": "Toggle Metronome",
     "speed": "SPEED",
@@ -168,6 +169,16 @@
   "progress": {
     "title": "Processing...",
     "please_wait": "Please wait while we process your request."
+  },
+  "playlist": {
+    "title": "Playlists",
+    "new_placeholder": "Playlist name...",
+    "add_song": "Add Song",
+    "empty": "No songs in this playlist.",
+    "select_prompt": "Select a playlist to view its content.",
+    "not_found": "Missing",
+    "prev": "Previous song",
+    "next": "Next song"
   },
   "views": {
     "timeline_waveform": "Timeline & Waveform",

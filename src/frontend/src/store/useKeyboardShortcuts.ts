@@ -11,7 +11,8 @@ export const useKeyboardShortcuts = () => {
         octave_shift, setOctaveShift, fft_window, setFFTWindow, metronome_enabled, updateMetronome,
         editingFlagIdx, editingHarmonyFlagIdx, setEditingFlagIdx, setEditingHarmonyFlagIdx,
         addFlag, addHarmonyFlag, removeFlag, removeHarmonyFlag, removeLyric,
-        updateFilter, toggleOverdrive, undo
+        updateFilter, toggleOverdrive, undo,
+        setShowPlaylistDialog, showPlaylistDialog
       } = state;
 
       const isInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || (e.target as HTMLElement).isContentEditable;
@@ -102,6 +103,13 @@ export const useKeyboardShortcuts = () => {
       if (e.key.toLowerCase() === 'z' && (e.ctrlKey || e.metaKey)) {
           e.preventDefault();
           undo();
+          return;
+      }
+
+      // Playlist: P
+      if (e.key.toLowerCase() === 'p' && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          setShowPlaylistDialog(!showPlaylistDialog);
           return;
       }
 
