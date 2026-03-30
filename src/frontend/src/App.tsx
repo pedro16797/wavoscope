@@ -18,7 +18,8 @@ const App: React.FC = () => {
     showSettings, setShowSettings,
     showPlaylistDialog, setShowPlaylistDialog,
     editingFlagIdx, setEditingFlagIdx, flags,
-    editingHarmonyFlagIdx, setEditingHarmonyFlagIdx, harmony_flags
+    editingHarmonyFlagIdx, setEditingHarmonyFlagIdx, harmony_flags,
+    isRemote
   } = useStore();
 
   useKeyboardShortcuts();
@@ -36,6 +37,9 @@ const App: React.FC = () => {
          style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)' }}>
       <PlaybackBar />
       <div className="flex-1 relative min-h-0">
+        {isRemote ? (
+          <WaveformView />
+        ) : (
           <PanelGroup orientation="vertical" className="h-full">
             <Panel defaultSize={50} minSize={20}>
                 <WaveformView />
@@ -45,6 +49,7 @@ const App: React.FC = () => {
                 <SpectrumView />
             </Panel>
           </PanelGroup>
+        )}
       </div>
 
       {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
