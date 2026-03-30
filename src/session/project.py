@@ -48,6 +48,7 @@ class Project:
         self.backend.set_click_volume(cfg.get("ui.click_volume", 0.3))
 
         self.wave_cache: WaveformCache | None = None
+        self.update_counter = 0
         self._lock = threading.RLock()
 
     # ---------- file handling ----------
@@ -335,7 +336,10 @@ class Project:
                         if start <= tick_time < end: ticks.append((tick_time, False))
         return sorted(ticks, key=lambda t: t[0])
 
-    def mark_dirty(self) -> None: self._manager.mark_dirty()
+    def mark_dirty(self) -> None:
+        self._manager.mark_dirty()
+        with self._lock:
+            self.update_counter += 1
     def _clear_backend_cache(self) -> None:
         self.backend.clear_tick_cache()
         self.backend.reset_loop_range()

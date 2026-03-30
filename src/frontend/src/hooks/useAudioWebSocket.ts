@@ -22,8 +22,11 @@ export const useAudioWebSocket = () => {
         if (data.loaded !== undefined) {
             const wasLoaded = useStore.getState().loaded;
             const currentFilename = useStore.getState().filename;
+            const currentCounter = (useStore.getState() as any).update_counter;
 
-            if (data.loaded && (!wasLoaded || (data.filename && data.filename !== currentFilename))) {
+            if (data.loaded && (!wasLoaded
+                || (data.filename && data.filename !== currentFilename)
+                || (data.update_counter !== undefined && data.update_counter !== currentCounter))) {
                 fetchStatus();
             }
         }

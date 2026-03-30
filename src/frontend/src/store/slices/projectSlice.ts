@@ -17,6 +17,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   selectedLyricIdx: null,
   export_status: { active: false, progress: 0, message: '' },
   undo_history: [],
+  update_counter: 0,
 
   fetchStatus: async () => {
     try {
@@ -54,6 +55,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   addFlag: async (t: number) => {
+    if (get().isRemote) return null;
     try {
         const res = await axios.post(`${API_BASE}/project/flags`, { t });
         set({ flags: res.data.flags });
@@ -65,6 +67,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   moveFlag: async (idx: number, t: number) => {
+    if (get().isRemote) return null;
     try {
         const res = await axios.post(`${API_BASE}/project/flags/move`, { idx, t });
         set({ flags: res.data.flags });
@@ -76,6 +79,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   removeFlag: async (idx: number) => {
+    if (get().isRemote) return;
     try {
         const res = await axios.delete(`${API_BASE}/project/flags/${idx}`);
         set({ flags: res.data.flags });
@@ -85,6 +89,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   updateFlag: async (idx: number, flag: Partial<Flag>) => {
+    if (get().isRemote) return;
     try {
         const res = await axios.patch(`${API_BASE}/project/flags/${idx}`, flag);
         set({ flags: res.data.flags });
@@ -94,6 +99,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   insertNFlags: async (left_idx: number, count: number) => {
+    if (get().isRemote) return;
     try {
         const res = await axios.post(`${API_BASE}/project/flags/insert_n`, { left_idx, count });
         set({ flags: res.data.flags });
@@ -103,6 +109,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   addHarmonyFlag: async (t: number, chord?: Chord) => {
+    if (get().isRemote) return null;
     try {
         if (!chord) {
             chord = await get().analyzeChord(t);
@@ -117,6 +124,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   moveHarmonyFlag: async (idx: number, t: number) => {
+    if (get().isRemote) return null;
     try {
         const res = await axios.post(`${API_BASE}/project/harmony_flags/move`, { idx, t });
         set({ harmony_flags: res.data.harmony_flags });
@@ -128,6 +136,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   removeHarmonyFlag: async (idx: number) => {
+    if (get().isRemote) return;
     try {
         const res = await axios.delete(`${API_BASE}/project/harmony_flags/${idx}`);
         set({ harmony_flags: res.data.harmony_flags });
@@ -137,6 +146,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   updateHarmonyFlag: async (idx: number, t: number, chord: Chord) => {
+    if (get().isRemote) return;
     try {
         const res = await axios.patch(`${API_BASE}/project/harmony_flags/${idx}`, { t, c: chord });
         set({ harmony_flags: res.data.harmony_flags });
@@ -159,6 +169,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   addLyric: async (lyric: Lyric) => {
+    if (get().isRemote) return null;
     try {
         const res = await axios.post(`${API_BASE}/project/lyrics`, lyric);
         set({ lyrics: res.data.lyrics });
@@ -170,6 +181,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   removeLyric: async (idx: number) => {
+    if (get().isRemote) return;
     try {
         const res = await axios.delete(`${API_BASE}/project/lyrics/${idx}`);
         set({ lyrics: res.data.lyrics });
@@ -179,6 +191,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   updateLyric: async (idx: number, lyric: Partial<Lyric>) => {
+    if (get().isRemote) return null;
     try {
         const res = await axios.patch(`${API_BASE}/project/lyrics/${idx}`, lyric);
         set({ lyrics: res.data.lyrics });
@@ -190,6 +203,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   },
 
   moveLyric: async (idx: number, t: number) => {
+    if (get().isRemote) return null;
     try {
         const res = await axios.post(`${API_BASE}/project/lyrics/move`, { idx, t });
         set({ lyrics: res.data.lyrics });

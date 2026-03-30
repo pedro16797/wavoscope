@@ -39,7 +39,8 @@ export const LyricsTimeline: React.FC = () => {
         zoom,
         ui_scale,
         setViewport,
-        duration: projectDuration
+        duration: projectDuration,
+        isRemote
     } = useStore();
 
     const [editingIdx, setEditingIdx] = useState<number | null>(null);
@@ -295,6 +296,7 @@ export const LyricsTimeline: React.FC = () => {
 
         if (e.button === 0) { // Left click
             if (clickedIdx !== -1) {
+                if (isRemote) return;
                 const isAlreadySelected = selectedIdx === clickedIdx;
                 const lyric = lyrics[clickedIdx];
                 const relativePos = (time - lyric.t) / lyric.l;
@@ -389,6 +391,7 @@ export const LyricsTimeline: React.FC = () => {
                 window.addEventListener('mousemove', onMouseMove);
                 window.addEventListener('mouseup', onMouseUp);
             } else {
+                if (isRemote) return;
                 if (editingIdx !== null) {
                     finishEditing();
                 }
@@ -399,7 +402,7 @@ export const LyricsTimeline: React.FC = () => {
     };
 
     const handleDoubleClick = (e: React.MouseEvent) => {
-        if (!loaded || e.button !== 0) return;
+        if (!loaded || e.button !== 0 || isRemote) return;
         const rect = canvasRef.current?.getBoundingClientRect();
         if (!rect) return;
         const x = e.clientX - rect.left;
@@ -416,7 +419,7 @@ export const LyricsTimeline: React.FC = () => {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             const { loaded, lyrics, position, selectedIdx, editingIdx, editValue } = stateRef.current;
-            if (!loaded) return;
+            if (!loaded || isRemote) return;
 
             // Global transcription key: 'V'
             if (e.key.toLowerCase() === 'v' && !e.shiftKey) {
@@ -606,9 +609,30 @@ export const LyricsTimeline: React.FC = () => {
         }
     };
 
-    const activeCursor = draggingLyric
+    const activeCursor = (!isRemote && draggingLyric)
         ? (draggingLyric.mode === 'move' ? 'grabbing' : 'ew-resize')
         : hoverCursor;
+
+    const lastTouchX = useRef<number | null>(null);
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        if (e.touches.length === 1) {
+            lastTouchX.current = e.touches[0].clientX;
+        }
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (!canvasRef.current || lastTouchX.current === null) return;
+        const dx = e.touches[0].clientX - lastTouchX.current;
+        const scrollAmount = dx / zoom;
+        const maxOffset = Math.max(0, projectDuration - viewWidth / zoom);
+        setViewport(Math.max(0, Math.min(offset - scrollAmount, maxOffset)), zoom);
+        lastTouchX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+        lastTouchX.current = null;
+    };
 
     return (
         <div ref={containerRef} className="relative w-full select-none bg-surface border-b overflow-hidden" style={{ height: height, borderBottomColor: 'var(--color-grid)' }}>
@@ -617,6 +641,9 @@ export const LyricsTimeline: React.FC = () => {
                 onMouseMove={handleMouseMove}
                 onMouseDown={handleMouseDown}
                 onDoubleClick={handleDoubleClick}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
                 onContextMenu={(e) => e.preventDefault()}
                 className="w-full h-full block"
                 style={{ cursor: activeCursor }}

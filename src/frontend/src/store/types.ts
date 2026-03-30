@@ -118,6 +118,7 @@ export interface ProjectSlice {
   selectedLyricIdx: null | number;
   export_status: ExportStatus;
   undo_history: UndoStep[];
+  update_counter: number;
 
   fetchStatus: () => Promise<void>;
   browseFile: () => Promise<void>;

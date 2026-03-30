@@ -13,7 +13,8 @@ export const Timeline: React.FC = () => {
     addFlag, moveFlag, setEditingFlagIdx,
     addHarmonyFlag, moveHarmonyFlag, setEditingHarmonyFlagIdx,
     loop_mode, loop_range, playTone, stopAllTones,
-    offset, zoom, setViewport
+    offset, zoom, setViewport,
+    isRemote
   } = useStore();
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dragHarmonyIdx, setDragHarmonyIdx] = useState<number | null>(null);
@@ -238,6 +239,7 @@ export const Timeline: React.FC = () => {
 
     if (e.button === 0) {
         if (foundHarmonyIdx !== -1) {
+            if (isRemote) return;
             // Play Chord on Hold
             const chord = harmony_flags[foundHarmonyIdx].c;
             const midis = getChordMidiNotes(chord);
@@ -268,6 +270,7 @@ export const Timeline: React.FC = () => {
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mouseup', onMouseUp);
         } else if (foundIdx !== -1) {
+            if (isRemote) return;
             if (e.shiftKey) {
                 if (foundIdx > 0) {
                     const delta = flags[foundIdx].t - flags[foundIdx - 1].t;
@@ -300,6 +303,7 @@ export const Timeline: React.FC = () => {
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mouseup', onMouseUp);
         } else {
+            if (isRemote) return;
             const snappedT = Math.round(clickT * 100) / 100;
             addFlag(snappedT);
         }
@@ -315,6 +319,7 @@ export const Timeline: React.FC = () => {
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (isRemote) return;
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
     const x = e.clientX - rect.left;
@@ -356,14 +361,38 @@ export const Timeline: React.FC = () => {
     }
   };
 
-  const activeCursor = (dragIdx !== null || dragHarmonyIdx !== null) ? 'ew-resize' : hoverCursor;
+  const activeCursor = (!isRemote && (dragIdx !== null || dragHarmonyIdx !== null)) ? 'ew-resize' : hoverCursor;
+
+  const lastTouchX = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      lastTouchX.current = e.touches[0].clientX;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!canvasRef.current || lastTouchX.current === null) return;
+    const dx = e.touches[0].clientX - lastTouchX.current;
+    const scrollAmount = dx / zoom;
+    const maxOffset = Math.max(0, duration - size.width / zoom);
+    setViewport(Math.max(0, Math.min(offset - scrollAmount, maxOffset)), zoom);
+    lastTouchX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    lastTouchX.current = null;
+  };
 
   return (
     <div ref={containerRef} className="w-full border-b select-none cursor-crosshair relative"
         style={{ height: 40 * ui_scale, backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-grid)' }}
         onMouseDown={handleMouseDown}
         onContextMenu={handleContextMenu}
-        onWheel={handleWheel}>
+        onWheel={handleWheel}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}>
         <canvas ref={canvasRef} className="w-full h-full block" style={{ cursor: activeCursor }} onMouseMove={handleMouseMove} />
 
         {/* Chord Flag Tooltips */}
