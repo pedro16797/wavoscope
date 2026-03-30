@@ -32,6 +32,21 @@ export const useAudioWebSocket = () => {
         }
         updatePosition(data.position, data.loop_range);
         setPlaying(data.playing);
+
+        // Update playback settings if they changed from another client
+        const state = useStore.getState();
+        if (data.loop_mode !== undefined && data.loop_mode !== state.loop_mode) {
+            useStore.setState({ loop_mode: data.loop_mode });
+        }
+        if (data.metronome_enabled !== undefined && data.metronome_enabled !== state.metronome_enabled) {
+            useStore.setState({ metronome_enabled: data.metronome_enabled });
+        }
+        if (data.speed !== undefined && data.speed !== state.speed) {
+            useStore.setState({ speed: data.speed });
+        }
+        if (data.volume !== undefined && data.volume !== state.volume) {
+            useStore.setState({ volume: data.volume });
+        }
     };
     return () => ws.close();
   }, [fetchThemes, fetchStatus, fetchConfig, fetchLocales, fetchAudioDevices, updatePosition, setPlaying]);

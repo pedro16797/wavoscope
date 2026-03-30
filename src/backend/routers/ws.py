@@ -29,7 +29,11 @@ async def websocket_endpoint(websocket: WebSocket):
         "loaded": initial_loaded,
         "loop_range": p.get_loop_range() if initial_loaded else None,
         "filename": p.audio_path.name if initial_loaded else None,
-        "update_counter": p.update_counter if initial_loaded else 0
+        "update_counter": p.update_counter if initial_loaded else 0,
+        "loop_mode": p.loop_mode if initial_loaded else "none",
+        "metronome_enabled": p.backend._metronome_enabled if initial_loaded else False,
+        "speed": p.backend._speed if initial_loaded else 1.0,
+        "volume": p.backend._volume if initial_loaded else 1.0
     }
 
     try:
@@ -40,17 +44,23 @@ async def websocket_endpoint(websocket: WebSocket):
                 pos = p.position
                 playing = p.backend._playing
                 filename = p.audio_path.name
-
-                # Only send if something meaningful changed
-                # Position update at ~30fps is fine during playback,
-                # but if paused and not seeking, no need to spam.
+                loop_mode = p.loop_mode
+                metronome_enabled = p.backend._metronome_enabled
+                speed = p.backend._speed
+                volume = p.backend._volume
                 loop_range = state.project.get_loop_range()
                 update_counter = state.project.update_counter
+
+                # Only send if something meaningful changed
                 if (playing or abs(pos - last_state.get("position", -1.0)) > 1e-4
                     or playing != last_state.get("playing")
                     or loop_range != last_state.get("loop_range")
                     or filename != last_state.get("filename")
                     or update_counter != last_state.get("update_counter")
+                    or loop_mode != last_state.get("loop_mode")
+                    or metronome_enabled != last_state.get("metronome_enabled")
+                    or speed != last_state.get("speed")
+                    or volume != last_state.get("volume")
                     or not last_state.get("loaded")):
 
                     if (not last_state.get("loaded")
@@ -64,14 +74,24 @@ async def websocket_endpoint(websocket: WebSocket):
                         "loop_range": loop_range,
                         "loaded": True,
                         "filename": filename,
-                        "update_counter": update_counter
+                        "update_counter": update_counter,
+                        "loop_mode": loop_mode,
+                        "metronome_enabled": metronome_enabled,
+                        "speed": speed,
+                        "volume": volume
                     })
-                    last_state["position"] = pos
-                    last_state["playing"] = playing
-                    last_state["loop_range"] = loop_range
-                    last_state["loaded"] = True
-                    last_state["filename"] = filename
-                    last_state["update_counter"] = update_counter
+                    last_state.update({
+                        "position": pos,
+                        "playing": playing,
+                        "loop_range": loop_range,
+                        "loaded": True,
+                        "filename": filename,
+                        "update_counter": update_counter,
+                        "loop_mode": loop_mode,
+                        "metronome_enabled": metronome_enabled,
+                        "speed": speed,
+                        "volume": volume
+                    })
             elif last_state.get("loaded"):
                 # Project was closed
                 await websocket.send_json({"loaded": False})
