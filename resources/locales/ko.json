@@ -18,7 +18,7 @@
     "keybinds": "단축키",
     "theme": "UI 테마",
     "language": "언어",
-    "audio_device": "오디오 출력",
+    "audio_device": "오디오 장치",
     "default_device": "시스템 기본값",
     "volume": "클릭 볼륨",
     "keys": "표시되는 피아노 건반",
@@ -97,8 +97,8 @@
     "filter_auto_gain": "자동 게인",
     "filter_auto_gain_desc": "필터링으로 인한 볼륨 손실을 자동으로 보정하여 일정한 인지 음량을 유지합니다.",
     "kb_no_ui_desc": "다음 단축키는 그래픽 인터페이스 요소에 대응하지 않습니다.",
-    "ui_scale": "UI Scale",
-    "ui_scale_desc": "Adjust the size of text, buttons, and other interface elements."
+    "ui_scale": "UI 배율",
+    "ui_scale_desc": "텍스트, 버튼 및 기타 인터페이스 요소의 크기를 조정합니다."
   },
   "keys": {
     "space": "스페이스",

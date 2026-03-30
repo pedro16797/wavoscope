@@ -18,7 +18,7 @@
     "keybinds": "キーバインド",
     "theme": "UIテーマ",
     "language": "言語",
-    "audio_device": "オーディオ出力",
+    "audio_device": "オーディオデバイス",
     "default_device": "システムデフォルト",
     "volume": "クリック音量",
     "keys": "表示されるピアノキー",
@@ -96,8 +96,8 @@
     "remote_url_hint": "お使いのスマートフォンや他のデバイスのブラウザでこの URL を入力してください。",
     "remote_restart_hint": "リモートアクセスの変更を有効にするには、Wavoscope を再起動する必要があります。",
     "remote_warning": "警告：リモートアクセスは認証されていません。ローカルネットワーク上の誰でもアプリを制御できます。",
-    "ui_scale": "UI Scale",
-    "ui_scale_desc": "Adjust the size of text, buttons, and other interface elements.",
+    "ui_scale": "UIスケール",
+    "ui_scale_desc": "テキスト、ボタン、その他のインターフェース要素のサイズを調整します。",
     "kb_no_ui_desc": "The following keybinds do not correspond to any graphical interface element."
   },
   "keys": {

@@ -95,10 +95,10 @@
     "remote_url_hint": "Saisissez cette URL dans le navigateur de votre téléphone ou d'un autre appareil.",
     "remote_restart_hint": "Vous devez redémarrer Wavoscope pour que les modifications de l'accès à distance prennent effet.",
     "remote_warning": "Attention : l'accès à distance n'est pas authentifié. Toute personne sur votre réseau local peut contrôler l'application.",
-    "ui_scale": "UI Scale",
+    "ui_scale": "Échelle de l'UI",
     "audio_device": "Audio Output",
     "default_device": "System Default",
-    "ui_scale_desc": "Adjust the size of text, buttons, and other interface elements."
+    "ui_scale_desc": "Ajuster la taille du texte, des boutons et des autres éléments de l'interface."
   },
   "keys": {
     "space": "Espace",
