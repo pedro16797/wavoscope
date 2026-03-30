@@ -38,6 +38,12 @@ Wavoscope utiliza un sistema de ficheiros "sidecar". Cando abres un ficheiro de 
 - **Volume e Overdrive:** Axusta o volume xeral co deslizador. Fai clic na **icona de volume** ou preme `G` para alternar o **modo Overdrive**, que estende o rango de volume do 100% ao 400%. A aplicación lembra niveis de volume independentes para os modos normal e overdrive.
 - **Tempo e Tap Tempo:** O tempo actual (en BPM) amósase na cabeceira da forma de onda. Fai clic repetidamente para medir o tempo manualmente (**Tap Tempo**). Volve automaticamente ao tempo calculado do compás tras 3 segundos de inactividade.
 - **Control Remoto:** Activa o **Acceso Remoto** nos axustes para controlar Wavoscope desde outros dispositivos (como un teléfono móbil) na mesma rede local. Os axustes amosarán un URL que podes introducir no navegador do teu dispositivo remoto para acceder á interface e controlar a reprodución.
+    - **Interface Optimizada:** Os dispositivos remotos reciben unha interface simplificada que oculta ferramentas complexas como o analizador de espectro e céntrase nos controis de reprodución.
+    - **Soporte Táctil:** Soporte completo para navegación táctil, incluíndo desprazamento e zoom con pellizco na forma de onda.
+    - **Protección do Host:** Para evitar edicións accidentais, os dispositivos remotos só poden controlar a reprodución e ver as marcas; a creación ou edición de marcas e letras está restrinxida ao equipo principal.
+    - *Nota: O acceso remoto non require autenticación; calquera persoa na túa rede local poderá controlar a aplicación.*
+
+![Interface Remota](docs/images/remote_view.png)
 
 ---
 

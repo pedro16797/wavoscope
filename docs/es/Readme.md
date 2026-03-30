@@ -42,7 +42,13 @@ Wavoscope utiliza un sistema de archivos "sidecar". Cuando abres un archivo de a
 - **Control de velocidad:** Usa el deslizador en la barra inferior para ajustar la velocidad de 0,1x a 2.0x. Wavoscope utiliza un estiramiento de tiempo de alta calidad que preserva el tono.
 - **Volumen y Overdrive:** Ajusta el volumen general con el deslizador. Haz clic en el **icono de volumen** o presiona `G` para alternar el **modo Overdrive**, que extiende el rango de volumen del 100% al 400%. La aplicación recuerda niveles de volumen independientes para los modos normal y overdrive.
 - **Tempo y Tap Tempo:** El tempo actual (en BPM) se muestra en el encabezado de la forma de onda. Haz clic repetidamente para medir el tempo manualmente (**Tap Tempo**). Vuelve automáticamente al tempo calculado del compás tras 3 segundos de inactividad.
-- **Control Remoto:** Activa el **Acceso Remoto** en los ajustes para controlar Wavoscope desde otros dispositivos (como un teléfono móvil) en la misma red local. Los ajustes mostrarán una URL que puedes introducir en el navegador de tu dispositivo remoto para acceder a la interfaz y controlar la reproducción. *Nota: El acceso remoto no requiere autenticación; cualquier persona en tu red local podrá controlar la aplicación.*
+- **Control Remoto:** Activa el **Acceso Remoto** en los ajustes para controlar Wavoscope desde otros dispositivos (como un teléfono móvil) en la misma red local. Los ajustes mostrarán una URL que puedes introducir en el navegador de tu dispositivo remoto para acceder a la interfaz y controlar la reproducción.
+    - **Interfaz Optimizada:** Los dispositivos remotos reciben una interfaz simplificada que oculta herramientas complejas como el analizador de espectro y se centra en los controles de reproducción.
+    - **Soporte Táctil:** Soporte completo para navegación táctil, incluyendo desplazamiento y zoom con pellizco en la forma de onda.
+    - **Protección del Host:** Para evitar ediciones accidentales, los dispositivos remotos solo pueden controlar la reproducción y ver las marcas; la creación o edición de marcas y letras está restringida al equipo principal.
+    - *Nota: El acceso remoto no requiere autenticación; cualquier persona en tu red local podrá controlar la aplicación.*
+
+![Interfaz Remota](docs/images/remote_view.png)
 
 ---
 

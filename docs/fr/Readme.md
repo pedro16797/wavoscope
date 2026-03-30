@@ -43,6 +43,12 @@ Wavoscope utilise un système de fichiers "sidecar". Lorsque vous ouvrez un fich
 - **Volume & Overdrive :** Ajustez le volume général avec le curseur. Cliquez sur l'**icône de volume** ou appuyez sur `G` pour basculer en **mode Overdrive**, qui étend la plage de volume de 100% à 400%. L'application mémorise des niveaux de volume distincts pour les modes normal et overdrive.
 - **Tempo & Tap Tempo :** Le tempo actuel (en BPM) est affiché dans l'en-tête de la forme d'onde. Cliquez plusieurs fois pour mesurer manuellement le tempo (**Tap Tempo**). Il revient automatiquement au tempo de mesure calculé après 3 secondes d'inactivité.
 - **Contrôle à distance :** Activez l'**Accès à distance** dans les paramètres pour contrôler Wavoscope depuis d'autres appareils (comme un téléphone portable) sur le même réseau local. Les paramètres afficheront une URL que vous pourrez saisir dans le navigateur de votre appareil distant pour accéder à l'interface et contrôler la lecture.
+    - **Interface Optimisée :** Les appareils distants bénéficient d'une interface simplifiée qui masque les outils complexes comme l'analyseur de spectre et se concentre sur les commandes de lecture.
+    - **Support Tactile :** La navigation tactile complète est prise en charge, y compris le panoramique et le zoom par pincement sur la forme d'onde.
+    - **Protection de l'Hôte :** Pour éviter les modifications accidentelles, les appareils distants peuvent uniquement contrôler la lecture et visualiser les marqueurs ; l'ajout ou la modification de marqueurs et de paroles est réservé à la machine hôte.
+    - *Note : L'accès à distance n'est pas authentifié ; toute personne sur votre réseau local pourra contrôler l'application.*
+
+![Interface Distante](docs/images/remote_view.png)
 
 ---
 

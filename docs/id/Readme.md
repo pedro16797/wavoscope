@@ -39,6 +39,8 @@ Wavoscope menggunakan sistem file "sidecar". Saat Anda membuka file audio, Wavos
 - **Tempo & Tap Tempo:** Tempo saat ini (dalam BPM) ditampilkan di header waveform. Klik berulang kali untuk mengukur tempo secara manual (**Tap Tempo**). Secara otomatis akan kembali ke tempo birama yang dihitung setelah 3 detik tidak ada aktivitas.
 - **Kontrol Jarak Jauh:** Aktifkan **Akses Jarak Jauh** di pengaturan untuk mengontrol Wavoscope dari perangkat lain (seperti ponsel) di jaringan lokal yang sama. Pengaturan akan menampilkan URL yang dapat Anda masukkan di browser perangkat jarak jauh Anda untuk mengakses antarmuka dan mengontrol pemutaran.
 
+![Tampilan Jarak Jauh](docs/images/remote_view.png)
+
 ---
 
 ## 🔍 Analisis Spektral & Pemfilteran
