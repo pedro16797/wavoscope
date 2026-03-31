@@ -36,13 +36,13 @@ def get_backend_error():
         return str(_backend_exception)
     return None
 
-def wait_for_backend(url='http://127.0.0.1:8000', max_retries=5):
+def wait_for_backend(url='http://127.0.0.1:8000', max_retries=50):
     for i in range(max_retries):
         try:
-            with urllib.request.urlopen(f"{url}/status", timeout=1) as resp:
+            with urllib.request.urlopen(f"{url}/status", timeout=0.5) as resp:
                 if resp.status == 200:
                     return True
         except Exception:
             pass
-        time.sleep(1)
+        time.sleep(0.1)
     return False

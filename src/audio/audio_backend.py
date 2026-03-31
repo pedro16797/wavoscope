@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Callable, List, Tuple, Any, Dict
 
 import numpy as np
-import soundfile as sf
 
 from session.looping import LoopingEngine
 from audio.synth import SimpleSynth
@@ -55,6 +54,7 @@ class AudioBackend:
     # ---------- file I/O ----------
     def open_file(self, path: Path) -> None:
         """Load audio file, reset playback state."""
+        import soundfile as sf
         with self._playback._lock:
             data, sr = sf.read(str(path), always_2d=False, dtype="float32")
             if data.ndim > 1:

@@ -2,14 +2,10 @@ import { useEffect } from 'react';
 import { useStore } from '../store/useStore';
 
 export const useAudioWebSocket = () => {
-  const { fetchThemes, fetchStatus, fetchConfig, fetchLocales, fetchAudioDevices, updatePosition, setPlaying } = useStore();
+  const { bootstrap, fetchStatus, updatePosition, setPlaying } = useStore();
 
   useEffect(() => {
-    fetchThemes();
-    fetchStatus();
-    fetchConfig();
-    fetchLocales();
-    fetchAudioDevices();
+    bootstrap();
 
     const isDev = window.location.origin.includes(':5173');
     const wsUrl = isDev
@@ -49,5 +45,5 @@ export const useAudioWebSocket = () => {
         }
     };
     return () => ws.close();
-  }, [fetchThemes, fetchStatus, fetchConfig, fetchLocales, fetchAudioDevices, updatePosition, setPlaying]);
+  }, [bootstrap, updatePosition, setPlaying]);
 };

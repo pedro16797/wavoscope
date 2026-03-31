@@ -244,6 +244,7 @@ export interface ConfigSlice {
     remote_access?: boolean
   }) => Promise<void>;
   fetchRemoteUrl: () => Promise<void>;
+  bootstrap: () => Promise<void>;
   browseFolder: (initialDir?: string) => Promise<string | null>;
   setShowSettings: (show: boolean) => void;
   setShowSpectrum: (show: boolean) => void;

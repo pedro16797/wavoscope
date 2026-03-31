@@ -101,3 +101,25 @@ async def get_remote_url():
     from utils.config import Config
     ip = Config().get_local_ip()
     return {"url": f"http://{ip}:{state.port}"}
+
+@router.get("/bootstrap")
+async def bootstrap():
+    from backend import state
+    from backend.routers import locales, themes
+    from utils.config import Config
+    from audio.audio_backend import AudioBackend
+    from backend.main import get_status
+
+    cfg = await get_config()
+    themes_list = themes.get_themes()
+    locales_list = locales.list_locales()
+    devices = AudioBackend.list_devices()
+    status = await get_status()
+
+    return {
+        "config": cfg,
+        "themes": themes_list,
+        "locales": locales_list,
+        "audio_devices": devices,
+        "status": status
+    }
