@@ -8,7 +8,8 @@ export const Waveform: React.FC = () => {
   const {
     loaded, position, duration, currentTheme, themes, controlPlayback,
     addHarmonyFlag, setEditingHarmonyFlagIdx,
-    offset, zoom, setViewport
+    offset, zoom, setViewport,
+    isRemote
   } = useStore();
   const [bars, setBars] = React.useState<number[][]>([]);
   const [size, setSize] = React.useState({ width: 0, height: 0 });
@@ -148,7 +149,7 @@ export const Waveform: React.FC = () => {
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) {
-        if (e.button === 2 && canvasRef.current) {
+        if (e.button === 2 && canvasRef.current && !isRemote) {
             e.preventDefault();
             const rect = canvasRef.current.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -193,10 +194,61 @@ export const Waveform: React.FC = () => {
     window.addEventListener('mouseup', onMouseUp);
   };
 
+  const touchState = useRef<{ lastX: number, lastDistance: number } | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+        touchState.current = { lastX: e.touches[0].clientX, lastDistance: 0 };
+    } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        touchState.current = { lastX: (e.touches[0].clientX + e.touches[1].clientX) / 2, lastDistance: dist };
+    }
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchState.current || !canvasRef.current) return;
+
+    if (e.touches.length === 1) {
+        const dx = e.touches[0].clientX - touchState.current.lastX;
+        const secDelta = dx / zoom;
+        const maxOffset = Math.max(0, duration - (canvasRef.current.clientWidth) / zoom);
+        setViewport(Math.max(0, Math.min(offset - secDelta, maxOffset)), zoom);
+        touchState.current.lastX = e.touches[0].clientX;
+    } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+
+        const rect = canvasRef.current.getBoundingClientRect();
+        const x = centerX - rect.left;
+        const mouseSec = offset + x / zoom;
+
+        const factor = dist / touchState.current.lastDistance;
+        const newZoom = Math.max(zoom * factor, canvasRef.current.clientWidth / (duration || 1));
+        const newOffset = Math.max(0, Math.min(mouseSec - x / newZoom, duration - canvasRef.current.clientWidth / newZoom));
+
+        setViewport(newOffset, newZoom);
+        touchState.current.lastX = centerX;
+        touchState.current.lastDistance = dist;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchState.current = null;
+    setIsDragging(false);
+  };
+
   return (
     <div ref={containerRef} className="w-full h-full relative overflow-hidden"
          onWheel={handleWheel}
-         onMouseDown={handleMouseDown}>
+         onMouseDown={handleMouseDown}
+         onTouchStart={handleTouchStart}
+         onTouchMove={handleTouchMove}
+         onTouchEnd={handleTouchEnd}>
         <canvas ref={canvasRef} className="w-full h-full block" style={{ cursor: isDragging ? 'grabbing' : 'grab' }} />
     </div>
   );

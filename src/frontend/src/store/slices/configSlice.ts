@@ -28,6 +28,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   undo_steps: 50,
   remote_access: false,
   remote_url: '',
+  isRemote: !['localhost', '127.0.0.1', '::1'].includes(window.location.hostname),
   showSettings: false,
   showSpectrum: true,
   showLyrics: false,
@@ -206,6 +207,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
   setShowSpectrum: (show: boolean) => set({ showSpectrum: show }),
   setShowLyrics: (show: boolean) => set({ showLyrics: show }),
   setViewport: (offset: number, zoom: number) => set({ offset, zoom }),
+  setRemote: (isRemote: boolean) => set({ isRemote }),
 
   fetchRemoteUrl: async () => {
     try {

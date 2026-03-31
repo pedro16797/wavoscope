@@ -94,7 +94,11 @@
     "remote_url": "远程控制 URL",
     "remote_url_hint": "在您的手机或其他设备的浏览器中输入此 URL。",
     "remote_restart_hint": "您必须重新启动 Wavoscope 才能使远程访问的更改生效。",
-    "remote_warning": "警告：远程访问未经身份验证。局域网内的任何人都可以控制此应用。"
+    "remote_warning": "警告：远程访问未经身份验证。局域网内的任何人都可以控制此应用。",
+    "ui_scale": "UI 缩放",
+    "audio_device": "音频设备",
+    "default_device": "系统默认",
+    "ui_scale_desc": "调整文本、按钮和其他界面元素的大小。"
   },
   "keys": {
     "space": "空格",

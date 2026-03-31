@@ -94,7 +94,11 @@
     "remote_url": "URL de Controle Remoto",
     "remote_url_hint": "Introduza este URL no navegador do seu telemóvel ou outro dispositivo.",
     "remote_restart_hint": "Deve reiniciar o Wavoscope para que as alterações ao acesso remoto produzam efeito.",
-    "remote_warning": "Aviso: O acesso remoto não é autenticado. Qualquer pessoa na sua rede local pode controlar a aplicação."
+    "remote_warning": "Aviso: O acesso remoto não é autenticado. Qualquer pessoa na sua rede local pode controlar a aplicação.",
+    "ui_scale": "Escala da UI",
+    "audio_device": "Dispositivo de áudio",
+    "default_device": "Padrão do sistema",
+    "ui_scale_desc": "Ajustar o tamanho do texto, botões e outros elementos da interface."
   },
   "keys": {
     "space": "Espaço",

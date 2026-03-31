@@ -66,6 +66,24 @@ class Config:
 
         return default if res == {} else res
 
+    def get_local_ip(self) -> str:
+        """Return the machine's local IP address."""
+        import socket
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.settimeout(0)
+            try:
+                # doesn't even have to be reachable
+                s.connect(('10.254.254.254', 1))
+                ip = s.getsockname()[0]
+            except Exception:
+                ip = '127.0.0.1'
+            finally:
+                s.close()
+        except Exception:
+            ip = '127.0.0.1'
+        return ip
+
     def set(self, key: str, value: Any) -> None:
         """Store `value` under `key` and flush to disk."""
         self._data[key] = value

@@ -12,7 +12,8 @@ export const PlaybackBar: React.FC = () => {
     controlPlayback, currentTheme, themes, ui_scale,
     metronome_enabled, updateMetronome, setShowSettings, browseFile,
     saveProject, exportMusicXML, dirty, loop_mode, cycleLoopMode,
-    activePlaylistId, setShowPlaylistDialog, nextPlaylistItem, prevPlaylistItem
+    activePlaylistId, setShowPlaylistDialog, nextPlaylistItem, prevPlaylistItem,
+    isRemote
   } = useStore();
 
   const theme = themes[currentTheme] || {};
@@ -55,31 +56,37 @@ export const PlaybackBar: React.FC = () => {
   };
 
   return (
-    <div className="p-2 flex items-center gap-4 border-b-[width:var(--ui-border)] select-none h-16 shrink-0 bg-surface" style={{ color: theme.text }}>
+    <div className={`p-2 flex items-center gap-4 border-b-[width:var(--ui-border)] select-none ${isRemote ? 'h-auto py-3 flex-wrap' : 'h-16'} shrink-0 bg-surface`} style={{ color: theme.text }}>
       <div className="flex items-center gap-1">
-        <Tooltip content={t('playback.open')} shortcut={`${t('keys.ctrl')} + O`}>
+        {!isRemote && (
+          <Tooltip content={t('playback.open')} shortcut={`${t('keys.ctrl')} + O`}>
             <button onClick={browseFile} aria-label={t('playback.open')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
                 <FolderOpen size={20 * ui_scale} />
             </button>
-        </Tooltip>
+          </Tooltip>
+        )}
         <Tooltip content={t('playlist.title')}>
             <button onClick={() => setShowPlaylistDialog(true)} aria-label={t('playlist.title')}
                     className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${activePlaylistId ? 'text-accent' : 'opacity-90'}`}>
                 <ListMusic size={20 * ui_scale} />
             </button>
         </Tooltip>
-        <Tooltip content={dirty ? t('playback.save_dirty') : t('playback.save_clean')} shortcut={`${t('keys.ctrl')} + S`}>
-            <button onClick={saveProject} disabled={!loaded} aria-label={t('playback.save_clean')}
-                    className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${!loaded ? 'opacity-20' : 'opacity-90'}`}>
-                <Save size={20 * ui_scale} className={dirty ? 'text-accent' : 'text-text'} />
-            </button>
-        </Tooltip>
-        <Tooltip content={t('playback.export_xml')} shortcut={`${t('keys.ctrl')} + E`}>
-            <button onClick={exportMusicXML} disabled={!loaded} aria-label={t('playback.export_xml')}
-                    className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : 'opacity-90'}`}>
-                <FileDown size={20 * ui_scale} />
-            </button>
-        </Tooltip>
+        {!isRemote && (
+          <>
+            <Tooltip content={dirty ? t('playback.save_dirty') : t('playback.save_clean')} shortcut={`${t('keys.ctrl')} + S`}>
+                <button onClick={saveProject} disabled={!loaded} aria-label={t('playback.save_clean')}
+                        className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${!loaded ? 'opacity-20' : 'opacity-90'}`}>
+                    <Save size={20 * ui_scale} className={dirty ? 'text-accent' : 'text-text'} />
+                </button>
+            </Tooltip>
+            <Tooltip content={t('playback.export_xml')} shortcut={`${t('keys.ctrl')} + E`}>
+                <button onClick={exportMusicXML} disabled={!loaded} aria-label={t('playback.export_xml')}
+                        className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : 'opacity-90'}`}>
+                    <FileDown size={20 * ui_scale} />
+                </button>
+            </Tooltip>
+          </>
+        )}
         {loaded && (
             <>
                 <Tooltip content={playing ? t('playback.pause') : t('playback.play')} shortcut={t('keys.space')}>
@@ -131,7 +138,7 @@ export const PlaybackBar: React.FC = () => {
         )}
       </div>
 
-      <div className="flex-1 flex flex-col justify-center gap-1 min-w-0 px-4">
+      <div className={`flex flex-col justify-center gap-1 min-w-0 px-4 ${isRemote ? 'w-full order-last mt-2' : 'flex-1'}`}>
         <Tooltip content={loaded ? filename : ''}>
             <div className="text-xs font-bold truncate opacity-80">
                 {getHeaderText()}
@@ -182,11 +189,13 @@ export const PlaybackBar: React.FC = () => {
             </Tooltip>
         </div>
 
-        <Tooltip content={t('playback.settings')} shortcut="Esc">
-            <button onClick={() => setShowSettings(true)} aria-label={t('playback.settings')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
-                <Settings size={18 * ui_scale} />
-            </button>
-        </Tooltip>
+        {!isRemote && (
+          <Tooltip content={t('playback.settings')} shortcut="Esc">
+              <button onClick={() => setShowSettings(true)} aria-label={t('playback.settings')} className="p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors">
+                  <Settings size={18 * ui_scale} />
+              </button>
+          </Tooltip>
+        )}
       </div>
     </div>
   );

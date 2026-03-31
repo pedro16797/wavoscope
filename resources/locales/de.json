@@ -94,7 +94,11 @@
     "remote_url": "Fernsteuerungs-URL",
     "remote_url_hint": "Geben Sie diese URL im Browser Ihres Telefons oder eines anderen Geräts ein.",
     "remote_restart_hint": "Sie müssen Wavoscope neu starten, damit die Änderungen am Fernzugriff wirksam werden.",
-    "remote_warning": "Warnung: Der Fernzugriff ist nicht passwortgeschützt. Jeder in Ihrem lokalen Netzwerk kann die App steuern."
+    "remote_warning": "Warnung: Der Fernzugriff ist nicht passwortgeschützt. Jeder in Ihrem lokalen Netzwerk kann die App steuern.",
+    "ui_scale": "UI-Skalierung",
+    "audio_device": "Audiogerät",
+    "default_device": "Systemstandard",
+    "ui_scale_desc": "Die Größe von Text, Schaltflächen und anderen UI-Elementen anpassen."
   },
   "keys": {
     "space": "Leertaste",

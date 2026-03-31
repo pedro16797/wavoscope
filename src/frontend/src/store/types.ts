@@ -118,6 +118,7 @@ export interface ProjectSlice {
   selectedLyricIdx: null | number;
   export_status: ExportStatus;
   undo_history: UndoStep[];
+  update_counter: number;
 
   fetchStatus: () => Promise<void>;
   browseFile: () => Promise<void>;
@@ -212,6 +213,7 @@ export interface ConfigSlice {
   language: string;
   remote_access: boolean;
   remote_url: string;
+  isRemote: boolean;
   showSettings: boolean;
   showSpectrum: boolean;
   showLyrics: boolean;
@@ -247,6 +249,7 @@ export interface ConfigSlice {
   setShowSpectrum: (show: boolean) => void;
   setShowLyrics: (show: boolean) => void;
   setViewport: (offset: number, zoom: number) => void;
+  setRemote: (isRemote: boolean) => void;
 }
 
 export type AppState = ProjectSlice & PlaybackSlice & ConfigSlice & PlaylistSlice;

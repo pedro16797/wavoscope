@@ -96,7 +96,9 @@
     "high_cutoff_desc": "Filtra las frecuencias por encima de este punto.",
     "filter_auto_gain": "Auto-Ganancia",
     "filter_auto_gain_desc": "Compensa automáticamente la pérdida de volumen debida al filtrado para mantener una sonoridad percibida constante.",
-    "kb_no_ui_desc": "Los siguientes atajos de teclado no corresponden a ningún elemento de la interfaz gráfica."
+    "kb_no_ui_desc": "Los siguientes atajos de teclado no corresponden a ningún elemento de la interfaz gráfica.",
+    "ui_scale": "Escala de la interfaz",
+    "ui_scale_desc": "Ajusta el tamaño del texto, botones y otros elementos de la interfaz."
   },
   "keys": {
     "space": "Espacio",

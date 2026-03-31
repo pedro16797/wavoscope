@@ -89,6 +89,7 @@ async def get_status():
         "click_volume": state.project.backend._click_volume,
         "loop_mode": state.project.loop_mode,
         "loop_range": state.project.get_loop_range(),
+        "update_counter": state.project.update_counter,
         "filter_enabled": state.project.backend._filter_enabled,
         "filter_low_enabled": state.project.backend._filter_low_enabled,
         "filter_high_enabled": state.project.backend._filter_high_enabled,
