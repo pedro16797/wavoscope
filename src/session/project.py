@@ -71,8 +71,8 @@ class Project:
 
     def _extract_metadata(self, path: Path) -> None:
         try:
-            from tinytag import TinyTag
-            tag = TinyTag.get(str(path))
+            import tinytag
+            tag = tinytag.TinyTag.get(str(path))
             self.metadata = {
                 "title": tag.title or "",
                 "artist": tag.artist or "",

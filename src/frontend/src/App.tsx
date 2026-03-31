@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import { useStore } from './store/useStore';
 import { useKeyboardShortcuts } from './store/useKeyboardShortcuts';
@@ -14,12 +15,13 @@ import { ProgressDialog } from './components/ProgressDialog';
 import { PlaylistDialog } from './components/PlaylistDialog';
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   const {
     showSettings, setShowSettings,
     showPlaylistDialog, setShowPlaylistDialog,
     editingFlagIdx, setEditingFlagIdx, flags,
     editingHarmonyFlagIdx, setEditingHarmonyFlagIdx, harmony_flags,
-    isRemote
+    isRemote, loaded
   } = useStore();
 
   useKeyboardShortcuts();
@@ -37,7 +39,12 @@ const App: React.FC = () => {
          style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)' }}>
       <PlaybackBar />
       <div className="flex-1 relative min-h-0">
-        {isRemote ? (
+        {!loaded ? (
+            <div className="h-full flex flex-col items-center justify-center opacity-40">
+                <div className="text-4xl mb-4">🎵</div>
+                <div className="text-lg font-bold tracking-widest uppercase">{t('common.drop_file_to_start') || 'Drop an audio file to begin'}</div>
+            </div>
+        ) : isRemote ? (
           <WaveformView />
         ) : (
           <PanelGroup orientation="vertical" className="h-full">

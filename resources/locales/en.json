@@ -9,7 +9,8 @@
     "delete": "Delete",
     "ok": "OK",
     "none": "None",
-    "ready": "Ready to load audio"
+    "ready": "Ready to load audio",
+    "drop_file_to_start": "Drop an audio file to begin"
   },
   "settings": {
     "title": "Settings",

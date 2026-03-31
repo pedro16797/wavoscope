@@ -195,6 +195,39 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
     }
   },
 
+  bootstrap: async () => {
+    try {
+        const res = await axios.get(`${API_BASE}/config/bootstrap`);
+        const { config, themes, locales, audio_devices, status } = res.data;
+
+        // Apply config
+        set({
+            ...config,
+            themes,
+            locales,
+            audioDevices: audio_devices,
+            currentTheme: config.theme,
+        });
+
+        // Apply status
+        if (status.loaded) {
+            const { filter_low_hz, filter_high_hz, ...rest } = status;
+            set({ ...rest });
+        }
+    } catch (e) {
+        console.error("[Store] Bootstrap failed:", e);
+        // Fallback to individual calls if bootstrap fails
+        const state = get();
+        await Promise.all([
+            state.fetchThemes(),
+            state.fetchConfig(),
+            state.fetchLocales(),
+            state.fetchAudioDevices(),
+            state.fetchStatus()
+        ]);
+    }
+  },
+
   browseFolder: async (initialDir?: string) => {
     const pywindow = window as any;
     if (pywindow.pywebview?.api?.browse_folder) {
