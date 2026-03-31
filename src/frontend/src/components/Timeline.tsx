@@ -243,9 +243,7 @@ export const Timeline: React.FC = () => {
             // Play Chord on Hold
             const chord = harmony_flags[foundHarmonyIdx].c;
             const midis = getChordMidiNotes(chord);
-            midis.forEach(m => {
-                playTone(midiToFreq(m), 'start');
-            });
+            playTone(midis.map(m => midiToFreq(m)), 'start', true);
 
             setDragHarmonyIdx(foundHarmonyIdx);
             document.body.style.cursor = 'ew-resize';

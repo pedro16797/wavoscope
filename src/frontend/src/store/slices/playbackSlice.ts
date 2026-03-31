@@ -140,9 +140,15 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
     }
   },
 
-  playTone: async (freq: number, action: 'start' | 'stop') => {
+  playTone: async (freq: number | number[], action: 'start' | 'stop', stopOthers: boolean = false) => {
     try {
-        await axios.post(`${API_BASE}/playback/tone`, { freq, action });
+        const payload: any = { action, stop_others: stopOthers };
+        if (Array.isArray(freq)) {
+            payload.freqs = freq;
+        } else {
+            payload.freq = freq;
+        }
+        await axios.post(`${API_BASE}/playback/tone`, payload);
     } catch (e) {
         console.error("[Store] Failed to play tone:", e);
     }

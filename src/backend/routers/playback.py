@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from pathlib import Path
 from backend import state
 from utils.logging import logger
@@ -124,7 +124,9 @@ async def control_playback(control: PlaybackControl):
 
 class ToneControl(BaseModel):
     freq: float = 0
+    freqs: Optional[List[float]] = None
     action: str = "start"
+    stop_others: bool = False
 
 @router.post("/tone")
 async def play_tone(control: ToneControl):
@@ -133,10 +135,20 @@ async def play_tone(control: ToneControl):
 
     try:
         synth = state.project.backend._synth
+        if control.stop_others:
+            synth.stop_all()
+
         if control.action == "start":
-            synth.start_tone(control.freq)
+            if control.freqs:
+                for f in control.freqs:
+                    synth.start_tone(f)
+            else:
+                synth.start_tone(control.freq)
         elif control.action == "stop":
-            if control.freq == 0:
+            if control.freqs:
+                for f in control.freqs:
+                    synth.stop_tone(f)
+            elif control.freq == 0:
                 synth.stop_all()
             else:
                 synth.stop_tone(control.freq)

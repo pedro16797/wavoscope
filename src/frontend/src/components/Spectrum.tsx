@@ -258,10 +258,7 @@ export const Spectrum: React.FC = () => {
 
         const now = Date.now();
         if (now - lastToneRef.current > 30) {
-            if (currentHzRef.current > 0) {
-                playToneStore(currentHzRef.current, 'stop');
-            }
-            playToneStore(snappedHz, 'start');
+            playToneStore(snappedHz, 'start', true);
             currentHzRef.current = snappedHz;
             lastToneRef.current = now;
         }

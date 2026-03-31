@@ -3,6 +3,7 @@ Simple real-time sine-wave synthesiser for live piano-style playback.
 """
 from __future__ import annotations
 
+import threading
 from typing import Any, Dict
 
 import numpy as np
@@ -23,6 +24,7 @@ class SimpleSynth:
     def __init__(self, sr: int = 44_100, device: int | str | None = None) -> None:
         self.sr: int = sr
         self._active: Dict[float, float] = {}  # freq -> current phase (seconds)
+        self._lock = threading.RLock()
         self._device: int | str | None = device
         self._stream: sd.OutputStream | None = None
 
@@ -60,15 +62,18 @@ class SimpleSynth:
     # ---------- public ----------
     def start_tone(self, freq: float) -> None:
         """Begin a sine at `freq` Hz (idempotent)."""
-        self._active[freq] = 0.0
+        with self._lock:
+            self._active[freq] = 0.0
 
     def stop_tone(self, freq: float) -> None:
         """Stop a sine at `freq` Hz if running."""
-        self._active.pop(freq, None)
+        with self._lock:
+            self._active.pop(freq, None)
 
     def stop_all(self) -> None:
         """Silence every active tone."""
-        self._active.clear()
+        with self._lock:
+            self._active.clear()
 
     def close(self) -> None:
         """Stop and close the audio stream."""
@@ -86,22 +91,33 @@ class SimpleSynth:
         _status: Any,
     ) -> None:
         """PortAudio callback: fill `outdata` with the summed sine bank."""
-        t = (np.arange(frames, dtype=np.float32) / self.sr)
-        out = np.zeros(frames, dtype=np.float32)
-
-        if not self._active:
-            outdata[:] = 0
+        outdata[:] = 0
+        if not self._lock.acquire(blocking=False):
             return
 
-        for freq, phase in list(self._active.items()):
-            # Use float32 for the entire calculation
-            wave = 0.2 * np.sin(2 * np.pi * freq * (t + phase)).astype(np.float32)
-            out += wave
+        try:
+            if not self._active:
+                return
 
-            # Apply modulo to phase to prevent precision loss over time
-            period = 1.0 / freq
-            self._active[freq] = (phase + frames / self.sr) % period
+            t = (np.arange(frames, dtype=np.float32) / self.sr)
+            out = np.zeros(frames, dtype=np.float32)
 
-        # Normalise when many tones overlap
-        out *= 0.8 / max(1, len(self._active))
-        outdata[:] = out.reshape(-1, 1)
+            # Take a snapshot of items while locked
+            active_items = list(self._active.items())
+
+            for freq, phase in active_items:
+                # Use float32 for the entire calculation
+                wave = 0.2 * np.sin(2 * np.pi * freq * (t + phase)).astype(np.float32)
+                out += wave
+
+                # Apply modulo to phase to prevent precision loss over time
+                # Only update if the note is still active (it might have been stopped during processing)
+                if freq in self._active:
+                    period = 1.0 / freq
+                    self._active[freq] = (phase + frames / self.sr) % period
+
+            # Normalise when many tones overlap
+            out *= 0.8 / max(1, len(self._active))
+            outdata[:] = out.reshape(-1, 1)
+        finally:
+            self._lock.release()
