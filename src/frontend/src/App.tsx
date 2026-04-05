@@ -21,6 +21,7 @@ const App: React.FC = () => {
     showPlaylistDialog, setShowPlaylistDialog,
     editingFlagIdx, setEditingFlagIdx, flags,
     editingHarmonyFlagIdx, setEditingHarmonyFlagIdx, harmony_flags,
+    stopAllTones,
     isRemote, loaded
   } = useStore();
 
@@ -32,7 +33,13 @@ const App: React.FC = () => {
     // Expose setShowSettings to native menu
     (window as Window & { setShowSettings?: (show: boolean) => void }).setShowSettings = setShowSettings;
     (window as any).useStore = useStore;
-  }, [setShowSettings]);
+
+    const handleBlur = () => {
+        stopAllTones();
+    };
+    window.addEventListener('blur', handleBlur);
+    return () => window.removeEventListener('blur', handleBlur);
+  }, [setShowSettings, stopAllTones]);
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden text-sm select-none"

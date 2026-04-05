@@ -176,7 +176,7 @@ export interface PlaybackSlice {
   toggleOverdrive: () => Promise<void>;
   setFFTWindow: (sec: number) => void;
   setOctaveShift: (shift: number) => void;
-  playTone: (freq: number, action: 'start' | 'stop') => Promise<void>;
+  playTone: (freq: number | number[], action: 'start' | 'stop', stopOthers?: boolean) => Promise<void>;
   stopAllTones: () => Promise<void>;
 }
 

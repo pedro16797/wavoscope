@@ -127,9 +127,7 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
 
   const handlePlayStart = () => {
     const midis = getChordMidiNotes(chord);
-    midis.forEach(m => {
-        playTone(midiToFreq(m), 'start');
-    });
+    playTone(midis.map(m => midiToFreq(m)), 'start', true);
   };
 
   const handlePlayStop = () => {
