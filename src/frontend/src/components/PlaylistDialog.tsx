@@ -102,20 +102,22 @@ export const PlaylistDialog: React.FC<PlaylistDialogProps> = ({ onClose }) => {
                                      onClick={() => setSelectedId(pl.id)}
                                      className={`group flex items-center justify-between p-2 rounded cursor-pointer transition-colors ${selectedId === pl.id ? 'bg-accent/20 text-accent' : 'hover:bg-white/5'}`}>
 
-                                    {editingPlaylistId === pl.id ? (
-                                        <input
-                                            autoFocus
-                                            value={editName}
-                                            onChange={(e) => setEditName(e.target.value)}
-                                            onBlur={() => handleEditSave(pl.id)}
-                                            onKeyDown={(e) => e.key === 'Enter' && handleEditSave(pl.id)}
-                                            className="bg-black/40 text-xs px-1 rounded w-full outline-none border border-accent"
-                                        />
-                                    ) : (
-                                        <span className="text-xs font-medium truncate flex-1">{pl.name}</span>
-                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        {editingPlaylistId === pl.id ? (
+                                            <input
+                                                autoFocus
+                                                value={editName}
+                                                onChange={(e) => setEditName(e.target.value)}
+                                                onBlur={() => handleEditSave(pl.id)}
+                                                onKeyDown={(e) => e.key === 'Enter' && handleEditSave(pl.id)}
+                                                className="bg-black/40 text-xs px-1 rounded w-full outline-none border border-accent"
+                                            />
+                                        ) : (
+                                            <div className="text-xs font-medium truncate">{pl.name}</div>
+                                        )}
+                                    </div>
 
-                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                                         <button onClick={(e) => { e.stopPropagation(); setEditingPlaylistId(pl.id); setEditName(pl.name); }} className="p-1 hover:text-white">
                                             <Edit2 size={12 * ui_scale} />
                                         </button>
@@ -129,12 +131,12 @@ export const PlaylistDialog: React.FC<PlaylistDialogProps> = ({ onClose }) => {
                     </div>
 
                     {/* Right Content: Playlist Items */}
-                    <div className="flex-1 flex flex-col bg-black/10">
+                    <div className="flex-1 flex flex-col bg-black/10 min-w-0">
                         {currentPlaylist ? (
                             <>
-                                <div className="p-4 border-b border-white/5 flex items-center justify-between">
-                                    <h3 className="font-bold text-sm">{currentPlaylist.name}</h3>
-                                    <button onClick={() => handleAddItem(currentPlaylist.id)} className="flex items-center gap-1 px-3 py-1 bg-accent/10 text-accent rounded hover:bg-accent/20 transition-colors text-xs">
+                                <div className="p-4 border-b border-white/5 flex items-center justify-between gap-4">
+                                    <h3 className="font-bold text-sm truncate min-w-0">{currentPlaylist.name}</h3>
+                                    <button onClick={() => handleAddItem(currentPlaylist.id)} className="flex items-center gap-1 px-3 py-1 bg-accent/10 text-accent rounded hover:bg-accent/20 transition-colors text-xs flex-shrink-0">
                                         <Plus size={14 * ui_scale} />
                                         {t('playlist.add_song')}
                                     </button>
@@ -156,7 +158,7 @@ export const PlaylistDialog: React.FC<PlaylistDialogProps> = ({ onClose }) => {
                                                     </div>
                                                     <div className="text-[10px] opacity-40 truncate">{item.path}</div>
                                                 </div>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2 flex-shrink-0">
                                                     {item.exists ? (
                                                         <button
                                                             onClick={() => {
