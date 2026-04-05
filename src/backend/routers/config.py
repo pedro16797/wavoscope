@@ -111,8 +111,8 @@ async def bootstrap():
     from backend.main import get_status
 
     cfg = await get_config()
-    themes_list = themes.get_themes()
-    locales_list = locales.list_locales()
+    themes_list = await themes.get_themes()
+    locales_list = await locales.list_locales()
     devices = AudioBackend.list_devices()
     status = await get_status()
 
