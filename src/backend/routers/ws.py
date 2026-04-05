@@ -63,11 +63,6 @@ async def websocket_endpoint(websocket: WebSocket):
                     or volume != last_state.get("volume")
                     or not last_state.get("loaded")):
 
-                    if (not last_state.get("loaded")
-                        or filename != last_state.get("filename")
-                        or update_counter != last_state.get("update_counter")):
-                        logger.info(f"WS: Project updated (loaded: {not last_state.get('loaded')}, changed: {filename != last_state.get('filename')}), sending update")
-
                     await websocket.send_json({
                         "position": pos,
                         "playing": playing,
