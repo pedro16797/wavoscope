@@ -14,7 +14,7 @@ describe('Project Slice - Remote Guards', () => {
   beforeEach(() => {
     set = vi.fn();
     get = vi.fn();
-    // @ts-ignore
+    // @ts-expect-error - simplified set/get mocks for slice unit test
     slice = createProjectSlice(set, get, {} as any);
   });
 

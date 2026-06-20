@@ -58,8 +58,5 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Lint (advisory)
-        # Non-blocking: the codebase has pre-existing lint issues to clean up
-        # before this can be a required check.
+      - name: Lint
         run: npm run lint
-        continue-on-error: true
