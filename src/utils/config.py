@@ -68,8 +68,10 @@ class Config:
             else:
                 return default
 
+        # A wrapper node carries its value under "default"; a plain dict subtree
+        # (e.g. ui.keybinds) is returned as-is.
         if isinstance(node, dict):
-            return node.get("default", default)
+            return node["default"] if "default" in node else node
         return node
 
     def get_local_ip(self) -> str:
@@ -92,10 +94,12 @@ class Config:
 
     def set(self, key: str, value: Any) -> None:
         """Store `value` under `key` and flush to disk atomically."""
+        # Hold the lock across the write so concurrent set() calls can't have
+        # their disk writes reordered (which could persist a stale snapshot).
+        # Config writes are infrequent, so serializing them is fine.
         with self._lock:
             self._data[key] = value
-            snapshot = dict(self._data)
-        try:
-            write_json_atomic(_CONFIG_PATH, snapshot)
-        except Exception as e:
-            logger.error(f"Failed to persist config to {_CONFIG_PATH}: {e}")
+            try:
+                write_json_atomic(_CONFIG_PATH, dict(self._data))
+            except Exception as e:
+                logger.error(f"Failed to persist config to {_CONFIG_PATH}: {e}")

@@ -27,6 +27,17 @@ from utils.logging import logger # noqa: E402
 
 app = FastAPI()
 
+# The packaged app and remote devices load the UI from the backend itself
+# (same-origin, not subject to CORS), so the only legitimate cross-origin caller
+# is the Vite dev server. Restrict to those origins instead of "*" so a
+# malicious page in the host's browser can't drive the local API.
+_DEV_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+]
+
 @app.on_event("startup")
 async def startup_event():
     autosave.start()
@@ -48,18 +59,15 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
     """Last-resort handler so unexpected errors become a clean 500 (and are logged
     with the offending route) instead of being wrapped by hand in every endpoint."""
     logger.exception(f"Unhandled error on {request.method} {request.url.path}")
-    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+    # This handler runs in ServerErrorMiddleware, outside CORSMiddleware, so echo
+    # the CORS header here for allowed origins — otherwise a dev-server 500 shows
+    # up in the browser as an opaque CORS failure instead of the actual error.
+    headers = {}
+    origin = request.headers.get("origin")
+    if origin in _DEV_ORIGINS:
+        headers["Access-Control-Allow-Origin"] = origin
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"}, headers=headers)
 
-# The packaged app and remote devices load the UI from the backend itself
-# (same-origin, which is not subject to CORS), so the only legitimate
-# cross-origin caller is the Vite dev server. Restrict to those origins instead
-# of "*" so a malicious page in the host's browser can't drive the local API.
-_DEV_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5174",
-]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_DEV_ORIGINS,

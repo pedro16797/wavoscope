@@ -37,6 +37,19 @@ def test_config_missing_key_returns_default(tmp_path, monkeypatch):
         Config._instance = None  # let other tests rebuild from the real path
 
 
+def test_config_get_returns_dict_subtree(tmp_path, monkeypatch):
+    monkeypatch.setattr(config_mod, "_CONFIG_PATH", tmp_path / "cfg.json")
+    Config._instance = None
+    try:
+        cfg = Config()
+        # ui.keybinds is a plain dict (no "default" wrapper) in default.json;
+        # get() must return the subtree, not the caller's fallback.
+        keybinds = cfg.get("ui.keybinds", "FALLBACK")
+        assert isinstance(keybinds, dict) and keybinds
+    finally:
+        Config._instance = None
+
+
 def test_config_set_is_atomic_and_thread_safe(tmp_path, monkeypatch):
     cfg_path = tmp_path / "cfg.json"
     monkeypatch.setattr(config_mod, "_CONFIG_PATH", cfg_path)
@@ -63,5 +76,11 @@ def test_config_set_is_atomic_and_thread_safe(tmp_path, monkeypatch):
         for t in threads:
             t.join()
         assert not errors
+
+        # The on-disk file must reflect the latest write (no stale/torn snapshot).
+        from utils.persistence import read_json
+        cfg.set("final", "value")
+        assert read_json(cfg_path)["final"] == "value"
+        assert cfg.get("final") == "value"
     finally:
         Config._instance = None

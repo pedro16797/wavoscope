@@ -1,11 +1,15 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 from typing import Optional
 import tempfile
 from backend import state
-from backend.deps import require_host
+from backend.deps import require_host, is_local_request
 
 router = APIRouter(prefix="/config", tags=["config"])
+
+# Fields that reveal host filesystem layout / identity; blanked for remote
+# clients so the documented "remote cannot read host files" guarantee holds.
+_HOST_ONLY_CONFIG_FIELDS = ("default_output_folder", "musicxml_author", "autosave_path")
 
 class AppConfig(BaseModel):
     theme: Optional[str] = None
@@ -25,10 +29,10 @@ class AppConfig(BaseModel):
     remote_access: Optional[bool] = None
 
 @router.get("")
-async def get_config():
+async def get_config(request: Request):
     from utils.config import Config
     cfg = Config()
-    return {
+    data = {
         "theme": cfg.get("ui.theme", "dark"),
         "ui_scale": cfg.get("ui.ui_scale", 1.0),
         "click_volume": cfg.get("ui.click_volume", 0.3),
@@ -45,6 +49,10 @@ async def get_config():
         "undo_steps": cfg.get("recovery.undo_steps", 50),
         "remote_access": cfg.get("network.remote_access", False)
     }
+    if not is_local_request(request):
+        for field in _HOST_ONLY_CONFIG_FIELDS:
+            data[field] = ""
+    return data
 
 @router.post("")
 async def update_config(new_cfg: AppConfig, _host: None = Depends(require_host)):
@@ -104,14 +112,14 @@ async def get_remote_url():
     return {"url": f"http://{ip}:{state.port}"}
 
 @router.get("/bootstrap")
-async def bootstrap():
+async def bootstrap(request: Request):
     from backend import state
     from backend.routers import locales, themes
     from utils.config import Config
     from audio.audio_backend import AudioBackend
     from backend.main import get_status
 
-    cfg = await get_config()
+    cfg = await get_config(request)
     themes_list = await themes.get_themes()
     locales_list = await locales.list_locales()
     devices = AudioBackend.list_devices()

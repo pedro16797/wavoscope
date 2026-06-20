@@ -19,7 +19,14 @@ def require_project() -> Project:
 
 
 def is_local_request(request: Request) -> bool:
-    """True if the request originates from the host machine (loopback)."""
+    """True if the request originates from the host machine (loopback).
+
+    Uses the raw peer address only and deliberately ignores X-Forwarded-* —
+    this assumes uvicorn is bound directly (no trusted reverse proxy), which is
+    how the app runs. If a proxy is ever introduced, every request would appear
+    loopback and this guard — the entire remote-access trust boundary — would be
+    bypassed.
+    """
     client = request.client
     if client is None:
         return False
@@ -40,3 +47,14 @@ def require_host(request: Request) -> None:
     """
     if not is_local_request(request):
         raise HTTPException(status_code=403, detail="This action is restricted to the host machine")
+
+
+def require_host_project(request: Request) -> Project:
+    """Host-only dependency that also returns the active project.
+
+    Evaluates the host guard *first* so a remote client cannot probe whether a
+    project is loaded: it gets 403 before the "no project loaded" 400 is ever
+    considered.
+    """
+    require_host(request)
+    return require_project()

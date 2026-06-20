@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from pathlib import Path
 import numpy as np
 from backend import state
-from backend.deps import require_project, require_host
+from backend.deps import require_project, require_host, require_host_project
 from utils.logging import logger
 from session.project import Project
 
@@ -37,7 +37,7 @@ class TimeSignatureData(BaseModel):
     denominator: int
 
 @router.post("/flags")
-async def add_flag(flag: FlagData, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def add_flag(flag: FlagData, project: Project = Depends(require_host_project)):
     idx = project.add_flag(
         t=flag.t,
         kind=flag.type,
@@ -49,7 +49,7 @@ async def add_flag(flag: FlagData, project: Project = Depends(require_project), 
     return {"status": "ok", "flags": project.flags, "idx": idx}
 
 @router.delete("/flags/{idx}")
-async def remove_flag(idx: int, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def remove_flag(idx: int, project: Project = Depends(require_host_project)):
     project.remove_flag(idx)
     return {"status": "ok", "flags": project.flags}
 
@@ -58,14 +58,14 @@ class FlagMove(BaseModel):
     t: float
 
 @router.post("/flags/move")
-async def move_flag(move: FlagMove, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def move_flag(move: FlagMove, project: Project = Depends(require_host_project)):
     res = project.move_flag(move.idx, move.t)
     if res is None:
         raise HTTPException(status_code=404, detail="Flag not found")
     return {"status": "ok", "flags": project.flags, "updated_flag": res["flag"], "new_idx": res["idx"]}
 
 @router.patch("/flags/{idx}")
-async def update_flag(idx: int, flag: FlagData, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def update_flag(idx: int, flag: FlagData, project: Project = Depends(require_host_project)):
     project.update_flag(
         idx=idx,
         t=flag.t,
@@ -82,22 +82,22 @@ class FlagInsertN(BaseModel):
     count: int
 
 @router.post("/flags/insert_n")
-async def insert_n_flags(data: FlagInsertN, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def insert_n_flags(data: FlagInsertN, project: Project = Depends(require_host_project)):
     project.insert_equi_spaced_flags(data.left_idx, data.left_idx + 1, data.count)
     return {"status": "ok", "flags": project.flags}
 
 @router.post("/time_signature")
-async def update_time_signature(data: TimeSignatureData, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def update_time_signature(data: TimeSignatureData, project: Project = Depends(require_host_project)):
     project.update_time_signature(data.numerator, data.denominator)
     return {"status": "ok", "time_signature": project.time_signature}
 
 @router.post("/harmony_flags")
-async def add_harmony_flag(flag: HarmonyFlagData, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def add_harmony_flag(flag: HarmonyFlagData, project: Project = Depends(require_host_project)):
     idx = project.add_harmony_flag(t=flag.t, chord=flag.c.model_dump())
     return {"status": "ok", "harmony_flags": project.harmony_flags, "idx": idx}
 
 @router.delete("/harmony_flags/{idx}")
-async def remove_harmony_flag(idx: int, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def remove_harmony_flag(idx: int, project: Project = Depends(require_host_project)):
     project.remove_harmony_flag(idx)
     return {"status": "ok", "harmony_flags": project.harmony_flags}
 
@@ -123,17 +123,17 @@ class LyricSelect(BaseModel):
     idx: int | None = None
 
 @router.post("/lyrics")
-async def add_lyric(lyric: LyricData, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def add_lyric(lyric: LyricData, project: Project = Depends(require_host_project)):
     res = project.add_lyric(lyric.s, lyric.t, lyric.l)
     return {"status": "ok", "lyrics": project.lyrics, "new_lyric": res["lyric"], "idx": res["idx"]}
 
 @router.delete("/lyrics/{idx}")
-async def remove_lyric(idx: int, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def remove_lyric(idx: int, project: Project = Depends(require_host_project)):
     project.remove_lyric(idx)
     return {"status": "ok", "lyrics": project.lyrics}
 
 @router.patch("/lyrics/{idx}")
-async def update_lyric(idx: int, lyric: LyricUpdate, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def update_lyric(idx: int, lyric: LyricUpdate, project: Project = Depends(require_host_project)):
     res = project.update_lyric(idx, lyric.s, lyric.t, lyric.l)
     if res is None:
         raise HTTPException(status_code=404, detail="Lyric not found")
@@ -145,21 +145,21 @@ async def select_lyric(select: LyricSelect, project: Project = Depends(require_p
     return {"status": "ok"}
 
 @router.post("/lyrics/move")
-async def move_lyric(move: LyricMove, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def move_lyric(move: LyricMove, project: Project = Depends(require_host_project)):
     res = project.move_lyric(move.idx, move.t)
     if res is None:
         raise HTTPException(status_code=404, detail="Lyric not found")
     return {"status": "ok", "lyrics": project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
 
 @router.post("/harmony_flags/move")
-async def move_harmony_flag(move: HarmonyFlagMove, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def move_harmony_flag(move: HarmonyFlagMove, project: Project = Depends(require_host_project)):
     res = project.move_harmony_flag(move.idx, move.t)
     if res is None:
         raise HTTPException(status_code=404, detail="Harmony flag not found")
     return {"status": "ok", "harmony_flags": project.harmony_flags, "updated_flag": res["flag"], "new_idx": res["idx"]}
 
 @router.patch("/harmony_flags/{idx}")
-async def update_harmony_flag(idx: int, flag: HarmonyFlagData, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def update_harmony_flag(idx: int, flag: HarmonyFlagData, project: Project = Depends(require_host_project)):
     project.update_harmony_flag(idx=idx, t=flag.t, chord=flag.c.model_dump())
     return {"status": "ok", "harmony_flags": project.harmony_flags}
 
@@ -180,7 +180,7 @@ async def analyze_chord(t: float, project: Project = Depends(require_project)):
     return await run_in_threadpool(analyze_chord_at, y_mono, sr, t)
 
 @router.post("/save")
-async def save_project(project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def save_project(project: Project = Depends(require_host_project)):
     await run_in_threadpool(project.save)
     return {"status": "ok"}
 
@@ -220,7 +220,7 @@ def bg_export(path: str, session_data: dict, audio_name: str, audio_duration: fl
         state.export_active = False
 
 @router.post("/export/musicxml/start")
-async def start_export(data: ExportStartData, background_tasks: BackgroundTasks, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def start_export(data: ExportStartData, background_tasks: BackgroundTasks, project: Project = Depends(require_host_project)):
     """Starts a background task to export the project to MusicXML."""
     # We copy the data to avoid thread issues if project changes
     session_data = project.session_data.copy()
@@ -239,7 +239,7 @@ async def get_export_progress():
     }
 
 @router.get("/export/musicxml")
-async def export_musicxml(project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def export_musicxml(project: Project = Depends(require_host_project)):
     # Legacy endpoint for browser fallback
     xml_content = await run_in_threadpool(project.generate_musicxml)
     filename = project.audio_path.stem + ".musicxml"
@@ -264,7 +264,7 @@ class UndoRestore(BaseModel):
     index: int
 
 @router.post("/undo/restore")
-async def restore_undo(data: UndoRestore, project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def restore_undo(data: UndoRestore, project: Project = Depends(require_host_project)):
     project.restore_checkpoint(data.index)
     return {
         "status": "ok",
@@ -275,7 +275,7 @@ async def restore_undo(data: UndoRestore, project: Project = Depends(require_pro
     }
 
 @router.post("/undo")
-async def undo_project(project: Project = Depends(require_project), _host: None = Depends(require_host)):
+async def undo_project(project: Project = Depends(require_host_project)):
     project.undo()
     return {
         "status": "ok",
@@ -292,13 +292,21 @@ async def open_project(data: OpenProject, _host: None = Depends(require_host)):
         logger.error(f"File not found at {data.path}")
         raise HTTPException(status_code=404, detail=f"File not found: {data.path}")
 
-    new_project = Project(path)
-    new_project.open_file(path)
+    new_project = None
+    try:
+        new_project = Project(path)
+        new_project.open_file(path)
 
-    # Register callback for playlist auto-advance
-    if state.on_playback_finished:
-        new_project.backend.register_callback("finished", state.on_playback_finished)
+        # Register callback for playlist auto-advance
+        if state.on_playback_finished:
+            new_project.backend.register_callback("finished", state.on_playback_finished)
 
-    # Atomically swap in the new project and close the previous one.
-    state.set_project(new_project)
-    return {"status": "ok", "filename": path.name}
+        # Atomically swap in the new project and close the previous one.
+        state.set_project(new_project)
+        return {"status": "ok", "filename": path.name}
+    except Exception:
+        # Don't leak the new project's audio backend/threads if open failed
+        # before it became the active project.
+        if new_project is not None and new_project is not state.project:
+            new_project.close()
+        raise

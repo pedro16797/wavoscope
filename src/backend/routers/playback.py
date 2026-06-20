@@ -37,6 +37,7 @@ def _advance_playlist(direction: int) -> None:
 
         path = Path(item.path)
         if path.exists():
+            new_project = None
             try:
                 new_project = Project(path)
                 new_project.open_file(path)
@@ -54,6 +55,9 @@ def _advance_playlist(direction: int) -> None:
                 return
             except Exception as e:
                 logger.error(f"Failed to open playlist item {path}: {e}")
+                # Don't leak a half-opened project's backend/threads.
+                if new_project is not None and new_project is not state.project:
+                    new_project.close()
         else:
             logger.warning(f"Playlist item {item.path} not found, skipping...")
 
