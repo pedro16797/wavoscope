@@ -50,10 +50,20 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
     logger.exception(f"Unhandled error on {request.method} {request.url.path}")
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
-# Enable CORS for development
+# The packaged app and remote devices load the UI from the backend itself
+# (same-origin, which is not subject to CORS), so the only legitimate
+# cross-origin caller is the Vite dev server. Restrict to those origins instead
+# of "*" so a malicious page in the host's browser can't drive the local API.
+_DEV_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_DEV_ORIGINS,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

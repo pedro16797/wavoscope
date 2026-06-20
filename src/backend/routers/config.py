@@ -1,8 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from typing import Optional
 import tempfile
 from backend import state
+from backend.deps import require_host
 
 router = APIRouter(prefix="/config", tags=["config"])
 
@@ -46,7 +47,7 @@ async def get_config():
     }
 
 @router.post("")
-async def update_config(new_cfg: AppConfig):
+async def update_config(new_cfg: AppConfig, _host: None = Depends(require_host)):
     from utils.config import Config
     cfg = Config()
     if new_cfg.theme is not None:

@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from backend.main import app
 from backend import state
 
-client = TestClient(app)
+client = TestClient(app, client=("127.0.0.1", 50000))
 
 def test_get_remote_url():
     state.port = 1234

@@ -47,8 +47,8 @@ Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope c
 - **Remote Control:** Enable **Remote Access** in settings to control Wavoscope from other devices (like a mobile phone) on the same local network. The settings will display a URL that you can enter in your remote device's browser to access the interface and control playback.
     - **Optimized UI:** Remote devices get a streamlined interface that hides complex tools like the spectrum analyzer and focuses on playback controls.
     - **Touch Support:** Full touch navigation is supported, including panning and pinch-to-zoom on the waveform.
-    - **Host Protection:** To prevent accidental edits, remote devices can only control playback and view markers; adding or editing flags and lyrics is restricted to the host machine.
-    - *Note: Remote access is unauthenticated; anyone on your local network will be able to control the application.*
+    - **Host Protection:** Remote devices can only control playback and view markers. Editing (flags, lyrics, chords), opening files, exporting, and changing settings are enforced as **host-only on the server**, so a remote device cannot read or modify files on the host machine.
+    - *Note: Remote **playback** control is unauthenticated — anyone on your local network can control playback. Only enable remote access on networks you trust.*
 
 ![Remote Interface](docs/images/remote_view.png)
 
