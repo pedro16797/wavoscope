@@ -3,7 +3,7 @@ import axios from 'axios';
 import i18n from '../../i18n';
 import type { AppState } from '../types';
 import { API_BASE } from '../useStore';
-import { midiToFreq, freqToMidi } from '../utils';
+import { maxOctaveShift, recomputeFilterHz, filterPayload } from '../utils';
 
 import type { ConfigSlice } from '../types';
 
@@ -85,7 +85,7 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         remote_access: res.data.remote_access
       };
 
-      const maxShift = 6 - Math.floor(newKeys / 12);
+      const maxShift = maxOctaveShift(newKeys);
       let effectiveShift = oldState.octave_shift;
       if (effectiveShift > maxShift) {
         effectiveShift = maxShift;
@@ -100,13 +100,9 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
       }
 
       if (newKeys !== oldState.spectrum_keys || effectiveShift !== oldState.octave_shift) {
-        const oldBaseMidi = 48 + oldState.octave_shift * 12;
-        const newBaseMidi = 48 + effectiveShift * 12;
-
-        const ratioLow = (freqToMidi(oldState.filter_low_hz) - oldBaseMidi) / oldState.spectrum_keys;
-        updates.filter_low_hz = midiToFreq(newBaseMidi + ratioLow * newKeys);
-        const ratioHigh = (freqToMidi(oldState.filter_high_hz) - oldBaseMidi) / oldState.spectrum_keys;
-        updates.filter_high_hz = midiToFreq(newBaseMidi + ratioHigh * newKeys);
+        Object.assign(updates, recomputeFilterHz(
+          oldState.filter_low_hz, oldState.filter_high_hz,
+          oldState.spectrum_keys, oldState.octave_shift, newKeys, effectiveShift));
       }
 
       set(updates);
@@ -160,34 +156,22 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
             const newKeys = cfg.spectrum_keys;
             const updates: any = { spectrum_keys: newKeys };
 
-            const maxShift = 6 - Math.floor(newKeys / 12);
+            const maxShift = maxOctaveShift(newKeys);
             let effectiveShift = oldState.octave_shift;
             if (effectiveShift > maxShift) {
                 effectiveShift = maxShift;
                 updates.octave_shift = effectiveShift;
             }
 
-            const oldBaseMidi = 48 + oldState.octave_shift * 12;
-            const newBaseMidi = 48 + effectiveShift * 12;
-
-            const ratioLow = (freqToMidi(oldState.filter_low_hz) - oldBaseMidi) / oldState.spectrum_keys;
-            updates.filter_low_hz = midiToFreq(newBaseMidi + ratioLow * newKeys);
-
-            const ratioHigh = (freqToMidi(oldState.filter_high_hz) - oldBaseMidi) / oldState.spectrum_keys;
-            updates.filter_high_hz = midiToFreq(newBaseMidi + ratioHigh * newKeys);
+            Object.assign(updates, recomputeFilterHz(
+                oldState.filter_low_hz, oldState.filter_high_hz,
+                oldState.spectrum_keys, oldState.octave_shift, newKeys, effectiveShift));
 
             set(updates);
 
             if ((oldState.filter_low_enabled && updates.filter_low_hz) || (oldState.filter_high_enabled && updates.filter_high_hz)) {
-                const newState = get();
-                axios.post(`${API_BASE}/playback/filter`, {
-                    enabled: newState.filter_enabled,
-                    low_hz: newState.filter_low_hz,
-                    high_hz: newState.filter_high_hz,
-                    low_enabled: newState.filter_low_enabled,
-                    high_enabled: newState.filter_high_enabled,
-                    auto_gain: newState.filter_auto_gain
-                }).catch(e => console.error("[Store] Failed to update filter after zoom change:", e));
+                axios.post(`${API_BASE}/playback/filter`, filterPayload(get()))
+                    .catch(e => console.error("[Store] Failed to update filter after zoom change:", e));
             }
         }
     } catch (e) {

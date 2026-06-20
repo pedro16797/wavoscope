@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useStore } from '../store/useStore';
+import { WS_URL } from '../env';
 
 export const useAudioWebSocket = () => {
   const { bootstrap, fetchStatus, updatePosition, setPlaying } = useStore();
@@ -7,12 +8,7 @@ export const useAudioWebSocket = () => {
   useEffect(() => {
     bootstrap();
 
-    const isDev = window.location.origin.includes(':5173');
-    const wsUrl = isDev
-      ? `ws://${window.location.hostname}:8000/ws`
-      : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
-
-    const ws = new WebSocket(wsUrl);
+    const ws = new WebSocket(WS_URL);
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.loaded !== undefined) {

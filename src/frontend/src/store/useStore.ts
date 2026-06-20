@@ -5,9 +5,8 @@ import { createProjectSlice } from './slices/projectSlice';
 import { createConfigSlice } from './slices/configSlice';
 import { createPlaylistSlice } from './slices/playlistSlice';
 
-export const API_BASE = window.location.origin.includes(':5173')
-  ? `http://${window.location.hostname}:8000`
-  : '';
+// Re-exported for backwards compatibility; the source of truth is src/env.ts.
+export { API_BASE } from '../env';
 
 export const useStore = create<AppState>((...a) => ({
   ...createPlaybackSlice(...a),

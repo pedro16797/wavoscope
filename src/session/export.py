@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from typing import List, Dict, Any, Tuple
+from typing import Dict, Any
 import datetime
 from .chord_utils import get_chord_midi_notes
 
@@ -282,14 +282,6 @@ def _add_measure_metro(part, number, num, den, attr_change, divisions):
         ET.SubElement(note, "type").text = "quarter" if den == 4 else "eighth"
         if i == 0:
             ET.SubElement(note, "notehead").text = "x"
-
-def _midi_to_pitch(midi: int) -> Tuple[str, int, int]:
-    steps = ['C', 'C', 'D', 'D', 'E', 'F', 'F', 'G', 'G', 'A', 'A', 'B']
-    alters = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0]
-    step = steps[midi % 12]
-    alter = alters[midi % 12]
-    octave = (midi // 12) - 1
-    return step, alter, octave
 
 def _add_harmony_tag(measure, chord_data, offset_div=0):
     harmony = ET.SubElement(measure, "harmony")

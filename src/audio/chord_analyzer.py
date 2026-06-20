@@ -2,12 +2,14 @@ import numpy as np
 import numpy.fft
 from typing import Dict, Any
 
+from session.chord_utils import default_chord
+
 def analyze_chord_at(audio_data: np.ndarray, sr: int, t: float, window_s: float = 0.5) -> Dict[str, Any]:
     """
     Suggest a chord based on audio chroma around time t.
     """
     if audio_data is None or len(audio_data) == 0:
-        return _default_chord()
+        return default_chord()
 
     # Extract a chunk of audio around t
     start = max(0, int((t - window_s / 2) * sr))
@@ -15,7 +17,7 @@ def analyze_chord_at(audio_data: np.ndarray, sr: int, t: float, window_s: float 
     chunk = audio_data[start:end]
 
     if len(chunk) < 1024:
-        return _default_chord()
+        return default_chord()
 
     # Compute chroma features manually to avoid librosa/numba build issues
     n_fft = 1 << (len(chunk) - 1).bit_length()
@@ -39,6 +41,7 @@ def analyze_chord_at(audio_data: np.ndarray, sr: int, t: float, window_s: float 
         chroma_mean /= np.max(chroma_mean)
 
     return analyze_chroma(chroma_mean)
+
 
 def analyze_chroma(chroma_mean: np.ndarray) -> Dict[str, Any]:
     """
@@ -81,7 +84,7 @@ def analyze_chroma(chroma_mean: np.ndarray) -> Dict[str, Any]:
     ]
 
     best_score = -1.0
-    best_chord = _default_chord()
+    best_chord = default_chord()
 
     for i in range(12):
         for template, quality, extension in templates:
@@ -113,15 +116,3 @@ def analyze_chroma(chroma_mean: np.ndarray) -> Dict[str, Any]:
                 }
 
     return best_chord
-
-def _default_chord() -> Dict[str, Any]:
-    return {
-        "r": "C",
-        "ca": "",
-        "q": "",
-        "ext": "",
-        "alt": [],
-        "add": [],
-        "b": "",
-        "ba": "",
-    }

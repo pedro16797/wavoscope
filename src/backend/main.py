@@ -6,10 +6,10 @@ src_path = Path(__file__).resolve().parent.parent
 sys.path.append(str(src_path))
 root_path = src_path.parent
 
-from fastapi import FastAPI  # noqa: E402
+from fastapi import FastAPI, Request  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
-from fastapi.responses import FileResponse  # noqa: E402
+from fastapi.responses import FileResponse, JSONResponse  # noqa: E402
 
 from backend import state  # noqa: E402
 from backend.routers import (  # noqa: E402
@@ -36,13 +36,19 @@ async def startup_event():
             from backend.routers.playback import trigger_next_playlist_item
             trigger_next_playlist_item()
 
-    # We need to wait for a project to be loaded to register the callback to its backend
-    # But the project can change, so we might need a more global way or register it on project load.
+    # Registered per-project on load (the active project can change over time).
     state.on_playback_finished = on_playback_finished
 
 @app.on_event("shutdown")
 async def shutdown_event():
     autosave.stop()
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    """Last-resort handler so unexpected errors become a clean 500 (and are logged
+    with the offending route) instead of being wrapped by hand in every endpoint."""
+    logger.exception(f"Unhandled error on {request.method} {request.url.path}")
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 # Enable CORS for development
 app.add_middleware(

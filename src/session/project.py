@@ -17,6 +17,7 @@ from session.manager import ProjectManager
 from session.flags import FlagManager
 from session.looping import LoopingEngine
 from session.undo import UndoManager
+from session.chord_utils import default_chord
 
 
 class Project:
@@ -39,8 +40,6 @@ class Project:
 
         self.metadata: Dict[str, str] = {"title": "", "artist": "", "album": ""}
 
-        from utils.config import Config
-        cfg = Config()
         device_name = cfg.get("ui.audio_device", "")
         if device_name:
             self.backend.set_device(device_name)
@@ -152,7 +151,7 @@ class Project:
     def add_harmony_flag(self, t: float, chord: Dict[str, Any] | None = None) -> int:
         with self._lock:
             if chord is None:
-                chord = {"r": "C", "ca": "", "q": "", "ext": "", "alt": [], "add": [], "b": "", "ba": ""}
+                chord = default_chord()
             idx = self._flags.add_harmony_flag(t, chord)
             if idx != -1:
                 self.mark_dirty()
