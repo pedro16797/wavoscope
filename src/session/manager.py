@@ -1,9 +1,12 @@
 from __future__ import annotations
 import copy
-import json
 from pathlib import Path
 from typing import Any, Dict
 from utils.logging import logger
+from utils.persistence import write_json_atomic, read_json, quarantine_corrupt_file
+
+# Bumped when the on-disk *.oscope structure changes; drives migration on load.
+SCHEMA_VERSION = 1
 
 # Per-item defaults. A field equal to its default is dropped on save (scrub) and
 # restored on load (fill), keeping the on-disk *.oscope sidecar compact.
@@ -23,29 +26,47 @@ class ProjectManager:
         self._dirty = False
 
     def _load_or_create_sidecar(self) -> Dict[str, Any]:
+        data: Dict[str, Any] = {}
         if self.sidecar_path.exists():
             try:
-                data = json.loads(self.sidecar_path.read_text(encoding="utf-8"))
+                data = read_json(self.sidecar_path)
+                if not isinstance(data, dict):
+                    raise ValueError("sidecar root is not a JSON object")
             except Exception as e:
                 logger.error(f"Error loading sidecar {self.sidecar_path}: {e}")
+                # Preserve the unreadable file instead of silently discarding
+                # the user's work by overwriting it on the next save.
+                quarantine_corrupt_file(self.sidecar_path)
                 data = {}
-        else:
-            data = {}
+        return self._migrate(data)
+
+    def _migrate(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Bring a loaded session up to the current schema version."""
+        version = data.get("version", 0)
+        if version > SCHEMA_VERSION:
+            logger.warning(
+                f"Sidecar {self.sidecar_path} has version {version}, newer than "
+                f"supported version {SCHEMA_VERSION}; loading best-effort."
+            )
+        # No structural migrations are needed yet; future versions add steps here.
         data.setdefault("flags", [])
         data.setdefault("harmony_flags", [])
         data.setdefault("lyrics", [])
         data.setdefault("time_signature", {"numerator": 4, "denominator": 4})
         return self._fill_defaults(data)
 
-    def save(self, path: Path | None = None):
+    def save(self, path: Path | None = None) -> None:
+        """Persist the session to disk atomically.
+
+        Raises on failure so callers (and the user) learn the save did not
+        succeed instead of believing their work is safely stored.
+        """
         target = path or self.sidecar_path
-        try:
-            scrubbed_data = self._scrub_defaults(self.session_data)
-            target.write_text(json.dumps(scrubbed_data, indent=2, ensure_ascii=False), encoding="utf-8")
-            if path is None:
-                self._dirty = False
-        except Exception as e:
-            logger.error(f"Error saving sidecar to {target}: {e}")
+        scrubbed_data = self._scrub_defaults(self.session_data)
+        scrubbed_data["version"] = SCHEMA_VERSION
+        write_json_atomic(target, scrubbed_data)
+        if path is None:
+            self._dirty = False
 
     def _scrub_defaults(self, data: Dict[str, Any]) -> Dict[str, Any]:
         data = copy.deepcopy(data)
