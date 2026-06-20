@@ -1,12 +1,12 @@
 from fastapi import APIRouter
+from fastapi.concurrency import run_in_threadpool
 import json
 from pathlib import Path
 
 router = APIRouter(prefix="/locales-api", tags=["locales"])
 root_path = Path(__file__).resolve().parent.parent.parent.parent
 
-@router.get("/list")
-async def list_locales():
+def _list_locales():
     locales_dir = root_path / "resources" / "locales"
     available = []
     if locales_dir.exists():
@@ -20,3 +20,7 @@ async def list_locales():
                 available.append({"code": locale_file.stem, "name": locale_file.stem})
 
     return sorted(available, key=lambda x: x["name"])
+
+@router.get("/list")
+async def list_locales():
+    return await run_in_threadpool(_list_locales)

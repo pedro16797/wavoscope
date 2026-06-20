@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.concurrency import run_in_threadpool
 from backend.deps import require_project
 from session.project import Project
 
@@ -13,7 +14,8 @@ async def get_waveform(start: float = 0, end: float = 0, n_bars: int = 1000,
     if end == 0:
         end = project.duration
 
-    bars = project.wave_cache.bars(start, end, n_bars)
+    # Bucketing scans the whole slice; keep it off the event loop.
+    bars = await run_in_threadpool(project.wave_cache.bars, start, end, n_bars)
     return {"bars": bars}
 
 @router.get("/spectrum")
@@ -24,5 +26,10 @@ async def get_spectrum(position: float, window: float = 0.3, low_hz: float = 20,
         raise HTTPException(status_code=400, detail="No audio loaded")
 
     from audio.spectrum_analyzer import analyze
-    f, db = analyze(project._data, project._sr, position, window, low_hz, high_hz, width)
+    # The FFT is CPU-heavy and fetched on every position tick; run it in a
+    # threadpool so it doesn't block the WebSocket broadcast loop.
+    f, db = await run_in_threadpool(
+        analyze, project._data, project._sr, position, window, low_hz, high_hz, width
+    )
     return {"freqs": f.tolist(), "db": db.tolist()}
+

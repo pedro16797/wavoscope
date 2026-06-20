@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Response, BackgroundTasks, Depends
+from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 from pathlib import Path
 import numpy as np
@@ -175,11 +176,12 @@ async def analyze_chord(t: float, project: Project = Depends(require_project)):
 
     # If stereo, mix to mono for analysis
     y_mono = np.mean(y, axis=1) if len(y.shape) > 1 else y
-    return analyze_chord_at(y_mono, sr, t)
+    # FFT-based analysis is CPU-heavy; keep it off the event loop.
+    return await run_in_threadpool(analyze_chord_at, y_mono, sr, t)
 
 @router.post("/save")
 async def save_project(project: Project = Depends(require_project), _host: None = Depends(require_host)):
-    project.save()
+    await run_in_threadpool(project.save)
     return {"status": "ok"}
 
 @router.get("/export/musicxml/check")
@@ -239,7 +241,7 @@ async def get_export_progress():
 @router.get("/export/musicxml")
 async def export_musicxml(project: Project = Depends(require_project), _host: None = Depends(require_host)):
     # Legacy endpoint for browser fallback
-    xml_content = project.generate_musicxml()
+    xml_content = await run_in_threadpool(project.generate_musicxml)
     filename = project.audio_path.stem + ".musicxml"
     return Response(
         content=xml_content,

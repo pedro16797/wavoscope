@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi.concurrency import run_in_threadpool
 import json
 from pathlib import Path
 
@@ -7,8 +8,7 @@ router = APIRouter(prefix="/themes", tags=["themes"])
 # Root path relative to this file: backend/routers/themes.py -> root
 root_path = Path(__file__).resolve().parent.parent.parent.parent
 
-@router.get("")
-async def get_themes():
+def _load_themes():
     themes_dir = root_path / "resources" / "themes"
     raw_themes = {}
     for theme_file in themes_dir.glob("*.json"):
@@ -35,3 +35,7 @@ async def get_themes():
         resolved_themes[name] = resolve(name)
 
     return resolved_themes
+
+@router.get("")
+async def get_themes():
+    return await run_in_threadpool(_load_themes)
