@@ -76,7 +76,7 @@ class AudioBackend:
         self._stop_event.set()
         if self._watcher_thread:
             self._watcher_thread.join(timeout=1.0)
-        self._playback.stop_stream()
+        self._playback.close()
         self._synth.close()
 
     # ---------- hardware management ----------
@@ -435,7 +435,7 @@ class AudioBackend:
                         self._playback._cursor = 0.0
                         self._read_sample_idx = 0
                         self._processor.reset()
-                        self._playback._on_finished()
+                        self._playback.notify_finished()
 
         except Exception:
             logger.exception("Error in audio callback")

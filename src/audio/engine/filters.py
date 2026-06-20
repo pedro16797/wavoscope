@@ -73,7 +73,7 @@ def sosfilt_zi(sos: np.ndarray) -> np.ndarray:
 def sosfilt(sos: np.ndarray, x: np.ndarray, zi: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """
     Filter data using cascaded second-order sections.
-    Pure python implementation (slower than scipy but removes dependency).
+    Pure python implementation (slow; fallback when SciPy is unavailable).
     """
     y = x.tolist()
     new_zi = zi.copy()
@@ -95,6 +95,26 @@ def sosfilt(sos: np.ndarray, x: np.ndarray, zi: np.ndarray) -> tuple[np.ndarray,
         new_zi[i] = [z1, z2]
 
     return np.array(y, dtype=np.float32), new_zi
+
+
+try:
+    from scipy.signal import sosfilt as _scipy_sosfilt
+    _HAVE_SCIPY = True
+except Exception:  # pragma: no cover - exercised via the fallback path
+    _HAVE_SCIPY = False
+
+
+def apply_sos(sos: np.ndarray, x: np.ndarray, zi: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Filter `x` through second-order sections, carrying delay state `zi`.
+
+    Uses SciPy's compiled ``sosfilt`` when available — the pure-Python loop is
+    far too slow for the realtime audio callback and causes dropouts. The custom
+    SOS/zi layout matches SciPy's, so this is a drop-in swap.
+    """
+    if _HAVE_SCIPY:
+        y, zf = _scipy_sosfilt(sos, x, zi=zi)
+        return np.asarray(y, dtype=np.float32), zf
+    return sosfilt(sos, x, zi)
 
 class FilterEngine:
     def __init__(self, sr: int):
@@ -172,13 +192,13 @@ class FilterEngine:
             return chunk
         if self._sos is not None and self._zi is not None:
             if not self._auto_gain:
-                chunk, self._zi = sosfilt(self._sos, chunk, self._zi)
+                chunk, self._zi = apply_sos(self._sos, chunk, self._zi)
             else:
                 # Calculate input power
                 p_in = np.mean(chunk * chunk)
 
                 # Filter
-                chunk, self._zi = sosfilt(self._sos, chunk, self._zi)
+                chunk, self._zi = apply_sos(self._sos, chunk, self._zi)
 
                 # Calculate output power
                 p_out = np.mean(chunk * chunk)

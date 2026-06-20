@@ -1,6 +1,6 @@
 from __future__ import annotations
 import threading
-from typing import Callable, List, Dict, Any, Tuple
+from typing import Callable, List, Dict
 import numpy as np
 from utils.logging import logger
 try:
@@ -20,6 +20,16 @@ class PlaybackEngine:
         self._stream: sd.OutputStream | None = None
         self._device: int | str | None = None
         self._callbacks: Dict[str, List[Callable]] = {"finished": []}
+
+        # "Playback finished" is signalled from the realtime audio callback but
+        # dispatched on this worker thread. Finished callbacks may tear down the
+        # stream or swap the active project, which must never happen on the
+        # PortAudio callback thread (calling stop()/close() from within a stream's
+        # own callback is undefined behaviour and can deadlock).
+        self._finished_event = threading.Event()
+        self._closed = threading.Event()
+        self._dispatch_thread = threading.Thread(target=self._dispatch_finished, daemon=True)
+        self._dispatch_thread.start()
 
     def set_data(self, data: np.ndarray, sr: int):
         with self._lock:
@@ -67,7 +77,6 @@ class PlaybackEngine:
                     samplerate=self._sr,
                     channels=1,
                     callback=callback,
-                    finished_callback=self._on_finished,
                     device=self._device,
                 )
                 self._stream.start()
@@ -82,9 +91,31 @@ class PlaybackEngine:
                 self._stream.close()
                 self._stream = None
 
-    def _on_finished(self):
-        for cb in self._callbacks.get("finished", []):
-            cb()
+    def close(self):
+        """Stop the stream and the finished-dispatch worker.
+
+        Safe to call from a finished callback (i.e. from the dispatch thread):
+        it signals the worker to exit rather than joining it.
+        """
+        self.stop_stream()
+        self._closed.set()
+        self._finished_event.set()  # wake the worker so it observes _closed and exits
+
+    def notify_finished(self):
+        """Signal that playback reached the end. Safe to call from the audio callback."""
+        self._finished_event.set()
+
+    def _dispatch_finished(self):
+        while True:
+            self._finished_event.wait()
+            self._finished_event.clear()
+            if self._closed.is_set():
+                return
+            for cb in list(self._callbacks.get("finished", [])):
+                try:
+                    cb()
+                except Exception:
+                    logger.exception("Error in playback-finished callback")
 
     def register_callback(self, event: str, callback: Callable):
         if event in self._callbacks:
