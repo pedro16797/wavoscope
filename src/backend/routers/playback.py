@@ -38,20 +38,19 @@ def _advance_playlist(direction: int) -> None:
         path = Path(item.path)
         if path.exists():
             try:
-                if state.project:
-                    state.project.close()
-
                 new_project = Project(path)
                 new_project.open_file(path)
-                state.project = new_project
-                state.active_item_id = item.id
 
                 # Re-register callback for the next transition.
                 if state.on_playback_finished:
-                    state.project.backend.register_callback("finished", state.on_playback_finished)
+                    new_project.backend.register_callback("finished", state.on_playback_finished)
 
-                state.project.set_loop_mode(old_loop_mode)
-                state.project.play()
+                new_project.set_loop_mode(old_loop_mode)
+
+                # Atomically swap in the new project and close the previous one.
+                state.set_project(new_project)
+                state.active_item_id = item.id
+                new_project.play()
                 return
             except Exception as e:
                 logger.error(f"Failed to open playlist item {path}: {e}")

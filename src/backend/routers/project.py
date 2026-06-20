@@ -292,15 +292,13 @@ async def open_project(data: OpenProject, _host: None = Depends(require_host)):
         logger.error(f"File not found at {data.path}")
         raise HTTPException(status_code=404, detail=f"File not found: {data.path}")
 
-    if state.project:
-        state.project.close()
-
     new_project = Project(path)
     new_project.open_file(path)
-    state.project = new_project
 
     # Register callback for playlist auto-advance
     if state.on_playback_finished:
-        state.project.backend.register_callback("finished", state.on_playback_finished)
+        new_project.backend.register_callback("finished", state.on_playback_finished)
 
+    # Atomically swap in the new project and close the previous one.
+    state.set_project(new_project)
     return {"status": "ok", "filename": path.name}
