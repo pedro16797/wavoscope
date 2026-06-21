@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import type { Flag } from '../store/types';
 import { Tooltip } from './Tooltip';
 
 export const FlagDialog: React.FC<{ idx: number; flag: Flag; onClose: () => void }> = ({ idx, flag, onClose }) => {
   const { t } = useTranslation();
-  const { duration, flags, removeFlag, updateFlag, insertNFlags } = useStore();
+  const { duration, flags, removeFlag, updateFlag, insertNFlags } = useStore(useShallow((s) => ({
+    duration: s.duration, flags: s.flags, removeFlag: s.removeFlag, updateFlag: s.updateFlag, insertNFlags: s.insertNFlags,
+  })));
 
   const [name, setName] = useState(flag?.n || '');
   const [time, setTime] = useState(flag?.t || 0);

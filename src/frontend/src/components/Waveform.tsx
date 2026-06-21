@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useStore, API_BASE } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
+import { useRafEffect } from '../hooks/useRafEffect';
 import axios from 'axios';
 
 export const Waveform: React.FC = () => {
@@ -10,7 +12,12 @@ export const Waveform: React.FC = () => {
     addHarmonyFlag, setEditingHarmonyFlagIdx,
     offset, zoom, setViewport,
     isRemote
-  } = useStore();
+  } = useStore(useShallow((s) => ({
+    loaded: s.loaded, position: s.position, duration: s.duration, currentTheme: s.currentTheme, themes: s.themes, controlPlayback: s.controlPlayback,
+    addHarmonyFlag: s.addHarmonyFlag, setEditingHarmonyFlagIdx: s.setEditingHarmonyFlagIdx,
+    offset: s.offset, zoom: s.zoom, setViewport: s.setViewport,
+    isRemote: s.isRemote,
+  })));
   const [bars, setBars] = React.useState<number[][]>([]);
   const [size, setSize] = React.useState({ width: 0, height: 0 });
   const [isDragging, setIsDragging] = React.useState(false);
@@ -70,7 +77,7 @@ export const Waveform: React.FC = () => {
     fetchBars(offset, zoom, size.width || 1000);
   }, [loaded, offset, zoom, duration, size.width]);
 
-  useEffect(() => {
+  useRafEffect(() => {
     const canvas = canvasRef.current;
     const theme = themes[currentTheme];
     if (!canvas || !theme || size.width === 0) return;

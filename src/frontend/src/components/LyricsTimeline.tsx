@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
+import { useRafEffect } from '../hooks/useRafEffect';
 
 /**
  * LyricsTimeline: Interactive track for lyrics transcription.
@@ -41,7 +43,26 @@ export const LyricsTimeline: React.FC = () => {
         setViewport,
         duration: projectDuration,
         isRemote
-    } = useStore();
+    } = useStore(useShallow((s) => ({
+        loaded: s.loaded,
+        lyrics: s.lyrics,
+        position: s.position,
+        controlPlayback: s.controlPlayback,
+        addLyric: s.addLyric,
+        updateLyric: s.updateLyric,
+        removeLyric: s.removeLyric,
+        moveLyric: s.moveLyric,
+        currentTheme: s.currentTheme,
+        themes: s.themes,
+        selectedLyricIdx: s.selectedLyricIdx,
+        setSelectedLyricIdx: s.setSelectedLyricIdx,
+        offset: s.offset,
+        zoom: s.zoom,
+        ui_scale: s.ui_scale,
+        setViewport: s.setViewport,
+        duration: s.duration,
+        isRemote: s.isRemote,
+    })));
 
     const [editingIdx, setEditingIdx] = useState<number | null>(null);
     const [editValue, setEditValue] = useState('');
@@ -223,7 +244,7 @@ export const LyricsTimeline: React.FC = () => {
         return () => observer.disconnect();
     }, [draw]);
 
-    useEffect(() => {
+    useRafEffect(() => {
         draw();
     }, [draw]);
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import { ChevronDown, FolderOpen } from 'lucide-react';
 import { Tooltip } from './Tooltip';
 
@@ -19,7 +20,16 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
     autosave_max_snapshots, autosave_path, undo_steps, undo_history,
     fetchUndoSteps, restoreUndoStep,
     remote_access, remote_url, fetchRemoteUrl
-  } = useStore();
+  } = useStore(useShallow((s) => ({
+    themes: s.themes, currentTheme: s.currentTheme, locales: s.locales, language: s.language,
+    audioDevices: s.audioDevices, audio_device: s.audio_device,
+    click_volume: s.click_volume, ui_scale: s.ui_scale, spectrum_keys: s.spectrum_keys, default_output_folder: s.default_output_folder,
+    musicxml_author: s.musicxml_author, updateConfig: s.updateConfig, time_signature: s.time_signature, updateTimeSignature: s.updateTimeSignature,
+    browseFolder: s.browseFolder, autosave_enabled: s.autosave_enabled, autosave_forced: s.autosave_forced, autosave_interval: s.autosave_interval,
+    autosave_max_snapshots: s.autosave_max_snapshots, autosave_path: s.autosave_path, undo_steps: s.undo_steps, undo_history: s.undo_history,
+    fetchUndoSteps: s.fetchUndoSteps, restoreUndoStep: s.restoreUndoStep,
+    remote_access: s.remote_access, remote_url: s.remote_url, fetchRemoteUrl: s.fetchRemoteUrl,
+  })));
 
   const [activeTab, setActiveTab] = useState<'global' | 'project' | 'recovery' | 'keybinds'>('global');
 

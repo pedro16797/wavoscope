@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore, API_BASE } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
+import { useRafEffect } from '../hooks/useRafEffect';
 import { getChordMidiNotes, midiToFreq, freqToMidi } from '../store/utils';
 import axios from 'axios';
 import { Tooltip } from './Tooltip';
@@ -16,7 +18,11 @@ export const Spectrum: React.FC = () => {
     loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys, ui_scale,
     filter_enabled, filter_low_enabled, filter_high_enabled, filter_low_hz, filter_high_hz, updateFilter,
     playTone: playToneStore, stopAllTones
-  } = useStore();
+  } = useStore(useShallow((s) => ({
+    loaded: s.loaded, position: s.position, currentTheme: s.currentTheme, themes: s.themes, fft_window: s.fft_window, octave_shift: s.octave_shift, spectrum_keys: s.spectrum_keys, ui_scale: s.ui_scale,
+    filter_enabled: s.filter_enabled, filter_low_enabled: s.filter_low_enabled, filter_high_enabled: s.filter_high_enabled, filter_low_hz: s.filter_low_hz, filter_high_hz: s.filter_high_hz, updateFilter: s.updateFilter,
+    playTone: s.playTone, stopAllTones: s.stopAllTones,
+  })));
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [draggingMode, setDraggingMode] = useState<'low' | 'high' | 'tone' | null>(null);
@@ -94,7 +100,7 @@ export const Spectrum: React.FC = () => {
     return activeFlag ? getChordMidiNotes(activeFlag.c) : [];
   }, [position, harmony_flags]);
 
-  useEffect(() => {
+  useRafEffect(() => {
     const canvas = canvasRef.current;
     const theme = themes[currentTheme];
     if (!canvas || !theme?.spectrum || size.width === 0) return;

@@ -1,8 +1,11 @@
 import { useEffect } from 'react';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 
 export const useTheme = () => {
-  const { currentTheme, themes, ui_scale } = useStore();
+  const { currentTheme, themes, ui_scale } = useStore(useShallow((s) => ({
+    currentTheme: s.currentTheme, themes: s.themes, ui_scale: s.ui_scale,
+  })));
 
   useEffect(() => {
     const theme = themes[currentTheme];

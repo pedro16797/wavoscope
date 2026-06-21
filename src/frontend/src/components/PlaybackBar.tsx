@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Play, Pause, Square, Volume2, Settings, Timer, FolderOpen, Save, Repeat, Repeat1, FileDown, ListMusic, SkipBack, SkipForward } from 'lucide-react';
 import { Tooltip } from './Tooltip';
 
@@ -14,7 +15,15 @@ export const PlaybackBar: React.FC = () => {
     saveProject, exportMusicXML, dirty, loop_mode, cycleLoopMode,
     activePlaylistId, setShowPlaylistDialog, nextPlaylistItem, prevPlaylistItem,
     isRemote
-  } = useStore();
+  } = useStore(useShallow((s) => ({
+    loaded: s.loaded, position: s.position, duration: s.duration, playing: s.playing, speed: s.speed,
+    volume: s.volume, filename: s.filename, metadata: s.metadata, overdrive: s.overdrive, toggleOverdrive: s.toggleOverdrive,
+    controlPlayback: s.controlPlayback, currentTheme: s.currentTheme, themes: s.themes, ui_scale: s.ui_scale,
+    metronome_enabled: s.metronome_enabled, updateMetronome: s.updateMetronome, setShowSettings: s.setShowSettings, browseFile: s.browseFile,
+    saveProject: s.saveProject, exportMusicXML: s.exportMusicXML, dirty: s.dirty, loop_mode: s.loop_mode, cycleLoopMode: s.cycleLoopMode,
+    activePlaylistId: s.activePlaylistId, setShowPlaylistDialog: s.setShowPlaylistDialog, nextPlaylistItem: s.nextPlaylistItem, prevPlaylistItem: s.prevPlaylistItem,
+    isRemote: s.isRemote,
+  })));
 
   const theme = themes[currentTheme] || {};
 

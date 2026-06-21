@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Spectrum } from './Spectrum';
 import { Tooltip } from './Tooltip';
@@ -10,7 +11,11 @@ export const SpectrumView: React.FC = () => {
   const {
     fft_window, setFFTWindow, octave_shift, setOctaveShift, ui_scale,
     filter_auto_gain, updateFilter
-  } = useStore();
+  } = useStore(useShallow((s) => ({
+    fft_window: s.fft_window, setFFTWindow: s.setFFTWindow, octave_shift: s.octave_shift,
+    setOctaveShift: s.setOctaveShift, ui_scale: s.ui_scale, filter_auto_gain: s.filter_auto_gain,
+    updateFilter: s.updateFilter,
+  })));
 
   return (
     <div className="flex flex-col h-full w-full min-h-0">

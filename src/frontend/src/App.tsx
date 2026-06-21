@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import { useStore } from './store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import { useKeyboardShortcuts } from './store/useKeyboardShortcuts';
 import { useAudioWebSocket } from './hooks/useAudioWebSocket';
 import { useTheme } from './hooks/useTheme';
@@ -23,7 +24,14 @@ const App: React.FC = () => {
     editingHarmonyFlagIdx, setEditingHarmonyFlagIdx, harmony_flags,
     stopAllTones,
     isRemote, loaded
-  } = useStore();
+  } = useStore(useShallow((s) => ({
+    showSettings: s.showSettings, setShowSettings: s.setShowSettings,
+    showPlaylistDialog: s.showPlaylistDialog, setShowPlaylistDialog: s.setShowPlaylistDialog,
+    editingFlagIdx: s.editingFlagIdx, setEditingFlagIdx: s.setEditingFlagIdx, flags: s.flags,
+    editingHarmonyFlagIdx: s.editingHarmonyFlagIdx, setEditingHarmonyFlagIdx: s.setEditingHarmonyFlagIdx, harmony_flags: s.harmony_flags,
+    stopAllTones: s.stopAllTones,
+    isRemote: s.isRemote, loaded: s.loaded,
+  })));
 
   useKeyboardShortcuts();
   useAudioWebSocket();
