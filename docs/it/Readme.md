@@ -46,7 +46,9 @@ Wavoscope utilizza un sistema di file "sidecar". Quando apri un file audio, Wavo
     - **UI Ottimizzata:** I dispositivi remoti ricevono un'interfaccia semplificata che nasconde strumenti complessi come l'analizzatore di spettro e si concentra sui controlli di riproduzione.
     - **Supporto Touch:** È supportata la navigazione touch completa, inclusa la panoramica e lo zoom (pinch-to-zoom) sulla forma d'onda.
     - **Protezione Host:** Per evitare modifiche accidentali, i dispositivi remoti possono solo controllare la riproduzione e visualizzare i marcatori; l'aggiunta o la modifica di marcatori e testi è riservata alla macchina host.
-    - *Nota: l'accesso remoto non è autenticato; chiunque sulla tua rete locale sarà in grado di controllare l'applicazione.*
+    - *L'accesso remoto è protetto da un token segreto incluso nel codice QR/URL. Solo i dispositivi che aprono quel link possono controllare la riproduzione; mantienilo privato. L'accesso ai file e la modifica dei progetti restano riservati all'host.*
+
+![Codice QR per l'accesso remoto](docs/images/remote_qr.png)
 
 ![Interfaccia Remota](docs/images/remote_view.png)
 
@@ -177,6 +179,8 @@ Wavoscope è progettato per essere guidato dalla comunità. Puoi aggiungere o mo
 | **Elimina Elemento** | `Canc` / `Backspace` |
 | **Apri File** | `Ctrl + O` |
 | **Salva Progetto** | `Ctrl + S` |
+| **Annulla** | `Ctrl + Z` |
+| **Ripeti** | `Ctrl + Shift + Z` / `Ctrl + Y` |
 | **Esporta MusicXML** | `Ctrl + E` |
 
 ### Interazioni Mouse

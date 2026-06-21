@@ -9,7 +9,8 @@
     "delete": "Hapus",
     "ok": "OK",
     "none": "Tidak ada",
-    "ready": "Siap memuat audio"
+    "ready": "Siap memuat audio",
+    "drop_file_to_start": "Jatuhkan file audio untuk memulai"
   },
   "settings": {
     "title": "Pengaturan",
@@ -82,9 +83,10 @@
     "remote_access": "Akses Jarak Jauh",
     "remote_access_desc": "Izinkan perangkat lain di jaringan lokal Anda untuk mengontrol Wavoscope.",
     "remote_url": "URL Kontrol Jarak Jauh",
-    "remote_url_hint": "Masukkan URL ini di browser ponsel atau perangkat lain Anda.",
+    "remote_qr_hint": "Pindai kode ini dengan kamera ponsel Anda untuk membuka pengontrol (tautan berisi token akses).",
+    "remote_url_hint": "Buka URL ini di ponsel atau perangkat lain Anda. URL ini berisi token akses, jadi rahasiakan — siapa pun yang memiliki tautan lengkap dapat mengontrol pemutaran.",
     "remote_restart_hint": "Anda harus memulai ulang Wavoscope agar perubahan pada akses jarak jauh dapat diterapkan.",
-    "remote_warning": "Peringatan: Akses jarak jauh tidak diautentikasi. Siapa pun di jaringan lokal Anda dapat mengontrol aplikasi.",
+    "remote_warning": "Perangkat jarak jauh diberi kendali melalui token akses yang tertanam di URL di atas. Akses file dan pengeditan proyek tetap terbatas pada komputer ini.",
     "autosave_enabled_desc": "Alihkan penyimpanan latar belakang otomatis proyek Anda.",
     "autosave_forced_desc": "Simpan meskipun tidak ada perubahan yang terdeteksi.",
     "autosave_interval_desc": "Seberapa sering (dalam menit) untuk melakukan simpan otomatis.",
@@ -125,6 +127,8 @@
     "open": "Buka File Audio",
     "save_dirty": "Simpan Proyek (Perubahan belum disimpan)",
     "save_clean": "Simpan Proyek",
+    "undo": "Urungkan",
+    "redo": "Ulangi",
     "export_xml": "Ekspor sebagai MusicXML",
     "loop_whole": "Loop: Seluruh Lagu",
     "loop_section": "Loop: Bagian Saat Ini",

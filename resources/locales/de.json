@@ -9,7 +9,8 @@
     "delete": "Löschen",
     "ok": "OK",
     "none": "Keine",
-    "ready": "Bereit zum Laden von Audio"
+    "ready": "Bereit zum Laden von Audio",
+    "drop_file_to_start": "Audiodatei hier ablegen, um zu beginnen"
   },
   "settings": {
     "title": "Einstellungen",
@@ -92,9 +93,10 @@
     "remote_access": "Fernzugriff",
     "remote_access_desc": "Ermöglicht anderen Geräten in Ihrem lokalen Netzwerk die Steuerung von Wavoscope.",
     "remote_url": "Fernsteuerungs-URL",
-    "remote_url_hint": "Geben Sie diese URL im Browser Ihres Telefons oder eines anderen Geräts ein.",
+    "remote_qr_hint": "Scannen Sie diesen Code mit der Kamera Ihres Telefons, um die Fernsteuerung zu öffnen (der Link enthält das Zugriffstoken).",
+    "remote_url_hint": "Öffnen Sie diese URL auf Ihrem Telefon oder einem anderen Gerät. Sie enthält ein Zugriffstoken – halten Sie sie geheim, denn jeder mit dem vollständigen Link kann die Wiedergabe steuern.",
     "remote_restart_hint": "Sie müssen Wavoscope neu starten, damit die Änderungen am Fernzugriff wirksam werden.",
-    "remote_warning": "Warnung: Der Fernzugriff ist nicht passwortgeschützt. Jeder in Ihrem lokalen Netzwerk kann die App steuern.",
+    "remote_warning": "Geräte aus der Ferne erhalten die Steuerung über das im obigen Link enthaltene Zugriffstoken. Dateizugriff und Projektbearbeitung bleiben auf diesen Computer beschränkt.",
     "ui_scale": "UI-Skalierung",
     "audio_device": "Audiogerät",
     "default_device": "Systemstandard",
@@ -125,6 +127,8 @@
     "open": "Audiodatei öffnen",
     "save_dirty": "Projekt speichern (Ungespeicherte Änderungen)",
     "save_clean": "Projekt speichern",
+    "undo": "Rückgängig",
+    "redo": "Wiederholen",
     "export_xml": "Als MusicXML exportieren",
     "loop_whole": "Loop: Ganzer Song",
     "loop_section": "Loop: Aktueller Abschnitt",

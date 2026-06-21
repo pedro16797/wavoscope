@@ -9,7 +9,8 @@
     "delete": "削除",
     "ok": "OK",
     "none": "なし",
-    "ready": "オーディオの読み込み準備完了"
+    "ready": "オーディオの読み込み準備完了",
+    "drop_file_to_start": "オーディオファイルをドロップして開始"
   },
   "settings": {
     "title": "設定",
@@ -93,9 +94,10 @@
     "remote_access": "リモートアクセス",
     "remote_access_desc": "ローカルネットワーク上の他のデバイスから Wavoscope を制御できるようにします。",
     "remote_url": "リモートコントロール URL",
-    "remote_url_hint": "お使いのスマートフォンや他のデバイスのブラウザでこの URL を入力してください。",
+    "remote_qr_hint": "スマートフォンのカメラでこのコードをスキャンしてコントローラーを開きます（リンクにアクセストークンが含まれます）。",
+    "remote_url_hint": "このURLをスマートフォンや他のデバイスで開きます。アクセストークンが含まれているため、非公開にしてください。完全なリンクを知っている人は誰でも再生を操作できます。",
     "remote_restart_hint": "リモートアクセスの変更を有効にするには、Wavoscope を再起動する必要があります。",
-    "remote_warning": "警告：リモートアクセスは認証されていません。ローカルネットワーク上の誰でもアプリを制御できます。",
+    "remote_warning": "リモートデバイスは、上記のURLに埋め込まれたアクセストークンを通じて操作権限を得ます。ファイルへのアクセスとプロジェクトの編集はこのコンピューターに限定されます。",
     "ui_scale": "UIスケール",
     "ui_scale_desc": "テキスト、ボタン、その他のインターフェース要素のサイズを調整します。",
     "kb_no_ui_desc": "The following keybinds do not correspond to any graphical interface element."
@@ -125,6 +127,8 @@
     "open": "オーディオファイルを開く",
     "save_dirty": "プロジェクトを保存 (未保存の変更あり)",
     "save_clean": "プロジェクトを保存",
+    "undo": "元に戻す",
+    "redo": "やり直す",
     "export_xml": "MusicXMLとしてエクスポート",
     "loop_whole": "ループ: 曲全体",
     "loop_section": "ループ: 現在のセクション",

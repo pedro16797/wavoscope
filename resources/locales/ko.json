@@ -9,7 +9,8 @@
     "delete": "삭제",
     "ok": "확인",
     "none": "없음",
-    "ready": "오디오를 로드할 준비가 되었습니다"
+    "ready": "오디오를 로드할 준비가 되었습니다",
+    "drop_file_to_start": "오디오 파일을 끌어다 놓아 시작하세요"
   },
   "settings": {
     "title": "설정",
@@ -80,9 +81,10 @@
     "remote_access": "원격 접속",
     "remote_access_desc": "로컬 네트워크의 다른 장치가 Wavoscope를 제어할 수 있도록 허용합니다.",
     "remote_url": "원격 제어 URL",
-    "remote_url_hint": "휴대폰이나 다른 장치의 브라우저에 이 URL을 입력하십시오.",
+    "remote_qr_hint": "휴대폰 카메라로 이 코드를 스캔하여 컨트롤러를 엽니다 (링크에 액세스 토큰이 포함되어 있습니다).",
+    "remote_url_hint": "이 URL을 휴대폰이나 다른 장치에서 엽니다. 액세스 토큰이 포함되어 있으므로 비공개로 유지하세요. 전체 링크를 가진 사람은 누구나 재생을 제어할 수 있습니다.",
     "remote_restart_hint": "원격 접속 변경 사항을 적용하려면 Wavoscope를 다시 시작해야 합니다.",
-    "remote_warning": "경고: 원격 접속은 인증되지 않았습니다. 로컬 네트워크의 누구나 앱을 제어할 수 있습니다.",
+    "remote_warning": "원격 장치는 위 URL에 포함된 액세스 토큰을 통해 제어 권한을 얻습니다. 파일 액세스와 프로젝트 편집은 이 컴퓨터로 제한됩니다.",
     "autosave_enabled_desc": "프로젝트의 자동 백그라운드 저장을 토글합니다.",
     "autosave_forced_desc": "변경 사항이 감지되지 않아도 저장합니다.",
     "autosave_interval_desc": "자동 저장을 수행할 빈도(분 단위)입니다.",
@@ -125,6 +127,8 @@
     "open": "오디오 파일 열기",
     "save_dirty": "프로젝트 저장 (저장되지 않은 변경 사항)",
     "save_clean": "프로젝트 저장",
+    "undo": "실행 취소",
+    "redo": "다시 실행",
     "export_xml": "MusicXML로 내보내기",
     "loop_whole": "루프: 전체 곡",
     "loop_section": "루프: 현재 섹션",

@@ -39,6 +39,10 @@ Wavoscope menggunakan sistem file "sidecar". Saat Anda membuka file audio, Wavos
 - **Tempo & Tap Tempo:** Tempo saat ini (dalam BPM) ditampilkan di header waveform. Klik berulang kali untuk mengukur tempo secara manual (**Tap Tempo**). Secara otomatis akan kembali ke tempo birama yang dihitung setelah 3 detik tidak ada aktivitas.
 - **Kontrol Jarak Jauh:** Aktifkan **Akses Jarak Jauh** di pengaturan untuk mengontrol Wavoscope dari perangkat lain (seperti ponsel) di jaringan lokal yang sama. Pengaturan akan menampilkan URL yang dapat Anda masukkan di browser perangkat jarak jauh Anda untuk mengakses antarmuka dan mengontrol pemutaran.
 
+*Akses jarak jauh dilindungi oleh token rahasia yang tertanam di kode QR/URL. Hanya perangkat yang membuka tautan itu yang dapat mengontrol pemutaran — rahasiakan. Akses file dan pengeditan proyek tetap hanya untuk host.*
+
+![Kode QR Akses Jarak Jauh](docs/images/remote_qr.png)
+
 ![Tampilan Jarak Jauh](docs/images/remote_view.png)
 
 ---
@@ -167,6 +171,8 @@ Wavoscope dirancang untuk digerakkan oleh komunitas. Anda dapat menambah atau me
 | **Hapus Item Terpilih** | `Delete` / `Backspace` |
 | **Buka File** | `Ctrl + O` |
 | **Simpan Proyek** | `Ctrl + S` |
+| **Urungkan** | `Ctrl + Z` |
+| **Ulangi** | `Ctrl + Shift + Z` / `Ctrl + Y` |
 | **Ekspor MusicXML** | `Ctrl + E` |
 
 ### Interaksi Mouse
