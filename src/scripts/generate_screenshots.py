@@ -13,7 +13,13 @@ def post_json(url, data):
 
 def generate():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        # Allow pointing at a preinstalled Chromium (e.g. in CI/sandboxes where
+        # the Playwright browser download is unavailable).
+        launch_kwargs = {"headless": True}
+        exe = os.environ.get("PLAYWRIGHT_CHROMIUM_PATH")
+        if exe:
+            launch_kwargs["executable_path"] = exe
+        browser = p.chromium.launch(**launch_kwargs)
         page = browser.new_page(viewport={'width': 1200, 'height': 800})
 
         # 1. Start by loading the app
@@ -29,9 +35,16 @@ def generate():
         post_json("http://127.0.0.1:8000/project/open", {"path": audio_path})
         time.sleep(2) # Wait for processing
 
+        # Reload so the freshly-opened project is reflected in the page, then
+        # pull the authoritative status from the backend. Relying on the
+        # WebSocket broadcast alone is flaky in headless runs.
+        page.reload()
+        page.evaluate("window.useStore.getState().fetchStatus()")
+        page.wait_for_function("window.useStore.getState().loaded === true", timeout=15000)
+        time.sleep(2)
+
         # 3. Take main UI screenshot
         # Add some flags and lyrics first
-        page.evaluate("window.useStore.setState({ lyrics: [], flags: [], harmony_flags: [], playlists: [], activePlaylistId: null, activeItemId: null })")
         page.evaluate("window.useStore.getState().setShowLyrics(true)")
         page.evaluate("window.useStore.getState().addFlag(1.0)")
         page.evaluate("window.useStore.getState().addHarmonyFlag(2.0, {r: 'G', ca: '', q: 'm', ext: '7', alt: [], add: [], b: '', ba: ''})")
@@ -42,9 +55,13 @@ def generate():
         page.screenshot(path="docs/images/main_view.png")
 
         # 4. Screenshot: Lyrics Track Detail
-        # Focus on the lyrics/waveform area
-        # Use a more resilient selector if possible
-        page.locator("div:has-text('Lyrics')").last.screenshot(path="docs/images/lyrics_track.png")
+        # Focus on the lyrics/waveform area. Fall back to a full-page capture if
+        # the lyrics container can't be isolated (selector drift is common here).
+        try:
+            page.locator("div.select-none.bg-surface.border-b").last.screenshot(
+                path="docs/images/lyrics_track.png", timeout=5000)
+        except Exception:
+            page.screenshot(path="docs/images/lyrics_track.png")
 
         # 5. Screenshot: Spectrum with Filter
         # Enable filter handles
