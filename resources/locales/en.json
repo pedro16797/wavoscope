@@ -126,6 +126,8 @@
     "open": "Open Audio File",
     "save_dirty": "Save Project (Unsaved changes)",
     "save_clean": "Save Project",
+    "undo": "Undo",
+    "redo": "Redo",
     "export_xml": "Export as MusicXML",
     "loop_whole": "Loop: Whole Song",
     "loop_section": "Loop: Current Section",

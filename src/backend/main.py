@@ -123,6 +123,8 @@ async def get_status():
         "filter_high_enabled": state.project.backend._filter_high_enabled,
         "filter_low_hz": state.project.backend._filter_low_hz,
         "filter_high_hz": state.project.backend._filter_high_hz,
+        "can_undo": state.project._undo.can_undo,
+        "can_redo": state.project._undo.can_redo,
     }
 
 # Serve frontend if it exists

@@ -28,6 +28,7 @@ On the first launch, Wavoscope will automatically download its own Python runtim
 Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope creates or loads a `.oscope` file in the same directory to store your markers, loops, and settings.
 - **Open:** Click the folder icon in the playback bar to load any common audio format (MP3, WAV, FLAC, etc.).
 - **Save:** Click the floppy disk icon. The icon will glow with your theme's accent color when there are unsaved changes.
+- **Undo / Redo:** Use the undo/redo arrows in the playback bar, or `Ctrl + Z` to undo and `Ctrl + Shift + Z` (or `Ctrl + Y`) to redo. Every edit (flags, chords, lyrics, time signature) is checkpointed; the buttons are disabled when there's nothing to undo or redo. You can also browse and jump to any checkpoint from the **Settings > Recovery** tab.
 - **Autosave:** Wavoscope automatically creates snapshots of your work at regular intervals. You can configure the autosave frequency, the maximum number of snapshots to keep, and the storage location in the **Settings > Autosave** tab. By default, autosaves only occur if there are unsaved changes. You can enable **Forced Autosave** to always create snapshots regardless of changes. By default, autosaves are stored in your system's temporary folder.
 
 ---
@@ -180,6 +181,8 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | **Open File** | `Ctrl + O` |
 | **Save Project** | `Ctrl + S` |
 | **Export MusicXML** | `Ctrl + E` |
+| **Undo** | `Ctrl + Z` |
+| **Redo** | `Ctrl + Shift + Z` / `Ctrl + Y` |
 
 ### Mouse Interactions
 | Area | Action | Interaction |

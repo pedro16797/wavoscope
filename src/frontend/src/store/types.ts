@@ -113,6 +113,8 @@ export interface ProjectSlice {
   lyrics: Lyric[];
   time_signature: TimeSignature;
   dirty: boolean;
+  can_undo: boolean;
+  can_redo: boolean;
   editingFlagIdx: null | number;
   editingHarmonyFlagIdx: null | number;
   selectedLyricIdx: null | number;

@@ -12,6 +12,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   lyrics: [],
   time_signature: { numerator: 4, denominator: 4 },
   dirty: false,
+  can_undo: false,
+  can_redo: false,
   editingFlagIdx: null,
   editingHarmonyFlagIdx: null,
   selectedLyricIdx: null,
