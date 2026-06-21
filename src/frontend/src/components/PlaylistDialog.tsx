@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import { X, Plus, Trash2, Edit2, Music, Check, ChevronRight, FileAudio } from 'lucide-react';
 
 interface PlaylistDialogProps {
@@ -14,7 +15,12 @@ export const PlaylistDialog: React.FC<PlaylistDialogProps> = ({ onClose }) => {
         createPlaylist, updatePlaylist, deletePlaylist,
         addItemToPlaylist, removeItemFromPlaylist, selectPlaylistItem, loadPlaylistItem,
         currentTheme, themes, ui_scale
-    } = useStore();
+    } = useStore(useShallow((s) => ({
+        playlists: s.playlists, activePlaylistId: s.activePlaylistId, activeItemId: s.activeItemId, fetchPlaylists: s.fetchPlaylists,
+        createPlaylist: s.createPlaylist, updatePlaylist: s.updatePlaylist, deletePlaylist: s.deletePlaylist,
+        addItemToPlaylist: s.addItemToPlaylist, removeItemFromPlaylist: s.removeItemFromPlaylist, selectPlaylistItem: s.selectPlaylistItem, loadPlaylistItem: s.loadPlaylistItem,
+        currentTheme: s.currentTheme, themes: s.themes, ui_scale: s.ui_scale,
+    })));
 
     const theme = themes[currentTheme] || {};
     const [newPlaylistName, setNewPlaylistName] = useState('');

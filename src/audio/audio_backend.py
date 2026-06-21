@@ -40,9 +40,11 @@ class AudioBackend:
         self._watcher_thread: threading.Thread | None = None
         self._start_watcher()
 
-        # Looping state
+        # Looping state. A single reusable LoopingEngine avoids allocating in the
+        # realtime callback when a loop range needs (re)computing.
         self._loop_enabled: bool = False
         self._active_loop_range: Tuple[float, float] | None = None
+        self._loop_engine = LoopingEngine()
 
         # Project data cache for thread-safety and performance
         self._cached_flags: List[Dict[str, Any]] = []
@@ -75,9 +77,10 @@ class AudioBackend:
         """Stop stream and release resources."""
         self._stop_event.set()
         if self._watcher_thread:
-            self._watcher_thread.join(timeout=1.0)
-        self._playback.stop_stream()
+            self._watcher_thread.join(timeout=2.5)
+        self._playback.close()
         self._synth.close()
+        self._processor.close()
 
     # ---------- hardware management ----------
     @staticmethod
@@ -129,8 +132,9 @@ class AudioBackend:
         self._watcher_thread.start()
 
     def _watch_devices(self) -> None:
-        import time
-        while not self._stop_event.is_set():
+        # Wait on the stop event instead of sleeping so close() wakes us
+        # immediately rather than blocking up to the full poll interval.
+        while not self._stop_event.wait(2.0):
             if self._selected_device_name is None:
                 try:
                     import sounddevice as sd
@@ -144,17 +148,18 @@ class AudioBackend:
                         self._last_default_name = curr_name
                 except Exception:
                     pass
-            time.sleep(2.0)
 
     # ---------- playback control ----------
     def seek(self, sec: float) -> None:
         with self._playback._lock:
             self._playback.seek(sec)
 
-            # Only reset loop range if we seek past the current loop
+            # Drop the cached loop range whenever we seek outside it (before the
+            # start or past the end); the callback will recompute one for the new
+            # position. Otherwise a backward scrub would be yanked forward.
             if self._active_loop_range:
-                _, lend = self._active_loop_range
-                if sec >= lend:
+                lstart, lend = self._active_loop_range
+                if sec < lstart or sec >= lend:
                     self._active_loop_range = None
 
             self._filters.reset_zi()
@@ -208,8 +213,6 @@ class AudioBackend:
             self._active_loop_range = None
 
     def clear_tick_cache(self) -> None:
-        if hasattr(self, "_last_tick_time"):
-            delattr(self, "_last_tick_time")
         self._metronome.reset()
 
     # ---------- read-only properties ----------
@@ -320,6 +323,17 @@ class AudioBackend:
                             ticks.append((tick_time, False))
         return sorted(ticks, key=lambda t: t[0])
 
+    def _compute_loop_range(self) -> Tuple[float, float]:
+        """Compute the active loop range using the reusable engine (no allocation)."""
+        self._loop_engine.set_loop_mode(self._cached_loop_mode)
+        return self._loop_engine.get_loop_range(
+            self._playback._cursor,
+            self._cached_duration,
+            self._cached_flags,
+            self._cached_lyrics,
+            self._cached_selected_lyric_idx,
+        )
+
     # ---------- real-time callback ----------
     def _audio_callback(
         self,
@@ -338,18 +352,15 @@ class AudioBackend:
             if not self._playback._playing or self._playback._data is None:
                 return
 
+            # "playlist" is not a loop: it must run to the end and fire
+            # notify_finished so the next track can auto-advance. Treat every
+            # other non-"none" mode as a true loop.
+            is_looping = self._loop_enabled and self._cached_loop_mode != "playlist"
+
             # Handle Looping
-            if self._loop_enabled:
+            if is_looping:
                 if self._active_loop_range is None:
-                    engine = LoopingEngine()
-                    engine.set_loop_mode(self._cached_loop_mode)
-                    self._active_loop_range = engine.get_loop_range(
-                        self._playback._cursor,
-                        self._cached_duration,
-                        self._cached_flags,
-                        self._cached_lyrics,
-                        self._cached_selected_lyric_idx
-                    )
+                    self._active_loop_range = self._compute_loop_range()
 
                 lstart, lend = self._active_loop_range
                 if self._playback._cursor >= lend - 0.001:
@@ -416,17 +427,9 @@ class AudioBackend:
                     self._processor._last_tsm_overlap = None
 
                 if self._processor._tsm_buffer.available_read() == 0:
-                    if self._loop_enabled:
+                    if is_looping:
                         if self._active_loop_range is None:
-                            engine = LoopingEngine()
-                            engine.set_loop_mode(self._cached_loop_mode)
-                            self._active_loop_range = engine.get_loop_range(
-                                self._playback._cursor,
-                                self._cached_duration,
-                                self._cached_flags,
-                                self._cached_lyrics,
-                                self._cached_selected_lyric_idx
-                            )
+                            self._active_loop_range = self._compute_loop_range()
                         lstart, _ = self._active_loop_range
                         self._playback._cursor = lstart
                         self._read_sample_idx = int(self._playback._cursor * self._playback._sr)
@@ -437,7 +440,7 @@ class AudioBackend:
                         self._playback._cursor = 0.0
                         self._read_sample_idx = 0
                         self._processor.reset()
-                        self._playback._on_finished()
+                        self._playback.notify_finished()
 
         except Exception:
             logger.exception("Error in audio callback")

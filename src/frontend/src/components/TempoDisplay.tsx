@@ -1,12 +1,15 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Tooltip } from './Tooltip';
 import { Activity } from 'lucide-react';
 
 export const TempoDisplay: React.FC = () => {
   const { t } = useTranslation();
-  const { position, flags, time_signature, ui_scale } = useStore();
+  const { position, flags, time_signature, ui_scale } = useStore(useShallow((s) => ({
+    position: s.position, flags: s.flags, time_signature: s.time_signature, ui_scale: s.ui_scale,
+  })));
 
   const [taps, setTaps] = useState<number[]>([]);
   const [isTapping, setIsTapping] = useState(false);

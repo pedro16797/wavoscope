@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import { useStore } from './store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import { useKeyboardShortcuts } from './store/useKeyboardShortcuts';
 import { useAudioWebSocket } from './hooks/useAudioWebSocket';
 import { useTheme } from './hooks/useTheme';
@@ -23,16 +24,23 @@ const App: React.FC = () => {
     editingHarmonyFlagIdx, setEditingHarmonyFlagIdx, harmony_flags,
     stopAllTones,
     isRemote, loaded
-  } = useStore();
+  } = useStore(useShallow((s) => ({
+    showSettings: s.showSettings, setShowSettings: s.setShowSettings,
+    showPlaylistDialog: s.showPlaylistDialog, setShowPlaylistDialog: s.setShowPlaylistDialog,
+    editingFlagIdx: s.editingFlagIdx, setEditingFlagIdx: s.setEditingFlagIdx, flags: s.flags,
+    editingHarmonyFlagIdx: s.editingHarmonyFlagIdx, setEditingHarmonyFlagIdx: s.setEditingHarmonyFlagIdx, harmony_flags: s.harmony_flags,
+    stopAllTones: s.stopAllTones,
+    isRemote: s.isRemote, loaded: s.loaded,
+  })));
 
   useKeyboardShortcuts();
   useAudioWebSocket();
   useTheme();
 
   useEffect(() => {
-    // Expose setShowSettings to native menu
+    // Expose setShowSettings to native menu. (window.useStore is set once in
+    // main.tsx for screenshot automation; no need to assign it again here.)
     (window as Window & { setShowSettings?: (show: boolean) => void }).setShowSettings = setShowSettings;
-    (window as any).useStore = useStore;
 
     const handleBlur = () => {
         stopAllTones();
@@ -70,6 +78,7 @@ const App: React.FC = () => {
       {showPlaylistDialog && <PlaylistDialog onClose={() => setShowPlaylistDialog(false)} />}
       {editingFlagIdx !== null && (
         <FlagDialog
+          key={editingFlagIdx}
           idx={editingFlagIdx}
           flag={flags[editingFlagIdx]}
           onClose={() => setEditingFlagIdx(null)}
@@ -77,6 +86,7 @@ const App: React.FC = () => {
       )}
       {editingHarmonyFlagIdx !== null && (
         <ChordDialog
+          key={editingHarmonyFlagIdx}
           idx={editingHarmonyFlagIdx}
           flag={harmony_flags[editingHarmonyFlagIdx]}
           onClose={() => setEditingHarmonyFlagIdx(null)}

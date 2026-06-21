@@ -1,8 +1,10 @@
-from fastapi import APIRouter, HTTPException, Response, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Response, BackgroundTasks, Depends
+from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 from pathlib import Path
 import numpy as np
 from backend import state
+from backend.deps import require_project, require_host, require_host_project
 from utils.logging import logger
 from session.project import Project
 
@@ -35,115 +37,69 @@ class TimeSignatureData(BaseModel):
     denominator: int
 
 @router.post("/flags")
-async def add_flag(flag: FlagData):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        idx = state.project.add_flag(
-            t=flag.t,
-            kind=flag.type,
-            div=flag.div,
-            n=flag.n,
-            s=flag.s,
-            divshade=flag.divshade
-        )
-        return {"status": "ok", "flags": state.project.flags, "idx": idx}
-    except Exception as e:
-        logger.exception("Error in add_flag")
-        raise HTTPException(status_code=500, detail=f"Failed to add flag: {str(e)}")
+async def add_flag(flag: FlagData, project: Project = Depends(require_host_project)):
+    idx = project.add_flag(
+        t=flag.t,
+        kind=flag.type,
+        div=flag.div,
+        n=flag.n,
+        s=flag.s,
+        divshade=flag.divshade
+    )
+    return {"status": "ok", "flags": project.flags, "idx": idx}
 
 @router.delete("/flags/{idx}")
-async def remove_flag(idx: int):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        state.project.remove_flag(idx)
-        return {"status": "ok", "flags": state.project.flags}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to remove flag: {str(e)}")
+async def remove_flag(idx: int, project: Project = Depends(require_host_project)):
+    project.remove_flag(idx)
+    return {"status": "ok", "flags": project.flags}
 
 class FlagMove(BaseModel):
     idx: int
     t: float
 
 @router.post("/flags/move")
-async def move_flag(move: FlagMove):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        res = state.project.move_flag(move.idx, move.t)
-        if res is None:
-            raise HTTPException(status_code=404, detail="Flag not found")
-        return {"status": "ok", "flags": state.project.flags, "updated_flag": res["flag"], "new_idx": res["idx"]}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to move flag: {str(e)}")
+async def move_flag(move: FlagMove, project: Project = Depends(require_host_project)):
+    res = project.move_flag(move.idx, move.t)
+    if res is None:
+        raise HTTPException(status_code=404, detail="Flag not found")
+    return {"status": "ok", "flags": project.flags, "updated_flag": res["flag"], "new_idx": res["idx"]}
 
 @router.patch("/flags/{idx}")
-async def update_flag(idx: int, flag: FlagData):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        state.project.update_flag(
-            idx=idx,
-            t=flag.t,
-            kind=flag.type,
-            div=flag.div,
-            n=flag.n,
-            s=flag.s,
-            divshade=flag.divshade
-        )
-        return {"status": "ok", "flags": state.project.flags}
-    except Exception as e:
-        logger.exception("Error in update_flag")
-        raise HTTPException(status_code=500, detail=f"Failed to update flag: {str(e)}")
+async def update_flag(idx: int, flag: FlagData, project: Project = Depends(require_host_project)):
+    project.update_flag(
+        idx=idx,
+        t=flag.t,
+        kind=flag.type,
+        div=flag.div,
+        n=flag.n,
+        s=flag.s,
+        divshade=flag.divshade
+    )
+    return {"status": "ok", "flags": project.flags}
 
 class FlagInsertN(BaseModel):
     left_idx: int
     count: int
 
 @router.post("/flags/insert_n")
-async def insert_n_flags(data: FlagInsertN):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        state.project.insert_equi_spaced_flags(data.left_idx, data.left_idx + 1, data.count)
-        return {"status": "ok", "flags": state.project.flags}
-    except Exception as e:
-        logger.exception("Error in insert_n_flags")
-        raise HTTPException(status_code=500, detail=f"Failed to insert flags: {str(e)}")
+async def insert_n_flags(data: FlagInsertN, project: Project = Depends(require_host_project)):
+    project.insert_equi_spaced_flags(data.left_idx, data.left_idx + 1, data.count)
+    return {"status": "ok", "flags": project.flags}
 
 @router.post("/time_signature")
-async def update_time_signature(data: TimeSignatureData):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        state.project.update_time_signature(data.numerator, data.denominator)
-        return {"status": "ok", "time_signature": state.project.time_signature}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to update time signature: {str(e)}")
+async def update_time_signature(data: TimeSignatureData, project: Project = Depends(require_host_project)):
+    project.update_time_signature(data.numerator, data.denominator)
+    return {"status": "ok", "time_signature": project.time_signature}
 
 @router.post("/harmony_flags")
-async def add_harmony_flag(flag: HarmonyFlagData):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        idx = state.project.add_harmony_flag(t=flag.t, chord=flag.c.model_dump())
-        return {"status": "ok", "harmony_flags": state.project.harmony_flags, "idx": idx}
-    except Exception as e:
-        logger.exception("Error in add_harmony_flag")
-        raise HTTPException(status_code=500, detail=f"Failed to add harmony flag: {str(e)}")
+async def add_harmony_flag(flag: HarmonyFlagData, project: Project = Depends(require_host_project)):
+    idx = project.add_harmony_flag(t=flag.t, chord=flag.c.model_dump())
+    return {"status": "ok", "harmony_flags": project.harmony_flags, "idx": idx}
 
 @router.delete("/harmony_flags/{idx}")
-async def remove_harmony_flag(idx: int):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        state.project.remove_harmony_flag(idx)
-        return {"status": "ok", "harmony_flags": state.project.harmony_flags}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to remove harmony flag: {str(e)}")
+async def remove_harmony_flag(idx: int, project: Project = Depends(require_host_project)):
+    project.remove_harmony_flag(idx)
+    return {"status": "ok", "harmony_flags": project.harmony_flags}
 
 class HarmonyFlagMove(BaseModel):
     idx: int
@@ -167,134 +123,69 @@ class LyricSelect(BaseModel):
     idx: int | None = None
 
 @router.post("/lyrics")
-async def add_lyric(lyric: LyricData):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        res = state.project.add_lyric(lyric.s, lyric.t, lyric.l)
-        return {"status": "ok", "lyrics": state.project.lyrics, "new_lyric": res["lyric"], "idx": res["idx"]}
-    except Exception as e:
-        logger.exception("Error in add_lyric")
-        raise HTTPException(status_code=500, detail=f"Failed to add lyric: {str(e)}")
+async def add_lyric(lyric: LyricData, project: Project = Depends(require_host_project)):
+    res = project.add_lyric(lyric.s, lyric.t, lyric.l)
+    return {"status": "ok", "lyrics": project.lyrics, "new_lyric": res["lyric"], "idx": res["idx"]}
 
 @router.delete("/lyrics/{idx}")
-async def remove_lyric(idx: int):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        state.project.remove_lyric(idx)
-        return {"status": "ok", "lyrics": state.project.lyrics}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to remove lyric: {str(e)}")
+async def remove_lyric(idx: int, project: Project = Depends(require_host_project)):
+    project.remove_lyric(idx)
+    return {"status": "ok", "lyrics": project.lyrics}
 
 @router.patch("/lyrics/{idx}")
-async def update_lyric(idx: int, lyric: LyricUpdate):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        res = state.project.update_lyric(idx, lyric.s, lyric.t, lyric.l)
-        if res is None:
-            raise HTTPException(status_code=404, detail="Lyric not found")
-        return {"status": "ok", "lyrics": state.project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.exception("Error in update_lyric")
-        raise HTTPException(status_code=500, detail=f"Failed to update lyric: {str(e)}")
+async def update_lyric(idx: int, lyric: LyricUpdate, project: Project = Depends(require_host_project)):
+    res = project.update_lyric(idx, lyric.s, lyric.t, lyric.l)
+    if res is None:
+        raise HTTPException(status_code=404, detail="Lyric not found")
+    return {"status": "ok", "lyrics": project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
 
 @router.post("/lyrics/select")
-async def select_lyric(select: LyricSelect):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        state.project.set_selected_lyric(select.idx)
-        return {"status": "ok"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to select lyric: {str(e)}")
+async def select_lyric(select: LyricSelect, project: Project = Depends(require_project)):
+    # Intentionally not host-only: selecting a lyric only changes which lyric is
+    # the loop target (playback control, which remote clients are allowed) and
+    # touches no filesystem. The frontend lets remote clients drive this.
+    project.set_selected_lyric(select.idx)
+    return {"status": "ok"}
 
 @router.post("/lyrics/move")
-async def move_lyric(move: LyricMove):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        res = state.project.move_lyric(move.idx, move.t)
-        if res is None:
-            raise HTTPException(status_code=404, detail="Lyric not found")
-        return {"status": "ok", "lyrics": state.project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.exception("Error in move_lyric")
-        raise HTTPException(status_code=500, detail=f"Failed to move lyric: {str(e)}")
+async def move_lyric(move: LyricMove, project: Project = Depends(require_host_project)):
+    res = project.move_lyric(move.idx, move.t)
+    if res is None:
+        raise HTTPException(status_code=404, detail="Lyric not found")
+    return {"status": "ok", "lyrics": project.lyrics, "updated_lyric": res["lyric"], "new_idx": res["idx"]}
 
 @router.post("/harmony_flags/move")
-async def move_harmony_flag(move: HarmonyFlagMove):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        res = state.project.move_harmony_flag(move.idx, move.t)
-        if res is None:
-            raise HTTPException(status_code=404, detail="Harmony flag not found")
-        return {"status": "ok", "harmony_flags": state.project.harmony_flags, "updated_flag": res["flag"], "new_idx": res["idx"]}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to move harmony flag: {str(e)}")
+async def move_harmony_flag(move: HarmonyFlagMove, project: Project = Depends(require_host_project)):
+    res = project.move_harmony_flag(move.idx, move.t)
+    if res is None:
+        raise HTTPException(status_code=404, detail="Harmony flag not found")
+    return {"status": "ok", "harmony_flags": project.harmony_flags, "updated_flag": res["flag"], "new_idx": res["idx"]}
 
 @router.patch("/harmony_flags/{idx}")
-async def update_harmony_flag(idx: int, flag: HarmonyFlagData):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        state.project.update_harmony_flag(idx=idx, t=flag.t, chord=flag.c.model_dump())
-        return {"status": "ok", "harmony_flags": state.project.harmony_flags}
-    except Exception as e:
-        logger.exception("Error in update_harmony_flag")
-        raise HTTPException(status_code=500, detail=f"Failed to update harmony flag: {str(e)}")
+async def update_harmony_flag(idx: int, flag: HarmonyFlagData, project: Project = Depends(require_host_project)):
+    project.update_harmony_flag(idx=idx, t=flag.t, chord=flag.c.model_dump())
+    return {"status": "ok", "harmony_flags": project.harmony_flags}
 
 @router.get("/analyze_chord")
-async def analyze_chord(t: float):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-
+async def analyze_chord(t: float, project: Project = Depends(require_project)):
     from audio.chord_analyzer import analyze_chord_at
-    try:
-        # Get audio data from project backend
-        y = state.project.backend._data
-        sr = state.project.backend._sr
-        if y is None or sr == 0:
-             return {
-                "r": "C",
-                "ca": "",
-                "q": "",
-                "ext": "",
-                "alt": [],
-                "add": [],
-                "b": "",
-                "ba": "",
-            }
+    from session.chord_utils import default_chord
 
-        # If stereo, mix to mono for analysis
-        if len(y.shape) > 1:
-            y_mono = np.mean(y, axis=1)
-        else:
-            y_mono = y
+    # Get audio data from project backend
+    y = project.backend._data
+    sr = project.backend._sr
+    if y is None or sr == 0:
+        return default_chord()
 
-        suggestion = analyze_chord_at(y_mono, sr, t)
-        return suggestion
-    except Exception as e:
-        logger.exception("Error in analyze_chord")
-        raise HTTPException(status_code=500, detail=f"Chord analysis failed: {str(e)}")
+    # If stereo, mix to mono for analysis
+    y_mono = np.mean(y, axis=1) if len(y.shape) > 1 else y
+    # FFT-based analysis is CPU-heavy; keep it off the event loop.
+    return await run_in_threadpool(analyze_chord_at, y_mono, sr, t)
 
 @router.post("/save")
-async def save_project():
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        state.project.save()
-        return {"status": "ok"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save project: {str(e)}")
+async def save_project(project: Project = Depends(require_host_project)):
+    await run_in_threadpool(project.save)
+    return {"status": "ok"}
 
 @router.get("/export/musicxml/check")
 async def check_export():
@@ -308,9 +199,8 @@ class ExportStartData(BaseModel):
     path: str
 
 def bg_export(path: str, session_data: dict, audio_name: str, audio_duration: float):
-    state.export_active = True
-    state.export_progress = 0.0
-    state.export_message = "Starting export..."
+    # state.export_active was set True synchronously in start_export so a second
+    # rapid start is rejected before this background task even runs.
     try:
         from session.export import generate_musicxml
         def progress_cb(ratio, msg):
@@ -327,20 +217,25 @@ def bg_export(path: str, session_data: dict, audio_name: str, audio_duration: fl
         logger.exception("bg_export error")
         state.export_message = f"Error: {str(e)}"
     finally:
-        import time
-        time.sleep(2) # Keep the message for a moment
         state.export_active = False
 
 @router.post("/export/musicxml/start")
-async def start_export(data: ExportStartData, background_tasks: BackgroundTasks):
+async def start_export(data: ExportStartData, background_tasks: BackgroundTasks, project: Project = Depends(require_host_project)):
     """Starts a background task to export the project to MusicXML."""
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
+    # Reject overlapping exports: they'd clobber the shared progress state and
+    # race each other's "active" flag. The check-and-set is synchronous (no
+    # await between), so two near-simultaneous starts can't both pass.
+    if state.export_active:
+        raise HTTPException(status_code=409, detail="An export is already in progress")
+    state.export_active = True
+    state.export_progress = 0.0
+    state.export_message = "Starting export..."
 
-    # We copy the data to avoid thread issues if project changes
-    session_data = state.project.session_data.copy()
-    audio_name = state.project.audio_path.name
-    audio_duration = state.project.duration
+    # Deep-copy under the project lock so a concurrent edit can't mutate the
+    # nested flag/lyric lists while the exporter iterates them.
+    session_data = project.snapshot_session_data()
+    audio_name = project.audio_path.name
+    audio_duration = project.duration
 
     background_tasks.add_task(bg_export, data.path, session_data, audio_name, audio_duration)
     return {"status": "started"}
@@ -354,23 +249,17 @@ async def get_export_progress():
     }
 
 @router.get("/export/musicxml")
-async def export_musicxml():
+async def export_musicxml(project: Project = Depends(require_host_project)):
     # Legacy endpoint for browser fallback
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        xml_content = state.project.generate_musicxml()
-        filename = state.project.audio_path.stem + ".musicxml"
-        return Response(
-            content=xml_content,
-            media_type="application/vnd.recordare.musicxml+xml",
-            headers={
-                "Content-Disposition": f"attachment; filename={filename}"
-            }
-        )
-    except Exception as e:
-        logger.exception("Error in export_musicxml")
-        raise HTTPException(status_code=500, detail=f"Failed to export MusicXML: {str(e)}")
+    xml_content = await run_in_threadpool(project.generate_musicxml)
+    filename = project.audio_path.stem + ".musicxml"
+    return Response(
+        content=xml_content,
+        media_type="application/vnd.recordare.musicxml+xml",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}"
+        }
+    )
 
 class OpenProject(BaseModel):
     path: str
@@ -384,60 +273,55 @@ async def get_undo_steps():
 class UndoRestore(BaseModel):
     index: int
 
+def _undo_state_response(project: Project) -> dict:
+    return {
+        "status": "ok",
+        "flags": project.flags,
+        "harmony_flags": project.harmony_flags,
+        "lyrics": project.lyrics,
+        "time_signature": project.time_signature,
+        "can_undo": project._undo.can_undo,
+        "can_redo": project._undo.can_redo,
+    }
+
 @router.post("/undo/restore")
-async def restore_undo(data: UndoRestore):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        state.project.restore_checkpoint(data.index)
-        return {
-            "status": "ok",
-            "flags": state.project.flags,
-            "harmony_flags": state.project.harmony_flags,
-            "lyrics": state.project.lyrics,
-            "time_signature": state.project.time_signature
-        }
-    except Exception as e:
-        logger.exception("Error in restore_undo")
-        raise HTTPException(status_code=500, detail=f"Failed to restore: {str(e)}")
+async def restore_undo(data: UndoRestore, project: Project = Depends(require_host_project)):
+    project.restore_checkpoint(data.index)
+    return _undo_state_response(project)
 
 @router.post("/undo")
-async def undo_project():
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-    try:
-        state.project.undo()
-        return {
-            "status": "ok",
-            "flags": state.project.flags,
-            "harmony_flags": state.project.harmony_flags,
-            "lyrics": state.project.lyrics,
-            "time_signature": state.project.time_signature
-        }
-    except Exception as e:
-        logger.exception("Error in undo_project")
-        raise HTTPException(status_code=500, detail=f"Failed to undo: {str(e)}")
+async def undo_project(project: Project = Depends(require_host_project)):
+    project.undo()
+    return _undo_state_response(project)
+
+@router.post("/redo")
+async def redo_project(project: Project = Depends(require_host_project)):
+    project.redo()
+    return _undo_state_response(project)
 
 @router.post("/open")
-async def open_project(data: OpenProject):
+async def open_project(data: OpenProject, _host: None = Depends(require_host)):
     path = Path(data.path)
     if not path.exists():
         logger.error(f"File not found at {data.path}")
         raise HTTPException(status_code=404, detail=f"File not found: {data.path}")
 
+    new_project = None
     try:
-        if state.project:
-            state.project.close()
+        with state.project_lock:
+            new_project = Project(path)
+            new_project.open_file(path)
 
-        new_project = Project(path)
-        new_project.open_file(path)
-        state.project = new_project
+            # Register callback for playlist auto-advance
+            if state.on_playback_finished:
+                new_project.backend.register_callback("finished", state.on_playback_finished)
 
-        # Register callback for playlist auto-advance
-        if hasattr(state, 'on_playback_finished'):
-            state.project.backend.register_callback("finished", state.on_playback_finished)
-
+            # Atomically swap in the new project and close the previous one.
+            state.set_project(new_project)
         return {"status": "ok", "filename": path.name}
-    except Exception as e:
-        logger.exception("Exception during open_project")
-        raise HTTPException(status_code=500, detail=f"Failed to open project: {str(e)}")
+    except Exception:
+        # Don't leak the new project's audio backend/threads if open failed
+        # before it became the active project.
+        if new_project is not None and new_project is not state.project:
+            new_project.close()
+        raise

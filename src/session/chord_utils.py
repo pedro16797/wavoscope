@@ -1,5 +1,9 @@
 from typing import List, Dict, Any
 
+def default_chord() -> Dict[str, Any]:
+    """Canonical empty chord (C major, no extensions)."""
+    return {"r": "C", "ca": "", "q": "", "ext": "", "alt": [], "add": [], "b": "", "ba": ""}
+
 def get_chord_midi_notes(chord: Dict[str, Any]) -> List[int]:
     root_map = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
     root = root_map.get(chord['r'], 0)

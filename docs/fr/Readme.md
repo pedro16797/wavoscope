@@ -46,7 +46,9 @@ Wavoscope utilise un système de fichiers "sidecar". Lorsque vous ouvrez un fich
     - **Interface Optimisée :** Les appareils distants bénéficient d'une interface simplifiée qui masque les outils complexes comme l'analyseur de spectre et se concentre sur les commandes de lecture.
     - **Support Tactile :** La navigation tactile complète est prise en charge, y compris le panoramique et le zoom par pincement sur la forme d'onde.
     - **Protection de l'Hôte :** Pour éviter les modifications accidentelles, les appareils distants peuvent uniquement contrôler la lecture et visualiser les marqueurs ; l'ajout ou la modification de marqueurs et de paroles est réservé à la machine hôte.
-    - *Note : L'accès à distance n'est pas authentifié ; toute personne sur votre réseau local pourra contrôler l'application.*
+    - *L'accès à distance est protégé par un jeton secret intégré au QR code/à l'URL. Seuls les appareils qui ouvrent ce lien peuvent contrôler la lecture ; gardez-le privé. L'accès aux fichiers et la modification des projets restent réservés à l'ordinateur hôte.*
+
+![QR code d'accès à distance](docs/images/remote_qr.png)
 
 ![Interface Distante](docs/images/remote_view.png)
 
@@ -177,6 +179,8 @@ Wavoscope est conçu pour être géré par la communauté. Vous pouvez ajouter o
 | **Supprimer l'Élément** | `Suppr` / `Retour Arrière` |
 | **Ouvrir un Fichier** | `Ctrl + O` |
 | **Enregistrer le Projet** | `Ctrl + S` |
+| **Annuler** | `Ctrl + Z` |
+| **Rétablir** | `Ctrl + Shift + Z` / `Ctrl + Y` |
 | **Exporter MusicXML** | `Ctrl + E` |
 
 ### Interactions Souris

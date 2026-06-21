@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
+import { useRafEffect } from '../hooks/useRafEffect';
 import { formatChord, getChordMidiNotes, midiToFreq, getTimelineStep, formatTimelineLabel } from '../store/utils';
 import { Tooltip } from './Tooltip';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +17,14 @@ export const Timeline: React.FC = () => {
     loop_mode, loop_range, playTone, stopAllTones,
     offset, zoom, setViewport,
     isRemote
-  } = useStore();
+  } = useStore(useShallow((s) => ({
+    loaded: s.loaded, duration: s.duration, currentTheme: s.currentTheme, themes: s.themes, flags: s.flags, harmony_flags: s.harmony_flags, ui_scale: s.ui_scale,
+    addFlag: s.addFlag, moveFlag: s.moveFlag, setEditingFlagIdx: s.setEditingFlagIdx,
+    addHarmonyFlag: s.addHarmonyFlag, moveHarmonyFlag: s.moveHarmonyFlag, setEditingHarmonyFlagIdx: s.setEditingHarmonyFlagIdx,
+    loop_mode: s.loop_mode, loop_range: s.loop_range, playTone: s.playTone, stopAllTones: s.stopAllTones,
+    offset: s.offset, zoom: s.zoom, setViewport: s.setViewport,
+    isRemote: s.isRemote,
+  })));
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dragHarmonyIdx, setDragHarmonyIdx] = useState<number | null>(null);
   const [dragT, setDragT] = useState<number | null>(null);
@@ -39,7 +48,7 @@ export const Timeline: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
+  useRafEffect(() => {
     const canvas = canvasRef.current;
     const theme = themes[currentTheme];
     if (!canvas || !theme || size.width === 0) return;
@@ -173,7 +182,7 @@ export const Timeline: React.FC = () => {
                 for (let k = 1; k < subdiv; k++) {
                     const t = f.t + k * step;
                     const sx = (t - offset) * zoom;
-                    if (sx >= 0 && sx <= canvas.width) {
+                    if (sx >= 0 && sx <= size.width) {
                         const baseColor = theme.flagRhythm || '#ff4757';
                         let opacity = "44"; // dimmed
                         if (f.divshade && k % 2 === 1) {
@@ -182,8 +191,8 @@ export const Timeline: React.FC = () => {
                         ctx.strokeStyle = baseColor + opacity;
                         ctx.lineWidth = 1;
                         ctx.beginPath();
-                        ctx.moveTo(sx, canvas.height / 2);
-                        ctx.lineTo(sx, canvas.height);
+                        ctx.moveTo(sx, size.height / 2);
+                        ctx.lineTo(sx, size.height);
                         ctx.stroke();
                     }
                 }

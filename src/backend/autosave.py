@@ -1,3 +1,4 @@
+import os
 import threading
 import time
 import tempfile
@@ -70,19 +71,14 @@ class AutosaveManager:
 
         original_stem = state.project.audio_path.stem
 
-        # Rotate existing snapshots
+        # Rotate existing snapshots (oldest is dropped when .{max} is overwritten).
         for i in range(max_snapshots - 1, 0, -1):
             old_file = autosave_dir / f"{original_stem}.autosave.{i}.oscope"
             new_file = autosave_dir / f"{original_stem}.autosave.{i+1}.oscope"
             if old_file.exists():
                 try:
-                    if i + 1 > max_snapshots:
-                        old_file.unlink()
-                    else:
-                        if new_file.exists():
-                            new_file.unlink()
-                        old_file.rename(new_file)
-                except Exception as e:
+                    os.replace(old_file, new_file)
+                except OSError as e:
                     logger.error(f"Error rotating autosave {old_file}: {e}")
 
         # Save new snapshot as .1.oscope

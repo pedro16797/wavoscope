@@ -11,7 +11,7 @@ export const useKeyboardShortcuts = () => {
         octave_shift, setOctaveShift, fft_window, setFFTWindow, metronome_enabled, updateMetronome,
         editingFlagIdx, editingHarmonyFlagIdx, setEditingFlagIdx, setEditingHarmonyFlagIdx,
         addFlag, addHarmonyFlag, removeFlag, removeHarmonyFlag, removeLyric,
-        updateFilter, toggleOverdrive, undo,
+        updateFilter, toggleOverdrive, undo, redo,
         setShowPlaylistDialog, showPlaylistDialog
       } = state;
 
@@ -99,10 +99,15 @@ export const useKeyboardShortcuts = () => {
           return;
       }
 
-      // Undo: Ctrl+Z
+      // Undo: Ctrl+Z / Redo: Ctrl+Shift+Z or Ctrl+Y
       if (e.key.toLowerCase() === 'z' && (e.ctrlKey || e.metaKey)) {
           e.preventDefault();
-          undo();
+          if (e.shiftKey) redo(); else undo();
+          return;
+      }
+      if (e.key.toLowerCase() === 'y' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          redo();
           return;
       }
 

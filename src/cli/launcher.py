@@ -15,7 +15,7 @@ def find_available_port(host="127.0.0.1", start_port=8000):
                 return port
         except socket.error:
             port += 1
-    return start_port
+    raise RuntimeError(f"No available port found in range {start_port}-{start_port + 100}")
 
 def run_server(port=8000, host="127.0.0.1"):
     global _backend_exception

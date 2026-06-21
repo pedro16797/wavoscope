@@ -1,0 +1,15 @@
+# Pinned dependency set used to run the backend test suite in CI.
+# Kept separate from requirements.txt so CI doesn't pull GUI/packaging deps
+# (pywebview, pyinstaller) the tests never import. sounddevice is mocked in
+# tests/conftest.py, so PortAudio is not needed.
+#
+# Pinned for reproducible CI runs; bump deliberately.
+numpy==2.4.6
+scipy==1.17.1
+soundfile==0.14.0
+fastapi==0.138.0
+httpx==0.28.1
+jsonpatch==1.33
+python-stretch==0.3.1
+tinytag==2.2.1
+pytest==9.1.1

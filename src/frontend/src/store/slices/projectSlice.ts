@@ -12,6 +12,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   lyrics: [],
   time_signature: { numerator: 4, denominator: 4 },
   dirty: false,
+  can_undo: false,
+  can_redo: false,
   editingFlagIdx: null,
   editingHarmonyFlagIdx: null,
   selectedLyricIdx: null,
@@ -58,7 +60,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return null;
     try {
         const res = await axios.post(`${API_BASE}/project/flags`, { t });
-        set({ flags: res.data.flags });
+        set({ flags: res.data.flags, can_undo: true, can_redo: false });
         return { idx: res.data.idx };
     } catch (e) {
         console.error("[Store] Failed to add flag:", e);
@@ -70,7 +72,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return null;
     try {
         const res = await axios.post(`${API_BASE}/project/flags/move`, { idx, t });
-        set({ flags: res.data.flags });
+        set({ flags: res.data.flags, can_undo: true, can_redo: false });
         return { idx: res.data.new_idx, flag: res.data.updated_flag };
     } catch (e) {
         console.error("[Store] Failed to move flag:", e);
@@ -82,7 +84,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return;
     try {
         const res = await axios.delete(`${API_BASE}/project/flags/${idx}`);
-        set({ flags: res.data.flags });
+        set({ flags: res.data.flags, can_undo: true, can_redo: false });
     } catch (e) {
         console.error("[Store] Failed to remove flag:", e);
     }
@@ -92,7 +94,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return;
     try {
         const res = await axios.patch(`${API_BASE}/project/flags/${idx}`, flag);
-        set({ flags: res.data.flags });
+        set({ flags: res.data.flags, can_undo: true, can_redo: false });
     } catch (e) {
         console.error("[Store] Failed to update flag:", e);
     }
@@ -102,7 +104,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return;
     try {
         const res = await axios.post(`${API_BASE}/project/flags/insert_n`, { left_idx, count });
-        set({ flags: res.data.flags });
+        set({ flags: res.data.flags, can_undo: true, can_redo: false });
     } catch (e) {
         console.error("[Store] Failed to insert flags:", e);
     }
@@ -115,7 +117,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
             chord = await get().analyzeChord(t);
         }
         const res = await axios.post(`${API_BASE}/project/harmony_flags`, { t, c: chord });
-        set({ harmony_flags: res.data.harmony_flags });
+        set({ harmony_flags: res.data.harmony_flags, can_undo: true, can_redo: false });
         return { idx: res.data.idx, t, c: chord };
     } catch (e) {
         console.error("[Store] Failed to add harmony flag:", e);
@@ -127,7 +129,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return null;
     try {
         const res = await axios.post(`${API_BASE}/project/harmony_flags/move`, { idx, t });
-        set({ harmony_flags: res.data.harmony_flags });
+        set({ harmony_flags: res.data.harmony_flags, can_undo: true, can_redo: false });
         return { idx: res.data.new_idx, t: res.data.updated_flag.t, c: res.data.updated_flag.c };
     } catch (e) {
         console.error("[Store] Failed to move harmony flag:", e);
@@ -139,7 +141,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return;
     try {
         const res = await axios.delete(`${API_BASE}/project/harmony_flags/${idx}`);
-        set({ harmony_flags: res.data.harmony_flags });
+        set({ harmony_flags: res.data.harmony_flags, can_undo: true, can_redo: false });
     } catch (e) {
         console.error("[Store] Failed to remove harmony flag:", e);
     }
@@ -149,7 +151,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return;
     try {
         const res = await axios.patch(`${API_BASE}/project/harmony_flags/${idx}`, { t, c: chord });
-        set({ harmony_flags: res.data.harmony_flags });
+        set({ harmony_flags: res.data.harmony_flags, can_undo: true, can_redo: false });
     } catch (e) {
         console.error("[Store] Failed to update harmony flag:", e);
     }
@@ -172,7 +174,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return null;
     try {
         const res = await axios.post(`${API_BASE}/project/lyrics`, lyric);
-        set({ lyrics: res.data.lyrics });
+        set({ lyrics: res.data.lyrics, can_undo: true, can_redo: false });
         return { idx: res.data.idx, lyric: res.data.new_lyric };
     } catch (e) {
         console.error("[Store] Failed to add lyric:", e);
@@ -184,7 +186,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return;
     try {
         const res = await axios.delete(`${API_BASE}/project/lyrics/${idx}`);
-        set({ lyrics: res.data.lyrics });
+        set({ lyrics: res.data.lyrics, can_undo: true, can_redo: false });
     } catch (e) {
         console.error("[Store] Failed to remove lyric:", e);
     }
@@ -194,7 +196,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return null;
     try {
         const res = await axios.patch(`${API_BASE}/project/lyrics/${idx}`, lyric);
-        set({ lyrics: res.data.lyrics });
+        set({ lyrics: res.data.lyrics, can_undo: true, can_redo: false });
         return { idx: res.data.new_idx, lyric: res.data.updated_lyric };
     } catch (e) {
         console.error("[Store] Failed to update lyric:", e);
@@ -206,7 +208,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     if (get().isRemote) return null;
     try {
         const res = await axios.post(`${API_BASE}/project/lyrics/move`, { idx, t });
-        set({ lyrics: res.data.lyrics });
+        set({ lyrics: res.data.lyrics, can_undo: true, can_redo: false });
         return { idx: res.data.new_idx, lyric: res.data.updated_lyric };
     } catch (e) {
         console.error("[Store] Failed to move lyric:", e);
@@ -217,7 +219,7 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
   updateTimeSignature: async (numerator: number, denominator: number) => {
     try {
         const res = await axios.post(`${API_BASE}/project/time_signature`, { numerator, denominator });
-        set({ time_signature: res.data.time_signature });
+        set({ time_signature: res.data.time_signature, can_undo: true, can_redo: false });
     } catch (e) {
         console.error("[Store] Failed to update time signature:", e);
     }
@@ -316,6 +318,8 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
             harmony_flags: res.data.harmony_flags,
             lyrics: res.data.lyrics,
             time_signature: res.data.time_signature,
+            can_undo: res.data.can_undo,
+            can_redo: res.data.can_redo,
             dirty: true
         });
         await get().fetchUndoSteps();
@@ -332,11 +336,31 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
             harmony_flags: res.data.harmony_flags,
             lyrics: res.data.lyrics,
             time_signature: res.data.time_signature,
+            can_undo: res.data.can_undo,
+            can_redo: res.data.can_redo,
             dirty: true
         });
         await get().fetchUndoSteps();
     } catch (e) {
         console.error("[Store] Failed to undo:", e);
+    }
+  },
+
+  redo: async () => {
+    try {
+        const res = await axios.post(`${API_BASE}/project/redo`);
+        set({
+            flags: res.data.flags,
+            harmony_flags: res.data.harmony_flags,
+            lyrics: res.data.lyrics,
+            time_signature: res.data.time_signature,
+            can_undo: res.data.can_undo,
+            can_redo: res.data.can_redo,
+            dirty: true
+        });
+        await get().fetchUndoSteps();
+    } catch (e) {
+        console.error("[Store] Failed to redo:", e);
     }
   }
 });

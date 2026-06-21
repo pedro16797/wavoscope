@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Timeline } from './Timeline';
 import { Waveform } from './Waveform';
 import { LyricsTimeline } from './LyricsTimeline';
@@ -10,7 +11,9 @@ import { TempoDisplay } from './TempoDisplay';
 
 export const WaveformView: React.FC = () => {
   const { t } = useTranslation();
-  const { showLyrics, setShowLyrics, ui_scale } = useStore();
+  const { showLyrics, setShowLyrics, ui_scale } = useStore(useShallow((s) => ({
+    showLyrics: s.showLyrics, setShowLyrics: s.setShowLyrics, ui_scale: s.ui_scale,
+  })));
 
   return (
     <div className="flex flex-col h-full w-full min-h-0">

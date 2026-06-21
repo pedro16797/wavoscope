@@ -9,7 +9,8 @@
     "delete": "删除",
     "ok": "确定",
     "none": "无",
-    "ready": "准备加载音频"
+    "ready": "准备加载音频",
+    "drop_file_to_start": "拖入音频文件即可开始"
   },
   "settings": {
     "title": "设置",
@@ -92,9 +93,10 @@
     "remote_access": "远程访问",
     "remote_access_desc": "允许本地网络中的其他设备控制 Wavoscope。",
     "remote_url": "远程控制 URL",
-    "remote_url_hint": "在您的手机或其他设备的浏览器中输入此 URL。",
+    "remote_qr_hint": "用手机摄像头扫描此二维码即可打开控制器（链接中包含访问令牌）。",
+    "remote_url_hint": "在您的手机或其他设备上打开此 URL。它包含访问令牌，请妥善保管——任何拥有完整链接的人都可以控制播放。",
     "remote_restart_hint": "您必须重新启动 Wavoscope 才能使远程访问的更改生效。",
-    "remote_warning": "警告：远程访问未经身份验证。局域网内的任何人都可以控制此应用。",
+    "remote_warning": "远程设备通过上方 URL 中嵌入的访问令牌获得控制权限。文件访问和项目编辑仍仅限于本机。",
     "ui_scale": "UI 缩放",
     "audio_device": "音频设备",
     "default_device": "系统默认",
@@ -125,6 +127,8 @@
     "open": "打开音频文件",
     "save_dirty": "保存项目 (未保存的更改)",
     "save_clean": "保存项目",
+    "undo": "撤销",
+    "redo": "重做",
     "export_xml": "导出为 MusicXML",
     "loop_whole": "循环: 整首歌曲",
     "loop_section": "循环: 当前部分",

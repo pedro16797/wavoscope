@@ -2,9 +2,34 @@ import type { StateCreator } from 'zustand';
 import axios from 'axios';
 import type { AppState } from '../types';
 import { API_BASE } from '../useStore';
-import { midiToFreq, freqToMidi } from '../utils';
+import { midiToFreq, maxOctaveShift, recomputeFilterHz, filterPayload } from '../utils';
 
 import type { PlaybackSlice } from '../types';
+
+// Coalesce filter POSTs: while one is in flight, dragging a cutoff handle would
+// otherwise fire one request per mousemove. Mark "pending" instead and send the
+// latest state once the in-flight request returns (~one request per round-trip).
+let _filterInFlight = false;
+let _filterPending = false;
+
+async function _flushFilter(getState: () => AppState): Promise<void> {
+  if (_filterInFlight) {
+    _filterPending = true;
+    return;
+  }
+  _filterInFlight = true;
+  try {
+    await axios.post(`${API_BASE}/playback/filter`, filterPayload(getState()));
+  } catch (e) {
+    console.error("[Store] Failed to update filter:", e);
+  } finally {
+    _filterInFlight = false;
+    if (_filterPending) {
+      _filterPending = false;
+      _flushFilter(getState);
+    }
+  }
+}
 
 export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> = (set, get) => ({
   position: 0,
@@ -123,20 +148,9 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
         (filter.high_hz !== undefined && oldState.filter_high_enabled);
 
     if (shouldUpdateBackend) {
-        const newState = get();
-        const payload = {
-            enabled: newState.filter_enabled,
-            low_hz: newState.filter_low_hz,
-            high_hz: newState.filter_high_hz,
-            low_enabled: newState.filter_low_enabled,
-            high_enabled: newState.filter_high_enabled,
-            auto_gain: newState.filter_auto_gain
-        };
-        try {
-            await axios.post(`${API_BASE}/playback/filter`, payload);
-        } catch (e) {
-            console.error("[Store] Failed to update filter:", e);
-        }
+        // Coalesced: rapid drag updates collapse to roughly one request per
+        // round-trip, and the final value is always sent.
+        await _flushFilter(get);
     }
   },
 
@@ -165,31 +179,21 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
   setFFTWindow: (sec: number) => set({ fft_window: sec }),
   setOctaveShift: (shift: number) => {
     const state = get();
-    const maxShift = 6 - Math.floor(state.spectrum_keys / 12);
-    const clampedShift = Math.max(-2, Math.min(maxShift, shift));
+    const clampedShift = Math.max(-2, Math.min(maxOctaveShift(state.spectrum_keys), shift));
     const oldShift = state.octave_shift;
     if (clampedShift === oldShift) return;
 
-    const updates: any = { octave_shift: clampedShift };
-    const oldBaseMidi = 48 + oldShift * 12;
-    const newBaseMidi = 48 + clampedShift * 12;
-
-    const ratioLow = (freqToMidi(state.filter_low_hz) - oldBaseMidi) / state.spectrum_keys;
-    updates.filter_low_hz = midiToFreq(newBaseMidi + ratioLow * state.spectrum_keys);
-    const ratioHigh = (freqToMidi(state.filter_high_hz) - oldBaseMidi) / state.spectrum_keys;
-    updates.filter_high_hz = midiToFreq(newBaseMidi + ratioHigh * state.spectrum_keys);
+    const updates: any = {
+        octave_shift: clampedShift,
+        ...recomputeFilterHz(state.filter_low_hz, state.filter_high_hz,
+            state.spectrum_keys, oldShift, state.spectrum_keys, clampedShift),
+    };
 
     set(updates);
 
     if ((state.filter_low_enabled && updates.filter_low_hz) || (state.filter_high_enabled && updates.filter_high_hz)) {
-        const newState = get();
-        axios.post(`${API_BASE}/playback/filter`, {
-            enabled: newState.filter_enabled,
-            low_hz: newState.filter_low_hz,
-            high_hz: newState.filter_high_hz,
-            low_enabled: newState.filter_low_enabled,
-            high_enabled: newState.filter_high_enabled
-        }).catch(e => console.error("[Store] Failed to update filter after octave shift:", e));
+        axios.post(`${API_BASE}/playback/filter`, filterPayload(get()))
+            .catch(e => console.error("[Store] Failed to update filter after octave shift:", e));
     }
   },
 });

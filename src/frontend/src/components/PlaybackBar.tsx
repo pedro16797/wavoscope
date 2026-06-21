@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
-import { Play, Pause, Square, Volume2, Settings, Timer, FolderOpen, Save, Repeat, Repeat1, FileDown, ListMusic, SkipBack, SkipForward } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
+import { Play, Pause, Square, Volume2, Settings, Timer, FolderOpen, Save, Repeat, Repeat1, FileDown, ListMusic, SkipBack, SkipForward, Undo2, Redo2 } from 'lucide-react';
 import { Tooltip } from './Tooltip';
 
 export const PlaybackBar: React.FC = () => {
@@ -13,8 +14,18 @@ export const PlaybackBar: React.FC = () => {
     metronome_enabled, updateMetronome, setShowSettings, browseFile,
     saveProject, exportMusicXML, dirty, loop_mode, cycleLoopMode,
     activePlaylistId, setShowPlaylistDialog, nextPlaylistItem, prevPlaylistItem,
+    undo, redo, can_undo, can_redo,
     isRemote
-  } = useStore();
+  } = useStore(useShallow((s) => ({
+    loaded: s.loaded, position: s.position, duration: s.duration, playing: s.playing, speed: s.speed,
+    volume: s.volume, filename: s.filename, metadata: s.metadata, overdrive: s.overdrive, toggleOverdrive: s.toggleOverdrive,
+    controlPlayback: s.controlPlayback, currentTheme: s.currentTheme, themes: s.themes, ui_scale: s.ui_scale,
+    metronome_enabled: s.metronome_enabled, updateMetronome: s.updateMetronome, setShowSettings: s.setShowSettings, browseFile: s.browseFile,
+    saveProject: s.saveProject, exportMusicXML: s.exportMusicXML, dirty: s.dirty, loop_mode: s.loop_mode, cycleLoopMode: s.cycleLoopMode,
+    activePlaylistId: s.activePlaylistId, setShowPlaylistDialog: s.setShowPlaylistDialog, nextPlaylistItem: s.nextPlaylistItem, prevPlaylistItem: s.prevPlaylistItem,
+    undo: s.undo, redo: s.redo, can_undo: s.can_undo, can_redo: s.can_redo,
+    isRemote: s.isRemote,
+  })));
 
   const theme = themes[currentTheme] || {};
 
@@ -82,8 +93,20 @@ export const PlaybackBar: React.FC = () => {
             </Tooltip>
             <Tooltip content={t('playback.export_xml')} shortcut={`${t('keys.ctrl')} + E`}>
                 <button onClick={exportMusicXML} disabled={!loaded} aria-label={t('playback.export_xml')}
-                        className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${!loaded ? 'opacity-20' : 'opacity-90'}`}>
+                        className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${!loaded ? 'opacity-20' : 'opacity-90'}`}>
                     <FileDown size={20 * ui_scale} />
+                </button>
+            </Tooltip>
+            <Tooltip content={t('playback.undo')} shortcut={`${t('keys.ctrl')} + Z`}>
+                <button onClick={undo} disabled={!loaded || !can_undo} aria-label={t('playback.undo')}
+                        className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors ${(!loaded || !can_undo) ? 'opacity-20' : 'opacity-90'}`}>
+                    <Undo2 size={20 * ui_scale} />
+                </button>
+            </Tooltip>
+            <Tooltip content={t('playback.redo')} shortcut={`${t('keys.ctrl')} + ${t('keys.shift')} + Z`}>
+                <button onClick={redo} disabled={!loaded || !can_redo} aria-label={t('playback.redo')}
+                        className={`p-2 hover:bg-white/10 rounded-[var(--ui-radius)] transition-colors mr-2 ${(!loaded || !can_redo) ? 'opacity-20' : 'opacity-90'}`}>
+                    <Redo2 size={20 * ui_scale} />
                 </button>
             </Tooltip>
           </>

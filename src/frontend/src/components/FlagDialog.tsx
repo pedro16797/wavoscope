@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import type { Flag } from '../store/types';
 import { Tooltip } from './Tooltip';
 
 export const FlagDialog: React.FC<{ idx: number; flag: Flag; onClose: () => void }> = ({ idx, flag, onClose }) => {
   const { t } = useTranslation();
-  const { duration, flags, removeFlag, updateFlag, insertNFlags } = useStore();
+  const { duration, flags, removeFlag, updateFlag, insertNFlags } = useStore(useShallow((s) => ({
+    duration: s.duration, flags: s.flags, removeFlag: s.removeFlag, updateFlag: s.updateFlag, insertNFlags: s.insertNFlags,
+  })));
 
   const [name, setName] = useState(flag?.n || '');
   const [time, setTime] = useState(flag?.t || 0);
@@ -14,9 +17,14 @@ export const FlagDialog: React.FC<{ idx: number; flag: Flag; onClose: () => void
   const [sectionStart, setSectionStart] = useState(flag?.s || false);
   const [shaded, setShaded] = useState(flag?.divshade || false);
 
+  useEffect(() => {
+    if (!flag) {
+      console.error("FlagDialog opened but flag is missing at index", idx);
+      onClose();
+    }
+  }, [flag, idx, onClose]);
+
   if (!flag) {
-    console.error("FlagDialog opened but flag is missing at index", idx);
-    onClose();
     return null;
   }
 

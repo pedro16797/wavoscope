@@ -46,7 +46,9 @@ Wavoscope verwendet ein "Sidecar"-Dateisystem. Wenn Sie eine Audiodatei öffnen,
     - **Optimierte Benutzeroberfläche:** Remote-Geräte erhalten eine optimierte Oberfläche, die komplexe Werkzeuge wie den Spektralanalysator ausblendet und sich auf die Wiedergabesteuerung konzentriert.
     - **Touch-Unterstützung:** Volle Touch-Navigation wird unterstützt, einschließlich Verschieben und Pinch-to-Zoom auf der Wellenform.
     - **Host-Schutz:** Um versehentliche Bearbeitungen zu verhindern, können Remote-Geräte nur die Wiedergabe steuern und Markierungen ansehen; das Hinzufügen oder Bearbeiten von Markierungen und Songtexten ist dem Host-Rechner vorbehalten.
-    - *Hinweis: Der Fernzugriff ist nicht passwortgeschützt; jeder in Ihrem lokalen Netzwerk kann die Anwendung steuern.*
+    - *Der Fernzugriff ist durch ein geheimes Token in QR-Code/URL geschützt. Nur Geräte, die diesen Link öffnen, können die Wiedergabe steuern – halten Sie ihn geheim. Dateizugriff und Projektbearbeitung bleiben auf den Host beschränkt.*
+
+![QR-Code für Fernzugriff](docs/images/remote_qr.png)
 
 ![Remote-Benutzeroberfläche](docs/images/remote_view.png)
 
@@ -177,6 +179,8 @@ Wavoscope ist so konzipiert, dass es von der Community getragen wird. Sie könne
 | **Element löschen** | `Entf` / `Rücktaste` |
 | **Datei öffnen** | `Strg + O` |
 | **Projekt speichern** | `Strg + S` |
+| **Rückgängig** | `Strg + Z` |
+| **Wiederholen** | `Strg + Umschalt + Z` / `Strg + Y` |
 | **MusicXML exportieren** | `Strg + E` |
 
 ### Maus-Interaktionen

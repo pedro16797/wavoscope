@@ -4,7 +4,8 @@ from backend import state
 from unittest.mock import MagicMock
 import pytest
 
-client = TestClient(app)
+# Loopback client: represents the host machine driving the app locally.
+client = TestClient(app, client=("127.0.0.1", 50000))
 
 def test_loop_control():
     # Mock project

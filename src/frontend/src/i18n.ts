@@ -2,9 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import HttpBackend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
-
-const isDev = window.location.origin.includes(':5173') || window.location.origin.includes(':5174');
-const backendUrl = isDev ? `http://${window.location.hostname}:8000` : '';
+import { API_BASE } from './env';
 
 i18n
   .use(HttpBackend)
@@ -17,7 +15,7 @@ i18n
       escapeValue: false,
     },
     backend: {
-      loadPath: `${backendUrl}/locales/{{lng}}.json`,
+      loadPath: `${API_BASE}/locales/{{lng}}.json`,
     },
     detection: {
       order: ['localStorage', 'navigator'],

@@ -1,9 +1,9 @@
 from __future__ import annotations
-import json
 import uuid
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from utils.logging import logger
+from utils.persistence import write_json_atomic, read_json, quarantine_corrupt_file
 
 _PLAYLISTS_PATH = Path.home() / ".wavoscope_playlists.json"
 
@@ -53,19 +53,23 @@ class PlaylistManager:
         self.load()
 
     def load(self):
-        if _PLAYLISTS_PATH.exists():
-            try:
-                data = json.loads(_PLAYLISTS_PATH.read_text(encoding="utf-8"))
-                for pl_data in data:
-                    pl = Playlist.from_dict(pl_data)
-                    self.playlists[pl.id] = pl
-            except Exception as e:
-                logger.error(f"Error loading playlists: {e}")
+        if not _PLAYLISTS_PATH.exists():
+            return
+        try:
+            data = read_json(_PLAYLISTS_PATH)
+            if not isinstance(data, list):
+                raise ValueError("playlists file is not a list")
+            for pl_data in data:
+                pl = Playlist.from_dict(pl_data)
+                self.playlists[pl.id] = pl
+        except Exception as e:
+            logger.error(f"Error loading playlists: {e}")
+            quarantine_corrupt_file(_PLAYLISTS_PATH)
 
     def save(self):
         try:
             data = [pl.to_dict() for pl in self.playlists.values()]
-            _PLAYLISTS_PATH.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+            write_json_atomic(_PLAYLISTS_PATH, data)
         except Exception as e:
             logger.error(f"Error saving playlists: {e}")
 

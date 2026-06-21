@@ -9,7 +9,8 @@
     "delete": "Excluir",
     "ok": "OK",
     "none": "Nenhum",
-    "ready": "Pronto para carregar áudio"
+    "ready": "Pronto para carregar áudio",
+    "drop_file_to_start": "Arraste um ficheiro de áudio para começar"
   },
   "settings": {
     "title": "Configurações",
@@ -92,9 +93,10 @@
     "remote_access": "Acesso Remoto",
     "remote_access_desc": "Permitir que outros dispositivos na sua rede local controlem o Wavoscope.",
     "remote_url": "URL de Controle Remoto",
-    "remote_url_hint": "Introduza este URL no navegador do seu telemóvel ou outro dispositivo.",
+    "remote_qr_hint": "Digitalize este código com a câmara do seu telemóvel para abrir o controlo (a ligação contém o token de acesso).",
+    "remote_url_hint": "Abra este URL no seu telemóvel ou noutro dispositivo. Contém um token de acesso, por isso mantenha-o privado — qualquer pessoa com a ligação completa pode controlar a reprodução.",
     "remote_restart_hint": "Deve reiniciar o Wavoscope para que as alterações ao acesso remoto produzam efeito.",
-    "remote_warning": "Aviso: O acesso remoto não é autenticado. Qualquer pessoa na sua rede local pode controlar a aplicação.",
+    "remote_warning": "Os dispositivos remotos obtêm o controlo através do token de acesso incluído no URL acima. O acesso a ficheiros e a edição de projetos permanecem restritos a este computador.",
     "ui_scale": "Escala da UI",
     "audio_device": "Dispositivo de áudio",
     "default_device": "Padrão do sistema",
@@ -125,6 +127,8 @@
     "open": "Abrir Arquivo de Áudio",
     "save_dirty": "Salvar Projeto (Alterações não salvas)",
     "save_clean": "Salvar Projeto",
+    "undo": "Desfazer",
+    "redo": "Refazer",
     "export_xml": "Exportar como MusicXML",
     "loop_whole": "Loop: Música Inteira",
     "loop_section": "Loop: Seção Atual",

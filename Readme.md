@@ -28,6 +28,7 @@ On the first launch, Wavoscope will automatically download its own Python runtim
 Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope creates or loads a `.oscope` file in the same directory to store your markers, loops, and settings.
 - **Open:** Click the folder icon in the playback bar to load any common audio format (MP3, WAV, FLAC, etc.).
 - **Save:** Click the floppy disk icon. The icon will glow with your theme's accent color when there are unsaved changes.
+- **Undo / Redo:** Use the undo/redo arrows in the playback bar, or `Ctrl + Z` to undo and `Ctrl + Shift + Z` (or `Ctrl + Y`) to redo. Every edit (flags, chords, lyrics, time signature) is checkpointed; the buttons are disabled when there's nothing to undo or redo. You can also browse and jump to any checkpoint from the **Settings > Recovery** tab.
 - **Autosave:** Wavoscope automatically creates snapshots of your work at regular intervals. You can configure the autosave frequency, the maximum number of snapshots to keep, and the storage location in the **Settings > Autosave** tab. By default, autosaves only occur if there are unsaved changes. You can enable **Forced Autosave** to always create snapshots regardless of changes. By default, autosaves are stored in your system's temporary folder.
 
 ---
@@ -44,11 +45,13 @@ Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope c
 - **Playlists:** Click the playlist icon to manage collections of songs. You can create, edit, and delete playlists, and easily switch between tracks.
 - **Auto-Advance:** When a playlist is active, you can enable the **Playlist loop mode** to automatically play the next song in the list when the current one ends.
 - **Tempo & Tap Tempo:** The current tempo (in BPM) is displayed in the waveform header. Click it repeatedly to manually measure the tempo (**Tap Tempo**). It automatically reverts to the calculated measure tempo after 3 seconds of inactivity.
-- **Remote Control:** Enable **Remote Access** in settings to control Wavoscope from other devices (like a mobile phone) on the same local network. The settings will display a URL that you can enter in your remote device's browser to access the interface and control playback.
+- **Remote Control:** Enable **Remote Access** in settings to control Wavoscope from other devices (like a mobile phone) on the same local network. The settings display a **QR code** (and the matching URL) — scan it with your phone's camera to open the remote interface instantly.
     - **Optimized UI:** Remote devices get a streamlined interface that hides complex tools like the spectrum analyzer and focuses on playback controls.
     - **Touch Support:** Full touch navigation is supported, including panning and pinch-to-zoom on the waveform.
-    - **Host Protection:** To prevent accidental edits, remote devices can only control playback and view markers; adding or editing flags and lyrics is restricted to the host machine.
-    - *Note: Remote access is unauthenticated; anyone on your local network will be able to control the application.*
+    - **Host Protection:** Remote devices can only control playback and view markers. Editing (flags, lyrics, chords), opening files, exporting, and changing settings are enforced as **host-only on the server**, so a remote device cannot read or modify files on the host machine.
+    - **Access Token:** Remote access is gated by a secret token embedded in the QR/URL (minted when you enable remote access). Only devices that open that link can control playback, so keep the link private and treat anyone you share it with as trusted.
+
+![Remote Access QR Code](docs/images/remote_qr.png)
 
 ![Remote Interface](docs/images/remote_view.png)
 
@@ -180,6 +183,8 @@ Wavoscope is designed to be community-driven. You can add or modify translations
 | **Open File** | `Ctrl + O` |
 | **Save Project** | `Ctrl + S` |
 | **Export MusicXML** | `Ctrl + E` |
+| **Undo** | `Ctrl + Z` |
+| **Redo** | `Ctrl + Shift + Z` / `Ctrl + Y` |
 
 ### Mouse Interactions
 | Area | Action | Interaction |

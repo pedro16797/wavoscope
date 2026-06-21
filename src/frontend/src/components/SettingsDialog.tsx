@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStore } from '../store/useStore';
+import axios from 'axios';
+import { QRCodeSVG } from 'qrcode.react';
+import { useStore, API_BASE } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import { ChevronDown, FolderOpen } from 'lucide-react';
 import { Tooltip } from './Tooltip';
 
@@ -19,7 +22,16 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
     autosave_max_snapshots, autosave_path, undo_steps, undo_history,
     fetchUndoSteps, restoreUndoStep,
     remote_access, remote_url, fetchRemoteUrl
-  } = useStore();
+  } = useStore(useShallow((s) => ({
+    themes: s.themes, currentTheme: s.currentTheme, locales: s.locales, language: s.language,
+    audioDevices: s.audioDevices, audio_device: s.audio_device,
+    click_volume: s.click_volume, ui_scale: s.ui_scale, spectrum_keys: s.spectrum_keys, default_output_folder: s.default_output_folder,
+    musicxml_author: s.musicxml_author, updateConfig: s.updateConfig, time_signature: s.time_signature, updateTimeSignature: s.updateTimeSignature,
+    browseFolder: s.browseFolder, autosave_enabled: s.autosave_enabled, autosave_forced: s.autosave_forced, autosave_interval: s.autosave_interval,
+    autosave_max_snapshots: s.autosave_max_snapshots, autosave_path: s.autosave_path, undo_steps: s.undo_steps, undo_history: s.undo_history,
+    fetchUndoSteps: s.fetchUndoSteps, restoreUndoStep: s.restoreUndoStep,
+    remote_access: s.remote_access, remote_url: s.remote_url, fetchRemoteUrl: s.fetchRemoteUrl,
+  })));
 
   const [activeTab, setActiveTab] = useState<'global' | 'project' | 'recovery' | 'keybinds'>('global');
 
@@ -230,6 +242,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         </div>
                         {remAccess && (
                             <div className="space-y-3 pl-2 border-l-2 border-accent/20 animate-in fade-in slide-in-from-left-1">
+                                {remote_url && (
+                                    <div className="flex flex-col items-center gap-1.5 py-1">
+                                        {/* White backing so the code scans reliably on any theme. */}
+                                        <div className="bg-white p-2 rounded-[var(--ui-radius)]">
+                                            <QRCodeSVG value={remote_url} size={148} level="M" marginSize={0} />
+                                        </div>
+                                        <p className="text-[0.5625rem] opacity-40 leading-tight text-center max-w-[12rem]">
+                                            {t('settings.remote_qr_hint')}
+                                        </p>
+                                    </div>
+                                )}
                                 <div className="space-y-1">
                                     <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('settings.remote_url')}</label>
                                     <div className="bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-xs font-mono text-accent break-all select-all"
@@ -359,9 +382,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                                         let initial = asPath;
                                                         if (!initial) {
                                                             try {
-                                                                const resp = await fetch(`${window.location.origin}/config/temp-dir`);
-                                                                const data = await resp.json();
-                                                                initial = data.temp_dir;
+                                                                const resp = await axios.get(`${API_BASE}/config/temp-dir`);
+                                                                initial = resp.data.temp_dir;
                                                             } catch (e) {
                                                                 console.error("Failed to fetch temp dir", e);
                                                             }

@@ -4,7 +4,8 @@ from backend import state
 import backend.routers.project
 from unittest.mock import MagicMock
 
-client = TestClient(app)
+# Host-only endpoints require a loopback client; mark the test client as local.
+client = TestClient(app, client=("127.0.0.1", 50000))
 
 def test_status():
     state.project = None

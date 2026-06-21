@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
 import type { HarmonyFlag, Chord } from '../store/types';
 import { formatChord, getChordMidiNotes, midiToFreq } from '../store/utils';
 import { Volume2 } from 'lucide-react';
@@ -21,14 +22,22 @@ const ADDITIONS = ['add2', 'add4', 'add9', 'add11', 'add13'];
 
 export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) => {
   const { t } = useTranslation();
-  const { updateHarmonyFlag, removeHarmonyFlag, duration, playTone, stopAllTones, ui_scale } = useStore();
+  const { updateHarmonyFlag, removeHarmonyFlag, duration, playTone, stopAllTones, ui_scale } = useStore(useShallow((s) => ({
+    updateHarmonyFlag: s.updateHarmonyFlag, removeHarmonyFlag: s.removeHarmonyFlag, duration: s.duration,
+    playTone: s.playTone, stopAllTones: s.stopAllTones, ui_scale: s.ui_scale,
+  })));
 
   const [chord, setChord] = useState<Chord>(flag?.c || { r: 'C', ca: '', q: '', ext: '', alt: [], add: [], b: '', ba: '' });
   const [time, setTime] = useState(flag?.t || 0);
   const [chordText, setChordText] = useState(flag ? formatChord(flag.c) : '');
 
+  // Close from an effect rather than during render (the guard normally never
+  // fires; flag can briefly be missing if it's removed while the dialog is open).
+  useEffect(() => {
+    if (!flag) onClose();
+  }, [flag, onClose]);
+
   if (!flag) {
-    onClose();
     return null;
   }
 

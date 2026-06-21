@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore, API_BASE } from '../store/useStore';
+import { useShallow } from 'zustand/react/shallow';
+import { useRafEffect } from '../hooks/useRafEffect';
 import { getChordMidiNotes, midiToFreq, freqToMidi } from '../store/utils';
 import axios from 'axios';
 import { Tooltip } from './Tooltip';
@@ -16,7 +18,11 @@ export const Spectrum: React.FC = () => {
     loaded, position, currentTheme, themes, fft_window, octave_shift, spectrum_keys, ui_scale,
     filter_enabled, filter_low_enabled, filter_high_enabled, filter_low_hz, filter_high_hz, updateFilter,
     playTone: playToneStore, stopAllTones
-  } = useStore();
+  } = useStore(useShallow((s) => ({
+    loaded: s.loaded, position: s.position, currentTheme: s.currentTheme, themes: s.themes, fft_window: s.fft_window, octave_shift: s.octave_shift, spectrum_keys: s.spectrum_keys, ui_scale: s.ui_scale,
+    filter_enabled: s.filter_enabled, filter_low_enabled: s.filter_low_enabled, filter_high_enabled: s.filter_high_enabled, filter_low_hz: s.filter_low_hz, filter_high_hz: s.filter_high_hz, updateFilter: s.updateFilter,
+    playTone: s.playTone, stopAllTones: s.stopAllTones,
+  })));
   const [data, setData] = useState<{ freqs: number[], db: number[] }>({ freqs: [], db: [] });
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [draggingMode, setDraggingMode] = useState<'low' | 'high' | 'tone' | null>(null);
@@ -94,7 +100,7 @@ export const Spectrum: React.FC = () => {
     return activeFlag ? getChordMidiNotes(activeFlag.c) : [];
   }, [position, harmony_flags]);
 
-  useEffect(() => {
+  useRafEffect(() => {
     const canvas = canvasRef.current;
     const theme = themes[currentTheme];
     if (!canvas || !theme?.spectrum || size.width === 0) return;
@@ -187,8 +193,16 @@ export const Spectrum: React.FC = () => {
         ctx.strokeStyle = theme.spectrum;
         ctx.lineWidth = 1;
 
-        const minDb = Math.min(...data.db);
-        const maxDb = Math.max(...data.db);
+        // Single pass instead of Math.min/max(...data.db): spreading a few
+        // thousand samples as call arguments every frame is wasteful and can
+        // overflow the argument limit on large arrays.
+        let minDb = Infinity;
+        let maxDb = -Infinity;
+        for (let i = 0; i < data.db.length; i++) {
+            const v = data.db[i];
+            if (v < minDb) minDb = v;
+            if (v > maxDb) maxDb = v;
+        }
         const spanDb = Math.max(maxDb - minDb, 1e-3);
 
         ctx.beginPath();
@@ -206,6 +220,15 @@ export const Spectrum: React.FC = () => {
 
   const lastToneRef = useRef<number>(0);
   const currentHzRef = useRef<number>(0);
+
+  // Read the current frequency range straight from the store so a drag started
+  // before an octave/key change (or a resize) keeps mapping x→Hz with live
+  // bounds instead of values captured at mousedown.
+  const getLiveRange = useCallback(() => {
+    const s = useStore.getState();
+    const bm = 48 + s.octave_shift * 12;
+    return { low: midiToFreq(bm), high: midiToFreq(bm + s.spectrum_keys) };
+  }, []);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return; // Only handle left-click
@@ -233,8 +256,13 @@ export const Spectrum: React.FC = () => {
     }
 
     const onMouseMove = (moveEvent: MouseEvent) => {
-        const mx = moveEvent.clientX - rect.left;
-        const hz = range.low * Math.pow(2, (mx * spanLog / rect.width));
+        // Recompute against live geometry/range (handles resize and octave/key
+        // changes mid-drag).
+        const liveRect = canvasRef.current?.getBoundingClientRect() ?? rect;
+        const liveRange = getLiveRange();
+        const liveSpan = Math.log2(liveRange.high / liveRange.low);
+        const mx = moveEvent.clientX - liveRect.left;
+        const hz = liveRange.low * Math.pow(2, (mx * liveSpan / liveRect.width));
 
         if (dragging === 'low') {
             updateFilter({ low_hz: hz });
@@ -246,9 +274,11 @@ export const Spectrum: React.FC = () => {
     };
 
     const auditionTone = (clientX: number) => {
-        const x = clientX - rect.left;
-        const spanLog = Math.log2(range.high / range.low);
-        const hz = range.low * Math.pow(2, (x * spanLog / rect.width));
+        const liveRect = canvasRef.current?.getBoundingClientRect() ?? rect;
+        const liveRange = getLiveRange();
+        const spanLog = Math.log2(liveRange.high / liveRange.low);
+        const x = clientX - liveRect.left;
+        const hz = liveRange.low * Math.pow(2, (x * spanLog / liveRect.width));
 
         // Round to nearest MIDI note frequency for cleaner dragging
         const midi = Math.round(freqToMidi(hz));

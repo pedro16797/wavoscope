@@ -3,6 +3,48 @@ import type { Chord } from './types';
 export const midiToFreq = (midi: number) => 440.0 * Math.pow(2, (midi - 69) / 12);
 export const freqToMidi = (freq: number) => 12 * Math.log2(freq / 440) + 69;
 
+// Highest allowed octave shift for a given number of visible piano keys.
+export const maxOctaveShift = (spectrumKeys: number): number => 6 - Math.floor(spectrumKeys / 12);
+
+// Recompute the band-pass cutoffs (Hz) when the visible key count or octave shift
+// changes, keeping each cutoff at the same relative position within the visible range.
+export const recomputeFilterHz = (
+  lowHz: number,
+  highHz: number,
+  oldKeys: number,
+  oldShift: number,
+  newKeys: number,
+  newShift: number,
+): { filter_low_hz: number; filter_high_hz: number } => {
+  const oldBaseMidi = 48 + oldShift * 12;
+  const newBaseMidi = 48 + newShift * 12;
+  const ratioLow = (freqToMidi(lowHz) - oldBaseMidi) / oldKeys;
+  const ratioHigh = (freqToMidi(highHz) - oldBaseMidi) / oldKeys;
+  return {
+    filter_low_hz: midiToFreq(newBaseMidi + ratioLow * newKeys),
+    filter_high_hz: midiToFreq(newBaseMidi + ratioHigh * newKeys),
+  };
+};
+
+interface FilterState {
+  filter_enabled: boolean;
+  filter_low_hz: number;
+  filter_high_hz: number;
+  filter_low_enabled: boolean;
+  filter_high_enabled: boolean;
+  filter_auto_gain: boolean;
+}
+
+// Build the /playback/filter request body from the current store state.
+export const filterPayload = (s: FilterState) => ({
+  enabled: s.filter_enabled,
+  low_hz: s.filter_low_hz,
+  high_hz: s.filter_high_hz,
+  low_enabled: s.filter_low_enabled,
+  high_enabled: s.filter_high_enabled,
+  auto_gain: s.filter_auto_gain,
+});
+
 export const formatChord = (chord: Chord): string => {
   let s = chord.r + chord.ca;
   if (chord.q !== 'M' && chord.q !== '') s += chord.q;
@@ -13,9 +55,10 @@ export const formatChord = (chord: Chord): string => {
   return s;
 };
 
+const ROOT_OFFSETS: Record<string, number> = { 'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11 };
+
 export const getChordMidiNotes = (chord: Chord): number[] => {
-  const rootMap: Record<string, number> = { 'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11 };
-  const root = (rootMap[chord.r] || 0) + (chord.ca === '#' ? 1 : chord.ca === 'b' ? -1 : 0);
+  const root = (ROOT_OFFSETS[chord.r] || 0) + (chord.ca === '#' ? 1 : chord.ca === 'b' ? -1 : 0);
 
   // Base octave logic: Keep roots in G3-F#4 range (55-66)
   let base = 60 + root;
@@ -80,7 +123,7 @@ export const getChordMidiNotes = (chord: Chord): number[] => {
 
   // Bass
   if (chord.b) {
-    const bassRoot = (rootMap[chord.b] || 0) + (chord.ba === '#' ? 1 : chord.ba === 'b' ? -1 : 0);
+    const bassRoot = (ROOT_OFFSETS[chord.b] || 0) + (chord.ba === '#' ? 1 : chord.ba === 'b' ? -1 : 0);
     midiNotes.push(36 + bassRoot); // C2 base for bass
   } else {
     midiNotes.push(36 + root); // Add root as bass by default

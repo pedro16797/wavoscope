@@ -1,10 +1,15 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 from typing import Optional
 import tempfile
 from backend import state
+from backend.deps import require_host, is_local_request
 
 router = APIRouter(prefix="/config", tags=["config"])
+
+# Fields that reveal host filesystem layout / identity; blanked for remote
+# clients so the documented "remote cannot read host files" guarantee holds.
+_HOST_ONLY_CONFIG_FIELDS = ("default_output_folder", "musicxml_author", "autosave_path")
 
 class AppConfig(BaseModel):
     theme: Optional[str] = None
@@ -24,10 +29,10 @@ class AppConfig(BaseModel):
     remote_access: Optional[bool] = None
 
 @router.get("")
-async def get_config():
+async def get_config(request: Request):
     from utils.config import Config
     cfg = Config()
-    return {
+    data = {
         "theme": cfg.get("ui.theme", "dark"),
         "ui_scale": cfg.get("ui.ui_scale", 1.0),
         "click_volume": cfg.get("ui.click_volume", 0.3),
@@ -44,9 +49,13 @@ async def get_config():
         "undo_steps": cfg.get("recovery.undo_steps", 50),
         "remote_access": cfg.get("network.remote_access", False)
     }
+    if not is_local_request(request):
+        for field in _HOST_ONLY_CONFIG_FIELDS:
+            data[field] = ""
+    return data
 
 @router.post("")
-async def update_config(new_cfg: AppConfig):
+async def update_config(new_cfg: AppConfig, _host: None = Depends(require_host)):
     from utils.config import Config
     cfg = Config()
     if new_cfg.theme is not None:
@@ -85,6 +94,12 @@ async def update_config(new_cfg: AppConfig):
         cfg.set("ui.language", new_cfg.language)
     if new_cfg.remote_access is not None:
         cfg.set("network.remote_access", new_cfg.remote_access)
+        # Mint a token the first time remote access is turned on so remote
+        # clients have a secret to present. Existing tokens are kept so already
+        # paired devices keep working.
+        if new_cfg.remote_access and not cfg.get("network.remote_token", ""):
+            import secrets
+            cfg.set("network.remote_token", secrets.token_urlsafe(24))
     return {"status": "ok"}
 
 @router.get("/audio-devices")
@@ -99,18 +114,25 @@ async def get_temp_dir():
 @router.get("/remote-url")
 async def get_remote_url():
     from utils.config import Config
-    ip = Config().get_local_ip()
-    return {"url": f"http://{ip}:{state.port}"}
+    cfg = Config()
+    ip = cfg.get_local_ip()
+    token = cfg.get("network.remote_token", "")
+    url = f"http://{ip}:{state.port}"
+    # Embed the token so the remote device is authorized just by opening the URL;
+    # the frontend extracts it and attaches it to every API/WebSocket call.
+    if token:
+        url += f"/?token={token}"
+    return {"url": url}
 
 @router.get("/bootstrap")
-async def bootstrap():
+async def bootstrap(request: Request):
     from backend import state
     from backend.routers import locales, themes
     from utils.config import Config
     from audio.audio_backend import AudioBackend
     from backend.main import get_status
 
-    cfg = await get_config()
+    cfg = await get_config(request)
     themes_list = await themes.get_themes()
     locales_list = await locales.list_locales()
     devices = AudioBackend.list_devices()

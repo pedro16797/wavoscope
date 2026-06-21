@@ -1,12 +1,16 @@
+# Lower bounds prevent silently resolving to an incompatible (e.g. major)
+# release. See requirements-test.txt for the pinned set CI runs against.
 numpy>=1.24
+scipy>=1.10
 sounddevice>=0.4.6
 soundfile>=0.12
-fastapi
-uvicorn
-websockets
-pywebview
-python-stretch
-tinytag
-jsonpatch
-nodeenv
-pyinstaller
+fastapi>=0.110
+uvicorn>=0.27
+websockets>=12
+pywebview>=4.4
+python-stretch>=0.3
+tinytag>=1.10
+jsonpatch>=1.33
+# Build / packaging tooling (also used by the run scripts' fallbacks).
+nodeenv>=1.8
+pyinstaller>=6.0

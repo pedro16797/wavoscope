@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, List
 from pathlib import Path
 from backend import state
+from backend.deps import require_project
 from utils.logging import logger
 from session.project import Project
 
@@ -12,7 +13,9 @@ class PlaybackControl(BaseModel):
     action: str
     value: Optional[float] = None
 
-def trigger_next_playlist_item():
+def _advance_playlist(direction: int) -> None:
+    """Switch playback to the next (direction >= 0) or previous playlist item,
+    skipping any items whose files are missing."""
     if not state.active_playlist_id or not state.active_item_id:
         return
 
@@ -20,105 +23,83 @@ def trigger_next_playlist_item():
     if not playlist or not playlist.items:
         return
 
-    # Keep track of current loop mode to carry it over
-    old_loop_mode = state.project.loop_mode if state.project else "none"
+    get_item = (state.playlist_manager.get_next_item if direction >= 0
+                else state.playlist_manager.get_prev_item)
 
-    # Try items until one exists or we've tried them all
-    current_item_id = state.active_item_id
-    tried_count = 0
-    while tried_count < len(playlist.items):
-        next_item = state.playlist_manager.get_next_item(state.active_playlist_id, current_item_id)
-        if not next_item:
-            break
+    # Hold the swap lock for the whole advance so it can't interleave with a
+    # route-driven open / next / prev (which would clobber state or close a
+    # just-opened project). Uncontended in the common case, so no added latency.
+    with state.project_lock:
+        # Carry over the current loop mode to the new track.
+        old_loop_mode = state.project.loop_mode if state.project else "none"
+        current_item_id = state.active_item_id
 
-        path = Path(next_item.path)
-        if path.exists():
-            try:
-                if state.project:
-                    state.project.close()
+        for _ in range(len(playlist.items)):
+            item = get_item(state.active_playlist_id, current_item_id)
+            if not item:
+                break
 
-                new_project = Project(path)
-                new_project.open_file(path)
-                state.project = new_project
-                state.active_item_id = next_item.id
+            path = Path(item.path)
+            if path.exists():
+                new_project = None
+                swapped = False
+                try:
+                    new_project = Project(path)
+                    new_project.open_file(path)
 
-                # Re-register callback for the next transition
-                if hasattr(state, 'on_playback_finished'):
-                    state.project.backend.register_callback("finished", state.on_playback_finished)
+                    # Re-register callback for the next transition.
+                    if state.on_playback_finished:
+                        new_project.backend.register_callback("finished", state.on_playback_finished)
 
-                # Carry over the playlist loop mode
-                state.project.set_loop_mode(old_loop_mode)
+                    new_project.set_loop_mode(old_loop_mode)
 
-                state.project.play()
-                return
-            except Exception as e:
-                logger.error(f"Failed to open next playlist item {path}: {e}")
-        else:
-            logger.warning(f"Playlist item {next_item.path} not found, skipping...")
+                    # Atomically swap in the new project and close the previous one.
+                    state.set_project(new_project)
+                    swapped = True
+                    state.active_item_id = item.id
+                    new_project.play()
+                    return
+                except Exception as e:
+                    logger.error(f"Failed to open playlist item {path}: {e}")
+                    # Only close the new project here if we failed before it
+                    # became the active project. After the swap it's owned by
+                    # state and will be closed by the next set_project.
+                    if new_project is not None and not swapped:
+                        new_project.close()
+            else:
+                logger.warning(f"Playlist item {item.path} not found, skipping...")
 
-        current_item_id = next_item.id
-        tried_count += 1
+            current_item_id = item.id
 
-    logger.error("No valid items found in playlist to auto-advance.")
+        logger.error("No valid items found in playlist to advance.")
+
+def trigger_next_playlist_item():
+    _advance_playlist(1)
 
 @router.post("")
-async def control_playback(control: PlaybackControl):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-
-    try:
-        if control.action == "play":
-            state.project.play()
-        elif control.action == "pause":
-            state.project.pause()
-        elif control.action == "stop":
-            state.project.pause()
-            if hasattr(state.project, "_last_play_start"):
-                state.project.seek(state.project._last_play_start)
-            else:
-                state.project.seek(0)
-        elif control.action == "seek":
-            if control.value is not None:
-                state.project.seek(control.value)
-        elif control.action == "next":
-            trigger_next_playlist_item()
-        elif control.action == "prev":
-            if state.active_playlist_id and state.active_item_id:
-                playlist = state.playlist_manager.get_playlist(state.active_playlist_id)
-                if not playlist: return
-
-                old_loop_mode = state.project.loop_mode if state.project else "none"
-                current_item_id = state.active_item_id
-                tried_count = 0
-                while tried_count < len(playlist.items):
-                    prev_item = state.playlist_manager.get_prev_item(state.active_playlist_id, current_item_id)
-                    if not prev_item: break
-
-                    path = Path(prev_item.path)
-                    if path.exists():
-                        if state.project: state.project.close()
-                        new_project = Project(path)
-                        new_project.open_file(path)
-                        state.project = new_project
-                        state.active_item_id = prev_item.id
-
-                        if hasattr(state, 'on_playback_finished'):
-                            state.project.backend.register_callback("finished", state.on_playback_finished)
-                        state.project.set_loop_mode(old_loop_mode)
-                        state.project.play()
-                        break
-                    current_item_id = prev_item.id
-                    tried_count += 1
-        elif control.action == "set_speed":
-            if control.value is not None:
-                state.project.set_speed(control.value)
-        elif control.action == "set_volume":
-            if control.value is not None:
-                state.project.set_volume(control.value)
-        else:
-            raise HTTPException(status_code=400, detail=f"Unknown playback action: {control.action}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Playback control error: {str(e)}")
+async def control_playback(control: PlaybackControl, project: Project = Depends(require_project)):
+    if control.action == "play":
+        project.play()
+    elif control.action == "pause":
+        project.pause()
+    elif control.action == "stop":
+        project.pause()
+        project.seek(0)
+    elif control.action == "seek":
+        if control.value is not None:
+            project.seek(control.value)
+    elif control.action == "next":
+        _advance_playlist(1)
+    elif control.action == "prev":
+        _advance_playlist(-1)
+    elif control.action == "set_speed":
+        if control.value is not None:
+            project.set_speed(control.value)
+    elif control.action == "set_volume":
+        if control.value is not None:
+            project.set_volume(control.value)
+    else:
+        raise HTTPException(status_code=400, detail=f"Unknown playback action: {control.action}")
 
     return {"status": "ok"}
 
@@ -129,33 +110,27 @@ class ToneControl(BaseModel):
     stop_others: bool = False
 
 @router.post("/tone")
-async def play_tone(control: ToneControl):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
+async def play_tone(control: ToneControl, project: Project = Depends(require_project)):
+    synth = project.backend._synth
+    if control.stop_others:
+        synth.stop_all()
 
-    try:
-        synth = state.project.backend._synth
-        if control.stop_others:
-            synth.stop_all()
-
-        if control.action == "start":
-            if control.freqs:
-                for f in control.freqs:
-                    synth.start_tone(f)
-            else:
-                synth.start_tone(control.freq)
-        elif control.action == "stop":
-            if control.freqs:
-                for f in control.freqs:
-                    synth.stop_tone(f)
-            elif control.freq == 0:
-                synth.stop_all()
-            else:
-                synth.stop_tone(control.freq)
+    if control.action == "start":
+        if control.freqs:
+            for f in control.freqs:
+                synth.start_tone(f)
         else:
-            raise HTTPException(status_code=400, detail=f"Unknown tone action: {control.action}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Tone generation error: {str(e)}")
+            synth.start_tone(control.freq)
+    elif control.action == "stop":
+        if control.freqs:
+            for f in control.freqs:
+                synth.stop_tone(f)
+        elif control.freq == 0:
+            synth.stop_all()
+        else:
+            synth.stop_tone(control.freq)
+    else:
+        raise HTTPException(status_code=400, detail=f"Unknown tone action: {control.action}")
 
     return {"status": "ok"}
 
@@ -164,18 +139,11 @@ class MetronomeControl(BaseModel):
     volume: Optional[float] = None
 
 @router.post("/metronome")
-async def control_metronome(control: MetronomeControl):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-
-    try:
-        if control.enabled is not None:
-            state.project.backend.set_metronome_enabled(control.enabled)
-        if control.volume is not None:
-            state.project.backend.set_click_volume(control.volume)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Metronome control error: {str(e)}")
-
+async def control_metronome(control: MetronomeControl, project: Project = Depends(require_project)):
+    if control.enabled is not None:
+        project.backend.set_metronome_enabled(control.enabled)
+    if control.volume is not None:
+        project.backend.set_click_volume(control.volume)
     return {"status": "ok"}
 
 class LoopControl(BaseModel):
@@ -190,32 +158,18 @@ class FilterControl(BaseModel):
     auto_gain: Optional[bool] = None
 
 @router.post("/loop")
-async def control_loop(control: LoopControl):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-
-    try:
-        state.project.set_loop_mode(control.mode)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Loop control error: {str(e)}")
-
-    return {"status": "ok", "loop_mode": state.project.loop_mode}
+async def control_loop(control: LoopControl, project: Project = Depends(require_project)):
+    project.set_loop_mode(control.mode)
+    return {"status": "ok", "loop_mode": project.loop_mode}
 
 @router.post("/filter")
-async def control_filter(control: FilterControl):
-    if not state.project:
-        raise HTTPException(status_code=400, detail="No project loaded")
-
-    try:
-        state.project.backend.set_filter(
-            enabled=control.enabled,
-            low=control.low_hz,
-            high=control.high_hz,
-            low_enabled=control.low_enabled,
-            high_enabled=control.high_enabled,
-            auto_gain=control.auto_gain
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Filter control error: {str(e)}")
-
+async def control_filter(control: FilterControl, project: Project = Depends(require_project)):
+    project.backend.set_filter(
+        enabled=control.enabled,
+        low=control.low_hz,
+        high=control.high_hz,
+        low_enabled=control.low_enabled,
+        high_enabled=control.high_enabled,
+        auto_gain=control.auto_gain
+    )
     return {"status": "ok"}

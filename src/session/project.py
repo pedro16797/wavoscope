@@ -17,6 +17,7 @@ from session.manager import ProjectManager
 from session.flags import FlagManager
 from session.looping import LoopingEngine
 from session.undo import UndoManager
+from session.chord_utils import default_chord
 
 
 class Project:
@@ -33,14 +34,14 @@ class Project:
 
         from utils.config import Config
         cfg = Config()
-        self._undo = UndoManager(self.session_data, max_steps=cfg.get("recovery.undo_steps", 50))
+        # Seed undo with the scrubbed shape that checkpoints push, so the first
+        # patch isn't full of spurious default-field add/removes.
+        self._undo = UndoManager(self._manager._scrub_defaults(self.session_data), max_steps=cfg.get("recovery.undo_steps", 50))
 
         self.backend = AudioBackend()
 
         self.metadata: Dict[str, str] = {"title": "", "artist": "", "album": ""}
 
-        from utils.config import Config
-        cfg = Config()
         device_name = cfg.get("ui.audio_device", "")
         if device_name:
             self.backend.set_device(device_name)
@@ -110,6 +111,16 @@ class Project:
         from session.export import generate_musicxml
         return generate_musicxml(self.session_data, self.audio_path.name, audio_duration=self.duration)
 
+    def snapshot_session_data(self) -> Dict[str, Any]:
+        """Return a deep copy of the session data taken under the project lock.
+
+        Used by the background exporter so a concurrent edit can't mutate the
+        nested flag/lyric lists while they're being iterated.
+        """
+        import copy
+        with self._lock:
+            return copy.deepcopy(self.session_data)
+
     @property
     def _dirty(self): return self._manager._dirty
     @_dirty.setter
@@ -152,7 +163,7 @@ class Project:
     def add_harmony_flag(self, t: float, chord: Dict[str, Any] | None = None) -> int:
         with self._lock:
             if chord is None:
-                chord = {"r": "C", "ca": "", "q": "", "ext": "", "alt": [], "add": [], "b": "", "ba": ""}
+                chord = default_chord()
             idx = self._flags.add_harmony_flag(t, chord)
             if idx != -1:
                 self.mark_dirty()
@@ -175,7 +186,7 @@ class Project:
             lyrics.sort(key=lambda item: item["t"])
             self.session_data["lyrics"] = lyrics
             self.mark_dirty()
-            idx = lyrics.index(new_lyric)
+            idx = next(i for i, x in enumerate(lyrics) if x is new_lyric)
             self.checkpoint(f"Added Lyric #{idx + 1}: {s}")
             return {"idx": idx, "lyric": new_lyric}
 
@@ -198,7 +209,7 @@ class Project:
                 lyrics.sort(key=lambda item: item["t"])
                 self.mark_dirty()
                 self.backend.reset_loop_range()
-                new_idx = lyrics.index(lyric)
+                new_idx = next(i for i, x in enumerate(lyrics) if x is lyric)
                 self.checkpoint(f"Updated Lyric #{new_idx + 1}: {lyric['s']}")
                 return {"idx": new_idx, "lyric": lyric}
             return None
@@ -218,7 +229,7 @@ class Project:
                 lyrics.sort(key=lambda item: item["t"])
                 self.mark_dirty()
                 self.backend.reset_loop_range()
-                new_idx = lyrics.index(lyric)
+                new_idx = next(i for i, x in enumerate(lyrics) if x is lyric)
                 self.checkpoint(f"Moved Lyric #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "lyric": lyric}
             return None
@@ -231,7 +242,7 @@ class Project:
                 flag["t"] = t
                 flags.sort(key=lambda f: f["t"])
                 self.mark_dirty()
-                new_idx = flags.index(flag)
+                new_idx = next(i for i, x in enumerate(flags) if x is flag)
                 self.checkpoint(f"Moved Chord Flag #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "flag": flag}
             return None
@@ -240,10 +251,12 @@ class Project:
         with self._lock:
             flags = self._flags.harmony_flags
             if 0 <= idx < len(flags):
-                flags[idx] = {"t": t, "c": chord}
+                new_flag = {"t": t, "c": chord}
+                flags[idx] = new_flag
                 flags.sort(key=lambda f: f["t"])
                 self.mark_dirty()
-                self.checkpoint(f"Updated Chord Flag #{idx + 1} at {t:.3f}s")
+                new_idx = next(i for i, x in enumerate(flags) if x is new_flag)
+                self.checkpoint(f"Updated Chord Flag #{new_idx + 1} at {t:.3f}s")
 
     def move_flag(self, idx: int, t: float) -> dict | None:
         with self._lock:
@@ -255,7 +268,7 @@ class Project:
                 self._flags._recompute_auto_names()
                 self._clear_backend_cache()
                 self.mark_dirty()
-                new_idx = flags.index(flag)
+                new_idx = next(i for i, x in enumerate(flags) if x is flag)
                 self.checkpoint(f"Moved Rhythm Flag #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "flag": flag}
             return None
@@ -400,6 +413,12 @@ class Project:
         with self._lock:
             if self._undo.can_undo:
                 new_data = self._undo.undo()
+                self._apply_new_data(new_data)
+
+    def redo(self) -> None:
+        with self._lock:
+            if self._undo.can_redo:
+                new_data = self._undo.redo()
                 self._apply_new_data(new_data)
 
     def _apply_new_data(self, new_data: Dict[str, Any]) -> None:

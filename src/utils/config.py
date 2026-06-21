@@ -8,9 +8,12 @@ Config().set("ui.theme", value) -> None
 """
 from __future__ import annotations
 
-import json
+import threading
 from pathlib import Path
 from typing import Any
+
+from utils.logging import logger
+from utils.persistence import write_json_atomic, read_json
 
 _CONFIG_PATH = Path.home() / ".wavoscope_config.json"
 _DEFAULT_FILE: Path = Path(__file__).resolve().parent.parent.parent / "config" / "default.json"
@@ -21,24 +24,29 @@ class Config:
     """Singleton thin wrapper around a JSON config file with fall-back to JSON defaults."""
 
     _instance: Config | None = None
+    _init_lock = threading.Lock()
 
     # ---------- singleton boiler-plate ----------
     def __new__(cls) -> Config:
         if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._defaults = {}
-            if _DEFAULT_FILE.exists():
-                try:
-                    cls._instance._defaults = json.loads(_DEFAULT_FILE.read_text(encoding="utf-8"))
-                except Exception:
-                    pass
+            with cls._init_lock:
+                if cls._instance is None:
+                    inst = super().__new__(cls)
+                    inst._lock = threading.RLock()
+                    inst._defaults = {}
+                    if _DEFAULT_FILE.exists():
+                        try:
+                            inst._defaults = read_json(_DEFAULT_FILE)
+                        except Exception:
+                            pass
 
-            cls._instance._data = {}
-            if _CONFIG_PATH.exists():
-                try:
-                    cls._instance._data = json.loads(_CONFIG_PATH.read_text(encoding="utf-8"))
-                except Exception:
-                    pass
+                    inst._data = {}
+                    if _CONFIG_PATH.exists():
+                        try:
+                            inst._data = read_json(_CONFIG_PATH)
+                        except Exception:
+                            pass
+                    cls._instance = inst
         return cls._instance
 
     # ---------- public ----------
@@ -48,23 +56,23 @@ class Config:
 
         Falls back to default.json, then to `default`.
         """
-        if key in self._data:
-            return self._data[key]
+        with self._lock:
+            if key in self._data:
+                return self._data[key]
 
-        # Walk the JSON tree for defaults
-        node = self._defaults
+        # `_defaults` is built once at init and never mutated, so it needs no lock.
+        node: Any = self._defaults
         for part in key.split("."):
-            if isinstance(node, dict):
-                node = node.get(part, {})
+            if isinstance(node, dict) and part in node:
+                node = node[part]
             else:
-                node = {}
-                break
+                return default
 
-        res = node
-        if isinstance(res, dict) and "default" in res:
-            res = res["default"]
-
-        return default if res == {} else res
+        # A wrapper node carries its value under "default"; a plain dict subtree
+        # (e.g. ui.keybinds) is returned as-is.
+        if isinstance(node, dict):
+            return node["default"] if "default" in node else node
+        return node
 
     def get_local_ip(self) -> str:
         """Return the machine's local IP address."""
@@ -85,9 +93,22 @@ class Config:
         return ip
 
     def set(self, key: str, value: Any) -> None:
-        """Store `value` under `key` and flush to disk."""
-        self._data[key] = value
-        try:
-            _CONFIG_PATH.write_text(json.dumps(self._data, indent=2, ensure_ascii=False), encoding="utf-8")
-        except Exception:
-            pass
+        """Store `value` under `key` and flush to disk atomically."""
+        # Hold the lock across the write so concurrent set() calls can't have
+        # their disk writes reordered (which could persist a stale snapshot).
+        # Config writes are infrequent, so serializing them is fine.
+        with self._lock:
+            # Re-read from disk first and merge, so we don't clobber keys written
+            # by another process (e.g. a separate autosave process) since we last
+            # loaded. Every set() persists, so our own in-memory keys already
+            # match disk — only foreign keys can have diverged.
+            if _CONFIG_PATH.exists():
+                try:
+                    self._data = read_json(_CONFIG_PATH)
+                except Exception:
+                    pass
+            self._data[key] = value
+            try:
+                write_json_atomic(_CONFIG_PATH, dict(self._data))
+            except Exception as e:
+                logger.error(f"Failed to persist config to {_CONFIG_PATH}: {e}")

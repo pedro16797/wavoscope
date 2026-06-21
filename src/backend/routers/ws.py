@@ -1,13 +1,20 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import asyncio
 from backend import state
+from utils.logging import logger
 
 router = APIRouter(tags=["websocket"])
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
+    from backend.deps import is_authorized_request
+
+    # Remote clients must present the token (loopback is always authorized).
+    if not is_authorized_request(websocket):
+        await websocket.close(code=1008)  # policy violation
+        return
+
     await websocket.accept()
-    from utils.logging import logger
 
     # Send initial state
     p = state.project
@@ -48,8 +55,8 @@ async def websocket_endpoint(websocket: WebSocket):
                 metronome_enabled = p.backend._metronome_enabled
                 speed = p.backend._speed
                 volume = p.backend._volume
-                loop_range = state.project.get_loop_range()
-                update_counter = state.project.update_counter
+                loop_range = p.get_loop_range()
+                update_counter = p.update_counter
 
                 # Only send if something meaningful changed
                 if (playing or abs(pos - last_state.get("position", -1.0)) > 1e-4
@@ -95,3 +102,7 @@ async def websocket_endpoint(websocket: WebSocket):
             await asyncio.sleep(0.03) # 30fps update
     except WebSocketDisconnect:
         pass
+    except Exception:
+        # Any other error (e.g. sending on a half-closed socket) shouldn't leave
+        # the task dangling — log it and let the connection close.
+        logger.exception("WebSocket loop terminated unexpectedly")
