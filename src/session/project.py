@@ -111,6 +111,16 @@ class Project:
         from session.export import generate_musicxml
         return generate_musicxml(self.session_data, self.audio_path.name, audio_duration=self.duration)
 
+    def snapshot_session_data(self) -> Dict[str, Any]:
+        """Return a deep copy of the session data taken under the project lock.
+
+        Used by the background exporter so a concurrent edit can't mutate the
+        nested flag/lyric lists while they're being iterated.
+        """
+        import copy
+        with self._lock:
+            return copy.deepcopy(self.session_data)
+
     @property
     def _dirty(self): return self._manager._dirty
     @_dirty.setter

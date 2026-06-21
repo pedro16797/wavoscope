@@ -184,13 +184,15 @@ export const createConfigSlice: StateCreator<AppState, [], [], ConfigSlice> = (s
         const res = await axios.get(`${API_BASE}/config/bootstrap`);
         const { config, themes, locales, audio_devices, status } = res.data;
 
-        // Apply config
+        // Apply config. Pull `theme` out: it maps to currentTheme and has no
+        // slot of its own in the store (spreading it would add a junk key).
+        const { theme, ...configRest } = config;
         set({
-            ...config,
+            ...configRest,
             themes,
             locales,
             audioDevices: audio_devices,
-            currentTheme: config.theme,
+            currentTheme: theme,
         });
 
         // Apply status

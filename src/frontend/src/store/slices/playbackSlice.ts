@@ -6,6 +6,31 @@ import { midiToFreq, maxOctaveShift, recomputeFilterHz, filterPayload } from '..
 
 import type { PlaybackSlice } from '../types';
 
+// Coalesce filter POSTs: while one is in flight, dragging a cutoff handle would
+// otherwise fire one request per mousemove. Mark "pending" instead and send the
+// latest state once the in-flight request returns (~one request per round-trip).
+let _filterInFlight = false;
+let _filterPending = false;
+
+async function _flushFilter(getState: () => AppState): Promise<void> {
+  if (_filterInFlight) {
+    _filterPending = true;
+    return;
+  }
+  _filterInFlight = true;
+  try {
+    await axios.post(`${API_BASE}/playback/filter`, filterPayload(getState()));
+  } catch (e) {
+    console.error("[Store] Failed to update filter:", e);
+  } finally {
+    _filterInFlight = false;
+    if (_filterPending) {
+      _filterPending = false;
+      _flushFilter(getState);
+    }
+  }
+}
+
 export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> = (set, get) => ({
   position: 0,
   duration: 0,
@@ -123,11 +148,9 @@ export const createPlaybackSlice: StateCreator<AppState, [], [], PlaybackSlice> 
         (filter.high_hz !== undefined && oldState.filter_high_enabled);
 
     if (shouldUpdateBackend) {
-        try {
-            await axios.post(`${API_BASE}/playback/filter`, filterPayload(get()));
-        } catch (e) {
-            console.error("[Store] Failed to update filter:", e);
-        }
+        // Coalesced: rapid drag updates collapse to roughly one request per
+        // round-trip, and the final value is always sent.
+        await _flushFilter(get);
     }
   },
 

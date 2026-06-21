@@ -32,12 +32,33 @@ def write_json_atomic(path: Path, data: Any) -> None:
             f.flush()
             os.fsync(f.fileno())
         os.replace(tmp_name, path)
+        _fsync_dir(path.parent)
     except BaseException:
         try:
             os.unlink(tmp_name)
         except OSError:
             pass
         raise
+
+
+def _fsync_dir(directory: Path) -> None:
+    """Fsync a directory so the rename from os.replace is itself durable.
+
+    Without this the file contents are on disk but the directory entry pointing
+    at them may not be, so a power loss right after os.replace could lose the
+    rename. Best-effort: directory fds aren't openable on every platform
+    (notably Windows), so failures are ignored.
+    """
+    try:
+        dir_fd = os.open(str(directory), os.O_RDONLY)
+    except OSError:
+        return
+    try:
+        os.fsync(dir_fd)
+    except OSError:
+        pass
+    finally:
+        os.close(dir_fd)
 
 
 def read_json(path: Path) -> Any:

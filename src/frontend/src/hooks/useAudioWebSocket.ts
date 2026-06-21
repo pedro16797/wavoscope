@@ -22,7 +22,7 @@ export const handleWsMessage = (event: MessageEvent): void => {
   if (data.loaded !== undefined) {
     const wasLoaded = store.loaded;
     const currentFilename = store.filename;
-    const currentCounter = (store as any).update_counter;
+    const currentCounter = store.update_counter;
     if (data.loaded && (!wasLoaded
         || (data.filename && data.filename !== currentFilename)
         || (data.update_counter !== undefined && data.update_counter !== currentCounter))) {

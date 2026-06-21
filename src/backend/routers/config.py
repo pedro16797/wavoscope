@@ -94,6 +94,12 @@ async def update_config(new_cfg: AppConfig, _host: None = Depends(require_host))
         cfg.set("ui.language", new_cfg.language)
     if new_cfg.remote_access is not None:
         cfg.set("network.remote_access", new_cfg.remote_access)
+        # Mint a token the first time remote access is turned on so remote
+        # clients have a secret to present. Existing tokens are kept so already
+        # paired devices keep working.
+        if new_cfg.remote_access and not cfg.get("network.remote_token", ""):
+            import secrets
+            cfg.set("network.remote_token", secrets.token_urlsafe(24))
     return {"status": "ok"}
 
 @router.get("/audio-devices")
@@ -108,8 +114,15 @@ async def get_temp_dir():
 @router.get("/remote-url")
 async def get_remote_url():
     from utils.config import Config
-    ip = Config().get_local_ip()
-    return {"url": f"http://{ip}:{state.port}"}
+    cfg = Config()
+    ip = cfg.get_local_ip()
+    token = cfg.get("network.remote_token", "")
+    url = f"http://{ip}:{state.port}"
+    # Embed the token so the remote device is authorized just by opening the URL;
+    # the frontend extracts it and attaches it to every API/WebSocket call.
+    if token:
+        url += f"/?token={token}"
+    return {"url": url}
 
 @router.get("/bootstrap")
 async def bootstrap(request: Request):

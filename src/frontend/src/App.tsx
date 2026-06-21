@@ -38,9 +38,9 @@ const App: React.FC = () => {
   useTheme();
 
   useEffect(() => {
-    // Expose setShowSettings to native menu
+    // Expose setShowSettings to native menu. (window.useStore is set once in
+    // main.tsx for screenshot automation; no need to assign it again here.)
     (window as Window & { setShowSettings?: (show: boolean) => void }).setShowSettings = setShowSettings;
-    (window as any).useStore = useStore;
 
     const handleBlur = () => {
         stopAllTones();

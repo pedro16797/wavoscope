@@ -141,6 +141,9 @@ async def update_lyric(idx: int, lyric: LyricUpdate, project: Project = Depends(
 
 @router.post("/lyrics/select")
 async def select_lyric(select: LyricSelect, project: Project = Depends(require_project)):
+    # Intentionally not host-only: selecting a lyric only changes which lyric is
+    # the loop target (playback control, which remote clients are allowed) and
+    # touches no filesystem. The frontend lets remote clients drive this.
     project.set_selected_lyric(select.idx)
     return {"status": "ok"}
 
@@ -196,9 +199,8 @@ class ExportStartData(BaseModel):
     path: str
 
 def bg_export(path: str, session_data: dict, audio_name: str, audio_duration: float):
-    state.export_active = True
-    state.export_progress = 0.0
-    state.export_message = "Starting export..."
+    # state.export_active was set True synchronously in start_export so a second
+    # rapid start is rejected before this background task even runs.
     try:
         from session.export import generate_musicxml
         def progress_cb(ratio, msg):
@@ -215,15 +217,23 @@ def bg_export(path: str, session_data: dict, audio_name: str, audio_duration: fl
         logger.exception("bg_export error")
         state.export_message = f"Error: {str(e)}"
     finally:
-        import time
-        time.sleep(2) # Keep the message for a moment
         state.export_active = False
 
 @router.post("/export/musicxml/start")
 async def start_export(data: ExportStartData, background_tasks: BackgroundTasks, project: Project = Depends(require_host_project)):
     """Starts a background task to export the project to MusicXML."""
-    # We copy the data to avoid thread issues if project changes
-    session_data = project.session_data.copy()
+    # Reject overlapping exports: they'd clobber the shared progress state and
+    # race each other's "active" flag. The check-and-set is synchronous (no
+    # await between), so two near-simultaneous starts can't both pass.
+    if state.export_active:
+        raise HTTPException(status_code=409, detail="An export is already in progress")
+    state.export_active = True
+    state.export_progress = 0.0
+    state.export_message = "Starting export..."
+
+    # Deep-copy under the project lock so a concurrent edit can't mutate the
+    # nested flag/lyric lists while the exporter iterates them.
+    session_data = project.snapshot_session_data()
     audio_name = project.audio_path.name
     audio_duration = project.duration
 
@@ -263,38 +273,31 @@ async def get_undo_steps():
 class UndoRestore(BaseModel):
     index: int
 
-@router.post("/undo/restore")
-async def restore_undo(data: UndoRestore, project: Project = Depends(require_host_project)):
-    project.restore_checkpoint(data.index)
+def _undo_state_response(project: Project) -> dict:
     return {
         "status": "ok",
         "flags": project.flags,
         "harmony_flags": project.harmony_flags,
         "lyrics": project.lyrics,
-        "time_signature": project.time_signature
+        "time_signature": project.time_signature,
+        "can_undo": project._undo.can_undo,
+        "can_redo": project._undo.can_redo,
     }
+
+@router.post("/undo/restore")
+async def restore_undo(data: UndoRestore, project: Project = Depends(require_host_project)):
+    project.restore_checkpoint(data.index)
+    return _undo_state_response(project)
 
 @router.post("/undo")
 async def undo_project(project: Project = Depends(require_host_project)):
     project.undo()
-    return {
-        "status": "ok",
-        "flags": project.flags,
-        "harmony_flags": project.harmony_flags,
-        "lyrics": project.lyrics,
-        "time_signature": project.time_signature
-    }
+    return _undo_state_response(project)
 
 @router.post("/redo")
 async def redo_project(project: Project = Depends(require_host_project)):
     project.redo()
-    return {
-        "status": "ok",
-        "flags": project.flags,
-        "harmony_flags": project.harmony_flags,
-        "lyrics": project.lyrics,
-        "time_signature": project.time_signature
-    }
+    return _undo_state_response(project)
 
 @router.post("/open")
 async def open_project(data: OpenProject, _host: None = Depends(require_host)):

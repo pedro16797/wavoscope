@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStore } from '../store/useStore';
+import axios from 'axios';
+import { useStore, API_BASE } from '../store/useStore';
 import { useShallow } from 'zustand/react/shallow';
 import { ChevronDown, FolderOpen } from 'lucide-react';
 import { Tooltip } from './Tooltip';
@@ -369,9 +370,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                                                         let initial = asPath;
                                                         if (!initial) {
                                                             try {
-                                                                const resp = await fetch(`${window.location.origin}/config/temp-dir`);
-                                                                const data = await resp.json();
-                                                                initial = data.temp_dir;
+                                                                const resp = await axios.get(`${API_BASE}/config/temp-dir`);
+                                                                initial = resp.data.temp_dir;
                                                             } catch (e) {
                                                                 console.error("Failed to fetch temp dir", e);
                                                             }

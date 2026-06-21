@@ -80,6 +80,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Content / control / settings endpoints. Static frontend assets, the index,
+# and non-sensitive UI resources (/themes, /locales) stay public so a remote
+# browser can load the app shell; the app then attaches the remote token to
+# these API calls. Loopback is always authorized, so this only affects the
+# remote-access-enabled deployment (which was previously fully open).
+_GATED_PREFIXES = ("/status", "/playback", "/audio", "/project", "/config", "/playlists")
+
+
+@app.middleware("http")
+async def remote_authorization(request: Request, call_next):
+    from backend.deps import is_authorized_request
+
+    # Let CORS preflight through (it carries no token by design).
+    if request.method != "OPTIONS":
+        path = request.url.path
+        if any(path == p or path.startswith(p + "/") for p in _GATED_PREFIXES):
+            if not is_authorized_request(request):
+                headers = {}
+                origin = request.headers.get("origin")
+                if origin in _DEV_ORIGINS:
+                    headers["Access-Control-Allow-Origin"] = origin
+                return JSONResponse(
+                    status_code=403,
+                    content={"detail": "Remote access requires a valid token"},
+                    headers=headers,
+                )
+    return await call_next(request)
+
 # Include modular routers
 app.include_router(playback.router)
 app.include_router(audio.router)
@@ -97,34 +125,38 @@ if locales_path.exists():
 
 @app.get("/status")
 async def get_status():
-    if not state.project:
+    # Snapshot the active project once: a concurrent playlist auto-advance or
+    # /project/open can swap state.project out from under us mid-build, which
+    # would otherwise NPE partway through this dict.
+    p = state.project
+    if p is None:
         return {"loaded": False}
     return {
         "loaded": True,
-        "position": state.project.position,
-        "duration": state.project.duration,
-        "playing": state.project.backend._playing,
-        "speed": state.project.backend._speed,
-        "volume": state.project.backend._volume,
-        "filename": state.project.audio_path.name,
-        "metadata": state.project.metadata,
-        "flags": state.project.flags,
-        "harmony_flags": state.project.harmony_flags,
-        "lyrics": state.project.lyrics,
-        "time_signature": state.project.time_signature,
-        "dirty": state.project._dirty,
-        "metronome_enabled": state.project.backend._metronome_enabled,
-        "click_volume": state.project.backend._click_volume,
-        "loop_mode": state.project.loop_mode,
-        "loop_range": state.project.get_loop_range(),
-        "update_counter": state.project.update_counter,
-        "filter_enabled": state.project.backend._filter_enabled,
-        "filter_low_enabled": state.project.backend._filter_low_enabled,
-        "filter_high_enabled": state.project.backend._filter_high_enabled,
-        "filter_low_hz": state.project.backend._filter_low_hz,
-        "filter_high_hz": state.project.backend._filter_high_hz,
-        "can_undo": state.project._undo.can_undo,
-        "can_redo": state.project._undo.can_redo,
+        "position": p.position,
+        "duration": p.duration,
+        "playing": p.backend._playing,
+        "speed": p.backend._speed,
+        "volume": p.backend._volume,
+        "filename": p.audio_path.name,
+        "metadata": p.metadata,
+        "flags": p.flags,
+        "harmony_flags": p.harmony_flags,
+        "lyrics": p.lyrics,
+        "time_signature": p.time_signature,
+        "dirty": p._dirty,
+        "metronome_enabled": p.backend._metronome_enabled,
+        "click_volume": p.backend._click_volume,
+        "loop_mode": p.loop_mode,
+        "loop_range": p.get_loop_range(),
+        "update_counter": p.update_counter,
+        "filter_enabled": p.backend._filter_enabled,
+        "filter_low_enabled": p.backend._filter_low_enabled,
+        "filter_high_enabled": p.backend._filter_high_enabled,
+        "filter_low_hz": p.backend._filter_low_hz,
+        "filter_high_hz": p.backend._filter_high_hz,
+        "can_undo": p._undo.can_undo,
+        "can_redo": p._undo.can_redo,
     }
 
 # Serve frontend if it exists

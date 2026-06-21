@@ -193,8 +193,16 @@ export const Spectrum: React.FC = () => {
         ctx.strokeStyle = theme.spectrum;
         ctx.lineWidth = 1;
 
-        const minDb = Math.min(...data.db);
-        const maxDb = Math.max(...data.db);
+        // Single pass instead of Math.min/max(...data.db): spreading a few
+        // thousand samples as call arguments every frame is wasteful and can
+        // overflow the argument limit on large arrays.
+        let minDb = Infinity;
+        let maxDb = -Infinity;
+        for (let i = 0; i < data.db.length; i++) {
+            const v = data.db[i];
+            if (v < minDb) minDb = v;
+            if (v > maxDb) maxDb = v;
+        }
         const spanDb = Math.max(maxDb - minDb, 1e-3);
 
         ctx.beginPath();
@@ -212,6 +220,15 @@ export const Spectrum: React.FC = () => {
 
   const lastToneRef = useRef<number>(0);
   const currentHzRef = useRef<number>(0);
+
+  // Read the current frequency range straight from the store so a drag started
+  // before an octave/key change (or a resize) keeps mapping x→Hz with live
+  // bounds instead of values captured at mousedown.
+  const getLiveRange = useCallback(() => {
+    const s = useStore.getState();
+    const bm = 48 + s.octave_shift * 12;
+    return { low: midiToFreq(bm), high: midiToFreq(bm + s.spectrum_keys) };
+  }, []);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return; // Only handle left-click
@@ -239,8 +256,13 @@ export const Spectrum: React.FC = () => {
     }
 
     const onMouseMove = (moveEvent: MouseEvent) => {
-        const mx = moveEvent.clientX - rect.left;
-        const hz = range.low * Math.pow(2, (mx * spanLog / rect.width));
+        // Recompute against live geometry/range (handles resize and octave/key
+        // changes mid-drag).
+        const liveRect = canvasRef.current?.getBoundingClientRect() ?? rect;
+        const liveRange = getLiveRange();
+        const liveSpan = Math.log2(liveRange.high / liveRange.low);
+        const mx = moveEvent.clientX - liveRect.left;
+        const hz = liveRange.low * Math.pow(2, (mx * liveSpan / liveRect.width));
 
         if (dragging === 'low') {
             updateFilter({ low_hz: hz });
@@ -252,9 +274,11 @@ export const Spectrum: React.FC = () => {
     };
 
     const auditionTone = (clientX: number) => {
-        const x = clientX - rect.left;
-        const spanLog = Math.log2(range.high / range.low);
-        const hz = range.low * Math.pow(2, (x * spanLog / rect.width));
+        const liveRect = canvasRef.current?.getBoundingClientRect() ?? rect;
+        const liveRange = getLiveRange();
+        const spanLog = Math.log2(liveRange.high / liveRange.low);
+        const x = clientX - liveRect.left;
+        const hz = liveRange.low * Math.pow(2, (x * spanLog / liveRect.width));
 
         // Round to nearest MIDI note frequency for cleaner dragging
         const midi = Math.round(freqToMidi(hz));

@@ -98,6 +98,15 @@ class Config:
         # their disk writes reordered (which could persist a stale snapshot).
         # Config writes are infrequent, so serializing them is fine.
         with self._lock:
+            # Re-read from disk first and merge, so we don't clobber keys written
+            # by another process (e.g. a separate autosave process) since we last
+            # loaded. Every set() persists, so our own in-memory keys already
+            # match disk — only foreign keys can have diverged.
+            if _CONFIG_PATH.exists():
+                try:
+                    self._data = read_json(_CONFIG_PATH)
+                except Exception:
+                    pass
             self._data[key] = value
             try:
                 write_json_atomic(_CONFIG_PATH, dict(self._data))

@@ -42,6 +42,7 @@ def _advance_playlist(direction: int) -> None:
             path = Path(item.path)
             if path.exists():
                 new_project = None
+                swapped = False
                 try:
                     new_project = Project(path)
                     new_project.open_file(path)
@@ -54,13 +55,16 @@ def _advance_playlist(direction: int) -> None:
 
                     # Atomically swap in the new project and close the previous one.
                     state.set_project(new_project)
+                    swapped = True
                     state.active_item_id = item.id
                     new_project.play()
                     return
                 except Exception as e:
                     logger.error(f"Failed to open playlist item {path}: {e}")
-                    # Don't leak a half-opened project's backend/threads.
-                    if new_project is not None and new_project is not state.project:
+                    # Only close the new project here if we failed before it
+                    # became the active project. After the swap it's owned by
+                    # state and will be closed by the next set_project.
+                    if new_project is not None and not swapped:
                         new_project.close()
             else:
                 logger.warning(f"Playlist item {item.path} not found, skipping...")
@@ -80,10 +84,7 @@ async def control_playback(control: PlaybackControl, project: Project = Depends(
         project.pause()
     elif control.action == "stop":
         project.pause()
-        if hasattr(project, "_last_play_start"):
-            project.seek(project._last_play_start)
-        else:
-            project.seek(0)
+        project.seek(0)
     elif control.action == "seek":
         if control.value is not None:
             project.seek(control.value)

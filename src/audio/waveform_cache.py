@@ -47,11 +47,13 @@ class WaveformCache:
         if len(slice_y) == 0:
             return []
 
-        # Vectorized bucket calculation
-        step = max(1, len(slice_y) // n_bars)
-        indices = np.arange(0, len(slice_y), step, dtype=np.int64)
-        if len(indices) > n_bars:
-            indices = indices[:n_bars]
+        # Vectorized bucket calculation. Use evenly-spaced boundaries so every
+        # bucket covers a near-equal span; a plain arange(step) leaves the final
+        # bucket oversized whenever the length isn't a multiple of the step.
+        # Clamp to the slice length so the indices stay strictly increasing
+        # (a requirement of reduceat).
+        n_bars = min(n_bars, len(slice_y))
+        indices = np.linspace(0, len(slice_y), n_bars + 1, dtype=np.int64)[:-1]
 
         # Use reduceat for fast min/max/mean on the slice
         mins = np.minimum.reduceat(slice_y, indices)

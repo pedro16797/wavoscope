@@ -33,7 +33,11 @@ def get_active_playlist_info():
     }
 
 @router.post("/select")
-async def select_playlist_item(playlist_id: Optional[str] = None, item_id: Optional[str] = None):
+async def select_playlist_item(playlist_id: Optional[str] = None, item_id: Optional[str] = None,
+                              _host: None = Depends(require_host)):
+    # Host-only: selecting an item feeds _advance_playlist, which opens that
+    # file on the host. A remote client must not be able to redirect host
+    # playback to arbitrary already-listed files.
     state.active_playlist_id = playlist_id
     state.active_item_id = item_id
     return {"status": "ok"}

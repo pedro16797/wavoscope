@@ -1,14 +1,17 @@
 """Shared FastAPI dependencies."""
 from __future__ import annotations
 
+import ipaddress
+import secrets
+
 from fastapi import HTTPException, Request
 
 from backend import state
 from session.project import Project
 
-# Loopback addresses identify the host machine. Anything else is a remote
-# (LAN) client when remote access is enabled and the server binds 0.0.0.0.
-_LOOPBACK_HOSTS = {"127.0.0.1", "::1", "localhost"}
+# Non-IP hostnames that still identify the host machine. Numeric loopback
+# addresses (the whole 127.0.0.0/8 range and ::1) are matched via ipaddress.
+_LOOPBACK_HOSTNAMES = {"localhost"}
 
 
 def require_project() -> Project:
@@ -31,10 +34,43 @@ def is_local_request(request: Request) -> bool:
     if client is None:
         return False
     host = client.host
-    # Normalize IPv4-mapped IPv6 addresses (e.g. ::ffff:127.0.0.1).
-    if host.startswith("::ffff:"):
-        host = host[7:]
-    return host in _LOOPBACK_HOSTS
+    if host in _LOOPBACK_HOSTNAMES:
+        return True
+    try:
+        addr = ipaddress.ip_address(host)
+    except ValueError:
+        return False
+    # Covers the full 127.0.0.0/8 range, ::1, and IPv4-mapped loopback
+    # (e.g. ::ffff:127.0.0.1) via the mapped address's own is_loopback.
+    if addr.is_loopback:
+        return True
+    mapped = getattr(addr, "ipv4_mapped", None)
+    return mapped is not None and mapped.is_loopback
+
+
+def get_remote_token() -> str:
+    """The shared secret remote clients must present. Empty string = unset."""
+    from utils.config import Config
+    return Config().get("network.remote_token", "") or ""
+
+
+def is_authorized_request(request) -> bool:
+    """True if the caller may access content/control endpoints.
+
+    Loopback (the host machine, and the dev server which runs on the same box)
+    is always authorized. A remote client is authorized only when it presents
+    the configured remote token — either as the ``X-Wavoscope-Token`` header or
+    a ``token`` query parameter. Works for both HTTP requests and WebSockets
+    (both expose ``client``, ``headers`` and ``query_params``).
+    """
+    if is_local_request(request):
+        return True
+    expected = get_remote_token()
+    if not expected:
+        # No token configured: remote access is effectively closed.
+        return False
+    provided = request.headers.get("x-wavoscope-token") or request.query_params.get("token") or ""
+    return secrets.compare_digest(provided, expected)
 
 
 def require_host(request: Request) -> None:

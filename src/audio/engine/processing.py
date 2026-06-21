@@ -13,16 +13,33 @@ class AudioProcessor:
         self._tsm_buffer = RingBuffer(sr * 10)
         self._last_tsm_overlap: np.ndarray | None = None
 
-    def reset(self, sr: int | None = None, speed: float = 1.0):
-        if sr is not None:
+    def reset(self, sr: int | None = None, speed: float | None = None):
+        """Reset processing state.
+
+        ``speed`` is applied to the stretcher only when given; callers that just
+        want to flush buffers (seek, loop wrap) pass nothing so the current time
+        factor is preserved.
+        """
+        if sr is not None and sr != self._sr:
+            # Sample rate actually changed: rebuild the stretcher and buffer.
+            # Drop the old stretcher reference first so nanobind can free it
+            # instead of accumulating native instances across file opens.
             self._sr = sr
+            self._stretcher = None
             self._stretcher = ps.Stretch()
             self._stretcher.preset(1, float(self._sr))
-            self._stretcher.setTimeFactor(speed)
+            self._stretcher.setTimeFactor(speed if speed is not None else 1.0)
             self._tsm_buffer = RingBuffer(int(self._sr * 10))
         else:
             self._stretcher.reset()
+            if speed is not None:
+                self._stretcher.setTimeFactor(speed)
             self._tsm_buffer.clear()
+        self._last_tsm_overlap = None
+
+    def close(self) -> None:
+        """Release the native stretcher so its memory can be reclaimed."""
+        self._stretcher = None
         self._last_tsm_overlap = None
 
     def set_speed(self, speed: float):
