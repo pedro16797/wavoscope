@@ -9,7 +9,9 @@ class LoopingEngine:
     def set_loop_mode(self, mode: str):
         self.loop_mode = mode
 
-    def get_loop_range(self, pos: float, duration: float, flags: List[Dict[str, Any]], lyrics: List[Dict[str, Any]] = [], selected_lyric_idx: int | None = None) -> Tuple[float, float]:
+    def get_loop_range(self, pos: float, duration: float, flags: List[Dict[str, Any]], lyrics: List[Dict[str, Any]] | None = None, selected_lyric_idx: int | None = None) -> Tuple[float, float]:
+        if lyrics is None:
+            lyrics = []
         if self.loop_mode in ["none", "whole", "playlist"]:
             return (0.0, duration)
 

@@ -1,17 +1,18 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.concurrency import run_in_threadpool
+from typing import Optional
 from backend.deps import require_project
 from session.project import Project
 
 router = APIRouter(prefix="/audio", tags=["audio"])
 
 @router.get("/waveform")
-async def get_waveform(start: float = 0, end: float = 0, n_bars: int = 1000,
+async def get_waveform(start: float = 0, end: Optional[float] = None, n_bars: int = 1000,
                        project: Project = Depends(require_project)):
     if not project.wave_cache:
         raise HTTPException(status_code=400, detail="No audio loaded")
 
-    if end == 0:
+    if end is None:
         end = project.duration
 
     # Bucketing scans the whole slice; keep it off the event loop.

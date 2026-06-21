@@ -6,6 +6,8 @@ src_path = Path(__file__).resolve().parent.parent
 sys.path.append(str(src_path))
 root_path = src_path.parent
 
+from contextlib import asynccontextmanager  # noqa: E402
+
 from fastapi import FastAPI, Request  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
@@ -25,7 +27,25 @@ from backend.routers import (  # noqa: E402
 from backend import autosave  # noqa: E402
 from utils.logging import logger # noqa: E402
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    autosave.start()
+
+    def on_playback_finished():
+        if state.project and state.project.loop_mode == "playlist":
+            from backend.routers.playback import trigger_next_playlist_item
+            trigger_next_playlist_item()
+
+    # Registered per-project on load (the active project can change over time).
+    state.on_playback_finished = on_playback_finished
+
+    yield
+
+    autosave.stop()
+
+
+app = FastAPI(lifespan=lifespan)
 
 # The packaged app and remote devices load the UI from the backend itself
 # (same-origin, not subject to CORS), so the only legitimate cross-origin caller
@@ -37,22 +57,6 @@ _DEV_ORIGINS = [
     "http://localhost:5174",
     "http://127.0.0.1:5174",
 ]
-
-@app.on_event("startup")
-async def startup_event():
-    autosave.start()
-
-    def on_playback_finished():
-        if state.project and state.project.loop_mode == "playlist":
-            from backend.routers.playback import trigger_next_playlist_item
-            trigger_next_playlist_item()
-
-    # Registered per-project on load (the active project can change over time).
-    state.on_playback_finished = on_playback_finished
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    autosave.stop()
 
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request: Request, exc: Exception):

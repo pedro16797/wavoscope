@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -17,9 +17,14 @@ export const FlagDialog: React.FC<{ idx: number; flag: Flag; onClose: () => void
   const [sectionStart, setSectionStart] = useState(flag?.s || false);
   const [shaded, setShaded] = useState(flag?.divshade || false);
 
+  useEffect(() => {
+    if (!flag) {
+      console.error("FlagDialog opened but flag is missing at index", idx);
+      onClose();
+    }
+  }, [flag, idx, onClose]);
+
   if (!flag) {
-    console.error("FlagDialog opened but flag is missing at index", idx);
-    onClose();
     return null;
   }
 

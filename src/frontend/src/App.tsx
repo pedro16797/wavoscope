@@ -78,6 +78,7 @@ const App: React.FC = () => {
       {showPlaylistDialog && <PlaylistDialog onClose={() => setShowPlaylistDialog(false)} />}
       {editingFlagIdx !== null && (
         <FlagDialog
+          key={editingFlagIdx}
           idx={editingFlagIdx}
           flag={flags[editingFlagIdx]}
           onClose={() => setEditingFlagIdx(null)}
@@ -85,6 +86,7 @@ const App: React.FC = () => {
       )}
       {editingHarmonyFlagIdx !== null && (
         <ChordDialog
+          key={editingHarmonyFlagIdx}
           idx={editingHarmonyFlagIdx}
           flag={harmony_flags[editingHarmonyFlagIdx]}
           onClose={() => setEditingHarmonyFlagIdx(null)}

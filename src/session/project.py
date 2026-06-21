@@ -174,7 +174,7 @@ class Project:
             lyrics.sort(key=lambda item: item["t"])
             self.session_data["lyrics"] = lyrics
             self.mark_dirty()
-            idx = lyrics.index(new_lyric)
+            idx = next(i for i, x in enumerate(lyrics) if x is new_lyric)
             self.checkpoint(f"Added Lyric #{idx + 1}: {s}")
             return {"idx": idx, "lyric": new_lyric}
 
@@ -197,7 +197,7 @@ class Project:
                 lyrics.sort(key=lambda item: item["t"])
                 self.mark_dirty()
                 self.backend.reset_loop_range()
-                new_idx = lyrics.index(lyric)
+                new_idx = next(i for i, x in enumerate(lyrics) if x is lyric)
                 self.checkpoint(f"Updated Lyric #{new_idx + 1}: {lyric['s']}")
                 return {"idx": new_idx, "lyric": lyric}
             return None
@@ -217,7 +217,7 @@ class Project:
                 lyrics.sort(key=lambda item: item["t"])
                 self.mark_dirty()
                 self.backend.reset_loop_range()
-                new_idx = lyrics.index(lyric)
+                new_idx = next(i for i, x in enumerate(lyrics) if x is lyric)
                 self.checkpoint(f"Moved Lyric #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "lyric": lyric}
             return None
@@ -230,7 +230,7 @@ class Project:
                 flag["t"] = t
                 flags.sort(key=lambda f: f["t"])
                 self.mark_dirty()
-                new_idx = flags.index(flag)
+                new_idx = next(i for i, x in enumerate(flags) if x is flag)
                 self.checkpoint(f"Moved Chord Flag #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "flag": flag}
             return None
@@ -239,10 +239,12 @@ class Project:
         with self._lock:
             flags = self._flags.harmony_flags
             if 0 <= idx < len(flags):
-                flags[idx] = {"t": t, "c": chord}
+                new_flag = {"t": t, "c": chord}
+                flags[idx] = new_flag
                 flags.sort(key=lambda f: f["t"])
                 self.mark_dirty()
-                self.checkpoint(f"Updated Chord Flag #{idx + 1} at {t:.3f}s")
+                new_idx = next(i for i, x in enumerate(flags) if x is new_flag)
+                self.checkpoint(f"Updated Chord Flag #{new_idx + 1} at {t:.3f}s")
 
     def move_flag(self, idx: int, t: float) -> dict | None:
         with self._lock:
@@ -254,7 +256,7 @@ class Project:
                 self._flags._recompute_auto_names()
                 self._clear_backend_cache()
                 self.mark_dirty()
-                new_idx = flags.index(flag)
+                new_idx = next(i for i, x in enumerate(flags) if x is flag)
                 self.checkpoint(f"Moved Rhythm Flag #{new_idx + 1} to {t:.3f}s")
                 return {"idx": new_idx, "flag": flag}
             return None

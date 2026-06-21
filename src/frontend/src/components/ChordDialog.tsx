@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../store/useStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -31,8 +31,13 @@ export const ChordDialog: React.FC<ChordDialogProps> = ({ idx, flag, onClose }) 
   const [time, setTime] = useState(flag?.t || 0);
   const [chordText, setChordText] = useState(flag ? formatChord(flag.c) : '');
 
+  // Close from an effect rather than during render (the guard normally never
+  // fires; flag can briefly be missing if it's removed while the dialog is open).
+  useEffect(() => {
+    if (!flag) onClose();
+  }, [flag, onClose]);
+
   if (!flag) {
-    onClose();
     return null;
   }
 

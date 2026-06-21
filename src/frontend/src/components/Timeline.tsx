@@ -182,7 +182,7 @@ export const Timeline: React.FC = () => {
                 for (let k = 1; k < subdiv; k++) {
                     const t = f.t + k * step;
                     const sx = (t - offset) * zoom;
-                    if (sx >= 0 && sx <= canvas.width) {
+                    if (sx >= 0 && sx <= size.width) {
                         const baseColor = theme.flagRhythm || '#ff4757';
                         let opacity = "44"; // dimmed
                         if (f.divshade && k % 2 === 1) {
@@ -191,8 +191,8 @@ export const Timeline: React.FC = () => {
                         ctx.strokeStyle = baseColor + opacity;
                         ctx.lineWidth = 1;
                         ctx.beginPath();
-                        ctx.moveTo(sx, canvas.height / 2);
-                        ctx.lineTo(sx, canvas.height);
+                        ctx.moveTo(sx, size.height / 2);
+                        ctx.lineTo(sx, size.height);
                         ctx.stroke();
                     }
                 }

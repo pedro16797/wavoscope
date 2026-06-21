@@ -55,9 +55,10 @@ export const formatChord = (chord: Chord): string => {
   return s;
 };
 
+const ROOT_OFFSETS: Record<string, number> = { 'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11 };
+
 export const getChordMidiNotes = (chord: Chord): number[] => {
-  const rootMap: Record<string, number> = { 'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11 };
-  const root = (rootMap[chord.r] || 0) + (chord.ca === '#' ? 1 : chord.ca === 'b' ? -1 : 0);
+  const root = (ROOT_OFFSETS[chord.r] || 0) + (chord.ca === '#' ? 1 : chord.ca === 'b' ? -1 : 0);
 
   // Base octave logic: Keep roots in G3-F#4 range (55-66)
   let base = 60 + root;
@@ -122,7 +123,7 @@ export const getChordMidiNotes = (chord: Chord): number[] => {
 
   // Bass
   if (chord.b) {
-    const bassRoot = (rootMap[chord.b] || 0) + (chord.ba === '#' ? 1 : chord.ba === 'b' ? -1 : 0);
+    const bassRoot = (ROOT_OFFSETS[chord.b] || 0) + (chord.ba === '#' ? 1 : chord.ba === 'b' ? -1 : 0);
     midiNotes.push(36 + bassRoot); // C2 base for bass
   } else {
     midiNotes.push(36 + root); // Add root as bass by default

@@ -64,7 +64,7 @@ def main():
 
             subprocess.call([str(script)], **kwargs)
         else:
-            show_error(f"[ERROR] {script_name} not found in {base_dir} or {parent_dir}.")
+            show_error(f"[ERROR] {script_name} not found at {script}.")
             sys.exit(1)
     else:
         script_name = "run.sh"
@@ -82,7 +82,7 @@ def main():
 
             subprocess.call(["/bin/bash", str(script)], env=env)
         else:
-            show_error(f"[ERROR] {script_name} not found in {base_dir} or {parent_dir}.")
+            show_error(f"[ERROR] {script_name} not found at {script}.")
             sys.exit(1)
 
 if __name__ == "__main__":
