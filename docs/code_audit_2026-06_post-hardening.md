@@ -14,6 +14,32 @@ below are consolidated and de-duplicated, ranked by real-world impact.
 
 ---
 
+## Resolution status (addressed on this branch)
+
+All findings below were worked through. Post-fix baseline: backend **96 passed**,
+frontend build + 16 vitest + lint (0 errors) green.
+
+- **Fixed:** C1, H1, H2, H3, H4, H5, H6, M1, M2, M3, M4, M5, M7, M8, M9, M10,
+  M11, M12, M13, M15, and the Low items (dead `stop` branch, watcher `wait`,
+  WebSocket loop cleanup, orphaned Playwright specs removed, de-duplicated
+  `window.useStore`, `SettingsDialog` `API_BASE`, stray `theme` store key,
+  unnecessary cast, chord-analyzer vectorization, playlist `isinstance` guard,
+  and `test_remote_logic` rewritten from tautologies into real assertions).
+- **H3 detail:** remote (LAN) access is now token-gated. A token is minted when
+  remote access is enabled and embedded in the remote URL; clients present it via
+  header/query. Loopback is always authorized, so local/dev are unchanged. The
+  UI remote warning copy was updated accordingly.
+- **Non-issue (verified, not changed):** M6 — having traced `MetronomeEngine.add_clicks`,
+  it is passed `to_read` and advances the cursor by `to_read`, so it is internally
+  consistent; underrun padding only occurs at EOF where the tail is silence.
+- **Deferred (needs a deliberate, separately-approved step):** M14 — the 6.6 MB
+  `src/tests/data/Test.mp3` is only truly removable from clone size via a git
+  history rewrite (`git filter-repo`/BFG + force-push), which is destructive and
+  out of scope for an autonomous change. Replacing the file now would only add
+  another blob to history. The orphaned specs that referenced it were removed.
+
+---
+
 ## Critical
 
 ### C1 — Playlist auto-advance is dead; tracks repeat forever

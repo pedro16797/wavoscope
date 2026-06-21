@@ -26,18 +26,19 @@ def analyze_chord_at(audio_data: np.ndarray, sr: int, t: float, window_s: float 
     freqs = numpy.fft.rfftfreq(n_fft, 1.0 / sr)
 
     chroma_mean = np.zeros(12)
-    # Only consider frequencies from 50Hz to 2000Hz for chord detection
+    # Only consider frequencies from 50Hz to 2000Hz for chord detection.
     mask = (freqs >= 50) & (freqs <= 2000)
+    sel_freqs = freqs[mask]
+    sel_mags = spectrum[mask]
 
-    for f, mag in zip(freqs[mask], spectrum[mask]):
-        if f <= 0:
-            continue
-        # MIDI note: 69 + 12 * log2(f / 440)
-        midi = 69 + 12 * np.log2(f / 440.0)
-        note = int(round(midi)) % 12
-        chroma_mean[note] += mag
+    if sel_freqs.size:
+        # Vectorized chroma accumulation: bin each frequency to a pitch class
+        # and sum magnitudes with np.add.at (replaces a per-bin Python loop).
+        midi = 69 + 12 * np.log2(sel_freqs / 440.0)
+        notes = np.rint(midi).astype(np.int64) % 12
+        np.add.at(chroma_mean, notes, sel_mags)
 
-    if np.sum(chroma_mean) > 0:
+    if np.max(chroma_mean) > 0:
         chroma_mean /= np.max(chroma_mean)
 
     return analyze_chroma(chroma_mean)

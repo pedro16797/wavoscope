@@ -57,6 +57,8 @@ class PlaylistManager:
             return
         try:
             data = read_json(_PLAYLISTS_PATH)
+            if not isinstance(data, list):
+                raise ValueError("playlists file is not a list")
             for pl_data in data:
                 pl = Playlist.from_dict(pl_data)
                 self.playlists[pl.id] = pl
