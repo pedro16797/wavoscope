@@ -294,15 +294,16 @@ async def open_project(data: OpenProject, _host: None = Depends(require_host)):
 
     new_project = None
     try:
-        new_project = Project(path)
-        new_project.open_file(path)
+        with state.project_lock:
+            new_project = Project(path)
+            new_project.open_file(path)
 
-        # Register callback for playlist auto-advance
-        if state.on_playback_finished:
-            new_project.backend.register_callback("finished", state.on_playback_finished)
+            # Register callback for playlist auto-advance
+            if state.on_playback_finished:
+                new_project.backend.register_callback("finished", state.on_playback_finished)
 
-        # Atomically swap in the new project and close the previous one.
-        state.set_project(new_project)
+            # Atomically swap in the new project and close the previous one.
+            state.set_project(new_project)
         return {"status": "ok", "filename": path.name}
     except Exception:
         # Don't leak the new project's audio backend/threads if open failed

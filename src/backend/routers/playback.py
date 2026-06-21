@@ -26,44 +26,48 @@ def _advance_playlist(direction: int) -> None:
     get_item = (state.playlist_manager.get_next_item if direction >= 0
                 else state.playlist_manager.get_prev_item)
 
-    # Carry over the current loop mode to the new track.
-    old_loop_mode = state.project.loop_mode if state.project else "none"
-    current_item_id = state.active_item_id
+    # Hold the swap lock for the whole advance so it can't interleave with a
+    # route-driven open / next / prev (which would clobber state or close a
+    # just-opened project). Uncontended in the common case, so no added latency.
+    with state.project_lock:
+        # Carry over the current loop mode to the new track.
+        old_loop_mode = state.project.loop_mode if state.project else "none"
+        current_item_id = state.active_item_id
 
-    for _ in range(len(playlist.items)):
-        item = get_item(state.active_playlist_id, current_item_id)
-        if not item:
-            break
+        for _ in range(len(playlist.items)):
+            item = get_item(state.active_playlist_id, current_item_id)
+            if not item:
+                break
 
-        path = Path(item.path)
-        if path.exists():
-            new_project = None
-            try:
-                new_project = Project(path)
-                new_project.open_file(path)
+            path = Path(item.path)
+            if path.exists():
+                new_project = None
+                try:
+                    new_project = Project(path)
+                    new_project.open_file(path)
 
-                # Re-register callback for the next transition.
-                if state.on_playback_finished:
-                    new_project.backend.register_callback("finished", state.on_playback_finished)
+                    # Re-register callback for the next transition.
+                    if state.on_playback_finished:
+                        new_project.backend.register_callback("finished", state.on_playback_finished)
 
-                new_project.set_loop_mode(old_loop_mode)
+                    new_project.set_loop_mode(old_loop_mode)
 
-                # Atomically swap in the new project and close the previous one.
-                state.set_project(new_project)
-                state.active_item_id = item.id
-                new_project.play()
-                return
-            except Exception as e:
-                logger.error(f"Failed to open playlist item {path}: {e}")
-                # Don't leak a half-opened project's backend/threads.
-                if new_project is not None and new_project is not state.project:
-                    new_project.close()
-        else:
-            logger.warning(f"Playlist item {item.path} not found, skipping...")
+                    # Atomically swap in the new project and close the previous one.
+                    state.set_project(new_project)
+                    state.active_item_id = item.id
+                    new_project.play()
+                    return
+                except Exception as e:
+                    logger.error(f"Failed to open playlist item {path}: {e}")
+                    # Don't leak a half-opened project's backend/threads.
+                    if new_project is not None and new_project is not state.project:
+                        new_project.close()
+            else:
+                logger.warning(f"Playlist item {item.path} not found, skipping...")
 
-        current_item_id = item.id
+            current_item_id = item.id
 
-    logger.error("No valid items found in playlist to advance.")
+        logger.error("No valid items found in playlist to advance.")
 
 def trigger_next_playlist_item():
     _advance_playlist(1)
