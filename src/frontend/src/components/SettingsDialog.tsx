@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import { QRCodeSVG } from 'qrcode.react';
 import { useStore, API_BASE } from '../store/useStore';
 import { useShallow } from 'zustand/react/shallow';
 import { ChevronDown, FolderOpen } from 'lucide-react';
@@ -241,6 +242,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ onClose }) => {
                         </div>
                         {remAccess && (
                             <div className="space-y-3 pl-2 border-l-2 border-accent/20 animate-in fade-in slide-in-from-left-1">
+                                {remote_url && (
+                                    <div className="flex flex-col items-center gap-1.5 py-1">
+                                        {/* White backing so the code scans reliably on any theme. */}
+                                        <div className="bg-white p-2 rounded-[var(--ui-radius)]">
+                                            <QRCodeSVG value={remote_url} size={148} level="M" marginSize={0} />
+                                        </div>
+                                        <p className="text-[0.5625rem] opacity-40 leading-tight text-center max-w-[12rem]">
+                                            {t('settings.remote_qr_hint')}
+                                        </p>
+                                    </div>
+                                )}
                                 <div className="space-y-1">
                                     <label className="text-[0.625rem] uppercase font-bold opacity-50">{t('settings.remote_url')}</label>
                                     <div className="bg-background border border-grid rounded-[var(--ui-radius)] p-2 text-xs font-mono text-accent break-all select-all"
