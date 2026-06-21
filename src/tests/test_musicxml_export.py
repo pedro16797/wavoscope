@@ -199,6 +199,36 @@ def test_musicxml_export_lyrics(tmp_path):
     assert notes[0].find("lyric/text").text == "Hello"
     assert notes[1].find("lyric/text").text == "World"
 
+def test_musicxml_export_durations_sum_and_carryover(tmp_path):
+    audio_path = tmp_path / "test_dur.wav"
+    audio_path.write_bytes(b"dummy")
+    project = Project(audio_path)
+
+    # Two 4/4 measures (0-3s, 3-6s).
+    project.add_flag(0.0, kind="rhythm", div=4)
+    project.add_flag(3.0, kind="rhythm", div=4)
+    project.add_flag(6.0, kind="rhythm", div=4)
+
+    # A chord in measure 1, and lyrics at odd times so measure 1 splits into
+    # several fractional segments (which plain truncation would not sum cleanly).
+    project.add_harmony_flag(0.5, {"r": "C", "ca": "", "q": "", "ext": "", "alt": [], "add": [], "b": "", "ba": ""})
+    project.add_lyric("a", 0.7, 0.6)
+    project.add_lyric("b", 2.1, 0.5)
+
+    xml_content = project.generate_musicxml()
+    tree = ET.fromstring(xml_content)
+    piano = tree.find("part[@id='P1']")
+
+    # Every measure's note durations must sum exactly to the 4/4 total (4*480).
+    for m in piano.findall("measure"):
+        durs = [int(n.find("duration").text) for n in m.findall("note")]
+        assert sum(durs) == 1920, f"measure {m.get('number')} sums to {sum(durs)} ({durs})"
+
+    # Measure 2 has no chord of its own, so it should carry C from measure 1.
+    m2 = piano.find("measure[@number='2']")
+    assert m2.find("harmony/root/root-step").text == "C"
+
+
 if __name__ == "__main__":
     import pytest
     pytest.main([__file__])

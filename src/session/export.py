@@ -95,6 +95,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
         last_num = -1
         last_den = -1
         current_subdiv = project_time_sig["numerator"]
+        current_harmony = None  # prevailing chord, carried across measures
 
         loop_len = len(rhythm_flags) - 1 if len(rhythm_flags) > 1 else 1
         for i in range(loop_len):
@@ -158,7 +159,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
             is_first = (i == 0)
             attr_change = is_first or (num != last_num) or (den != last_den)
 
-            _add_measure_piano(part_piano, i+1, num, den, tempo_to_note, attr_change, measure_harmonies, divisions, start_t, end_t, rehearsal, annotation, measure_lyrics)
+            current_harmony = _add_measure_piano(part_piano, i+1, num, den, tempo_to_note, attr_change, measure_harmonies, divisions, start_t, end_t, rehearsal, annotation, measure_lyrics, current_harmony)
             _add_measure_metro(part_metro, i+1, num, den, attr_change, divisions)
 
             last_num = num
@@ -175,7 +176,7 @@ def generate_musicxml(session_data: Dict[str, Any], audio_filename: str, progres
            '<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">\n' + \
            xml_str
 
-def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, divisions, start_t=0, end_t=0, rehearsal=None, annotation=None, lyrics=[]):
+def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, divisions, start_t=0, end_t=0, rehearsal=None, annotation=None, lyrics=[], current_harmony=None):
     measure = ET.SubElement(part, "measure", number=str(number))
 
     if attr_change:
@@ -209,6 +210,7 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
         ET.SubElement(metronome, "per-minute").text = str(round(tempo))
 
     total_dur_div = int(num * divisions * (4 / den))
+    span = end_t - start_t
 
     # Combine harmony and lyric events for splitting
     event_points = set([start_t, end_t])
@@ -219,15 +221,19 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
 
     sorted_points = sorted([p for p in event_points if start_t <= p <= end_t])
 
-    # Generate notes for each segment
+    # Generate notes for each segment. Use cumulative rounding so the segment
+    # durations sum exactly to total_dur_div — plain int() truncation per segment
+    # left measures short, which notation software flags as corrupt.
+    acc_prev = 0
     for i in range(len(sorted_points) - 1):
         seg_start = sorted_points[i]
-        seg_end = sorted_points[i+1]
-        seg_dur_ratio = (seg_end - seg_start) / (end_t - start_t)
-        seg_dur_div = int(seg_dur_ratio * total_dur_div)
-        if seg_dur_div <= 0: continue
+        seg_end = sorted_points[i + 1]
+        acc_now = round(((seg_end - start_t) / span) * total_dur_div) if span > 0 else total_dur_div
+        seg_dur_div = acc_now - acc_prev
+        acc_prev = acc_now
 
-        # Check for harmony change at this start point
+        # Harmony at this segment's start, otherwise carry the prevailing chord
+        # into the measure's first segment so each bar shows its chord.
         harmony = None
         for h in harmonies:
             if abs(h["t"] - seg_start) < 0.001:
@@ -236,10 +242,12 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
 
         if harmony:
             _add_harmony_tag(measure, harmony["c"])
-        elif i == 0:
-            # Check if there's a preceding harmony
-            # (In this simplified version we only add if it's explicitly at start or we'd need more logic)
-            pass
+            current_harmony = harmony["c"]
+        elif i == 0 and current_harmony is not None:
+            _add_harmony_tag(measure, current_harmony)
+
+        if seg_dur_div <= 0:
+            continue
 
         # Check for lyric in this segment
         seg_mid = (seg_start + seg_end) / 2
@@ -256,6 +264,8 @@ def _add_measure_piano(part, number, num, den, tempo, attr_change, harmonies, di
         if active_lyric:
             lyr_el = ET.SubElement(note, "lyric")
             ET.SubElement(lyr_el, "text").text = active_lyric["s"]
+
+    return current_harmony
 
 def _add_measure_metro(part, number, num, den, attr_change, divisions):
     measure = ET.SubElement(part, "measure", number=str(number))
