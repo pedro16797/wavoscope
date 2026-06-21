@@ -83,6 +83,24 @@ def generate():
         time.sleep(1)
         page.locator(".fixed.inset-0").screenshot(path="docs/images/settings_dialog.png")
 
+        # 6b. Screenshot: Remote Access QR (Global tab). Enabling remote access
+        # mints a token; the dialog then renders it as a scannable QR code.
+        try:
+            post_json("http://127.0.0.1:8000/config", {"remote_access": True})
+            page.evaluate("window.useStore.getState().fetchConfig()")
+            time.sleep(0.5)
+            page.locator("button:has-text('Global')").click()
+            time.sleep(0.3)
+            page.evaluate("window.useStore.getState().fetchRemoteUrl()")
+            time.sleep(0.7)
+            # Scroll the token-bearing URL (and the QR above it) into view.
+            page.get_by_text("token=", exact=False).scroll_into_view_if_needed()
+            time.sleep(0.7)
+            page.locator(".fixed.inset-0").screenshot(path="docs/images/remote_qr.png")
+        finally:
+            # Don't leave remote access enabled in the dev config.
+            post_json("http://127.0.0.1:8000/config", {"remote_access": False})
+
         # 7. Screenshot: Rhythm Flag Dialog
         page.evaluate("window.useStore.getState().setShowSettings(false)")
         page.evaluate("window.useStore.getState().setEditingFlagIdx(0)")

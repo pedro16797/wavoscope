@@ -45,11 +45,13 @@ Wavoscope uses a "sidecar" file system. When you open an audio file, Wavoscope c
 - **Playlists:** Click the playlist icon to manage collections of songs. You can create, edit, and delete playlists, and easily switch between tracks.
 - **Auto-Advance:** When a playlist is active, you can enable the **Playlist loop mode** to automatically play the next song in the list when the current one ends.
 - **Tempo & Tap Tempo:** The current tempo (in BPM) is displayed in the waveform header. Click it repeatedly to manually measure the tempo (**Tap Tempo**). It automatically reverts to the calculated measure tempo after 3 seconds of inactivity.
-- **Remote Control:** Enable **Remote Access** in settings to control Wavoscope from other devices (like a mobile phone) on the same local network. The settings will display a URL that you can enter in your remote device's browser to access the interface and control playback.
+- **Remote Control:** Enable **Remote Access** in settings to control Wavoscope from other devices (like a mobile phone) on the same local network. The settings display a **QR code** (and the matching URL) — scan it with your phone's camera to open the remote interface instantly.
     - **Optimized UI:** Remote devices get a streamlined interface that hides complex tools like the spectrum analyzer and focuses on playback controls.
     - **Touch Support:** Full touch navigation is supported, including panning and pinch-to-zoom on the waveform.
     - **Host Protection:** Remote devices can only control playback and view markers. Editing (flags, lyrics, chords), opening files, exporting, and changing settings are enforced as **host-only on the server**, so a remote device cannot read or modify files on the host machine.
-    - *Note: Remote **playback** control is unauthenticated — anyone on your local network can control playback. Only enable remote access on networks you trust.*
+    - **Access Token:** Remote access is gated by a secret token embedded in the QR/URL (minted when you enable remote access). Only devices that open that link can control playback, so keep the link private and treat anyone you share it with as trusted.
+
+![Remote Access QR Code](docs/images/remote_qr.png)
 
 ![Remote Interface](docs/images/remote_view.png)
 
