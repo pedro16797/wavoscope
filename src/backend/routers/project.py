@@ -285,6 +285,17 @@ async def undo_project(project: Project = Depends(require_host_project)):
         "time_signature": project.time_signature
     }
 
+@router.post("/redo")
+async def redo_project(project: Project = Depends(require_host_project)):
+    project.redo()
+    return {
+        "status": "ok",
+        "flags": project.flags,
+        "harmony_flags": project.harmony_flags,
+        "lyrics": project.lyrics,
+        "time_signature": project.time_signature
+    }
+
 @router.post("/open")
 async def open_project(data: OpenProject, _host: None = Depends(require_host)):
     path = Path(data.path)

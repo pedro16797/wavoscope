@@ -25,20 +25,30 @@ def test_undo_manager_basic(tmp_path):
     project.add_flag(2.0, kind="rhythm")
     assert len(project.flags) == 2
 
-    # Undo to Step 1
+    # Move back to Step 1 (non-destructive: future steps are kept for redo)
     project.restore_checkpoint(1)
     assert len(project.flags) == 1
     assert project.flags[0]["t"] == 1.0
-
-    # History should be truncated
     history = project._undo.get_history()
-    assert len(history) == 2
+    assert len(history) == 3            # base + 2 steps still present
+    assert project._undo.can_redo
 
-    # Undo to Step 0
-    project.restore_checkpoint(0)
+    # Redo back to Step 2
+    project.redo()
+    assert len(project.flags) == 2
+
+    # Undo twice back to Step 0
+    project.undo()
+    project.undo()
     assert len(project.flags) == 0
+    assert not project._undo.can_undo
+    assert project._undo.can_redo
+
+    # A new edit from here discards the redo branch
+    project.add_flag(5.0, kind="rhythm")
+    assert not project._undo.can_redo
     history = project._undo.get_history()
-    assert len(history) == 1
+    assert len(history) == 2            # base + the single new step
 
 def test_undo_max_steps(tmp_path):
     audio_path = tmp_path / "test2.wav"

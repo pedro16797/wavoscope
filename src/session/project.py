@@ -34,7 +34,9 @@ class Project:
 
         from utils.config import Config
         cfg = Config()
-        self._undo = UndoManager(self.session_data, max_steps=cfg.get("recovery.undo_steps", 50))
+        # Seed undo with the scrubbed shape that checkpoints push, so the first
+        # patch isn't full of spurious default-field add/removes.
+        self._undo = UndoManager(self._manager._scrub_defaults(self.session_data), max_steps=cfg.get("recovery.undo_steps", 50))
 
         self.backend = AudioBackend()
 
@@ -401,6 +403,12 @@ class Project:
         with self._lock:
             if self._undo.can_undo:
                 new_data = self._undo.undo()
+                self._apply_new_data(new_data)
+
+    def redo(self) -> None:
+        with self._lock:
+            if self._undo.can_redo:
+                new_data = self._undo.redo()
                 self._apply_new_data(new_data)
 
     def _apply_new_data(self, new_data: Dict[str, Any]) -> None:

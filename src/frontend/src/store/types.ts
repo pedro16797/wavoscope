@@ -145,6 +145,7 @@ export interface ProjectSlice {
   fetchUndoSteps: () => Promise<void>;
   restoreUndoStep: (index: number) => Promise<void>;
   undo: () => Promise<void>;
+  redo: () => Promise<void>;
 }
 
 export interface PlaybackSlice {

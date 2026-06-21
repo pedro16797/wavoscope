@@ -338,5 +338,21 @@ export const createProjectSlice: StateCreator<AppState, [], [], ProjectSlice> = 
     } catch (e) {
         console.error("[Store] Failed to undo:", e);
     }
+  },
+
+  redo: async () => {
+    try {
+        const res = await axios.post(`${API_BASE}/project/redo`);
+        set({
+            flags: res.data.flags,
+            harmony_flags: res.data.harmony_flags,
+            lyrics: res.data.lyrics,
+            time_signature: res.data.time_signature,
+            dirty: true
+        });
+        await get().fetchUndoSteps();
+    } catch (e) {
+        console.error("[Store] Failed to redo:", e);
+    }
   }
 });
